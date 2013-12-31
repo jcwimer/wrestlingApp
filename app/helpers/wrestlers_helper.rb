@@ -1,0 +1,2 @@
+module WrestlersHelper
+end

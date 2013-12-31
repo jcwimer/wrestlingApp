@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  school_id: 1
+  weight_id: 1
+  seed: 1
+  original_seed: 1
+
+two:
+  name: MyString
+  school_id: 1
+  weight_id: 1
+  seed: 1
+  original_seed: 1

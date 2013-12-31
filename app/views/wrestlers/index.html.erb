@@ -1,0 +1,35 @@
+<h1>Listing wrestlers</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>School</th>
+      <th>Weight</th>
+      <th>Seed</th>
+      <th>Original seed</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @wrestlers.each do |wrestler| %>
+      <tr>
+        <td><%= wrestler.name %></td>
+        <td><%= School.find(wrestler.school_id).name %></td>
+        <td><%= Weight.find(wrestler.weight_id).max %></td>
+        <td><%= wrestler.seed %></td>
+        <td><%= wrestler.original_seed %></td>
+        <td><%= link_to 'Show', wrestler %></td>
+        <td><%= link_to 'Edit', edit_wrestler_path(wrestler) %></td>
+        <td><%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Wrestler', new_wrestler_path %>

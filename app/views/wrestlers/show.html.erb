@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @wrestler.name %>
+</p>
+
+<p>
+  <strong>School:</strong>
+  <%= School.find(@wrestler.school_id).name %>
+</p>
+
+<p>
+  <strong>Weight:</strong>
+  <%= Weight.find(@wrestler.weight_id).max %>
+</p>
+
+<p>
+  <strong>Seed:</strong>
+  <%= @wrestler.seed %>
+</p>
+
+<p>
+  <strong>Original seed:</strong>
+  <%= @wrestler.original_seed %>
+</p>
+
+<%= link_to 'Edit', edit_wrestler_path(@wrestler) %> |
+<%= link_to 'Back', wrestlers_path %>

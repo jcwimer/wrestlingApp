@@ -1,0 +1,27 @@
+<h1>Listing weights</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Max</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @weights.each do |weight| %>
+      <tr>
+        <td><%= weight.max %></td>
+        <td><%= link_to 'Show', weight %></td>
+        <td><%= link_to 'Edit', edit_weight_path(weight) %></td>
+        <td><%= link_to 'Destroy', weight, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Weight', new_weight_path %>

@@ -1,0 +1,39 @@
+<%= form_for(@wrestler) do |f| %>
+  <% if @wrestler.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@wrestler.errors.count, "error") %> prohibited this wrestler from being saved:</h2>
+
+      <ul>
+      <% @wrestler.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label 'School' %><br>
+    <%= f.collection_select :school_id, School.all, :id, :name %>
+  </div>
+  <div class="field">
+    <%= f.label 'Weight Class' %><br>
+    <%= f.collection_select :weight_id, Weight.all, :id, :max %>
+  </div>
+  <div class="field">
+    <%= f.label :seed %><br>
+    <%= f.number_field :seed %>
+  </div>
+  <div class="field">
+    <%= f.label :original_seed %><br>
+    <%= f.number_field :original_seed %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+
+
