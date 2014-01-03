@@ -3,8 +3,9 @@
 <h1>Weight Class:<%= @weight.max %></h1>
   
 
-<%= link_to 'Edit Weight Class', edit_weight_path(@weight) %> |
-<%= link_to 'Back to Weight Classes', weights_path %>
+<%= link_to "Edit #{@weight.max} Weight Class", edit_weight_path(@weight) %> |
+<%= link_to 'Back to Weight Classes', weights_path %> |
+<%= link_to 'Back to Admin', '/admin/index' %>
 <br>
 <br>
 <br>

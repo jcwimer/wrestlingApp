@@ -10,5 +10,37 @@
   <%= @school.score %>
 </p>
 
-<%= link_to 'Edit', edit_school_path(@school) %> |
-<%= link_to 'Back', schools_path %>
+<%= link_to "Edit #{@school.name}", edit_school_path(@school) %> |
+<%= link_to 'Back to Schools', schools_path %> |
+<%= link_to 'Back to Admin', '/admin/index' %>
+
+
+
+<br>
+<br>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Weight</th>
+      <th>Seed</th>
+      <th>Original seed</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @wrestlers.each do |wrestler| %>
+      <% if wrestler.school_id == @school.id %>
+        <tr>
+          <td><%= wrestler.name %></td>
+          <td><%= Weight.find(wrestler.weight_id).max %></td>
+          <td><%= wrestler.seed %></td>
+          <td><%= wrestler.original_seed %></td>
+          <td><%= link_to 'Show', wrestler , :class=>"btn" %><%= link_to 'Edit', edit_wrestler_path(wrestler), :class=>"btn" %><%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

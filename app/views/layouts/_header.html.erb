@@ -8,6 +8,10 @@
           <li><%= link_to "School Scores", '/static_pages/school' %></li>
           <li><%= link_to "Brackets" , '#' %></li>
           <li><%= link_to "Bout Board" , '#' %></li>
+          <% #If logged in %>
+          <li><%= link_to "Admin" , '/admin/index' %></li>
+          <% #ELSE %>
+          <li><%= link_to "Log In" , '#' %></li>
         </ul>
       </nav>
     </div>
