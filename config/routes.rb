@@ -1,9 +1,13 @@
 Wrestling::Application.routes.draw do
-  resources :wrestlers
+  resources :schools
 
   resources :weights
 
-  resources :schools
+  resources :wrestlers
+
+  
+
+  
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
