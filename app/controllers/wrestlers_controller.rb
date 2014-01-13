@@ -15,6 +15,9 @@ class WrestlersController < ApplicationController
   # GET /wrestlers/new
   def new
     @wrestler = Wrestler.new
+    if params[:school]
+      @school = params[:school]
+    end
   end
 
   # GET /wrestlers/1/edit

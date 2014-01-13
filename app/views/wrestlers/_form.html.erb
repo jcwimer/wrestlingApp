@@ -15,12 +15,15 @@
     <%= f.label :name %><br>
     <%= f.text_field :name %>
   </div>
-  
 
+  <% if @school %>
+      <%= f.hidden_field :school_id, :value => @school %>
+  <% else %>
       <div class="field">
         <%= f.label 'School' %><br>
         <%= f.collection_select :school_id, School.all, :id, :name %>
       </div>
+  <% end %>
 
   <div class="field">
     <%= f.label 'Weight Class' %><br>
