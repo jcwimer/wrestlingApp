@@ -1,10 +1,12 @@
 <p id="notice"><%= notice %></p>
 
 <h1>Weight Class:<%= @weight.max %></h1>
-  
+ 
+ <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}" %> |
+<% if user_signed_in? %>
+  <%= link_to "Edit #{@weight.max} Weight Class", edit_weight_path(@weight) %> |
+<% end %>
 
-<%= link_to "Edit #{@weight.max} Weight Class", edit_weight_path(@weight) %> |
-<%= link_to 'Back to Weight Classes', weights_path %> |
 <br>
 <br>
 <br>

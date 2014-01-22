@@ -1,5 +1,10 @@
 <p id="notice"><%= notice %></p>
 
+<%= link_to "Back to #{@school.name}", "/schools/#{@school.id}" %> |
+<% if user_signed_in? %>
+  <%= link_to "Edit #{@wrestler.name}", edit_wrestler_path(@wrestler) %> |
+<% end %>
+
 <p>
   <strong>Name:</strong>
   <%= @wrestler.name %>
@@ -16,14 +21,7 @@
 </p>
 
 <p>
-  <strong>Seed:</strong>
-  <%= @wrestler.seed %>
-</p>
-
-<p>
   <strong>Original seed:</strong>
   <%= @wrestler.original_seed %>
 </p>
 
-<%= link_to 'Edit', edit_wrestler_path(@wrestler) %> |
-<%= link_to 'Back', wrestlers_path %>

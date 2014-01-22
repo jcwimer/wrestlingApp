@@ -18,7 +18,6 @@
 <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}" %> |
 <% if user_signed_in? %>
   <%= link_to "Edit #{@school.name}", edit_school_path(@school) %> |
-  <%= link_to 'Back to Admin', '/admin/index' %>
 <% end %>
 
 
