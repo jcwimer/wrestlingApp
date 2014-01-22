@@ -15,15 +15,19 @@
   <%= Tournament.find(@school.tournament_id).name %>
 </p>
 
-<%= link_to "Edit #{@school.name}", edit_school_path(@school) %> |
-<%= link_to 'Back to Schools', schools_path %> |
-<%= link_to 'Back to Admin', '/admin/index' %>
+<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}" %> |
+<% if user_signed_in? %>
+  <%= link_to "Edit #{@school.name}", edit_school_path(@school) %> |
+  <%= link_to 'Back to Admin', '/admin/index' %>
+<% end %>
 
 
 
 <br>
 <br>
-<%= link_to "New #{@school.name} Wrestler" , "/wrestlers/new?school=#{@school.id}" %>
+<% if user_signed_in? %>
+  <%= link_to "New #{@school.name} Wrestler" , "/wrestlers/new?school=#{@school.id}" %>
+<% end %>
 <br>
 <br>
 
@@ -33,7 +37,6 @@
       <th>Name</th>
       <th>Weight</th>
       <th>Seed</th>
-      <th>Original seed</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -44,9 +47,14 @@
         <tr>
           <td><%= wrestler.name %></td>
           <td><%= Weight.find(wrestler.weight_id).max %></td>
-          <td><%= wrestler.seed %></td>
           <td><%= wrestler.original_seed %></td>
-          <td><%= link_to 'Show', wrestler , :class=>"btn" %><%= link_to 'Edit', edit_wrestler_path(wrestler), :class=>"btn" %><%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %></td>
+          <td>
+            <% if user_signed_in? %>
+              <%= link_to 'Show', wrestler , :class=>"btn" %>
+              <%= link_to 'Edit', edit_wrestler_path(wrestler), :class=>"btn" %>
+              <%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     <% end %>

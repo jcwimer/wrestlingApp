@@ -11,6 +11,7 @@ class SchoolsController < ApplicationController
   # GET /schools/1.json
   def show
     @wrestlers = Wrestler.all
+    @tournament = Tournament.find(@school.tournament_id)
   end
 
   # GET /schools/new
