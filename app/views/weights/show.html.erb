@@ -26,7 +26,11 @@
       				<td><%= wrestler.name %></td>
       				<td><%= School.find(wrestler.school_id).name %></td>
       				<td><%= wrestler.original_seed %></td>
-      				<td><%= link_to 'Show', wrestler , :class=>"btn" %><%= link_to 'Edit', edit_wrestler_path(wrestler) , :class=>"btn" %><%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' } , :class=>"btn btn-danger" %></td>
+      				<td><%= link_to 'Show', wrestler , :class=>"btn" %>
+      					<% if user_signed_in? %>
+	      					<%= link_to 'Edit', edit_wrestler_path(wrestler) , :class=>"btn" %>
+	      					<%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' } , :class=>"btn btn-danger" %></td>
+	      				<% end %>
       			</tr>
       		<% end %>
     	<% end %>
