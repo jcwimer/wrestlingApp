@@ -1,4 +1,6 @@
 Wrestling::Application.routes.draw do
+  resources :tournaments
+
   resources :schools
 
   resources :weights

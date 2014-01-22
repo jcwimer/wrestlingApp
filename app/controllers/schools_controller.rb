@@ -16,6 +16,9 @@ class SchoolsController < ApplicationController
   # GET /schools/new
   def new
     @school = School.new
+    if params[:tournament]
+      @tournament = params[:tournament]
+    end
   end
 
   # GET /schools/1/edit
@@ -70,6 +73,6 @@ class SchoolsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def school_params
-      params.require(:school).permit(:name, :score)
+      params.require(:school).permit(:name, :score, :tournament_id)
     end
 end

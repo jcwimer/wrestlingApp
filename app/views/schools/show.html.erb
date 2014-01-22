@@ -10,6 +10,11 @@
   <%= @school.score %>
 </p>
 
+<p>
+  <strong>Tournament:</strong>
+  <%= Tournament.find(@school.tournament_id).name %>
+</p>
+
 <%= link_to "Edit #{@school.name}", edit_school_path(@school) %> |
 <%= link_to 'Back to Schools', schools_path %> |
 <%= link_to 'Back to Admin', '/admin/index' %>
