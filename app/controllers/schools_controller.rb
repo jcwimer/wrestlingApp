@@ -25,16 +25,17 @@ class SchoolsController < ApplicationController
 
   # GET /schools/1/edit
   def edit
+    @tournament_field = @school.tournament_id
   end
 
   # POST /schools
   # POST /schools.json
   def create
     @school = School.new(school_params)
-
+    @tournament = Tournament.find(school_params[:tournament_id])
     respond_to do |format|
       if @school.save
-        format.html { redirect_to @school, notice: 'School was successfully created.' }
+        format.html { redirect_to @tournament, notice: 'School was successfully created.' }
         format.json { render action: 'show', status: :created, location: @school }
       else
         format.html { render action: 'new' }
@@ -46,9 +47,10 @@ class SchoolsController < ApplicationController
   # PATCH/PUT /schools/1
   # PATCH/PUT /schools/1.json
   def update
+    @tournament = Tournament.find(@school.tournament_id)
     respond_to do |format|
       if @school.update(school_params)
-        format.html { redirect_to @school, notice: 'School was successfully updated.' }
+        format.html { redirect_to @tournament, notice: 'School was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -60,9 +62,10 @@ class SchoolsController < ApplicationController
   # DELETE /schools/1
   # DELETE /schools/1.json
   def destroy
+    @tournament = Tournament.find(@school.tournament_id)
     @school.destroy
     respond_to do |format|
-      format.html { redirect_to schools_url }
+      format.html { redirect_to @tournament }
       format.json { head :no_content }
     end
   end

@@ -11,6 +11,7 @@ class TournamentsController < ApplicationController
   # GET /tournaments/1.json
   def show
     @schools = @tournament.schools
+    @weights = @tournament.weights
   end
 
   # GET /tournaments/new
@@ -26,7 +27,6 @@ class TournamentsController < ApplicationController
   # POST /tournaments.json
   def create
     @tournament = Tournament.new(tournament_params)
-
     respond_to do |format|
       if @tournament.save
         format.html { redirect_to @tournament, notice: 'Tournament was successfully created.' }

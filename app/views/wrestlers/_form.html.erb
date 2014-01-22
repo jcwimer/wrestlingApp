@@ -27,7 +27,7 @@
 
   <div class="field">
     <%= f.label 'Weight Class' %><br>
-    <%= f.collection_select :weight_id, Weight.all, :id, :max %>
+    <%= f.collection_select :weight_id, @weight, :id, :max %>
   </div>
   <div class="field">
     <%= f.label :original_seed %><br>

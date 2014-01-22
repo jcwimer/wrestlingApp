@@ -54,6 +54,36 @@
     <% end %>
   </tbody>
 </table>
+<br>
+<br>
+<% if user_signed_in? %>
+  <%= link_to "New #{@tournament.name} Weight" , "/weights/new?tournament=#{@tournament.id}" %>
+<% end %>
+<br>
+<br>
+<h3>Weights</h3>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Weight Class</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @weights.each do |weight| %>
+      <tr>
+        <td><%= weight.max %></td>
+        <td><%= link_to 'Show', weight, :class=>"btn" %>
+          <% if user_signed_in? %>
+            <%= link_to 'Edit', edit_weight_path(weight), :class=>"btn" %>
+            <%= link_to 'Destroy', weight, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
 
 

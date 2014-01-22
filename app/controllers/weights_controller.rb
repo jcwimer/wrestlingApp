@@ -11,25 +11,31 @@ class WeightsController < ApplicationController
   # GET /weights/1.json
   def show
     @wrestler = Wrestler.all
+    @tournament = Tournament.find(@weight.tournament_id)
   end
 
   # GET /weights/new
   def new
     @weight = Weight.new
+    if params[:tournament]
+      @tournament_field = params[:tournament]
+      @tournament = Tournament.find(params[:tournament])
+    end
   end
 
   # GET /weights/1/edit
   def edit
+    @tournament_field = @weight.tournament_id
   end
 
   # POST /weights
   # POST /weights.json
   def create
     @weight = Weight.new(weight_params)
-
+    @tournament = Tournament.find(weight_params[:tournament_id])
     respond_to do |format|
       if @weight.save
-        format.html { redirect_to @weight, notice: 'Weight was successfully created.' }
+        format.html { redirect_to @tournament, notice: 'Weight was successfully created.' }
         format.json { render action: 'show', status: :created, location: @weight }
       else
         format.html { render action: 'new' }
@@ -41,9 +47,10 @@ class WeightsController < ApplicationController
   # PATCH/PUT /weights/1
   # PATCH/PUT /weights/1.json
   def update
+    @tournament = Tournament.find(@weight.tournament_id)
     respond_to do |format|
       if @weight.update(weight_params)
-        format.html { redirect_to @weight, notice: 'Weight was successfully updated.' }
+        format.html { redirect_to @tournament, notice: 'Weight was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -55,9 +62,10 @@ class WeightsController < ApplicationController
   # DELETE /weights/1
   # DELETE /weights/1.json
   def destroy
+    @tournament = Tournament.find(@weight.tournament_id)
     @weight.destroy
     respond_to do |format|
-      format.html { redirect_to weights_url }
+      format.html { redirect_to @tournament }
       format.json { head :no_content }
     end
   end
@@ -70,6 +78,6 @@ class WeightsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def weight_params
-      params.require(:weight).permit(:max)
+      params.require(:weight).permit(:max, :tournament_id)
     end
 end

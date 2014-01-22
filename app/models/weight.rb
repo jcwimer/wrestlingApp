@@ -1,3 +1,4 @@
 class Weight < ActiveRecord::Base
-	has_many :wrestlers
+	belongs_to :tournament
+	has_many :wrestlers, dependent: :destroy
 end
