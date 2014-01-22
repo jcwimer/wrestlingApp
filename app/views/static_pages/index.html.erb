@@ -14,7 +14,12 @@
     <% @tournaments.each do |tournament| %>
       <tr>
         <td><%= tournament.name %></td>
-        <td><%= link_to 'Show', tournament, :class=>"btn" %><%= link_to 'Edit', edit_tournament_path(tournament), :class=>"btn" %><%= link_to 'Destroy', tournament, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %></td>
+        <td><%= link_to 'Show', tournament, :class=>"btn" %>
+          <% if user_signed_in? %>
+            <%= link_to 'Edit', edit_tournament_path(tournament), :class=>"btn" %>
+            <%= link_to 'Destroy', tournament, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
+          <% end %>
+        </td>
       </tr>
     <% end %>
   </tbody>

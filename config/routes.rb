@@ -1,4 +1,5 @@
 Wrestling::Application.routes.draw do
+  devise_for :users
   resources :tournaments
 
   resources :schools
