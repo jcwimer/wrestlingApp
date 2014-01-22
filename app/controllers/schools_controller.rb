@@ -17,7 +17,8 @@ class SchoolsController < ApplicationController
   def new
     @school = School.new
     if params[:tournament]
-      @tournament = params[:tournament]
+      @tournament_field = params[:tournament]
+      @tournament = Tournament.find(params[:tournament])
     end
   end
 

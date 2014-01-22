@@ -6,11 +6,10 @@
         <ul class="nav pull-right">
           <li><%= link_to "Home", root_path %></li>
           <% if @tournament %>
-            <li><%= link_to "Brackets" , '#' %></li>
-            <li><%= link_to "Bout Board" , '#' %></li>
+              <li><%= link_to "Brackets" , '#' %></li>
+              <li><%= link_to "Bout Board" , '#' %></li>
           <% end %>
           <% if user_signed_in? %>
-            <li><%= link_to "Admin" , '/admin/index' %></li>
             <li><%= link_to "Log Out",  destroy_user_session_path, method: :delete %></li>
           <% else %>
             <li><%= link_to "Log In" , new_user_session_path %></li>

@@ -16,7 +16,8 @@ class WrestlersController < ApplicationController
   def new
     @wrestler = Wrestler.new
     if params[:school]
-      @school = params[:school]
+      @school_field = params[:school]
+      @school = School.find(params[:school])
     end
   end
 

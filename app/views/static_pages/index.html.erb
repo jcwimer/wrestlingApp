@@ -1,5 +1,7 @@
 <h1>Pick A Tournament</h1>
-<%= link_to 'New Tournament', new_tournament_path, :class=>"btn" %>
+<% if user_signed_in? %>
+  <%= link_to 'New Tournament', new_tournament_path, :class=>"btn" %>
+<% end %>
 </br>
 </br>
 <table class="table table-striped table-bordered">
