@@ -41,7 +41,7 @@ end
 #MY GEMS
 gem 'devise'
 gem 'cancan'
-gem 'bootstrap-sass', '2.3.2.0'
+gem 'bootstrap-sass'
 
 
 # Use ActiveModel has_secure_password
