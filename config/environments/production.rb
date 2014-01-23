@@ -78,8 +78,13 @@ Wrestling::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
+
+  #THESE ADDED BY ME TO GET RAILS 4 WORKING IN HEROKU
   config.cache_classes = true
   config.serve_static_assets = true
   config.assets.compile = true
   config.assets.digest = true
+
+  #Added by me to force SSL in production
+  config.force_ssl = true
 end
