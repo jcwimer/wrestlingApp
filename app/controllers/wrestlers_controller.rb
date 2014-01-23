@@ -5,12 +5,13 @@ class WrestlersController < ApplicationController
   # GET /wrestlers.json
   def index
     @wrestlers = Wrestler.all
-    #@school = School.find(@wrestler.school_id)
+    @school = School.find(@wrestler.school_id)
   end
 
   # GET /wrestlers/1
   # GET /wrestlers/1.json
   def show
+    @school = School.find(@wrestler.school_id)
   end
 
   # GET /wrestlers/new
@@ -34,6 +35,9 @@ class WrestlersController < ApplicationController
   # GET /wrestlers/1/edit
   def edit
     @school_field = @wrestler.school_id
+    @school = School.find(@wrestler.school_id)
+    @tournament = Tournament.find(@school.tournament_id)
+    @weight = Weight.where(tournament_id: @tournament.id)
   end
 
   # POST /wrestlers

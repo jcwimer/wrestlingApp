@@ -24,10 +24,10 @@
         <%= f.collection_select :school_id, School.all, :id, :name %>
       </div>
   <% end %>
-
   <div class="field">
     <%= f.label 'Weight Class' %><br>
     <%= f.collection_select :weight_id, @weight, :id, :max %>
+
   </div>
   <div class="field">
     <%= f.label :original_seed %><br>
