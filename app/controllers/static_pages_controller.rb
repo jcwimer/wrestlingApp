@@ -7,6 +7,7 @@ class StaticPagesController < ApplicationController
 	def brackets
 	    if params[:weight]
 	    	@weight = Weight.find(params[:weight])
+	    	@tournament = Tournament.find(@weight.tournament_id)
 	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
 	    	@bracket_size = Wrestler.where(weight_id: @weight.id).count
 	    	@seed1 = Wrestler.where(weight_id: @weight.id, original_seed: 1).first
