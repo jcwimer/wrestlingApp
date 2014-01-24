@@ -8,13 +8,13 @@ class StaticPagesController < ApplicationController
 	    if params[:weight]
 	    	@weight = Weight.find(params[:weight])
 	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
+	    	@bracket_size = Wrestler.where(weight_id: @weight.id).count
 	    	@seed1 = Wrestler.where(weight_id: @weight.id, original_seed: 1).first
 	    	@seed10 = Wrestler.where(weight_id: @weight.id, original_seed: 10).first
 	    	@seed7 = Wrestler.where(weight_id: @weight.id, original_seed: 7).first
 	    	@seed5 = Wrestler.where(weight_id: @weight.id, original_seed: 5).first
 	    	@seed4 = Wrestler.where(weight_id: @weight.id, original_seed: 4).first
 	    end
-	    #@seed1 = @wrestlers.where(original_seed: 1).name
 
 
 	end
