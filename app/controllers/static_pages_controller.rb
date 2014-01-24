@@ -14,6 +14,11 @@ class StaticPagesController < ApplicationController
 	    	@seed7 = Wrestler.where(weight_id: @weight.id, original_seed: 7).first
 	    	@seed5 = Wrestler.where(weight_id: @weight.id, original_seed: 5).first
 	    	@seed4 = Wrestler.where(weight_id: @weight.id, original_seed: 4).first
+	    	@seed2 = Wrestler.where(weight_id: @weight.id, original_seed: 2).first
+	    	@seed9 = Wrestler.where(weight_id: @weight.id, original_seed: 9).first
+	    	@seed6 = Wrestler.where(weight_id: @weight.id, original_seed: 6).first
+	    	@seed8 = Wrestler.where(weight_id: @weight.id, original_seed: 8).first
+	    	@seed3 = Wrestler.where(weight_id: @weight.id, original_seed: 3).first
 	    end
 
 
