@@ -21,7 +21,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<% @wrestler.each do |wrestler| %>
+		<% @wrestlers.order("original_seed asc").each do |wrestler| %>
       		<% if wrestler.weight_id == @weight.id %>
       			<tr>
       				<td><%= wrestler.name %></td>

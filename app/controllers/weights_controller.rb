@@ -10,7 +10,7 @@ class WeightsController < ApplicationController
   # GET /weights/1
   # GET /weights/1.json
   def show
-    @wrestler = Wrestler.all
+    @wrestlers = Wrestler.all
     @tournament = Tournament.find(@weight.tournament_id)
   end
 
