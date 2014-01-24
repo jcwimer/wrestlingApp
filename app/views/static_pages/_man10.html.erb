@@ -1,0 +1,55 @@
+<h1><%= @weight.max %> lbs Bracket</h1>
+<h3>Pool 1</h3>
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>R1</th>
+			<th>R2</th>
+			<th>R3</th>
+			<th>R4</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>1. <%= @seed1.name %> <%= @seed1.season_win %>-<%= @seed1.season_loss %></td>
+			<td>V2</td>
+			<td>V3</td>
+			<td>V5</td>
+			<td>V4</td>
+			<td>BYE</td>
+		</tr>
+		<tr>
+			<td>2. <%= @seed10.name %> <%= @seed10.season_win %>-<%= @seed10.season_loss %></td>
+			<td>V1</td>
+			<td>V5</td>
+			<td>V4</td>
+			<td>BYE</td>
+			<td>V3</td>
+		</tr>
+		<tr>
+			<td>3. <%= @seed5.name %> <%= @seed5.season_win %>-<%= @seed5.season_loss %></td>
+			<td>V4</td>
+			<td>V1</td>
+			<td>BYE</td>
+			<td>V5</td>
+			<td>V2</td>
+		</tr>
+		<tr>
+			<td>4. <%= @seed7.name %> <%= @seed7.season_win %>-<%= @seed7.season_loss %></td>
+			<td>V3</td>
+			<td>BYE</td>
+			<td>V2</td>
+			<td>V1</td>
+			<td>V5</td>
+		</tr>
+		<tr>
+			<td>5. <%= @seed4.name %> <%= @seed4.season_win %>-<%= @seed4.season_loss %></td>
+			<td>BYE</td>
+			<td>V2</td>
+			<td>V1</td>
+			<td>V3</td>
+			<td>V4</td>
+		</tr>		
+  	</tbody>
+</table>

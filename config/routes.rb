@@ -17,7 +17,8 @@ Wrestling::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'static_pages#index'
-  get 'static_pages/school'
+  get 'static_pages/brackets'
+   get 'static_pages/weights'
   get 'admin/index'
 
   # Example of regular route:

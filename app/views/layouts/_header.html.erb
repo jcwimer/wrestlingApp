@@ -6,7 +6,7 @@
         <ul class="nav pull-right">
           <li><%= link_to "Home", root_path %></li>
           <% if @tournament %>
-              <li><%= link_to "Brackets" , '#' %></li>
+              <li><%= link_to "Brackets" , "/static_pages/weights?tournament=#{@tournament.id}" %></li>
               <li><%= link_to "Bout Board" , '#' %></li>
           <% end %>
           <% if user_signed_in? %>
