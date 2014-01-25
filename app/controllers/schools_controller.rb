@@ -31,6 +31,10 @@ class SchoolsController < ApplicationController
   # POST /schools
   # POST /schools.json
   def create
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @school = School.new(school_params)
     @tournament = Tournament.find(school_params[:tournament_id])
     respond_to do |format|
@@ -47,6 +51,10 @@ class SchoolsController < ApplicationController
   # PATCH/PUT /schools/1
   # PATCH/PUT /schools/1.json
   def update
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @tournament = Tournament.find(@school.tournament_id)
     respond_to do |format|
       if @school.update(school_params)
@@ -62,6 +70,10 @@ class SchoolsController < ApplicationController
   # DELETE /schools/1
   # DELETE /schools/1.json
   def destroy
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @tournament = Tournament.find(@school.tournament_id)
     @school.destroy
     respond_to do |format|

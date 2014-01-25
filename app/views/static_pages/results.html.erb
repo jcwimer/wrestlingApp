@@ -1,0 +1,105 @@
+<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}" %>
+<br>
+<br>
+<h3>Round 1</h3>
+<% @matches.each do |m| %>
+	<% if m.round == 1 %>
+		<% if Wrestler.find(m.g_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.g_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.g_id) %>
+		<% end %>
+		<% if Wrestler.find(m.r_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.r_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.r_id) %>
+		<% end %>
+		<%= @winner.weight.max %> Lbs <%= @winner.name %> <%= m.win_type %> <%= m.score %> <%= @loser.name %> 
+		<br>
+	<% end %>
+<% end %>
+<h3>Round 2</h3>
+<% @matches.each do |m| %>
+	<% if m.round == 2 %>
+		<% if Wrestler.find(m.g_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.g_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.g_id) %>
+		<% end %>
+		<% if Wrestler.find(m.r_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.r_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.r_id) %>
+		<% end %>
+		<%= @winner.weight.max %> Lbs <%= @winner.name %> <%= m.win_type %> <%= m.score %> <%= @loser.name %> 
+		<br>
+	<% end %>
+<% end %>
+<h3>Round 3</h3>
+<% @matches.each do |m| %>
+	<% if m.round == 3 %>
+		<% if Wrestler.find(m.g_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.g_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.g_id) %>
+		<% end %>
+		<% if Wrestler.find(m.r_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.r_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.r_id) %>
+		<% end %>
+		<%= @winner.weight.max %> Lbs <%= @winner.name %> <%= m.win_type %> <%= m.score %> <%= @loser.name %> 
+		<br>
+	<% end %>
+<% end %>
+<h3>Round 4</h3>
+<% @matches.each do |m| %>
+	<% if m.round == 4 %>
+		<% if Wrestler.find(m.g_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.g_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.g_id) %>
+		<% end %>
+		<% if Wrestler.find(m.r_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.r_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.r_id) %>
+		<% end %>
+		<%= @winner.weight.max %> Lbs <%= @winner.name %> <%= m.win_type %> <%= m.score %> <%= @loser.name %> 
+		<br>
+	<% end %>
+<% end %>
+<h3>Round 5</h3>
+<% @matches.each do |m| %>
+	<% if m.round == 5 %>
+		<% if Wrestler.find(m.g_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.g_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.g_id) %>
+		<% end %>
+		<% if Wrestler.find(m.r_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.r_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.r_id) %>
+		<% end %>
+		<%= @winner.weight.max %> Lbs <%= @winner.name %> <%= m.win_type %> <%= m.score %> <%= @loser.name %> 
+		<br>
+	<% end %>
+<% end %>
+<h3>Round 6</h3>
+<% @matches.each do |m| %>
+	<% if m.round == 6 %>
+		<% if Wrestler.find(m.g_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.g_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.g_id) %>
+		<% end %>
+		<% if Wrestler.find(m.r_id).id == m.winner_id %>
+			<% @winner = Wrestler.find(m.r_id) %>
+		<% else %>
+			<% @loser = Wrestler.find(m.r_id) %>
+		<% end %>
+		<%= @winner.weight.max %> Lbs <%= @winner.name %> <%= m.win_type %> <%= m.score %> <%= @loser.name %> 
+		<br>
+	<% end %>
+<% end %>

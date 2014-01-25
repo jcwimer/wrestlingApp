@@ -1,0 +1,31 @@
+<%= form_for(@mat) do |f| %>
+  <% if @mat.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@mat.errors.count, "error") %> prohibited this mat from being saved:</h2>
+
+      <ul>
+      <% @mat.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+
+<% if @tournament_field %>
+      <%= f.hidden_field :tournament_id, :value => @tournament_field %>
+<% else %>
+    <div class="field">
+      <%= f.label 'Tournament' %><br>
+      <%= f.collection_select :tournament_id, Tournament.all, :id, :name %>
+    </div>
+<% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

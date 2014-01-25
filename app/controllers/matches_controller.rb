@@ -19,11 +19,26 @@ class MatchesController < ApplicationController
 
   # GET /matches/1/edit
   def edit
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
+    if params[:match]
+      @match = Match.find (params[:match])
+    end
+    if @match
+      @w1 = Wrestler.find(@match.r_id)
+      @w2 = Wrestler.find(@match.g_id)
+    end
   end
 
   # POST /matches
   # POST /matches.json
   def create
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @match = Match.new(match_params)
 
     respond_to do |format|
@@ -40,9 +55,13 @@ class MatchesController < ApplicationController
   # PATCH/PUT /matches/1
   # PATCH/PUT /matches/1.json
   def update
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     respond_to do |format|
       if @match.update(match_params)
-        format.html { redirect_to @match, notice: 'Match was successfully updated.' }
+        format.html { redirect_to root_path, notice: 'Match was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -54,6 +73,10 @@ class MatchesController < ApplicationController
   # DELETE /matches/1
   # DELETE /matches/1.json
   def destroy
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @match.destroy
     respond_to do |format|
       format.html { redirect_to matches_url }
@@ -69,6 +92,6 @@ class MatchesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def match_params
-      params.require(:match).permit(:r_id, :g_id, :g_stat, :r_stat, :winner_id, :win_type, :score)
+      params.require(:match).permit(:r_id, :g_id, :g_stat, :r_stat, :winner_id, :win_type, :score, :finished)
     end
 end

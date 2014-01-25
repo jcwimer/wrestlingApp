@@ -1,4 +1,6 @@
 Wrestling::Application.routes.draw do
+  resources :mats
+
   resources :matches
 
   devise_for :users
@@ -20,8 +22,12 @@ Wrestling::Application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'static_pages#index'
   get 'static_pages/brackets'
-   get 'static_pages/weights'
+  get 'static_pages/weights'
   get 'admin/index'
+  get 'static_pages/generate_matches'
+  get 'static_pages/up_matches'
+  get 'static_pages/control_match'
+  get 'static_pages/results'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

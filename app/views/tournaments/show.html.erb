@@ -22,10 +22,13 @@
   <strong>Director email:</strong>
   <%= @tournament.director_email %>
 </p>
+
 <br>
 <br>
 <% if user_signed_in? %>
   <%= link_to "New #{@tournament.name} School" , "/schools/new?tournament=#{@tournament.id}" %>
+  <br>
+  BE CAREFUL <%= link_to "Generate Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}" %>
 <% end %>
 <br>
 <br>
@@ -78,6 +81,36 @@
           <% if user_signed_in? %>
             <%= link_to 'Edit', edit_weight_path(weight), :class=>"btn" %>
             <%= link_to 'Destroy', weight, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<br>
+<br>
+<% if user_signed_in? %>
+  <%= link_to "New #{@tournament.name} Mat" , "/mats/new?tournament=#{@tournament.id}" %>
+<% end %>
+<br>
+<br>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @mats.each do |mat| %>
+      <tr>
+        <td><%= mat.name %></td>
+        <td>
+          <% if user_signed_in? %>
+            <%= link_to 'Destroy', mat, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
           <% end %>
         </td>
       </tr>

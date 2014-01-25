@@ -21,16 +21,22 @@ class WeightsController < ApplicationController
       @tournament_field = params[:tournament]
       @tournament = Tournament.find(params[:tournament])
     end
+    @mats = Mat.where(tournament_id: @tournament.id)
   end
 
   # GET /weights/1/edit
   def edit
     @tournament_field = @weight.tournament_id
+    @mats = Mat.where(tournament_id: @weight.tournament.id)
   end
 
   # POST /weights
   # POST /weights.json
   def create
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @weight = Weight.new(weight_params)
     @tournament = Tournament.find(weight_params[:tournament_id])
     respond_to do |format|
@@ -47,6 +53,10 @@ class WeightsController < ApplicationController
   # PATCH/PUT /weights/1
   # PATCH/PUT /weights/1.json
   def update
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @tournament = Tournament.find(@weight.tournament_id)
     respond_to do |format|
       if @weight.update(weight_params)
@@ -62,6 +72,10 @@ class WeightsController < ApplicationController
   # DELETE /weights/1
   # DELETE /weights/1.json
   def destroy
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @tournament = Tournament.find(@weight.tournament_id)
     @weight.destroy
     respond_to do |format|
@@ -78,6 +92,6 @@ class WeightsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def weight_params
-      params.require(:weight).permit(:max, :tournament_id)
+      params.require(:weight).permit(:max, :tournament_id, :mat_id)
     end
 end

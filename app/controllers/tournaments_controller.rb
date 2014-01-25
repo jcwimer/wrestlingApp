@@ -12,6 +12,7 @@ class TournamentsController < ApplicationController
   def show
     @schools = @tournament.schools
     @weights = @tournament.weights
+    @mats = @tournament.mats
   end
 
   # GET /tournaments/new
@@ -26,6 +27,10 @@ class TournamentsController < ApplicationController
   # POST /tournaments
   # POST /tournaments.json
   def create
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @tournament = Tournament.new(tournament_params)
     respond_to do |format|
       if @tournament.save
@@ -41,6 +46,10 @@ class TournamentsController < ApplicationController
   # PATCH/PUT /tournaments/1
   # PATCH/PUT /tournaments/1.json
   def update
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     respond_to do |format|
       if @tournament.update(tournament_params)
         format.html { redirect_to @tournament, notice: 'Tournament was successfully updated.' }
@@ -55,6 +64,10 @@ class TournamentsController < ApplicationController
   # DELETE /tournaments/1
   # DELETE /tournaments/1.json
   def destroy
+    if user_signed_in?
+    else
+      redirect_to root_path
+    end
     @tournament.destroy
     respond_to do |format|
       format.html { redirect_to tournaments_url }

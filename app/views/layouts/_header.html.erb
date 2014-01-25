@@ -7,7 +7,8 @@
           <li><%= link_to "Home", root_path %></li>
           <% if @tournament %>
               <li><%= link_to "Brackets" , "/static_pages/weights?tournament=#{@tournament.id}" %></li>
-              <li><%= link_to "Bout Board" , '#' %></li>
+              <li><%= link_to "Upcoming Matches" , "/static_pages/up_matches?tournament=#{@tournament.id}" %></li>
+              <li><%= link_to "Results" , "/static_pages/results?tournament=#{@tournament.id}" %></li>
           <% end %>
           <% if user_signed_in? %>
             <li><%= link_to "Log Out",  destroy_user_session_path, method: :delete %></li>
