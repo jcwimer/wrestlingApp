@@ -8,18 +8,19 @@ class StaticPagesController < ApplicationController
 	      @tournament = Tournament.find(params[:tournament])
 	    end
 	    if @tournament
-	    	@matches = Weight.where(tournament_id: @tournament.id)
+	    	@matches = Match.where(tournament_id: @tournament.id)
 	    end
-		@matches = Match.where(finished: nil)
+		@matches = @matches.where(finished: nil)
+
 	end
 	def results
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
 	    end
 	    if @tournament
-	    	@matches = Weight.where(tournament_id: @tournament.id)
+	    	@matches = Match.where(tournament_id: @tournament.id)
 	    end
-		@matches = Match.where(finished: 1)
+		@matches = @matches.where(finished: 1)
 
 	end
 	def brackets
