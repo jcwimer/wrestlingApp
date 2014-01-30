@@ -1,7 +1,7 @@
 <%= link_to "Back to #{@tournament.name} weights", "/static_pages/weights?tournament=#{@tournament.id}" %>
 <br>
 <br>
-<h1><%= @weight.max %> lbs Bracket <%= Mat.find(@weight.mat_id).name %></h1>
+<h1><%= @weight.max %> lbs Bracket</h1>
 <% if @bracket_size == 10 %>
 	<%= render 'man10' %>
 <% elsif @bracket_size == 9 %>

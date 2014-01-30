@@ -24,13 +24,6 @@
       <%= f.collection_select :tournament_id, Tournament.all, :id, :name %>
     </div>
   <% end %>
-
-  <div class="field">
-    <%= f.label 'Assigned Mat' %><br>
-    <%= f.collection_select :mat_id, @mats, :id, :name %>
-
-  </div>
-
   
   <div class="actions">
     <%= f.submit %>

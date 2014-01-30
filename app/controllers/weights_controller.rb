@@ -21,7 +21,6 @@ class WeightsController < ApplicationController
       @tournament_field = params[:tournament]
       @tournament = Tournament.find(params[:tournament])
     end
-    @mats = Mat.where(tournament_id: @tournament.id)
   end
 
   # GET /weights/1/edit
