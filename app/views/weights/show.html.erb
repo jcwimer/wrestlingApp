@@ -17,6 +17,7 @@
 			<th>School</th>
 			<th>Seed</th>
 			<th>Record</th>
+			<th>Seed Criteria</th>
 			<th>Actions for wrestler</th>
 		</tr>
 	</thead>
@@ -28,6 +29,7 @@
       				<td><%= School.find(wrestler.school_id).name %></td>
       				<td><%= wrestler.original_seed %></td>
       				<td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
+      				<td><%= wrestler.criteria %></td>
       				<td><%= link_to 'Show', wrestler , :class=>"btn" %>
       					<% if user_signed_in? %>
 	      					<%= link_to 'Edit', edit_wrestler_path(wrestler) , :class=>"btn" %>

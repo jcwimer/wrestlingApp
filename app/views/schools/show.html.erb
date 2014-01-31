@@ -37,6 +37,7 @@
       <th>Weight</th>
       <th>Seed</th>
       <th>Record</th>
+      <th>Seed Criteria</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -49,6 +50,7 @@
           <td><%= Weight.find(wrestler.weight_id).max %></td>
           <td><%= wrestler.original_seed %></td>
           <td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
+          <td><%= wrestler.criteria %></td>
           <td>
             <% if user_signed_in? %>
               <%= link_to 'Show', wrestler , :class=>"btn" %>
