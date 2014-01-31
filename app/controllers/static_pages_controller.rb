@@ -39,6 +39,12 @@ class StaticPagesController < ApplicationController
 	    	@seed6 = Wrestler.where(weight_id: @weight.id, original_seed: 6).first
 	    	@seed8 = Wrestler.where(weight_id: @weight.id, original_seed: 8).first
 	    	@seed3 = Wrestler.where(weight_id: @weight.id, original_seed: 3).first
+	    	@seed11 = Wrestler.where(weight_id: @weight.id, original_seed: 11).first
+	    	@seed12 = Wrestler.where(weight_id: @weight.id, original_seed: 12).first
+	    	@seed13 = Wrestler.where(weight_id: @weight.id, original_seed: 13).first
+	    	@seed14 = Wrestler.where(weight_id: @weight.id, original_seed: 14).first
+	    	@seed15 = Wrestler.where(weight_id: @weight.id, original_seed: 15).first
+	    	@seed16 = Wrestler.where(weight_id: @weight.id, original_seed: 16).first
 	    end
 
 
@@ -79,6 +85,12 @@ class StaticPagesController < ApplicationController
 		    	@seed6 = Wrestler.where(weight_id: weight.id, original_seed: 6).first
 		    	@seed8 = Wrestler.where(weight_id: weight.id, original_seed: 8).first
 		    	@seed3 = Wrestler.where(weight_id: weight.id, original_seed: 3).first
+		    	@seed11 = Wrestler.where(weight_id: @weight.id, original_seed: 11).first
+		    	@seed12 = Wrestler.where(weight_id: @weight.id, original_seed: 12).first
+		    	@seed13 = Wrestler.where(weight_id: @weight.id, original_seed: 13).first
+		    	@seed14 = Wrestler.where(weight_id: @weight.id, original_seed: 14).first
+		    	@seed15 = Wrestler.where(weight_id: @weight.id, original_seed: 15).first
+		    	@seed16 = Wrestler.where(weight_id: @weight.id, original_seed: 16).first
 		    	@bracket_size = Wrestler.where(weight_id: weight.id).count
 		    	def createMatch(r_id,g_id,tournament)
 		    		@match = Match.new
@@ -88,7 +100,16 @@ class StaticPagesController < ApplicationController
 		    		@match.round = 1
 		    		@match.save
 		    	end
-		    	if @bracket_size == 10
+		    	if @bracket_size == 16
+		    		createMatch(@seed1.id,@seed16.id,@tournament.id)
+		    		createMatch(@seed12.id,@seed8.id,@tournament.id)
+		    		createMatch(@seed2.id,@seed15.id,@tournament.id)
+		    		createMatch(@seed11.id,@seed7.id,@tournament.id)
+		    		createMatch(@seed3.id,@seed14.id,@tournament.id)
+		    		createMatch(@seed10.id,@seed6.id,@tournament.id)
+		    		createMatch(@seed4.id,@seed13.id,@tournament.id)
+		    		createMatch(@seed9.id,@seed5.id,@tournament.id)
+		    	elsif @bracket_size == 10
 		    		createMatch(@seed1.id,@seed10.id,@tournament.id)
 		    		createMatch(@seed5.id,@seed7.id,@tournament.id)
 		    		createMatch(@seed2.id,@seed9.id,@tournament.id)
@@ -117,6 +138,11 @@ class StaticPagesController < ApplicationController
 		    	@seed6 = Wrestler.where(weight_id: weight.id, original_seed: 6).first
 		    	@seed8 = Wrestler.where(weight_id: weight.id, original_seed: 8).first
 		    	@seed3 = Wrestler.where(weight_id: weight.id, original_seed: 3).first
+		    	@seed12 = Wrestler.where(weight_id: @weight.id, original_seed: 12).first
+		    	@seed13 = Wrestler.where(weight_id: @weight.id, original_seed: 13).first
+		    	@seed14 = Wrestler.where(weight_id: @weight.id, original_seed: 14).first
+		    	@seed15 = Wrestler.where(weight_id: @weight.id, original_seed: 15).first
+		    	@seed16 = Wrestler.where(weight_id: @weight.id, original_seed: 16).first
 		    	@bracket_size = Wrestler.where(weight_id: weight.id).count
 		    	def createMatch(r_id,g_id,tournament)
 		    		@match = Match.new
@@ -126,7 +152,16 @@ class StaticPagesController < ApplicationController
 		    		@match.round = 2
 		    		@match.save
 		    	end
-		    	if @bracket_size == 10
+		    	if @bracket_size == 16
+		    		createMatch(@seed1.id,@seed12.id,@tournament.id)
+		    		createMatch(@seed16.id,@seed8.id,@tournament.id)
+		    		createMatch(@seed2.id,@seed11.id,@tournament.id)
+		    		createMatch(@seed15.id,@seed7.id,@tournament.id)
+		    		createMatch(@seed3.id,@seed10.id,@tournament.id)
+		    		createMatch(@seed14.id,@seed6.id,@tournament.id)
+		    		createMatch(@seed4.id,@seed9.id,@tournament.id)
+		    		createMatch(@seed13.id,@seed5.id,@tournament.id)
+		    	elsif @bracket_size == 10
 		    		createMatch(@seed1.id,@seed5.id,@tournament.id)
 		    		createMatch(@seed10.id,@seed4.id,@tournament.id)
 		    		createMatch(@seed2.id,@seed6.id,@tournament.id)
@@ -156,6 +191,11 @@ class StaticPagesController < ApplicationController
 		    	@seed6 = Wrestler.where(weight_id: weight.id, original_seed: 6).first
 		    	@seed8 = Wrestler.where(weight_id: weight.id, original_seed: 8).first
 		    	@seed3 = Wrestler.where(weight_id: weight.id, original_seed: 3).first
+		    	@seed12 = Wrestler.where(weight_id: @weight.id, original_seed: 12).first
+		    	@seed13 = Wrestler.where(weight_id: @weight.id, original_seed: 13).first
+		    	@seed14 = Wrestler.where(weight_id: @weight.id, original_seed: 14).first
+		    	@seed15 = Wrestler.where(weight_id: @weight.id, original_seed: 15).first
+		    	@seed16 = Wrestler.where(weight_id: @weight.id, original_seed: 16).first
 		    	@bracket_size = Wrestler.where(weight_id: weight.id).count
 		    	def createMatch(r_id,g_id,tournament)
 		    		@match = Match.new
@@ -165,7 +205,16 @@ class StaticPagesController < ApplicationController
 		    		@match.round = 3
 		    		@match.save
 		    	end
-		    	if @bracket_size == 10
+		    	if @bracket_size == 16
+		    		createMatch(@seed1.id,@seed8.id,@tournament.id)
+		    		createMatch(@seed12.id,@seed16.id,@tournament.id)
+		    		createMatch(@seed2.id,@seed7.id,@tournament.id)
+		    		createMatch(@seed11.id,@seed15.id,@tournament.id)
+		    		createMatch(@seed3.id,@seed6.id,@tournament.id)
+		    		createMatch(@seed10.id,@seed14.id,@tournament.id)
+		    		createMatch(@seed4.id,@seed5.id,@tournament.id)
+		    		createMatch(@seed9.id,@seed13.id,@tournament.id)
+		    	elsif @bracket_size == 10
 		    		createMatch(@seed1.id,@seed4.id,@tournament.id)
 		    		createMatch(@seed10.id,@seed7.id,@tournament.id)
 		    		createMatch(@seed2.id,@seed3.id,@tournament.id)
