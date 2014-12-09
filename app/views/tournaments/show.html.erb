@@ -28,7 +28,7 @@
 <% if user_signed_in? %>
   <%= link_to "New #{@tournament.name} School" , "/schools/new?tournament=#{@tournament.id}" %>
   <br>
-  BE CAREFUL <%= link_to "Generate Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}" %>
+  BE CAREFUL <%= link_to "Generate Pool Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}" %>
 <% end %>
 <br>
 <br>
