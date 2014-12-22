@@ -1,45 +1,8 @@
 <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}" %>
 <br>
 <br>
-<h3>Round 1</h3>
-<% @matches.each do |m| %>
-	<% if m.round == 1 %>
-		<%= Wrestler.find(m.r_id).weight.max %> Lbs <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).name %> <% if user_signed_in? %><% if user_signed_in? %><%= link_to "Control Match", "/matches/#{m.id}/edit" %><% end %><% end %>
+<h3>Upcoming Matches</h3>
+<% @bouts.each do |m| %>
+		<%= Wrestler.find(m.w1).weight.max %> Lbs <%= Wrestler.find(m.w1).name %> vs. Some Guy
 		<br>
-	<% end %>
-<% end %>
-<h3>Round 2</h3>
-<% @matches.each do |m| %>
-	<% if m.round == 2 %>
-		<%= Wrestler.find(m.r_id).weight.max %> Lbs <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).name %> <% if user_signed_in? %><%= link_to "Control Match", "/matches/#{m.id}/edit" %><% end %>
-		<br>
-	<% end %>
-<% end %>
-<h3>Round 3</h3>
-<% @matches.each do |m| %>
-	<% if m.round == 3 %>
-		<%= Wrestler.find(m.r_id).weight.max %> Lbs <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).name %> <% if user_signed_in? %><%= link_to "Control Match", "/matches/#{m.id}/edit" %><% end %>
-		<br>
-	<% end %>
-<% end %>
-<h3>Round 4</h3>
-<% @matches.each do |m| %>
-	<% if m.round == 4 %>
-		<%= Wrestler.find(m.r_id).weight.max %> Lbs <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).name %> <% if user_signed_in? %><%= link_to "Control Match", "/matches/#{m.id}/edit" %><% end %>
-		<br>
-	<% end %>
-<% end %>
-<h3>Round 5</h3>
-<% @matches.each do |m| %>
-	<% if m.round == 5 %>
-		<%= Wrestler.find(m.r_id).weight.max %> Lbs <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).name %> <% if user_signed_in? %><%= link_to "Control Match", "/matches/#{m.id}/edit" %><% end %>
-		<br>
-	<% end %>
-<% end %>
-<h3>Round 6</h3>
-<% @matches.each do |m| %>
-	<% if m.round == 6 %>
-	<%= Wrestler.find(m.r_id).weight.max %> Lbs <%= @weight_class %> LBS <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).name %> <% if user_signed_in? %><%= link_to "Control Match", "/matches/#{m.id}/edit" %><% end %>
-		<br>
-	<% end %>
 <% end %>
