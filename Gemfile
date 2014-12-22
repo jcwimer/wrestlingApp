@@ -39,18 +39,17 @@ gem 'spring',        group: :development
 # gem 'debugger', group: [:development, :test]
 
 
-#Install by me
+#Installed by me
 	#For Heroku
-	group :production do
-	  gem 'pg'
-	  gem 'rails_12factor'
-	  gem 'mysql2'
-	end
+		group :production do
+		  gem 'pg'
+		  gem 'rails_12factor'
+		  gem 'mysql2'
+		end
 	#Other
-	#gem 'capistrano', :group => :development
-	gem 'bootstrap-sass', '2.3.2.0'
-	gem 'devise'
-gem 'cancan'
+		gem 'bootstrap-sass', '2.3.2.0'
+		gem 'devise'
+		gem 'cancan'
 
 
 
