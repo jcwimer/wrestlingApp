@@ -10,7 +10,7 @@ end
 
 group :production do
   gem 'pg', '0.15.1'
-  gem 'mysql'
+  gem 'mysql2'
 end
 
 # Use SCSS for stylesheets
