@@ -42,6 +42,6 @@ end
 gem 'devise'
 gem 'cancan'
 gem 'bootstrap-sass'
-gem 'mysql'
+#gem 'mysql'
 
 
