@@ -10,6 +10,7 @@ end
 
 group :production do
   gem 'pg', '0.15.1'
+  gem 'mysql'
 end
 
 # Use SCSS for stylesheets
@@ -42,6 +43,6 @@ end
 gem 'devise'
 gem 'cancan'
 gem 'bootstrap-sass'
-#gem 'mysql'
+
 
 
