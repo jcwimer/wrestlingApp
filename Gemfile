@@ -42,7 +42,6 @@ end
 #MY GEMS
 gem 'devise'
 gem 'cancan'
-gem 'bootstrap-sass'
-#gem 'mysql'
+gem 'bootstrap-sass', '3.1.1.0'
 
 
