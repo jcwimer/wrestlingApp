@@ -13,15 +13,15 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td>1. <%= @seed1.name %> <%= @seed1.season_win %>-<%= @seed1.season_loss %> <%= School.find(@seed1.school_id).name %></td>
-			<td>V2</td>
+			<td>1. <%= @seed1.name %> <%= @seed1.season_win %>-<%= @seed1.season_loss %> <%= @seed1.school.name %></td>
+			<td>V2<br>Result</td>
 			<td>V3</td>
 			<td>V5</td>
 			<td>V4</td>
 			<td>BYE</td>
 		</tr>
 		<tr>
-			<td>2. <%= @seed5.name %> <%= @seed5.season_win %>-<%= @seed5.season_loss %> <%= School.find(@seed5.school_id).name %></td>
+			<td>2. <%= @seed5.name %> <%= @seed5.season_win %>-<%= @seed5.season_loss %> <%= @seed5.school.name %></td>
 			<td>V1</td>
 			<td>V5</td>
 			<td>V4</td>
@@ -29,7 +29,7 @@
 			<td>V3</td>
 		</tr>
 		<tr>
-			<td>3. <%= @seed3.name %> <%= @seed3.season_win %>-<%= @seed3.season_loss %> <%= School.find(@seed3.school_id).name %></td>
+			<td>3. <%= @seed3.name %> <%= @seed3.season_win %>-<%= @seed3.season_loss %> <%= @seed3.school.name %></td>
 			<td>V4</td>
 			<td>V1</td>
 			<td>BYE</td>
@@ -37,7 +37,7 @@
 			<td>V2</td>
 		</tr>
 		<tr>
-			<td>4. <%= @seed4.name %> <%= @seed4.season_win %>-<%= @seed4.season_loss %> <%= School.find(@seed4.school_id).name %></td>
+			<td>4. <%= @seed4.name %> <%= @seed4.season_win %>-<%= @seed4.season_loss %> <%= @seed4.school.name %></td>
 			<td>V3</td>
 			<td>BYE</td>
 			<td>V2</td>
@@ -45,7 +45,7 @@
 			<td>V5</td>
 		</tr>
 		<tr>
-			<td>5. <%= @seed2.name %> <%= @seed2.season_win %>-<%= @seed2.season_loss %> <%= School.find(@seed2.school_id).name %></td>
+			<td>5. <%= @seed2.name %> <%= @seed2.season_win %>-<%= @seed2.season_loss %> <%= @seed2.school.name %></td>
 			<td>BYE</td>
 			<td>V2</td>
 			<td>V1</td>
