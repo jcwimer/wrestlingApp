@@ -7,11 +7,14 @@ class Weight < ActiveRecord::Base
 	def generatePool
 		@wrestlers = Wrestler.where(weight_id: self.id)
 		if self.pools == 1
-			onePool(@wrestlers)
+			@pool = Pool.new
+			@pool.onePool(@wrestlers,self.id,self.tournament_id)
 		elsif self.pools == 2
-			
+			@pool = Pool.new
+			@pool.twoPools(@wrestlers,self.id,self.tournament_id)
 		elsif self.pools == 4
-			
+			@pool = Pool.new
+			@pool.fourPools(@wrestlers,self.id,self.tournament_id)
 		end
 	end
 
@@ -26,16 +29,5 @@ class Weight < ActiveRecord::Base
 		end
 	end
 
-	def fourPool
-
-	end
 	
-	def onePool(wrestlers)
-		wrestlers.each do |wrestler|
-			wrestler.poolNumber = 1
-			wrestler.save
-		end
-	end
-
-
 end

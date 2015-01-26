@@ -8,7 +8,7 @@ class StaticPagesController < ApplicationController
 	      @tournament = Tournament.find(params[:tournament])
 	    end
 	    if @tournament
-	    	@bouts = @tournament.bouts
+	    	@matches = Match.where(tournament_id: @tournament.id)
 	    end
 	end
 	def results
