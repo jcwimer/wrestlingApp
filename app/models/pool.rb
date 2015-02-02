@@ -65,7 +65,6 @@ class Pool
 		@match.g_id = w2
 		@match.tournament_id = tournament
 		@match.save
-		puts @match.inspect
 	end
 
 end

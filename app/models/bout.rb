@@ -1,0 +1,3 @@
+class Bout
+	
+end
