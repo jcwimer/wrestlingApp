@@ -46,7 +46,8 @@ class Pool
 	end
 
 	def roundRobin(pool,tournament,weight_id)
-		@wrestlers = Wrestler.where(weight_id: weight_id, poolNumber: pool).to_a
+		@wrestlers = Wrestler.where(weight_id: weight_id, poolNumber: pool)
+		@wrestlers.sort_by{|x|[x.original_seed]}.to_a
 		@wrestlers.each_with_index do |w,index|
 			next_guy_index = index+1
 			while index < @wrestlers.length && next_guy_index < @wrestlers.length

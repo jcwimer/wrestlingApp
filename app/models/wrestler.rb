@@ -3,14 +3,15 @@ class Wrestler < ActiveRecord::Base
 	belongs_to :weight
 	attr_accessor :matches_all, :isWrestlingThisRound
 
-	def isWrestlingThisRound(round)
-		@gMatches = Match.where(g_id: self.id, round: round)
-		@rMatches = Match.where(r_id: self.id, round: round)
+	def isWrestlingThisRound(matchRound)
+		@gMatches = Match.where(g_id: self.id, round: matchRound)
+		@rMatches = Match.where(r_id: self.id, round: matchRound)
 		@allMatches = @gMatches + @rMatches
-		if @allMatches == nil
-			return true
-		else
+		if @gMatches.blank? and @rMatches.blank?
 			return false
+		else
+			puts "He does wrestle this round"
+			return true
 		end		
 	end
 

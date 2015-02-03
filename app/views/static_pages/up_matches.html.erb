@@ -3,6 +3,6 @@
 <br>
 <h3>Upcoming Matches</h3>
 <% @matches.each do |m| %>
-		<%= Wrestler.find(m.r_id).weight.max %> Lbs <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).weight.max %> Lbs <%= Wrestler.find(m.g_id).name %>
+		Round <%= m.round %> Bout <%= m.boutNumber %> <%= Wrestler.find(m.r_id).weight.max %> Lbs <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).weight.max %> Lbs <%= Wrestler.find(m.g_id).name %>
 		<br>
 <% end %>
