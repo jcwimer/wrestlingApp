@@ -1,0 +1,90 @@
+<h5>Pool 1</h5>
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>R1</th>
+			<th>R2</th>
+			<th>R3</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% @poolOneWrestlers.each do |w| %>
+		<tr>
+			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.boutByRound(1) %><br>Result</td>
+			<td><%= w.boutByRound(2) %></td>
+			<td><%= w.boutByRound(3) %></td>
+		</tr>
+		<% end %>
+  	</tbody>
+</table>
+
+
+<h5>Pool 2</h5>
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>R1</th>
+			<th>R2</th>
+			<th>R3</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% @poolTwoWrestlers.each do |w| %>
+		<tr>
+			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.boutByRound(1) %><br>Result</td>
+			<td><%= w.boutByRound(2) %></td>
+			<td><%= w.boutByRound(3) %></td>
+		</tr>
+		<% end %>
+  	</tbody>
+</table>
+
+
+<h5>Pool 3</h5>
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>R1</th>
+			<th>R2</th>
+			<th>R3</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% @poolThreeWrestlers.each do |w| %>
+		<tr>
+			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.boutByRound(1) %><br>Result</td>
+			<td><%= w.boutByRound(2) %></td>
+			<td><%= w.boutByRound(3) %></td>
+		</tr>
+		<% end %>
+  	</tbody>
+</table>
+
+
+<h5>Pool 4</h5>
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>R1</th>
+			<th>R2</th>
+			<th>R3</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% @poolFourWrestlers.each do |w| %>
+		<tr>
+			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.boutByRound(1) %><br>Result</td>
+			<td><%= w.boutByRound(2) %></td>
+			<td><%= w.boutByRound(3) %></td>
+		</tr>
+		<% end %>
+  	</tbody>
+</table>

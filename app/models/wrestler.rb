@@ -1,7 +1,7 @@
 class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
-	attr_accessor :matches_all, :isWrestlingThisRound
+	attr_accessor :matches_all, :isWrestlingThisRound, :boutByRound
 
 	def isWrestlingThisRound(matchRound)
 		@gMatches = Match.where(g_id: self.id, round: matchRound)
@@ -10,9 +10,17 @@ class Wrestler < ActiveRecord::Base
 		if @gMatches.blank? and @rMatches.blank?
 			return false
 		else
-			puts "He does wrestle this round"
 			return true
 		end		
+	end
+
+	def boutByRound(round)
+		@match = matches_all.select{|m| m.round == round}.first
+		if @match.blank?
+			return "BYE"
+		else
+			return @match.boutNumber
+		end
 	end
 
 	def matches_all

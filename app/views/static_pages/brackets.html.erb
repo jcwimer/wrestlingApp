@@ -2,34 +2,10 @@
 <br>
 <br>
 <h1><%= @weight.max %> lbs Bracket</h1>
-<% if @bracket_size == 10 %>
-	<%= render 'man10' %>
-<% elsif @bracket_size == 9 %>
-	<%= render 'man9' %>
-<% elsif @bracket_size == 8 %>
-	<%= render 'man8' %>
-<% elsif @bracket_size == 7 %>
-	<%= render 'man7' %>
-<% elsif @bracket_size == 6 %>
-	<%= render 'man6' %>
-<% elsif @bracket_size == 5 %>
-	<%= render 'man5' %>
-<% elsif @bracket_size == 4 %>
-	<%= render 'man4' %>
-<% elsif @bracket_size == 3 %>
-	<%= render 'man3' %>
-<% elsif @bracket_size == 2 %>
-	<%= render 'man2' %>
-<% elsif @bracket_size == 16 %>
-	<%= render 'man16' %>
-<% elsif @bracket_size == 15 %>
-	<%= render 'man15' %>
-<% elsif @bracket_size == 14 %>
-	<%= render 'man14' %>
-<% elsif @bracket_size == 13 %>
-	<%= render 'man13' %>
-<% elsif @bracket_size == 12 %>
-	<%= render 'man12' %>
-<% elsif @bracket_size == 11 %>
-	<%= render 'man11' %>
+<% if @weight.pools == 4 %>
+	<%= render 'fourPool' %>
+<% elsif @weight.pools == 2 %>
+	<%= render 'twoPool' %>
+<% elsif @weight.pools == 1 %>
+	<%= render 'onePool' %>
 <% end %>
