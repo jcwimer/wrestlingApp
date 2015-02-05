@@ -50,6 +50,8 @@ gem 'spring',        group: :development
 		gem 'bootstrap-sass', '2.3.2.0'
 		gem 'devise'
 		gem 'cancan'
+		gem 'round_robin_tournament'
+		gem 'rb-readline'
 
 
 
