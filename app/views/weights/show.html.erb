@@ -18,6 +18,7 @@
 			<th>Seed</th>
 			<th>Record</th>
 			<th>Seed Criteria</th>
+			<th>Extra></th>
 			<th>Actions for wrestler</th>
 		</tr>
 	</thead>
@@ -30,6 +31,9 @@
       				<td><%= wrestler.original_seed %></td>
       				<td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
       				<td><%= wrestler.criteria %></td>
+      				<td><% if wrestler.extra? == true %>
+           				 Yes
+          			<% end %></td>
       				<td><%= link_to 'Show', wrestler , :class=>"btn" %>
       					<% if user_signed_in? %>
 	      					<%= link_to 'Edit', edit_wrestler_path(wrestler) , :class=>"btn" %>
