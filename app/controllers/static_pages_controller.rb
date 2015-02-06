@@ -22,6 +22,7 @@ class StaticPagesController < ApplicationController
 
 	end
 	def brackets
+		
 	    if params[:weight]
 	    	@weight = Weight.find(params[:weight])
 	    	@tournament = Tournament.find(@weight.tournament_id)
