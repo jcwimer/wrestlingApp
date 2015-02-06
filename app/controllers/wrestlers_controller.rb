@@ -102,6 +102,6 @@ class WrestlersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def wrestler_params
-      params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win, :season_loss,:criteria)
+      params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win, :season_loss,:criteria,:extra)
     end
 end
