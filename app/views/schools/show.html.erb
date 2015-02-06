@@ -49,7 +49,9 @@
         <tr>
           <td><%= wrestler.name %></td>
           <td><%= Weight.find(wrestler.weight_id).max %></td>
-          <td><%= wrestler.original_seed %></td>
+          <td>
+              <%= wrestler.original_seed %>
+          </td>
           <td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
           <td><%= wrestler.criteria %> Win <%= wrestler.seasonWinPercentage %>%</td>
           <td><% if wrestler.extra? == true %>

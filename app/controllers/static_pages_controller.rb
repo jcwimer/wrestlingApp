@@ -52,6 +52,7 @@ class StaticPagesController < ApplicationController
 	    end
 	    if @tournament
 	    	@weights = Weight.where(tournament_id: @tournament.id)
+	    	@weights = @weights.sort_by{|x|[x.max]}
 	    end
 	end
 

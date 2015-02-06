@@ -28,7 +28,13 @@
       			<tr>
       				<td><%= wrestler.name %></td>
       				<td><%= School.find(wrestler.school_id).name %></td>
-      				<td><%= wrestler.original_seed %></td>
+      				<td>
+                <% if user_signed_in? %>
+                  <%= wrestler.original_seed %>
+                <% else %>
+                  <%= wrestler.original_seed %>
+                <% end %>
+              </td>
       				<td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
       				<td><%= wrestler.criteria %> Win <%= wrestler.seasonWinPercentage %>%</td>
       				<td><% if wrestler.extra? == true %>
@@ -44,6 +50,8 @@
     	<% end %>
   	</tbody>
 </table>
+
+
 
 
 

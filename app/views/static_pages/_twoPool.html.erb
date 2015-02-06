@@ -6,15 +6,17 @@
 			<th>R1</th>
 			<th>R2</th>
 			<th>R3</th>
+			<th>R4</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% @poolOneWrestlers.each do |w| %>
 		<tr>
 			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
-			<td><%= w.boutByRound(1) %><br>Result</td>
+			<td><%= w.boutByRound(1) %><br></td>
 			<td><%= w.boutByRound(2) %></td>
 			<td><%= w.boutByRound(3) %></td>
+			<td><%= w.boutByRound(4) %></td>
 		</tr>
 		<% end %>
   	</tbody>
@@ -34,7 +36,7 @@
 		<% @poolTwoWrestlers.each do |w| %>
 		<tr>
 			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
-			<td><%= w.boutByRound(1) %><br>Result</td>
+			<td><%= w.boutByRound(1) %><br></td>
 			<td><%= w.boutByRound(2) %></td>
 			<td><%= w.boutByRound(3) %></td>
 		</tr>

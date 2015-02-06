@@ -22,9 +22,9 @@ class Weight < ActiveRecord::Base
 		@wrestlers = Wrestler.where(weight_id: self.id)
 		if @wrestlers.size <= 6
 			self.pools = 1
-		elsif  (@wrestlers.size > 6) && (@wrestlers.size <= 8)
+		elsif  (@wrestlers.size > 6) && (@wrestlers.size <= 10)
 			self.pools = 2
-		elsif (@wrestlers.size > 8) && (@wrestlers.size <= 16)
+		elsif (@wrestlers.size > 10) && (@wrestlers.size <= 16)
 			self.pools = 4
 		end
 	end
