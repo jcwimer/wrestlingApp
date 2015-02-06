@@ -41,11 +41,11 @@ if Rails.env.development?
 	Wrestler.create(name: 'Guy 22', school_id: 200, weight_id: 201, original_seed: 6, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 23', school_id: 200, weight_id: 201, original_seed: 7, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 24', school_id: 200, weight_id: 201, original_seed: 8, season_win: 0, season_loss: 0, criteria: 'N/A')
-	Wrestler.create(name: 'Guy 25', school_id: 200, weight_id: 202, original_seed: 1, season_win: 0, season_loss: 0, criteria: 'N/A')
-	Wrestler.create(name: 'Guy 26', school_id: 201, weight_id: 202, original_seed: 2, season_win: 0, season_loss: 0, criteria: 'N/A')
-	Wrestler.create(name: 'Guy 27', school_id: 202, weight_id: 202, original_seed: 3, season_win: 0, season_loss: 0, criteria: 'N/A')
-	Wrestler.create(name: 'Guy 28', school_id: 203, weight_id: 202, original_seed: 4, season_win: 0, season_loss: 0, criteria: 'N/A')
-	Wrestler.create(name: 'Guy 29', school_id: 204, weight_id: 202, original_seed: 5, season_win: 0, season_loss: 0, criteria: 'N/A')
+	Wrestler.create(name: 'Guy 25', school_id: 200, weight_id: 201, original_seed: 9, season_win: 0, season_loss: 0, criteria: 'N/A')
+	Wrestler.create(name: 'Guy 26', school_id: 201, weight_id: 201, original_seed: 10, season_win: 0, season_loss: 0, criteria: 'N/A')
+	Wrestler.create(name: 'Guy 27', school_id: 202, weight_id: 201, original_seed: 11, season_win: 0, season_loss: 0, criteria: 'N/A')
+	Wrestler.create(name: 'Guy 28', school_id: 203, weight_id: 201, original_seed: 12, season_win: 0, season_loss: 0, criteria: 'N/A')
+	Wrestler.create(name: 'Guy 29', school_id: 204, weight_id: 201, original_seed: 13, season_win: 0, season_loss: 0, criteria: 'N/A')
 end
 
 if Rails.env.production?
