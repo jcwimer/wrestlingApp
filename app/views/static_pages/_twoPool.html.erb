@@ -10,7 +10,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<% @poolOneWrestlers.each do |w| %>
+		<% @poolOneWrestlers.sort_by{|x|[x.original_seed]}.each do |w| %>
 		<tr>
 			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
 			<td><%= w.boutByRound(1) %><br></td>
@@ -33,7 +33,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<% @poolTwoWrestlers.each do |w| %>
+		<% @poolTwoWrestlers.sort_by{|x|[x.original_seed]}.each do |w| %>
 		<tr>
 			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
 			<td><%= w.boutByRound(1) %><br></td>
