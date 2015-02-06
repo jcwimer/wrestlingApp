@@ -30,12 +30,17 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def seasonWinPercentage
-		if self.season_win > 0 and self.season_loss > 0
-			@percentage = self.season_win / (self.season_win + self.season_loss)
-			return @percentage
+		@win = self.season_win.to_f
+		@loss = self.season_loss.to_f
+		if @win > 0 and @loss != nil
+			@matchTotal = @win + @loss
+			@percentageDec = @win / @matchTotal
+			@percentage = @percentageDec * 100
+			return @percentage.to_i
 		elsif self.season_win == 0
 			return 0
-			
+		elsif self.season_win == nil or self.season_loss == nil
+			return 0	
 		end
 
 	end
