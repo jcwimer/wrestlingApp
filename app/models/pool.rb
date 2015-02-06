@@ -9,7 +9,7 @@ class Pool
 
 
 	def twoPools(wrestlers,weight_id,tournament)
-		wrestlers.sort_by{|x|[x.original_seed]}
+		#wrestlers.sort_by{|x|[x.original_seed]}
 		wrestlers.to_a
 		pool = 1
 		wrestlers.each do |w|
@@ -27,7 +27,7 @@ class Pool
 
 
 	def fourPools(wrestlers,weight_id,tournament)
-		wrestlers.sort_by{|x|[x.original_seed]}
+		#wrestlers.sort_by{|x|[x.original_seed]}
 		wrestlers.to_a
 		pool = 1
 		wrestlers.each do |w|
