@@ -32,7 +32,7 @@
 <% end %>
 <br>
 <br>
-<h3>Schools</h3>
+<h3>School Lineups</h3>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
@@ -62,7 +62,7 @@
 <% end %>
 <br>
 <br>
-<h3>Weights</h3>
+<h3>Weight Class Seeds</h3>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
@@ -93,7 +93,6 @@
 <br>
 <% if user_signed_in? %>
   <%= link_to "New #{@tournament.name} Mat" , "/mats/new?tournament=#{@tournament.id}" %>
-<% end %>
 <br>
 <br>
 <table class="table table-striped table-bordered">
@@ -117,6 +116,7 @@
     <% end %>
   </tbody>
 </table>
+<% end %>
 
 
 
