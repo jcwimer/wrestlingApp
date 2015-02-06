@@ -37,7 +37,6 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th>Score</th>
       <th></th>
     </tr>
   </thead>
@@ -46,7 +45,6 @@
     <% @schools.each do |school| %>
       <tr>
         <td><%= school.name %></td>
-        <td><%= school.score %></td>
         <td><%= link_to 'Show', school, :class=>"btn" %>
           <% if user_signed_in? %>
             <%= link_to 'Edit', edit_school_path(school), :class=>"btn" %>

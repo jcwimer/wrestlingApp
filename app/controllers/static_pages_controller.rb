@@ -11,6 +11,17 @@ class StaticPagesController < ApplicationController
 	    	@matches = @tournament.upcomingMatches
 	    end
 	end
+
+	def team_scores
+		if params[:tournament]
+	      @tournament = Tournament.find(params[:tournament])
+	    end
+	    if @tournament
+	    	@schools = School.where(tournament_id: @tournament.id)
+	    	@schools.sort_by{|x|[x.score]}
+	    end
+	end
+
 	def results
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])

@@ -28,6 +28,7 @@ Wrestling::Application.routes.draw do
   get 'static_pages/up_matches'
   get 'static_pages/control_match'
   get 'static_pages/results'
+  get 'static_pages/team_scores'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
