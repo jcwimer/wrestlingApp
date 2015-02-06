@@ -11,7 +11,7 @@
 	<tbody>
 		<% @poolOneWrestlers.sort_by{|x|[x.original_seed]}.each do |w| %>
 		<tr>
-			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
 			<td><%= w.boutByRound(1) %><br></td>
 			<td><%= w.boutByRound(2) %></td>
 			<td><%= w.boutByRound(3) %></td>
@@ -34,7 +34,7 @@
 	<tbody>
 		<% @poolTwoWrestlers.sort_by{|x|[x.original_seed]}.each do |w| %>
 		<tr>
-			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
 			<td><%= w.boutByRound(1) %><br></td>
 			<td><%= w.boutByRound(2) %></td>
 			<td><%= w.boutByRound(3) %></td>
@@ -57,7 +57,7 @@
 	<tbody>
 		<% @poolThreeWrestlers.sort_by{|x|[x.original_seed]}.each do |w| %>
 		<tr>
-			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
 			<td><%= w.boutByRound(1) %><br></td>
 			<td><%= w.boutByRound(2) %></td>
 			<td><%= w.boutByRound(3) %></td>
@@ -80,7 +80,7 @@
 	<tbody>
 		<% @poolFourWrestlers.sort_by{|x|[x.original_seed]}.each do |w| %>
 		<tr>
-			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
 			<td><%= w.boutByRound(1) %><br></td>
 			<td><%= w.boutByRound(2) %></td>
 			<td><%= w.boutByRound(3) %></td>

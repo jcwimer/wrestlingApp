@@ -1,6 +1,6 @@
 class Pool
 	def onePool(wrestlers,weight_id,tournament)
-		wrestlers.each do |w|
+		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
 			w.poolNumber = 1
 			w.save
 		end
@@ -12,7 +12,7 @@ class Pool
 		#wrestlers.sort_by{|x|[x.original_seed]}
 		
 		pool = 1
-		wrestlers.each do |w|
+		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
 			w.poolNumber = pool
 			w.save
 			if pool < 2
@@ -27,16 +27,16 @@ class Pool
 
 
 	def fourPools(wrestlers,weight_id,tournament)
-		#wrestlers.sort_by{|x|[x.original_seed]}
 		
-		pool = 1
-		wrestlers.each do |w|
-			w.poolNumber = pool
+		
+		@pool = 1
+		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
+			w.poolNumber = @pool
 			w.save
-			if pool < 4
-				pool = pool + 1
+			if @pool < 4
+				@pool = @pool + 1
 			else
-				pool =1
+				@pool =1
 			end
 		end
 		roundRobin(1,tournament,weight_id)

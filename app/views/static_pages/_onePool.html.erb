@@ -13,7 +13,7 @@
 	<tbody>
 		<% @poolOneWrestlers.each do |w| %>
 		<tr>
-			<td><%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
 			<td><%= w.boutByRound(1) %><br>Result</td>
 			<td><%= w.boutByRound(2) %></td>
 			<td><%= w.boutByRound(3) %></td>

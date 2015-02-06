@@ -6,7 +6,7 @@ class Weight < ActiveRecord::Base
 
 	def generatePool
 		@wrestlers = Wrestler.where(weight_id: self.id)
-		@wrestlers.sort_by{|x|[x.original_seed]}
+		#@wrestlers.sort_by{|w| [w.original_seed]}
 		if self.pools == 1
 			@pool = Pool.new
 			@pool.onePool(@wrestlers,self.id,self.tournament_id)
