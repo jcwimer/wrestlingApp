@@ -13,6 +13,7 @@ class TournamentsController < ApplicationController
     @schools = @tournament.schools
     @weights = @tournament.weights
     @mats = @tournament.mats
+    @weights = @weights.sort_by{|x|[x.max]}
   end
 
   # GET /tournaments/new
