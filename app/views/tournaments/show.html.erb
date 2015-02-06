@@ -69,6 +69,7 @@
   <thead>
     <tr>
       <th>Weight Class</th>
+      <th>Bracket Size</th>
       <th></th>
     </tr>
   </thead>
@@ -77,6 +78,7 @@
     <% @weights.each do |weight| %>
       <tr>
         <td><%= weight.max %></td>
+        <td><%= weight.bracket_size %></td>
         <td><%= link_to 'Show', weight, :class=>"btn" %>
           <% if user_signed_in? %>
             <%= link_to 'Edit', edit_weight_path(weight), :class=>"btn" %>
