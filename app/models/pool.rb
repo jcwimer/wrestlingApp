@@ -13,8 +13,16 @@ class Pool
 		
 		pool = 1
 		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
-			w.poolNumber = pool
-			w.save
+			if w.original_seed == 3
+				w.poolNumber = 2
+				w.save
+			elsif w.original_seed == 4
+				w.poolNumber = 1
+				w.save
+			else
+				w.poolNumber = pool
+				w.save
+			end
 			if pool < 2
 				pool = pool + 1
 			else
