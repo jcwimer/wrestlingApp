@@ -55,7 +55,7 @@ class Pool
 
 	def roundRobin(pool,tournament_id,weight_id)
 		@wrestlers = Wrestler.where(weight_id: weight_id, poolNumber: pool).to_a
-		@poolMatches = RoundRobinTournament.schedule(@wrestlers)
+		@poolMatches = RoundRobinTournament.schedule(@wrestlers).reverse
 		@poolMatches.each_with_index do |b,index|
 			@bout = b.map
 			@bout.each do |b|
