@@ -35,9 +35,11 @@ class Weight < ActiveRecord::Base
 		return @wrestlers.size
 	end
 
-	def bracket_type
-		if self.wrestlers.size > 7 && self.wrestlers.size <= 10
+	def pool_bracket_type
+		if self.wrestlers.size > 7 && self.wrestlers.size <= 8
 			return "twoPoolsToSemi"
+		elsif self.wrestlers.size > 8 && self.wrestlers.size <= 10
+			return "twoPoolToFinal"			
 		elsif self.wrestlers.size == 11
 			return "fourPoolsToQuarter"
 		elsif self.wrestlers.size > 11 && self.wrestlers.size <= 16
