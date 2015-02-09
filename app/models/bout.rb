@@ -16,7 +16,7 @@ class Bout
 	def giveBout(matches)
 		@matches = matches.sort_by{|x|[x.weight_max]}
 		@matches.each_with_index do |m, i|
-			bout = m.round * 100 + i
+			bout = m.round * 1000 + i
 			m.boutNumber = bout
 			m.save
 		end

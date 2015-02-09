@@ -8,9 +8,7 @@ class Pool
 	end
 
 
-	def twoPools(wrestlers,weight_id,tournament)
-		#wrestlers.sort_by{|x|[x.original_seed]}
-		
+	def twoPools(wrestlers,weight_id,tournament)		
 		pool = 1
 		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
 			if w.original_seed == 3
@@ -35,12 +33,24 @@ class Pool
 
 
 	def fourPools(wrestlers,weight_id,tournament)
-		
-		
 		@pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
-			w.poolNumber = @pool
-			w.save
+		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
+			if w.original_seed == 3
+				w.poolNumber = 3
+				w.save
+			elsif w.original_seed == 4
+				w.poolNumber = 4
+				w.save
+			elsif w.original_seed == 1
+				w.poolNumber = 1
+				w.save
+			elsif w.original_seed == 2
+				w.poolNumber = 2
+				w.save
+			else
+				w.poolNumber = @pool
+				w.save
+			end
 			if @pool < 4
 				@pool = @pool + 1
 			else
@@ -55,17 +65,11 @@ class Pool
 
 	def roundRobin(pool,tournament_id,weight_id)
 		@wrestlers = Wrestler.where(weight_id: weight_id, poolNumber: pool).to_a
-		@poolMatches = RoundRobinTournament.schedule(@wrestlers).reverse
+		@poolMatches = RoundRobinTournament.schedule(@wrestlers)
 		@poolMatches.each_with_index do |b,index|
 			@bout = b.map
 			@bout.each do |b|
 				if b[0] != nil and b[1] != nil
-					# puts "Start Map Here"
-					# puts b[0].name
-					# puts " vs " 
-					# puts b[1].name
-					# puts "Round " 
-					# puts index + 1
 					@match = Match.new
 					@match.r_id = b[0].id
 					@match.g_id = b[1].id
@@ -76,28 +80,5 @@ class Pool
 			end
 		end
 	end
-
-	# def roundRobin(pool,tournament,weight_id)
-	# 	@wrestlers = Wrestler.where(weight_id: weight_id, poolNumber: pool)
-	# 	@wrestlers.sort_by{|x|[x.original_seed]}.to_a
-	# 	@wrestlers.each_with_index do |w,index|
-	# 		next_guy_index = index+1
-	# 		while index < @wrestlers.length && next_guy_index < @wrestlers.length
-	# 			other_guy = @wrestlers[next_guy_index]
-	# 			createMatch(w.id,other_guy.id,tournament)
-	# 			index += 1
-	# 			next_guy_index += 1
-	# 		end
-	# 	end
-	# end
-
-
-	# def createMatch(w1,w2,tournament)
-	# 	@match = Match.new
-	# 	@match.r_id = w1
-	# 	@match.g_id = w2
-	# 	@match.tournament_id = tournament
-	# 	@match.save
-	# end
 
 end
