@@ -2,7 +2,7 @@ class Weight < ActiveRecord::Base
 	belongs_to :tournament
 	has_many :wrestlers, dependent: :destroy
 
-	attr_accessor :pools, :bracket_size
+	attr_accessor :pools, :bracket_size, :bracket_type
 
 	def generatePool
 		@wrestlers = Wrestler.where(weight_id: self.id)
@@ -35,5 +35,15 @@ class Weight < ActiveRecord::Base
 		return @wrestlers.size
 	end
 
+	def bracket_type
+		if self.wrestlers.size > 7 && self.wrestlers.size <= 10
+			return "twoPoolsToSemi"
+		elsif self.wrestlers.size == 11
+			return "fourPoolsToQuarter"
+		elsif self.wrestlers.size > 11 && self.wrestlers.size <= 16
+			return "fourPoolsToSemi"			
+		end
+		self.wrestlers.size 
+	end
 	
 end
