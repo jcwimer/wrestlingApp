@@ -10,7 +10,7 @@ class Pool
 
 	def twoPools(wrestlers,weight_id,tournament)		
 		pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
+		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
 			if w.original_seed == 3
 				w.poolNumber = 2
 				w.save
@@ -65,7 +65,7 @@ class Pool
 
 	def roundRobin(pool,tournament_id,weight_id)
 		@wrestlers = Wrestler.where(weight_id: weight_id, poolNumber: pool).to_a
-		@poolMatches = RoundRobinTournament.schedule(@wrestlers)
+		@poolMatches = RoundRobinTournament.schedule(@wrestlers).reverse
 		@poolMatches.each_with_index do |b,index|
 			@bout = b.map
 			@bout.each do |b|
@@ -80,5 +80,4 @@ class Pool
 			end
 		end
 	end
-
 end
