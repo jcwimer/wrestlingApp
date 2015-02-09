@@ -24,6 +24,7 @@ class Tournament < ActiveRecord::Base
 	    # assignRound
 	    assignBouts
 	end
+	handle_asynchronously :generateMatches
 
 	def destroyAllMatches
 		@matches_all = Match.where(tournament_id: self.id)
