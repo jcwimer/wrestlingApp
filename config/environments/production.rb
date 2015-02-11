@@ -81,7 +81,7 @@ Wrestling::Application.configure do
 
   #THESE ADDED BY ME TO GET RAILS 4 WORKING IN HEROKU
   config.cache_classes = true
-  config.serve_static_assets = true
+  config.serve_static_files = true
   config.assets.compile = true
   config.assets.digest = true
 
