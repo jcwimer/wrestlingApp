@@ -53,6 +53,8 @@ gem 'spring',        group: :development
 		gem 'round_robin_tournament'
 		gem 'rb-readline'
 		gem 'delayed_job_active_record'
+		gem 'jquery-datatables-rails', github: 'rweng/jquery-datatables-rails'
+		gem 'jquery-ui-rails'
 
 
 

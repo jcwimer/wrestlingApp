@@ -2,7 +2,28 @@
 <br>
 <br>
 <h3>Upcoming Matches</h3>
-<% @matches.each do |m| %>
-		Round <%= m.round %> Bout <%= m.boutNumber %> <%= Wrestler.find(m.r_id).weight.max %> Lbs <%= Wrestler.find(m.r_id).name %> vs. <%= Wrestler.find(m.g_id).weight.max %> Lbs <%= Wrestler.find(m.g_id).name %>
-		<br>
-<% end %>
+<br>
+<br>
+<table class="display compact cell-border" id="matches">
+  <thead>
+    <tr>
+      <th>Round</th>
+      <th>Bout Number</th>
+      <th>Weight Class</th>
+      <th>Matchup</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @matches.each do |m| %>
+      <tr>
+        <td>Round <%= m.round %></td>
+        <td>Bout <%= m.boutNumber %></td>
+        <td><%= m.weight_max %> lbs</td>
+        <td><%= m.w1_name %> vs. <%= m.w2_name %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
