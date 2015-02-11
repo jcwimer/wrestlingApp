@@ -21,7 +21,7 @@ module Wrestling
     # config.i18n.default_locale = :de
 	
 	#Add Bootstrap SAAS to asset pipeline
-    config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)
+    config.assets.precompile = false
     config.active_job.queue_adapter = :delayed_job
   end
 
