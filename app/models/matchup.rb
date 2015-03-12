@@ -1,5 +1,5 @@
 class Matchup
-	attr_accessor :w1, :w2, :round, :weight_id
+	attr_accessor :w1, :w2, :round, :weight_id, :boutNumber
 
 	# def w1
 	# end

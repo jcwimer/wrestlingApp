@@ -1,15 +1,8 @@
 class Bout
-	def assignBouts(tournament_id)
-		@round = 1
-		until matchesByRound(@round, tournament_id).blank? do
-				@matches = matchesByRound(@round, tournament_id)
-				giveBout(@matches)
-				@round += 1
-		end
-	end
+	
 
-	def matchesByRound(round, tournament_id)
-		@matches = Match.where(tournament_id: tournament_id, round: round)
+	def matchesByRound(round, matches)
+		@matches = matches.select {|m| m.round == round}
 		return @matches
 	end
 
@@ -18,7 +11,21 @@ class Bout
 		@matches.each_with_index do |m, i|
 			bout = m.round * 1000 + i
 			m.boutNumber = bout
-			m.save
 		end
+		return @matches
 	end
+
+	def assignBouts(matches)
+		@round = 1
+		until matchesByRound(@round, matches).blank? do
+				@matches = matchesByRound(@round, matches)
+				giveBout(@matches)
+				@round += 1
+		end
+		return matches
+	end
+
+
+
+
 end

@@ -17,6 +17,7 @@ class Tournament < ActiveRecord::Base
 		self.weights.sort_by{|x|[x.max]}.each do |weight|
 	    	@upcomingMatches = weight.generateMatchups(@matches)
 	    end
+	    @upcomingMatches = assignBouts(@upcomingMatches)
 	    return @upcomingMatches
 	end
 
@@ -40,9 +41,10 @@ class Tournament < ActiveRecord::Base
 
 
 
-	def assignBouts
+	def assignBouts(matches)
 		@bouts = Bout.new
-		@bouts.assignBouts(self.id)
+		@matches = @bouts.assignBouts(matches)
+		return @matches
 	end
 
 end

@@ -18,7 +18,7 @@
     <% @matches.each.map do |m| %>
       <tr>
         <td>Round <%= m.round %></td>
-        <td></td>
+        <td><%= m.boutNumber %></td>
         <td><%= m.weight_max %> lbs</td>
         <td><%= m.w_name(m.w1) %> vs. <%= m.w_name(m.w2) %></td>
       </tr>
