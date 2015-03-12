@@ -15,12 +15,12 @@
   </thead>
 
   <tbody>
-    <% @matches.each do |m| %>
+    <% @matches.each.map do |m| %>
       <tr>
         <td>Round <%= m.round %></td>
-        <td>Bout <%= m.boutNumber %></td>
+        <td></td>
         <td><%= m.weight_max %> lbs</td>
-        <td><%= m.w1_name %> vs. <%= m.w2_name %></td>
+        <td><%= m.w_name(m.w1) %> vs. <%= m.w_name(m.w2) %></td>
       </tr>
     <% end %>
   </tbody>

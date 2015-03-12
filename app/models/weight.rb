@@ -47,5 +47,21 @@ class Weight < ActiveRecord::Base
 		end
 		self.wrestlers.size 
 	end
+
+	def generateMatchups(matches)
+		@wrestlers = Wrestler.where(weight_id: self.id)
+		#@wrestlers.sort_by{|w| [w.original_seed]}
+		if self.pools == 1
+			@pool = Pool.new
+			@matches = @pool.onePool(@wrestlers,self.id,self.tournament_id,matches)
+		elsif self.pools == 2
+			@pool = Pool.new
+			@matches = @pool.twoPools(@wrestlers,self.id,self.tournament_id,matches)
+		elsif self.pools == 4
+			@pool = Pool.new
+			@matches = @pool.fourPools(@wrestlers,self.id,self.tournament_id,matches)
+		end
+		return @matches
+	end
 	
 end

@@ -10,9 +10,14 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def upcomingMatches
-		@matches = Match.where(tournament_id: self.id)
-		@matches.sort_by{|x|[x.boutNumber]}
+		# @matches = Match.where(tournament_id: self.id)
+		# @matches.sort_by{|x|[x.boutNumber]}
 		# @matches.sort_by{|x|[x.round,x.weight.max]}
+		@matches = []
+		self.weights.sort_by{|x|[x.max]}.each do |weight|
+	    	@upcomingMatches = weight.generateMatchups(@matches)
+	    end
+	    return @upcomingMatches
 	end
 
 
