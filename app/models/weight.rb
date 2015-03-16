@@ -4,21 +4,6 @@ class Weight < ActiveRecord::Base
 
 	attr_accessor :pools, :bracket_size, :bracket_type
 
-	def generatePool
-		@wrestlers = Wrestler.where(weight_id: self.id)
-		#@wrestlers.sort_by{|w| [w.original_seed]}
-		if self.pools == 1
-			@pool = Pool.new
-			@pool.onePool(@wrestlers,self.id,self.tournament_id)
-		elsif self.pools == 2
-			@pool = Pool.new
-			@pool.twoPools(@wrestlers,self.id,self.tournament_id)
-		elsif self.pools == 4
-			@pool = Pool.new
-			@pool.fourPools(@wrestlers,self.id,self.tournament_id)
-		end
-	end
-
 	def pools
 		@wrestlers = self.wrestlers
 		if @wrestlers.size <= 6

@@ -14,8 +14,9 @@ class Wrestler < ActiveRecord::Base
 		end		
 	end
 
-	def boutByRound(round)
-		@match = matches_all.select{|m| m.round == round}.first
+	def boutByRound(round,matches)
+		@matches = matches.select{|m| m.w1 == self.id || m.w2 == self.id}
+		@match = @matches.select{|m| m.round == round}.first
 		if @match.blank?
 			return "BYE"
 		else

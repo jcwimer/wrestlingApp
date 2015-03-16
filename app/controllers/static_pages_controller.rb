@@ -37,10 +37,12 @@ class StaticPagesController < ApplicationController
 	    if params[:weight]
 	    	@weight = Weight.find(params[:weight])
 	    	@tournament = Tournament.find(@weight.tournament_id)
-	    	@poolOneWrestlers = Wrestler.where(weight_id: @weight.id, poolNumber: 1)
-	    	@poolTwoWrestlers = Wrestler.where(weight_id: @weight.id, poolNumber: 2)
-	    	@poolThreeWrestlers = Wrestler.where(weight_id: @weight.id, poolNumber: 3)
-	    	@poolFourWrestlers = Wrestler.where(weight_id: @weight.id, poolNumber: 4)
+	    	@matches = @tournament.upcomingMatches
+	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
+	    	@poolOneWrestlers = @wrestlers.select{|w| w.poolNumber == 1}
+	    	@poolTwoWrestlers = @wrestlers.select{|w| w.poolNumber == 2}
+	    	@poolThreeWrestlers = @wrestlers.select{|w| w.poolNumber == 3}
+	    	@poolFourWrestlers = @wrestlers.select{|w| w.poolNumber == 4}
 	    end
 
 
