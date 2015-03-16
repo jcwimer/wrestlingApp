@@ -23,6 +23,7 @@
 		</tr>
 	</thead>
 	<tbody>
+    <%= form_tag @wrestlers_update_path do %>
 		<% @wrestlers.order("original_seed asc").each do |wrestler| %>
       		<% if wrestler.weight_id == @weight.id %>
       			<tr>
@@ -30,7 +31,9 @@
       				<td><%= School.find(wrestler.school_id).name %></td>
       				<td>
                 <% if user_signed_in? %>
-                  <%= wrestler.original_seed %>
+                  <%= fields_for "wrestler[]", wrestler do |w| %>
+                    <%= w.text_field :original_seed %>
+                  <% end %> 
                 <% else %>
                   <%= wrestler.original_seed %>
                 <% end %>
@@ -50,6 +53,9 @@
     	<% end %>
   	</tbody>
 </table>
+      <%= submit_tag "Save"%>
+    <% end %>
+
 
 
 

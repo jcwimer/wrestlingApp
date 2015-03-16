@@ -10,8 +10,12 @@ class WeightsController < ApplicationController
   # GET /weights/1
   # GET /weights/1.json
   def show
+    if params[:wrestler]
+      Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
+    end
     @wrestlers = Wrestler.all
     @tournament = Tournament.find(@weight.tournament_id)
+
   end
 
   # GET /weights/new

@@ -12,7 +12,7 @@ Wrestling::Application.routes.draw do
 
   resources :wrestlers
 
-  
+  post "/weights/:id" => "weights#show"
 
   
 
