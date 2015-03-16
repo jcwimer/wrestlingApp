@@ -12,14 +12,14 @@ class Pool
 	def twoPools(wrestlers,weight,tournament,matches)		
 		pool = 1
 		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
-			if w.original_seed == 3
-				w.poolNumber = 2
-			elsif w.original_seed == 4
-				w.poolNumber = 1
-			elsif w.original_seed == 1
+			if w.original_seed == 1
 				w.poolNumber = 1
 			elsif w.original_seed == 2
 				w.poolNumber = 2
+			elsif w.original_seed == 3
+				w.poolNumber = 2
+			elsif w.original_seed == 4
+				w.poolNumber = 1
 			else
 				w.poolNumber = pool
 			end
