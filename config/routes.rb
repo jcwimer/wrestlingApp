@@ -24,7 +24,6 @@ Wrestling::Application.routes.draw do
   get 'static_pages/brackets'
   get 'static_pages/weights'
   get 'admin/index'
-  get 'static_pages/generate_matches'
   get 'static_pages/up_matches'
   get 'static_pages/control_match'
   get 'static_pages/results'

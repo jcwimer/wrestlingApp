@@ -25,13 +25,6 @@
 
 <br>
 <br>
-<% if user_signed_in? %>
-  <%= link_to "New #{@tournament.name} School" , "/schools/new?tournament=#{@tournament.id}" %>
-  <br>
-  BE CAREFUL <%= link_to "Generate Pool Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}", :class=>"btn" %>
-<% end %>
-<br>
-<br>
 <h3>School Lineups</h3>
 <table class="table table-striped table-bordered">
   <thead>
