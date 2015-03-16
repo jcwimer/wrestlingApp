@@ -16,6 +16,10 @@ class Pool
 				w.poolNumber = 2
 			elsif w.original_seed == 4
 				w.poolNumber = 1
+			elsif w.original_seed == 1
+				w.poolNumber = 1
+			elsif w.original_seed == 2
+				w.poolNumber = 2
 			else
 				w.poolNumber = pool
 			end
