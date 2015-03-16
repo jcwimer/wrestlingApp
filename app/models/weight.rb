@@ -20,7 +20,7 @@ class Weight < ActiveRecord::Base
 	end
 
 	def pools
-		@wrestlers = Wrestler.where(weight_id: self.id)
+		@wrestlers = self.wrestlers
 		if @wrestlers.size <= 6
 			self.pools = 1
 		elsif  (@wrestlers.size > 6) && (@wrestlers.size <= 10)
@@ -49,17 +49,17 @@ class Weight < ActiveRecord::Base
 	end
 
 	def generateMatchups(matches)
-		@wrestlers = Wrestler.where(weight_id: self.id)
+		@wrestlers = self.wrestlers
 		#@wrestlers.sort_by{|w| [w.original_seed]}
 		if self.pools == 1
 			@pool = Pool.new
-			@matches = @pool.onePool(@wrestlers,self.id,self.tournament_id,matches)
+			@matches = @pool.onePool(@wrestlers,self,self.tournament_id,matches)
 		elsif self.pools == 2
 			@pool = Pool.new
-			@matches = @pool.twoPools(@wrestlers,self.id,self.tournament_id,matches)
+			@matches = @pool.twoPools(@wrestlers,self,self.tournament_id,matches)
 		elsif self.pools == 4
 			@pool = Pool.new
-			@matches = @pool.fourPools(@wrestlers,self.id,self.tournament_id,matches)
+			@matches = @pool.fourPools(@wrestlers,self,self.tournament_id,matches)
 		end
 		return @matches
 	end

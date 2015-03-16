@@ -1,5 +1,5 @@
 class Matchup
-	attr_accessor :w1, :w2, :round, :weight_id, :boutNumber
+	attr_accessor :w1, :w2, :round, :weight_id, :boutNumber, :w1_name, :w2_name
 
 	# def w1
 	# end
@@ -14,13 +14,8 @@ class Matchup
 	# end
 
 	def weight_max
-		@wrestler = Wrestler.find(self.w1)
-		@weight = Weight.find(@wrestler.weight_id)
+		@weight = Weight.find(self.weight_id)
 		return @weight.max
 	end
 
-	def w_name(id)
-		@wrestler = Wrestler.find(id)
-		return @wrestler.name
-	end
 end
