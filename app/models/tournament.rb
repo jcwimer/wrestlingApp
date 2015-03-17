@@ -3,6 +3,7 @@ class Tournament < ActiveRecord::Base
 	has_many :weights, dependent: :destroy
 	has_many :matches, dependent: :destroy
 	has_many :mats, dependent: :destroy	
+	has_many :wrestlers, through: :weights
 	attr_accessor :upcomingMatches, :unfinishedMatches
 
 	def self.unfinishedMatches
@@ -11,8 +12,9 @@ class Tournament < ActiveRecord::Base
 
 	def upcomingMatches
 		@matches = []
+		@wrestlers = self.wrestlers
 		self.weights.sort_by{|x|[x.max]}.each do |weight|
-	    	@upcomingMatches = weight.generateMatchups(@matches)
+	    	@upcomingMatches = generateMatchups(@matches,@wrestlers,weight)
 	    end
 	    @upcomingMatches = assignBouts(@upcomingMatches)
 	    return @upcomingMatches
@@ -31,6 +33,21 @@ class Tournament < ActiveRecord::Base
 	def assignBouts(matches)
 		@bouts = Bout.new
 		@matches = @bouts.assignBouts(matches)
+		return @matches
+	end
+
+	def generateMatchups(matches,wrestlers,weight)
+		@wrestlers = wrestlers.select{|w| w.weight_id == weight.id}
+		if weight.pools == 1
+			@pool = Pool.new
+			@matches = @pool.generatePools(1,@wrestlers,weight,self.id,matches)
+		elsif weight.pools == 2
+			@pool = Pool.new
+			@matches = @pool.generatePools(2,@wrestlers,weight,self.id,matches)
+		elsif weight.pools == 4
+			@pool = Pool.new
+			@matches = @pool.generatePools(4,@wrestlers,weight,self.id,matches)
+		end
 		return @matches
 	end
 
