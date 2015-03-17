@@ -99,5 +99,20 @@ class Weight < ActiveRecord::Base
 		end
 		self.wrestlers.size 
 	end
+
+	def generateMatchups(matches)
+		@wrestlers = self.wrestlers
+		if self.pools == 1
+			@pool = Pool.new
+			@matches = @pool.generatePools(1,@wrestlers,self,self.tournament_id,matches)
+		elsif self.pools == 2
+			@pool = Pool.new
+			@matches = @pool.generatePools(2,@wrestlers,self,self.tournament_id,matches)
+		elsif self.pools == 4
+			@pool = Pool.new
+			@matches = @pool.generatePools(4,@wrestlers,self,self.tournament_id,matches)
+		end
+		return @matches
+	end
 	
 end
