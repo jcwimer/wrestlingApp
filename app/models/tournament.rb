@@ -15,7 +15,6 @@ class Tournament < ActiveRecord::Base
 		@wrestlers = self.wrestlers
 		self.weights.sort_by{|x|[x.max]}.each do |weight|
 	    	@upcomingMatches = generateMatchups(@matches,@wrestlers,weight)
-	    	@matches = @upcomingMatches
 	    end
 	    @upcomingMatches = assignBouts(@upcomingMatches)
 	    return @upcomingMatches
