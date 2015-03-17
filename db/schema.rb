@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150316131043) do
+ActiveRecord::Schema.define(version: 20150317122709) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "r_id"
@@ -89,7 +89,6 @@ ActiveRecord::Schema.define(version: 20150316131043) do
     t.integer  "season_win"
     t.integer  "season_loss"
     t.string   "criteria"
-    t.integer  "poolNumber"
     t.boolean  "extra"
   end
 

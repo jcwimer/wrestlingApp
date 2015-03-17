@@ -1,7 +1,7 @@
 class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
-	attr_accessor :matches_all, :isWrestlingThisRound, :boutByRound, :seasonWinPercentage
+	attr_accessor :matches_all, :isWrestlingThisRound, :boutByRound, :seasonWinPercentage, :poolNumber
 
 	def isWrestlingThisRound(matchRound)
 		@gMatches = Match.where(g_id: self.id, round: matchRound)
@@ -12,6 +12,11 @@ class Wrestler < ActiveRecord::Base
 		else
 			return true
 		end		
+	end
+
+	def generatePoolNumber
+		@pool = self.weight.returnPoolNumber(self)
+		return @pool
 	end
 
 	def boutByRound(round,matches)

@@ -15,6 +15,73 @@ class Weight < ActiveRecord::Base
 		end
 	end
 
+	def returnPoolNumber(wrestler)
+		if self.pools == 4
+			@wrestlers = fourPoolNumbers(self.wrestlers)
+		elsif self.pools == 2
+			@wrestlers = twoPoolNumbers(self.wrestlers)
+		elsif self.pools == 1
+			@wrestlers = onePoolNumbers(self.wrestlers)
+		end
+		@wrestler = @wrestlers.select{|w| w.id == wrestler.id}.first
+		return @wrestler.poolNumber
+	end
+
+	def fourPoolNumbers(wrestlers)
+		@pool = 1
+		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
+			if w.original_seed == 3
+				w.poolNumber = 3
+			elsif w.original_seed == 4
+				w.poolNumber = 4
+			elsif w.original_seed == 1
+				w.poolNumber = 1
+			elsif w.original_seed == 2
+				w.poolNumber = 2
+			else
+				w.poolNumber = @pool
+			end
+			if @pool < 4
+				@pool = @pool + 1
+			else
+				@pool =1
+			end
+		end
+		return wrestlers
+	end
+
+	def onePoolNumbers(wrestlers)
+		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
+			w.poolNumber = 1
+		end
+		return wrestlers
+
+	end
+
+
+	def twoPoolNumbers(wrestlers)		
+		pool = 1
+		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
+			if w.original_seed == 1
+				w.poolNumber = 1
+			elsif w.original_seed == 2
+				w.poolNumber = 2
+			elsif w.original_seed == 3
+				w.poolNumber = 2
+			elsif w.original_seed == 4
+				w.poolNumber = 1
+			else
+				w.poolNumber = pool
+			end
+			if pool < 2
+				pool = pool + 1
+			else
+				pool =1
+			end
+		end
+		return wrestlers
+	end
+
 	def bracket_size
 		@wrestlers = Wrestler.where(weight_id: self.id)
 		return @wrestlers.size
@@ -35,16 +102,15 @@ class Weight < ActiveRecord::Base
 
 	def generateMatchups(matches)
 		@wrestlers = self.wrestlers
-		#@wrestlers.sort_by{|w| [w.original_seed]}
 		if self.pools == 1
 			@pool = Pool.new
-			@matches = @pool.onePool(@wrestlers,self,self.tournament_id,matches)
+			@matches = @pool.generatePools(1,@wrestlers,self,self.tournament_id,matches)
 		elsif self.pools == 2
 			@pool = Pool.new
-			@matches = @pool.twoPools(@wrestlers,self,self.tournament_id,matches)
+			@matches = @pool.generatePools(2,@wrestlers,self,self.tournament_id,matches)
 		elsif self.pools == 4
 			@pool = Pool.new
-			@matches = @pool.fourPools(@wrestlers,self,self.tournament_id,matches)
+			@matches = @pool.generatePools(4,@wrestlers,self,self.tournament_id,matches)
 		end
 		return @matches
 	end

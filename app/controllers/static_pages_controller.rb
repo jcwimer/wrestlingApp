@@ -39,10 +39,10 @@ class StaticPagesController < ApplicationController
 	    	@tournament = Tournament.find(@weight.tournament_id)
 	    	@matches = @tournament.upcomingMatches
 	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
-	    	@poolOneWrestlers = @wrestlers.select{|w| w.poolNumber == 1}
-	    	@poolTwoWrestlers = @wrestlers.select{|w| w.poolNumber == 2}
-	    	@poolThreeWrestlers = @wrestlers.select{|w| w.poolNumber == 3}
-	    	@poolFourWrestlers = @wrestlers.select{|w| w.poolNumber == 4}
+	    	@poolOneWrestlers = @wrestlers.select{|w| w.generatePoolNumber == 1}
+	    	@poolTwoWrestlers = @wrestlers.select{|w| w.generatePoolNumber == 2}
+	    	@poolThreeWrestlers = @wrestlers.select{|w| w.generatePoolNumber == 3}
+	    	@poolFourWrestlers = @wrestlers.select{|w| w.generatePoolNumber == 4}
 	    end
 
 

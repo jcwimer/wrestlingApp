@@ -1,69 +1,16 @@
 class Pool
-	def onePool(wrestlers,weight,tournament,matches)
-		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
-			w.poolNumber = 1
-		end
-		matches = roundRobin(1,tournament,weight,matches,wrestlers)
-		return matches
-
-	end
-
-
-	def twoPools(wrestlers,weight,tournament,matches)		
-		pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
-			if w.original_seed == 1
-				w.poolNumber = 1
-			elsif w.original_seed == 2
-				w.poolNumber = 2
-			elsif w.original_seed == 3
-				w.poolNumber = 2
-			elsif w.original_seed == 4
-				w.poolNumber = 1
-			else
-				w.poolNumber = pool
-			end
-			if pool < 2
-				pool = pool + 1
-			else
-				pool =1
-			end
-		end
-		matches = roundRobin(1,tournament,weight,matches,wrestlers)
-		matches = roundRobin(2,tournament,weight,matches,wrestlers)
-		return matches
-	end
-
-
-	def fourPools(wrestlers,weight,tournament,matches)
+	def generatePools(pools,wrestlers,weight,tournament,matches)
+		@pools = pools
 		@pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
-			if w.original_seed == 3
-				w.poolNumber = 3
-			elsif w.original_seed == 4
-				w.poolNumber = 4
-			elsif w.original_seed == 1
-				w.poolNumber = 1
-			elsif w.original_seed == 2
-				w.poolNumber = 2
-			else
-				w.poolNumber = @pool
-			end
-			if @pool < 4
-				@pool = @pool + 1
-			else
-				@pool =1
-			end
+		while @pool <= @pools
+			matches = roundRobin(@pool,wrestlers,weight,tournament,matches)
+			@pool = @pool +1
 		end
-		matches = roundRobin(1,tournament,weight,matches,wrestlers)
-		matches = roundRobin(2,tournament,weight,matches,wrestlers)
-		matches = roundRobin(3,tournament,weight,matches,wrestlers)
-		matches = roundRobin(4,tournament,weight,matches,wrestlers)
 		return matches
 	end
 
-	def roundRobin(pool,tournament_id,weight,matches,wrestlers)
-		@wrestlers = wrestlers.select{|w| w.poolNumber == pool}.to_a
+	def roundRobin(pool,wrestlers,weight,tournament,matches)
+		@wrestlers = wrestlers.select{|w| w.generatePoolNumber == pool}.to_a
 		@poolMatches = RoundRobinTournament.schedule(@wrestlers).reverse
 		@poolMatches.each_with_index do |b,index|
 			@bout = b.map
