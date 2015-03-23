@@ -44,8 +44,6 @@ if Rails.env.development?
 	Wrestler.create(name: 'Guy 25', school_id: 200, weight_id: 201, original_seed: 9, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 26', school_id: 201, weight_id: 201, original_seed: 10, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 27', school_id: 202, weight_id: 201, original_seed: 11, season_win: 0, season_loss: 0, criteria: 'N/A')
-	Wrestler.create(name: 'Guy 28', school_id: 203, weight_id: 201, original_seed: 12, season_win: 0, season_loss: 0, criteria: 'N/A')
-	Wrestler.create(name: 'Guy 29', school_id: 204, weight_id: 201, original_seed: 13, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 30', school_id: 204, weight_id: 202, original_seed: 13, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 31', school_id: 204, weight_id: 202, original_seed: 13, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 32', school_id: 204, weight_id: 202, original_seed: 13, season_win: 0, season_loss: 0, criteria: 'N/A')
