@@ -97,13 +97,17 @@ class Weight < ActiveRecord::Base
 		elsif self.wrestlers.size > 11 && self.wrestlers.size <= 16
 			return "fourPoolsToSemi"			
 		end
-		self.wrestlers.size 
 	end
 
 	def generateMatchups(matches)
 		@wrestlers = self.wrestlers
 		@pool = Pool.new
 		@matches = @pool.generatePools(self.pools,@wrestlers,self,self.tournament_id,matches)
+		@weight_matches = @matches.select{|m|m.weight_id == self.id}
+		@last_match = @weight_matches.sort_by{|m| m.round}.last
+		@highest_round = @last_match.round
+		@bracket = Poolbracket.new
+		@matches = @bracket.generateBracketMatches(@matches,self,@highest_round)
 		return @matches
 	end
 	
