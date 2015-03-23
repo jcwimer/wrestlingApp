@@ -5,7 +5,7 @@ class Tournament < ActiveRecord::Base
 	has_many :mats, dependent: :destroy	
 	attr_accessor :upcomingMatches, :unfinishedMatches
 
-	def self.unfinishedMatches
+	def unfinishedMatches
 		
 	end
 
