@@ -54,6 +54,7 @@ gem 'spring',        group: :development
 		gem 'rb-readline'
 		gem 'jquery-datatables-rails', github: 'rweng/jquery-datatables-rails'
 		gem 'jquery-ui-rails'
+		gem 'puma'
 
 
 
