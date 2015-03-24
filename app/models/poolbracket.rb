@@ -103,5 +103,5 @@ class Poolbracket
 		@bouts = Bout.new
 		@matches = @bouts.assignBouts(matches)
 		return @matches
-	end
+    end
 end
