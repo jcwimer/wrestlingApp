@@ -50,4 +50,9 @@
   	</tbody>
 </table>
 
-<%= render 'twoPoolBracket' %>
+<% if @bracketType == "twoPoolsToFinal" %>
+<%= render 'twoPoolFinalBracket' %>
+<% end %>
+<% if @bracketType == "twoPoolsToSemi" %>
+<%= render 'twoPoolSemiBracket' %>
+<% end %>

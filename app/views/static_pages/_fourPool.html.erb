@@ -92,4 +92,9 @@
 
 </br>
 </br>
-<%= render 'fourPoolBracket' %>
+<% if @bracketType == "fourPoolsToQuarter" %>
+<%= render 'fourPoolQuarterBracket' %>
+<% end %>
+<% if @bracketType == "fourPoolsToSemi" %>
+<%= render 'fourPoolSemiBracket' %>
+<% end %>

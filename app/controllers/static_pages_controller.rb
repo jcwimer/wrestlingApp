@@ -36,6 +36,7 @@ class StaticPagesController < ApplicationController
 		
 	    if params[:weight]
 	    	@weight = Weight.find(params[:weight])
+	    	@bracketType = @weight.pool_bracket_type
 	    	@tournament = Tournament.find(@weight.tournament_id)
 	    	@matches = @tournament.upcomingMatches.select{|m| m.weight_id == @weight.id}
 	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
