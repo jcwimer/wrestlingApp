@@ -4,7 +4,7 @@ class Tournament < ActiveRecord::Base
 	has_many :matches, dependent: :destroy
 	has_many :mats, dependent: :destroy	
 	attr_accessor :upcomingMatches, :unfinishedMatches
-	serialize :matchups, Array
+	serialize :matchups
 
 	def unfinishedMatches
 		
