@@ -95,6 +95,7 @@ class Poolbracket
 		@match.round = round
 		@match.bracket_position = bracket_position
 		@match.bracket_position_number = bracket_position_number
+		@match.weight_max = weight.max
 		matches << @match
 		return matches
     end

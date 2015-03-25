@@ -11,7 +11,7 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def upcomingMatches
-		if self.matchups_array?
+		if self.matchups_array
 			return matchupHashesToObjects(self.matchups_array)
 		else
 			@matches = generateMatchups

@@ -23,6 +23,7 @@ class Pool
 					@match.w2_name = b[1].name
 					@match.weight_id = weight.id
 					@match.round = index + 1
+					@match.weight_max = weight.max
 					matches << @match
 				end
 			end

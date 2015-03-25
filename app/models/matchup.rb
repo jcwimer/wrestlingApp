@@ -1,11 +1,6 @@
 class Matchup
-	attr_accessor :w1, :w2, :round, :weight_id, :boutNumber, :w1_name, :w2_name, :bracket_position, :bracket_position_number
+	attr_accessor :w1, :w2, :round, :weight_id, :boutNumber, :w1_name, :w2_name, :bracket_position, :bracket_position_number, :weight_max
 
-	def weight_max
-		@weight = Weight.find(self.weight_id)
-		return @weight.max
-	end
-	
 	def to_hash
     	hash = {}
     	instance_variables.each {|var| hash[var.to_s.delete("@")] = instance_variable_get(var) }
