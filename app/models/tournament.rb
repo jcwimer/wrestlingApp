@@ -4,18 +4,19 @@ class Tournament < ActiveRecord::Base
 	has_many :matches, dependent: :destroy
 	has_many :mats, dependent: :destroy	
 	attr_accessor :upcomingMatches, :unfinishedMatches
+	serialize :matchups, Array
 
 	def unfinishedMatches
 		
 	end
 
 	def upcomingMatches
-		@matches = []
-		self.weights.sort_by{|x|[x.max]}.each do |weight|
-	    	@upcomingMatches = weight.generateMatchups(@matches)
+		if self.matchups?
+			return self.matchups
+		else
+			@upcomingMatches = generateMatchups
+		    return @upcomingMatches
 	    end
-	    @upcomingMatches = assignBouts(@upcomingMatches)
-	    return @upcomingMatches
 	end
 
 
@@ -26,7 +27,16 @@ class Tournament < ActiveRecord::Base
 	    end
 	end
 
-
+	def generateMatchups
+		@matches = []
+		self.weights.map.sort_by{|x|[x.max]}.each do |weight|
+    		@upcomingMatches = weight.generateMatchups(@matches)
+	    end
+	    @upcomingMatches = assignBouts(@upcomingMatches)
+	    self.matchups = @upcomingMatches
+	    self.save
+	    return @upcomingMatches
+	end
 
 	def assignBouts(matches)
 		@bouts = Bout.new

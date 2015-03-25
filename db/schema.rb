@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150317122709) do
+ActiveRecord::Schema.define(version: 20150324233726) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "r_id"
@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 20150317122709) do
     t.string   "director_email"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "matchups"
   end
 
   create_table "users", force: :cascade do |t|
