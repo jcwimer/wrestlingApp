@@ -4,7 +4,7 @@ class Tournament < ActiveRecord::Base
 	has_many :matches, dependent: :destroy
 	has_many :mats, dependent: :destroy	
 	attr_accessor :upcomingMatches, :unfinishedMatches
-	serialize :matchups_array
+	serialize :matchups_array, Array
 
 	def unfinishedMatches
 		
@@ -14,8 +14,7 @@ class Tournament < ActiveRecord::Base
 		if self.matchups_array?
 			return self.matchups_array
 		else
-			@upcomingMatches = generateMatchups
-		    return @upcomingMatches
+		    return generateMatchups
 	    end
 	end
 
@@ -33,8 +32,8 @@ class Tournament < ActiveRecord::Base
     		@upcomingMatches = weight.generateMatchups(@matches)
 	    end
 	    @upcomingMatches = assignBouts(@upcomingMatches)
-	    self.matchups_array = @upcomingMatches
-	    self.save
+	    #self.matchups_array = @upcomingMatches
+	    #self.save
 	    return @upcomingMatches
 	end
 
