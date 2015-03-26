@@ -1,15 +1,397 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
+  name: Zach Collins
   school_id: 1
   weight_id: 1
-  seed: 1
-  original_seed: 1
-
+  original_seed: 4
+  season_loss: 8
+  season_win: 30
+  criteria: DP 5th
+  
 two:
-  name: MyString
+  name: Jaden Mattox
   school_id: 1
   weight_id: 1
-  seed: 1
   original_seed: 1
+  season_loss: 3
+  season_win: 49
+  criteria: SP 2nd
+  
+three:
+  name: Jackson Lakso
+  school_id: 1
+  weight_id: 1
+  original_seed: 3
+  season_loss: 8
+  season_win: 30
+  criteria: SQ
+  
+four:
+  name: JD Woods
+  school_id: 1
+  weight_id: 1
+  original_seed: 5
+  season_loss: 12
+  season_win: 30
+  criteria: DP 6th
+  
+five:
+  name: James Wimer
+  school_id: 1
+  weight_id: 1
+  original_seed: 2
+  season_loss: 12
+  season_win: 49
+  criteria: SP 5th
+  
+six:
+  name: Derek Wurzauf
+  school_id: 1
+  weight_id: 2
+  original_seed: 6
+  season_loss: 15
+  season_win: 16
+  criteria: 
+  
+seven:
+  name: Casey Davis
+  school_id: 1
+  weight_id: 2
+  original_seed: 5
+  season_loss: 15
+  season_win: 16
+  criteria: DQ
+  
+eight:
+  name: Ethan Leapley
+  school_id: 1
+  weight_id: 2
+  original_seed: 4
+  season_loss: 15
+  season_win: 20
+  criteria: DP 6th
+  
+nine:
+  name: Clayton Ray
+  school_id: 1
+  weight_id: 2
+  original_seed: 1
+  season_loss: 4
+  season_win: 30
+  criteria: SP 7th
+  
+ten:
+  name: Robbie Fusner
+  school_id: 1
+  weight_id: 2
+  original_seed: 3
+  season_loss: 5
+  season_win: 40
+  criteria: SQ
+  
+eleven:
+  name: Kameron Teacher
+  school_id: 1
+  weight_id: 2
+  original_seed: 2
+  season_loss: 2
+  season_win: 50
+  criteria: SQ
+  
+twelve:
+  name: Guy1
+  school_id: 1
+  weight_id: 2
+  original_seed: 7
+  season_loss: 2
+  season_win: 50
+  criteria: 
+  
+thirteen:
+  name: Guy2
+  school_id: 1
+  weight_id: 3
+  original_seed: 1
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourteen:
+  name: Guy3
+  school_id: 1
+  weight_id: 3
+  original_seed: 2
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fifteen:
+  name: Guy4
+  school_id: 1
+  weight_id: 3
+  original_seed: 3
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+sixteen:
+  name: Guy5
+  school_id: 1
+  weight_id: 3
+  original_seed: 4
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+seventeen:
+  name: Guy6
+  school_id: 1
+  weight_id: 3
+  original_seed: 5
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+eighteen:
+  name: Guy7
+  school_id: 1
+  weight_id: 3
+  original_seed: 6
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+ninteen:
+  name: Guy8
+  school_id: 1
+  weight_id: 3
+  original_seed: 7
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twenty:
+  name: Guy9
+  school_id: 1
+  weight_id: 3
+  original_seed: 8
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twentyone:
+  name: Guy10
+  school_id: 1
+  weight_id: 3
+  original_seed: 9
+  season_loss: 2
+  season_win: 50
+  criteria:
+
+twentytwo:
+  name: Guy11
+  school_id: 1
+  weight_id: 4
+  original_seed: 1
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twentythree:
+  name: Guy12
+  school_id: 1
+  weight_id: 4
+  original_seed: 2
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twentyfour:
+  name: Guy13
+  school_id: 1
+  weight_id: 4
+  original_seed: 3
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twentyfive:
+  name: Guy14
+  school_id: 1
+  weight_id: 4
+  original_seed: 4
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twentysix:
+  name: Guy15
+  school_id: 1
+  weight_id: 4
+  original_seed: 5
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twnetyseven:
+  name: Guy16
+  school_id: 1
+  weight_id: 4
+  original_seed: 6
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twentyeight:
+  name: Guy17
+  school_id: 1
+  weight_id: 4
+  original_seed: 7
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+twentynine:
+  name: Guy18
+  school_id: 1
+  weight_id: 4
+  original_seed: 8
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirty:
+  name: Guy19
+  school_id: 1
+  weight_id: 4
+  original_seed: 9
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thrityone:
+  name: Guy20
+  school_id: 1
+  weight_id: 4
+  original_seed: 10
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirtytwo:
+  name: Guy21
+  school_id: 1
+  weight_id: 4
+  original_seed: 11
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirtythree:
+  name: Guy22
+  school_id: 1
+  weight_id: 5
+  original_seed: 1
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirtyfour:
+  name: Guy23
+  school_id: 1
+  weight_id: 5
+  original_seed: 2
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirtyfive:
+  name: Guy24
+  school_id: 1
+  weight_id: 5
+  original_seed: 3
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirtysix:
+  name: Guy25
+  school_id: 1
+  weight_id: 5
+  original_seed: 4
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirtyseven:
+  name: Guy26
+  school_id: 1
+  weight_id: 5
+  original_seed: 5
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirtyeight:
+  name: Guy27
+  school_id: 1
+  weight_id: 5
+  original_seed: 6
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+thirtynine:
+  name: Guy28
+  school_id: 1
+  weight_id: 5
+  original_seed: 7
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourty:
+  name: Guy29
+  school_id: 1
+  weight_id: 5
+  original_seed: 8
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourtyone:
+  name: Guy30
+  school_id: 1
+  weight_id: 5
+  original_seed: 9
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourtytwo:
+  name: Guy31
+  school_id: 1
+  weight_id: 5
+  original_seed: 10
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourtythree:
+  name: Guy32
+  school_id: 1
+  weight_id: 5
+  original_seed: 11
+  season_loss: 2
+  season_win: 50
+  criteria:
+
+fourtyfour:
+  name: Guy33
+  school_id: 1
+  weight_id: 5
+  original_seed: 12
+  season_loss: 2
+  season_win: 50
+  criteria:

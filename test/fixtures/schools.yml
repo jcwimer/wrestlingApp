@@ -1,9 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  score: 1
+  id: 1
+  name: Central Crossing
+  tournament_id: 1
 
 two:
-  name: MyString
-  score: 1
+  id: 2
+  name: Grove City
+  tournament_id: 1

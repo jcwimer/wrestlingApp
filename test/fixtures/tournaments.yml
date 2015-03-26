@@ -1,13 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  address: MyString
-  director: MyString
-  director_email: MyString
+  id: 1
+  name: Comet Classic
+  address: Some Place
+  director: Jacob Cody Wimer
+  director_email: jacob.wimer@gmail.com
+  matchups_array: 
+  
 
-two:
-  name: MyString
-  address: MyString
-  director: MyString
-  director_email: MyString

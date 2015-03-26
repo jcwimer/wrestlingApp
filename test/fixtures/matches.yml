@@ -1,19 +1,19 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  r_id: 1
-  g_id: 1
-  g_stat: MyText
-  r_stat: MyText
-  winner_id: 1
-  win_type: MyString
-  score: MyString
+# one:
+#   r_id: 1
+#   g_id: 1
+#   g_stat: MyText
+#   r_stat: MyText
+#   winner_id: 1
+#   win_type: MyString
+#   score: MyString
 
-two:
-  r_id: 1
-  g_id: 1
-  g_stat: MyText
-  r_stat: MyText
-  winner_id: 1
-  win_type: MyString
-  score: MyString
+# two:
+#   r_id: 1
+#   g_id: 1
+#   g_stat: MyText
+#   r_stat: MyText
+#   winner_id: 1
+#   win_type: MyString
+#   score: MyString
