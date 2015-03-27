@@ -2,7 +2,7 @@ class Weight < ActiveRecord::Base
 	belongs_to :tournament
 	has_many :wrestlers, dependent: :destroy
 
-	attr_accessor :pools, :bracket_size, :bracket_type, :poolRounds
+	attr_accessor :pools, :bracket_size, :bracket_type, :poolRounds, :totalRounds
 
 	def pools
 		@wrestlers = self.wrestlers
@@ -95,7 +95,7 @@ class Weight < ActiveRecord::Base
 		elsif self.wrestlers.size == 11 || self.wrestlers.size == 12
 			return "fourPoolsToQuarter"
 		elsif self.wrestlers.size > 12 && self.wrestlers.size <= 16
-			return "fourPoolsToSemi"			
+			return "fourPoolsToSemi"
 		end
 	end
 
@@ -115,6 +115,11 @@ class Weight < ActiveRecord::Base
 		@matchups = matches.select{|m| m.weight_id == self.id}
 		@poolMatches = @matchups.select{|m| m.bracket_position == nil}
 		return @poolMatches.sort_by{|m| m.round}.last.round
+	end
+	
+	def totalRounds(matches)
+		@matchups = matches.select{|m| m.weight_id == self.id}
+		return @matchups.sort_by{|m| m.round}.last.round
 	end
 	
 end

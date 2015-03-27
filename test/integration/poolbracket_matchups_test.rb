@@ -7,6 +7,61 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     @genMatchups = @tournament.generateMatchups
   end
   
+  def createTournament(numberOfWrestlers)
+    @count = 1
+    @id = 6000 + numberOfWrestlers
+    @tournament3 = Tournament.new
+    @tournament3.id = @id
+    @tournament3.name = "Something"
+    @tournament3.address = "Some Place"
+    @tournament3.director = "Some Guy"
+    @tournament3.director_email = "test@test.com"
+    @tournament3.save
+    @school3 = School.new
+    @school3.id = @id
+    @school3.name = "Shit Show"
+    @school3.tournament_id = @id
+    @school3.save
+    @weight3 = Weight.new
+    @weight3.id = @id
+    @weight3.max = 350
+    @weight3.tournament_id = @id
+    @weight3.save
+    until @count > numberOfWrestlers do
+      @wrestler2 = Wrestler.new
+      @wrestler2.name = "Guy #{@count}"
+      @wrestler2.school_id = @id
+      @wrestler2.weight_id = @id
+      @wrestler2.original_seed = @count
+      @wrestler2.season_loss = 0
+      @wrestler2.season_win = 0
+      @wrestler2.criteria = nil
+      @wrestler2.save
+      @count = @count + 1
+    end
+    return @tournament3
+  end
+  
+  def checkForByeInPool(tournament)
+    @matchups = tournament.generateMatchups
+    tournament.weights.each do |w|
+      w.wrestlers.each do |wr|
+        @round = 1
+        if w.totalRounds(@matchups) > 5
+          until @round > w.poolRounds(@matchups) do
+            if wr.boutByRound(@round,@matchups) == "BYE"
+              @message = "BYE"
+            end
+            @round = @round + 1
+          end
+          assert_equal "BYE", @message
+          @message = nil
+        end
+      end
+    end
+  end
+    
+
   test "the truth" do
     assert true
   end
@@ -56,6 +111,15 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     @genMatchup = @genMatchups.select{|m| m.boutNumber == 4000}.first
     @matchup = @tournament_saved.upcomingMatches.select{|m| m.boutNumber == 4000}.first
     assert_equal @genMatchup.w1_name, @matchup.w1_name
+  end
+  
+  test "test if a wrestler can exceed five matches" do
+    @count = 5
+    until @count > 16 do
+      @tournament2 = createTournament(@count)
+      checkForByeInPool(@tournament2)
+      @count = @count + 1
+    end
   end
   
   #todo test crazy movements through each bracket?
