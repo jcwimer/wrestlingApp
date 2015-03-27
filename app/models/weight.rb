@@ -92,9 +92,9 @@ class Weight < ActiveRecord::Base
 			return "twoPoolsToSemi"
 		elsif self.wrestlers.size > 8 && self.wrestlers.size <= 10
 			return "twoPoolsToFinal"			
-		elsif self.wrestlers.size == 11
+		elsif self.wrestlers.size == 11 || self.wrestlers.size == 12
 			return "fourPoolsToQuarter"
-		elsif self.wrestlers.size > 11 && self.wrestlers.size <= 16
+		elsif self.wrestlers.size > 12 && self.wrestlers.size <= 16
 			return "fourPoolsToSemi"			
 		end
 	end

@@ -395,3 +395,39 @@ fourtyfour:
   season_loss: 2
   season_win: 50
   criteria:
+  
+fourtyfive:
+  name: Guy34
+  school_id: 1
+  weight_id: 5
+  original_seed: 13
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourtysix:
+  name: Guy35
+  school_id: 1
+  weight_id: 5
+  original_seed: 14
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourtyseven:
+  name: Guy36
+  school_id: 1
+  weight_id: 5
+  original_seed: 15
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourtyeight:
+  name: Guy37
+  school_id: 1
+  weight_id: 5
+  original_seed: 16
+  season_loss: 2
+  season_win: 50
+  criteria:

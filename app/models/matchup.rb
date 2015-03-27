@@ -7,7 +7,7 @@ class Matchup
     	hash
   	end
   	
-  	def convert_to_obj(h)
+    def convert_to_obj(h)
 	 h.each do |k,v|
      	self.class.send(:attr_accessor, k)
      	instance_variable_set("@#{k}", v) 
