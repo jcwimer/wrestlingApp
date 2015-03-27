@@ -6,8 +6,10 @@
 			<th>R1</th>
 			<th>R2</th>
 			<th>R3</th>
-			<th>R4</th>
-			<th>R5</th>
+			<% if @bracketType == "twoPoolsToFinal" %>
+				<th>R4</th>
+				<th>R5</th>
+			<% end %>
 		</tr>
 	</thead>
 	<tbody>
@@ -17,8 +19,10 @@
 			<td><%= w.boutByRound(1,@matches) %><br></td>
 			<td><%= w.boutByRound(2,@matches) %></td>
 			<td><%= w.boutByRound(3,@matches) %></td>
-			<td><%= w.boutByRound(4,@matches) %></td>
-			<td><%= w.boutByRound(5,@matches) %></td>
+			<% if @bracketType == "twoPoolsToFinal" %>
+				<td><%= w.boutByRound(4,@matches) %></td>
+				<td><%= w.boutByRound(5,@matches) %></td>
+			<% end %>
 		</tr>
 		<% end %>
   	</tbody>
@@ -32,8 +36,10 @@
 			<th>R1</th>
 			<th>R2</th>
 			<th>R3</th>
-			<th>R4</th>
-			<th>R5</th>
+			<% if @bracketType == "twoPoolsToFinal" %>
+				<th>R4</th>
+				<th>R5</th>
+			<% end %>
 		</tr>
 	</thead>
 	<tbody>
@@ -43,8 +49,10 @@
 			<td><%= w.boutByRound(1,@matches) %><br></td>
 			<td><%= w.boutByRound(2,@matches) %></td>
 			<td><%= w.boutByRound(3,@matches) %></td>
-			<td><%= w.boutByRound(4,@matches) %></td>
-			<td><%= w.boutByRound(5,@matches) %></td>
+			<% if @bracketType == "twoPoolsToFinal" %>
+				<td><%= w.boutByRound(4,@matches) %></td>
+				<td><%= w.boutByRound(5,@matches) %></td>
+			<% end %>
 		</tr>
 		<% end %>
   	</tbody>
