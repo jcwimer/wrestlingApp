@@ -15,7 +15,7 @@
     		</tr>
     	</thead>
     	<tbody>
-    		<% @wrestlers.select{|w| w.generatePoolNumber == @pool}.each do |w| %>
+    		<% @wrestlers.select{|w| w.generatePoolNumber == @pool}.sort_by{|w| w.original_seed}.each do |w| %>
     		<tr>
     			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
     			<% @round = 1 %>
