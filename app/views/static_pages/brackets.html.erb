@@ -6,10 +6,18 @@
 <br>
 <br>
 <h1><%= @weight.max %> lbs Bracket</h1>
-<% if @weight.pools == 4 %>
-	<%= render 'fourPool' %>
-<% elsif @weight.pools == 2 %>
-	<%= render 'twoPool' %>
-<% elsif @weight.pools == 1 %>
-	<%= render 'onePool' %>
+
+<%= render 'pool' %>
+
+<% if @bracketType == "twoPoolsToFinal" %>
+	<%= render 'twoPoolFinalBracket' %>
+<% end %>
+<% if @bracketType == "twoPoolsToSemi" %>
+	<%= render 'twoPoolSemiBracket' %>
+<% end %>
+<% if @bracketType == "fourPoolsToQuarter" %>
+	<%= render 'fourPoolQuarterBracket' %>
+<% end %>
+<% if @bracketType == "fourPoolsToSemi" %>
+	<%= render 'fourPoolSemiBracket' %>
 <% end %>

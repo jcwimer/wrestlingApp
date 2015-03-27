@@ -2,7 +2,7 @@ class Weight < ActiveRecord::Base
 	belongs_to :tournament
 	has_many :wrestlers, dependent: :destroy
 
-	attr_accessor :pools, :bracket_size, :bracket_type
+	attr_accessor :pools, :bracket_size, :bracket_type, :poolRounds
 
 	def pools
 		@wrestlers = self.wrestlers
@@ -109,6 +109,12 @@ class Weight < ActiveRecord::Base
 		@bracket = Poolbracket.new
 		@matches = @bracket.generateBracketMatches(@matches,self,@highest_round)
 		return @matches
+	end
+	
+	def poolRounds(matches)
+		@matchups = matches.select{|m| m.weight_id == self.id}
+		@poolMatches = @matchups.select{|m| m.bracket_position == nil}
+		return @poolMatches.sort_by{|m| m.round}.last.round
 	end
 	
 end
