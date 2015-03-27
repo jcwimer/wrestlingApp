@@ -3,6 +3,7 @@ require 'test_helper'
 class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
+    @tournament.upcomingMatches
     @genMatchups = @tournament.generateMatchups
   end
   
@@ -49,4 +50,13 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     @twentysix_matches = @genMatchups.select{|m| m.weight_max == 132}
     assert_equal 32, @twentysix_matches.length
   end
+  
+  test "tests serialization for matchups" do
+    @tournament_saved = Tournament.find(1)
+    @genMatchup = @genMatchups.select{|m| m.boutNumber == 4000}.first
+    @matchup = @tournament_saved.upcomingMatches.select{|m| m.boutNumber == 4000}.first
+    assert_equal @genMatchup.w1_name, @matchup.w1_name
+  end
+  
+  #todo test crazy movements through each bracket?
 end
