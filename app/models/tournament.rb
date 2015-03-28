@@ -3,6 +3,7 @@ class Tournament < ActiveRecord::Base
 	has_many :weights, dependent: :destroy
 	has_many :matches, dependent: :destroy
 	has_many :mats, dependent: :destroy	
+	has_many :wrestlers, through: :weights
 	attr_accessor :upcomingMatches, :unfinishedMatches
 	serialize :matchups_array
 

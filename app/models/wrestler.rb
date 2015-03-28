@@ -1,6 +1,7 @@
 class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
+	has_one :tournament, through: :weight
 	attr_accessor :allMatches, :isWrestlingThisRound, :boutByRound, :seasonWinPercentage
 
 	def isWrestlingThisRound(matchRound)
