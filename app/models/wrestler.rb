@@ -2,8 +2,14 @@ class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
 	has_one :tournament, through: :weight
-	attr_accessor :allMatches, :isWrestlingThisRound, :boutByRound, :seasonWinPercentage
+	attr_accessor :allMatches, :isWrestlingThisRound, :boutByRound, :seasonWinPercentage, :poolNumber
 
+	before_save do
+		self.tournament.matchups_array = nil
+		self.tournament.save
+	end
+	
+	
 	def isWrestlingThisRound(matchRound)
 		@gMatches = Match.where(g_id: self.id, round: matchRound)
 		@rMatches = Match.where(r_id: self.id, round: matchRound)

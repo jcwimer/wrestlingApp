@@ -4,6 +4,11 @@ class Weight < ActiveRecord::Base
 
 	attr_accessor :pools, :bracket_size, :bracket_type, :poolRounds, :totalRounds
 
+	before_save do
+		self.tournament.matchups_array = nil
+		self.tournament.save
+	end
+
 	def pools
 		@wrestlers = self.wrestlers
 		if @wrestlers.size <= 6
@@ -50,6 +55,29 @@ class Weight < ActiveRecord::Base
 				w.poolNumber = pool
 			end
 			if pool < 2
+				pool = pool + 1
+			else
+				pool =1
+			end
+		end
+		return wrestlers
+	end
+	
+	def fourPoolNumbers(wrestlers)		
+		pool = 1
+		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
+			if w.original_seed == 1
+				w.poolNumber = 1
+			elsif w.original_seed == 2
+				w.poolNumber = 2
+			elsif w.original_seed == 3
+				w.poolNumber = 3
+			elsif w.original_seed == 4
+				w.poolNumber = 4
+			else
+				w.poolNumber = pool
+			end
+			if pool < 4
 				pool = pool + 1
 			else
 				pool =1
