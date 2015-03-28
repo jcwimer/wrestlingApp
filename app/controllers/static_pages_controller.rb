@@ -33,7 +33,6 @@ class StaticPagesController < ApplicationController
 
 	end
 	def brackets
-		
 	    if params[:weight]
 	    	@weight = Weight.find(params[:weight])
 	    	@bracketType = @weight.pool_bracket_type
@@ -41,8 +40,6 @@ class StaticPagesController < ApplicationController
 	    	@matches = @tournament.upcomingMatches.select{|m| m.weight_id == @weight.id}
 	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
 	    end
-
-
 	end
 
 	def weights
@@ -54,5 +51,4 @@ class StaticPagesController < ApplicationController
 	    	@weights = @weights.sort_by{|x|[x.max]}
 	    end
 	end
-
 end
