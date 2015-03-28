@@ -1,7 +1,7 @@
 class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
-	attr_accessor :matches_all, :isWrestlingThisRound, :boutByRound, :seasonWinPercentage, :poolNumber
+	attr_accessor :allMatches, :isWrestlingThisRound, :boutByRound, :seasonWinPercentage
 
 	def isWrestlingThisRound(matchRound)
 		@gMatches = Match.where(g_id: self.id, round: matchRound)
@@ -28,12 +28,12 @@ class Wrestler < ActiveRecord::Base
 			return @match.boutNumber
 		end
 	end
-
-	def matches_all
-		@gMatches = Match.where(g_id: self.id)
-		@rMatches = Match.where(r_id: self.id)
-		return @gMatches + @rMatches
+	
+	def allMatches(matches)
+		@matches = matches.select{|m| m.w1 == self.id || m.w2 == self.id}
+		return @matches
 	end
+
 
 	def seasonWinPercentage
 		@win = self.season_win.to_f
@@ -48,7 +48,6 @@ class Wrestler < ActiveRecord::Base
 		elsif self.season_win == nil or self.season_loss == nil
 			return 0	
 		end
-
 	end
 
 end

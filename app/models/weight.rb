@@ -27,35 +27,11 @@ class Weight < ActiveRecord::Base
 		return @wrestler.poolNumber
 	end
 
-	def fourPoolNumbers(wrestlers)
-		@pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
-			if w.original_seed == 3
-				w.poolNumber = 3
-			elsif w.original_seed == 4
-				w.poolNumber = 4
-			elsif w.original_seed == 1
-				w.poolNumber = 1
-			elsif w.original_seed == 2
-				w.poolNumber = 2
-			else
-				w.poolNumber = @pool
-			end
-			if @pool < 4
-				@pool = @pool + 1
-			else
-				@pool =1
-			end
-		end
-		return wrestlers
-	end
-
 	def onePoolNumbers(wrestlers)
 		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
 			w.poolNumber = 1
 		end
 		return wrestlers
-
 	end
 
 
