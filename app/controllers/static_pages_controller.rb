@@ -41,6 +41,12 @@ class StaticPagesController < ApplicationController
 	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
 	    end
 	end
+	
+	def all_brackets
+	    if params[:tournament]
+	    	@tournament = Tournament.find(params[:tournament])
+	    end
+	end
 
 	def weights
 		if params[:tournament]

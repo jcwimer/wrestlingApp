@@ -1,0 +1,34 @@
+<style>
+.pagebreak { page-break-after: always; width:100%;} 
+#html, #body, #wrapper { width:100%; }
+
+</style>
+
+
+<%= link_to "Back to #{@tournament.name} weights", "/static_pages/weights?tournament=#{@tournament.id}" %>
+<br>
+<br>
+<% @tournament.weights.sort_by{|w| w.max}.each do |w| %>
+    <div class="pagebreak">
+        <% @weight = w %>
+        <% @matches = @tournament.upcomingMatches.select{|m| m.weight_id == @weight.id} %>
+        <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
+        <h5><%= @weight.max %> lbs Bracket</h5>
+        
+        <%= render 'pool' %>
+    </div>
+    <div class="pagebreak">
+        <% if w.pool_bracket_type == "twoPoolsToFinal" %>
+        	<%= render 'twoPoolFinalBracket' %>
+        <% end %>
+        <% if w.pool_bracket_type == "twoPoolsToSemi" %>
+        	<%= render 'twoPoolSemiBracket' %>
+        <% end %>
+        <% if w.pool_bracket_type == "fourPoolsToQuarter" %>
+        	<%= render 'fourPoolQuarterBracket' %>
+        <% end %>
+        <% if w.pool_bracket_type == "fourPoolsToSemi" %>
+        	<%= render 'fourPoolSemiBracket' %>
+        <% end %>
+    </div>
+<% end %>
