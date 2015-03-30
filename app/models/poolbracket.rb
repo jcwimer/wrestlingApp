@@ -1,6 +1,5 @@
 class Poolbracket
-    attr_accessor :weight
-    
+
     def generateBracketMatches(matches,weight,highest_round)
         if weight.pool_bracket_type == "twoPoolsToSemi"
             matches = twoPoolsToSemi(matches,weight,highest_round) 

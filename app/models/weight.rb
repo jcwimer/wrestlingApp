@@ -2,7 +2,7 @@ class Weight < ActiveRecord::Base
 	belongs_to :tournament
 	has_many :wrestlers, dependent: :destroy
 
-	attr_accessor :pools, :bracket_size, :bracket_type, :poolRounds, :totalRounds
+	attr_accessor :pools
 
 	before_save do
 		self.tournament.matchups_array = nil

@@ -2,8 +2,8 @@ class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
 	has_one :tournament, through: :weight
-	attr_accessor :allMatches, :isWrestlingThisRound, :boutByRound, :seasonWinPercentage, :poolNumber
-
+	attr_accessor :poolNumber
+	
 	before_save do
 		self.tournament.matchups_array = nil
 		self.tournament.save
