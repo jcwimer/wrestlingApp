@@ -74,7 +74,7 @@ li.game{
 		<% end %>
 	</ul>
 	<ul class="round round-2">
-		<% @matches.select{|m|m.bracket_position == "Semis"}.each do |match| %>
+		<% @matches.select{|m|m.bracket_position == "Semis"}.sort_by{|m| m.bracket_position_number}.each do |match| %>
 		<li class="spacer">&nbsp;</li>
 		
 		<li class="game game-top "><%= match.w1_name %> <span>Score</span></li>
@@ -136,7 +136,7 @@ li.game{
 <h5>Consolation Bracket After Pool</h5>
 <main id="bracket">
 	<ul class="round round-1">
-		<% @matches.select{|m|m.bracket_position == "Conso Semis"}.each do |match| %>
+		<% @matches.select{|m|m.bracket_position == "Conso Semis"}.sort_by{|m| m.bracket_position_number}.each do |match| %>
 		<li class="spacer">&nbsp;</li>
 		
 		<li class="game game-top "><%= match.w1_name %> <span>Score</span></li>

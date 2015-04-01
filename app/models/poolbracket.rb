@@ -15,21 +15,21 @@ class Poolbracket
     
     def twoPoolsToSemi(matches,weight,round)
        @round = round + 1 
-       matches = createMatchup(matches,weight,@round,"Winner Pool 1","Runner Up Pool 2","Semis",nil)
-       matches = createMatchup(matches,weight,@round,"Winner Pool 2","Runner Up Pool 1","Semis",nil)
+       matches = createMatchup(matches,weight,@round,"Winner Pool 1","Runner Up Pool 2","Semis",1)
+       matches = createMatchup(matches,weight,@round,"Winner Pool 2","Runner Up Pool 1","Semis",2)
        matches = assignBouts(matches)
        @round = @round + 1
        @matches = matches.select{|m| m.weight_id == weight.id}
        @match1 = @matches.select{|m| m.w1_name == "Winner Pool 1"}.first
        @match2 = @matches.select{|m| m.w1_name == "Winner Pool 2"}.first
-       matches = createMatchup(matches,weight,@round,"","","1/2",nil)
-       matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","3/4",nil)
+       matches = createMatchup(matches,weight,@round,"","","1/2",1)
+       matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","3/4",1)
     end
     
     def twoPoolsToFinal(matches,weight,round)
        @round = round + 1 
-       matches = createMatchup(matches,weight,@round,"Winner Pool 1","Winner Pool 2","1/2",nil)
-       matches = createMatchup(matches,weight,@round,"Runner Up Pool 1","Runner Up Pool 2","3/4",nil)
+       matches = createMatchup(matches,weight,@round,"Winner Pool 1","Winner Pool 2","1/2",1)
+       matches = createMatchup(matches,weight,@round,"Runner Up Pool 1","Runner Up Pool 2","3/4",1)
     end
     
     def fourPoolsToQuarter(matches,weight,round)
@@ -56,33 +56,33 @@ class Poolbracket
        @match1 = @match.select{|m|m.bracket_position_number == 1}.first
        @match = @matches.select{|m| m.bracket_position == "Semis"}
        @match2 = @match.select{|m|m.bracket_position_number == 2}.first
-       matches = createMatchup(matches,weight,@round,"","","1/2",nil)
-       matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","3/4",nil)
+       matches = createMatchup(matches,weight,@round,"","","1/2",1)
+       matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","3/4",1)
        @match = @matches.select{|m| m.bracket_position == "Conso Semis"}
        @match1 = @match.select{|m|m.bracket_position_number == 1}.first
        @match = @matches.select{|m| m.bracket_position == "Conso Semis"}
        @match2 = @match.select{|m|m.bracket_position_number == 2}.first
-       matches = createMatchup(matches,weight,@round,"","","5/6",nil)
-       matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","7/8",nil)
+       matches = createMatchup(matches,weight,@round,"","","5/6",1)
+       matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","7/8",1)
     end
     
     def fourPoolsToSemi(matches,weight,round)
         @round = round + 1
-        matches = createMatchup(matches,weight,@round,"Winner Pool 1","Winner Pool 4","Semis",nil)
-        matches = createMatchup(matches,weight,@round,"Winner Pool 2","Winner Pool 3","Semis",nil)
-        matches = createMatchup(matches,weight,@round,"Runner Up Pool 1","Runner Up Pool 4","Conso Semis",nil)
-        matches = createMatchup(matches,weight,@round,"Runner Up Pool 2","Runner Up Pool 3","Conso Semis",nil)
+        matches = createMatchup(matches,weight,@round,"Winner Pool 1","Winner Pool 4","Semis",1)
+        matches = createMatchup(matches,weight,@round,"Winner Pool 2","Winner Pool 3","Semis",2)
+        matches = createMatchup(matches,weight,@round,"Runner Up Pool 1","Runner Up Pool 4","Conso Semis",1)
+        matches = createMatchup(matches,weight,@round,"Runner Up Pool 2","Runner Up Pool 3","Conso Semis",2)
         matches = assignBouts(matches)
         @round = @round + 1
         @matches = matches.select{|m| m.weight_id == weight.id}
-        matches = createMatchup(matches,weight,@round,"","","1/2",nil)
+        matches = createMatchup(matches,weight,@round,"","","1/2",1)
         @match1 = @matches.select{|m| m.w1_name == "Winner Pool 1"}.first
         @match2 = @matches.select{|m| m.w1_name == "Winner Pool 2"}.first
-        matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","3/4",nil)
-        matches = createMatchup(matches,weight,@round,"","","5/6",nil)
+        matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","3/4",1)
+        matches = createMatchup(matches,weight,@round,"","","5/6",1)
         @match1 = @matches.select{|m| m.w1_name == "Runner Up Pool 1"}.first
         @match2 = @matches.select{|m| m.w1_name == "Runner Up Pool 2"}.first
-        matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","7/8",nil)
+        matches = createMatchup(matches,weight,@round,"Loser of #{@match1.boutNumber}","Loser of #{@match2.boutNumber}","7/8",1)
         return matches
     end
     
