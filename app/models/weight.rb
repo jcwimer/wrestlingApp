@@ -123,7 +123,16 @@ class Weight < ActiveRecord::Base
 	
 	def totalRounds(matches)
 		@matchups = matches.select{|m| m.weight_id == self.id}
-		return @matchups.sort_by{|m| m.round}.last.round
+		@lastRound = matches.sort_by{|m| m.round}.last.round
+		@count = 0
+		@round =1
+		until @round > @lastRound do
+			if @matchups.select{|m| m.round == @round}
+				@count = @count + 1
+			end
+			@round = @round + 1
+		end
+		return @count
 	end
 	
 end
