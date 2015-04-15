@@ -14,6 +14,20 @@ Development details:
 
 * Development login email: <tt>test@test.com</tt> password: <tt>password</tt>
 
+
+What the app does now:
+
+* Allows tournaments to be set up by someone logged in
+
+* Allows schools, wrestlers, weights, and mats to be created by someone logged in
+
+* Generates matchups for a pool to bracket type tournament for 2-16 wrestlers
+
+* Assigns bout numbers for each match based on round and weight class
+
+* Shows view of pools/brackets
+
+
 Things that need to be done:
 
 * Create a printable page for all brackets
