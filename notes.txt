@@ -1,2 +1,0 @@
-run delayed jobs in dev 
-rake jobs:work
