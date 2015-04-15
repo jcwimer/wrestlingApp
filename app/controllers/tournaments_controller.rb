@@ -11,9 +11,8 @@ class TournamentsController < ApplicationController
   # GET /tournaments/1.json
   def show
     @schools = @tournament.schools
-    @weights = @tournament.weights
+    @weights = @tournament.weights.sort_by{|x|[x.max]}
     @mats = @tournament.mats
-    @weights = @weights.sort_by{|x|[x.max]}
   end
 
   # GET /tournaments/new

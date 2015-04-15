@@ -11,10 +11,7 @@ class Wrestler < ActiveRecord::Base
 	
 	
 	def isWrestlingThisRound(matchRound)
-		@gMatches = Match.where(g_id: self.id, round: matchRound)
-		@rMatches = Match.where(r_id: self.id, round: matchRound)
-		@allMatches = @gMatches + @rMatches
-		if @gMatches.blank? and @rMatches.blank?
+		if allMatches(self.tournament.upcomingMatches).blank?
 			return false
 		else
 			return true
@@ -27,8 +24,7 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def boutByRound(round,matches)
-		@matches = matches.select{|m| m.w1 == self.id || m.w2 == self.id}
-		@match = @matches.select{|m| m.round == round}.first
+		@match = allMatches(matches).select{|m| m.round == round}.first
 		if @match.blank?
 			return "BYE"
 		else
@@ -56,5 +52,4 @@ class Wrestler < ActiveRecord::Base
 			return 0	
 		end
 	end
-
 end

@@ -53,7 +53,9 @@
     	<% end %>
   	</tbody>
 </table>
-      <%= submit_tag "Save"%>
+		<% if user_signed_in? %>
+	      <%= submit_tag "Save"%>
+	    <% end %>
     <% end %>
 
 

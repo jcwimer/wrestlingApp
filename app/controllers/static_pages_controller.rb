@@ -6,7 +6,7 @@ class StaticPagesController < ApplicationController
 	def up_matches
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
-	    end
+		end
 	    if @tournament
 	    	@matches = @tournament.upcomingMatches
 	    end
@@ -15,7 +15,7 @@ class StaticPagesController < ApplicationController
 	def team_scores
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
-	    end
+		end
 	    if @tournament
 	    	@schools = School.where(tournament_id: @tournament.id)
 	    	@schools.sort_by{|x|[x.score]}
@@ -25,7 +25,7 @@ class StaticPagesController < ApplicationController
 	def results
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
-	    end
+		end
 	    if @tournament
 	    	@matches = Match.where(tournament_id: @tournament.id)
 	    end
@@ -51,7 +51,7 @@ class StaticPagesController < ApplicationController
 	def weights
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
-	    end
+		end
 	    if @tournament
 	    	@weights = Weight.where(tournament_id: @tournament.id)
 	    	@weights = @weights.sort_by{|x|[x.max]}

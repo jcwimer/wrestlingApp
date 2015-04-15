@@ -100,7 +100,7 @@ class Poolbracket
     end
     
     def assignBouts(matches)
-		@bouts = Bout.new
+		@bouts = Boutgen.new
 		@matches = @bouts.assignBouts(matches)
 		return @matches
     end

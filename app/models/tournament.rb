@@ -7,10 +7,6 @@ class Tournament < ActiveRecord::Base
 
 	serialize :matchups_array
 
-	def unfinishedMatches
-		
-	end
-
 	def upcomingMatches
 		if self.matchups_array
 			return matchupHashesToObjects(self.matchups_array)
@@ -18,15 +14,7 @@ class Tournament < ActiveRecord::Base
 			@matches = generateMatchups
 		    saveMatchups(@matches)
 		    return @matches
-	    end
-	end
-
-
-	def destroyAllMatches
-		@matches_all = Match.where(tournament_id: self.id)
-	    @matches_all.each do |match|
-	    		match.destroy
-	    end
+		end
 	end
 
 	def generateMatchups
@@ -39,7 +27,7 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def assignBouts(matches)
-		@bouts = Bout.new
+		@bouts = Boutgen.new
 		@matches = @bouts.assignBouts(matches)
 		return @matches
 	end
