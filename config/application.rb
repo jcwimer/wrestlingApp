@@ -7,6 +7,7 @@ require 'rails/all'
 Bundler.require(:default, Rails.env)
 
 module Wrestling
+
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -24,6 +25,8 @@ module Wrestling
     config.assets.initialize_on_precompile = false
     config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)
     config.active_job.queue_adapter = :delayed_job
+  #gzip assets
+    config.middleware.use Rack::Deflater
   end
 
   
