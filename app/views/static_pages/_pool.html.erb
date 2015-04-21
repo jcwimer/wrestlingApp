@@ -7,7 +7,7 @@
     		<tr>
     			<th>Name</th>
     			<% until @matches.select{|m| m.round == @round}.blank? %>
-    			 <% if @round <= @weight.poolRounds(@matches) %>
+    			 <% if @round <= @pools %>
     			    <th>R<%= @round %></th>
     			 <% end %>
     			 <% @round = @round + 1 %>
@@ -20,7 +20,7 @@
     			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
     			<% @round = 1 %>
     			<% until @matches.select{|m| m.round == @round}.blank? %>
-    			    <% if @round <= @weight.poolRounds(@matches) %>
+    			    <% if @round <= @pools %>
     			        <td><%= w.boutByRound(@round,@matches) %><br>Result</td>
     			    <% end %>
     			    <% @round = @round + 1 %>
