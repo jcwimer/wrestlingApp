@@ -29,7 +29,7 @@ class Tournament < ActiveRecord::Base
 
 	def assignBouts(matches)
 		@bouts = Boutgen.new
-		@matches = @bouts.assignBouts(matches)
+		@matches = @bouts.assignBouts(matches,self.weights)
 		return @matches
 	end
 	
