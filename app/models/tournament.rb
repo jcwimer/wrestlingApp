@@ -8,14 +8,14 @@ class Tournament < ActiveRecord::Base
 	serialize :matchups_array
 
 	def upcomingMatches
-		# @matches = generateMatchups
-		if self.matchups_array
-			return matchupHashesToObjects(self.matchups_array)
-		else
-			@matches = generateMatchups
-		    saveMatchups(@matches)
-		    return @matches
-		end
+		@matches = generateMatchups
+		# if self.matchups_array
+		# 	return matchupHashesToObjects(self.matchups_array)
+		# else
+		# 	@matches = generateMatchups
+		#     saveMatchups(@matches)
+		#     return @matches
+		# end
 	end
 
 	def generateMatchups
