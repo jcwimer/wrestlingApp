@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html>
   <% if params[:print] %>
-  <head>
-    <title>Wrestling App</title>
-  </head>
-  <body>
-    <%= yield %>
-  </body>
-  <% else %>
-    <head>
-      <title>Wrestling App</title>
-      <%= render 'layouts/js' %>
-      <%= stylesheet_link_tag "application", media: "all",
-                                             "data-turbolinks-track" => true %>
-      <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
-      <%= csrf_meta_tags %>
-      <%= render 'layouts/shim' %>
-    </head>
-    <body>
-      <%= render 'layouts/header' %>
-      <div class="container">
-        
+      <head>
+        <title>Wrestling App</title>
+      </head>
+      <body>
         <%= yield %>
-        <%= render 'layouts/footer' %>
-        <%= debug(params) if Rails.env.development? %>
-      </div>
-    </body>
-  <% end %>
+      </body>
+  <% else %>
+        <head>
+          <title>Wrestling App</title>
+          <%= render 'layouts/cdn' %>
+          <%= stylesheet_link_tag "application", media: "all",
+                                                 "data-turbolinks-track" => true %>
+          <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+          <%= csrf_meta_tags %>
+          <%= render 'layouts/shim' %>
+        </head>
+        <body style="padding-top: 70px;">
+            <div class="container">
+                <div class="navbar-roof"></div>
+                <%= render 'layouts/header' %>
+
+                  <div id="page-content">
+                    <div class="row no-margin">
+                      <div class="col-md-12">
+                        <div id="view"><%= yield %></div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </body>
+    <% end %>
 </html>
 

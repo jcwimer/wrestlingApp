@@ -1,23 +1,21 @@
-<header class="navbar navbar-fixed-top navbar-inverse">
-  <div class="navbar-inner">
-    <div class="container">
-      <%= link_to "Wrestling App", root_path, id: "logo" %>
-      <nav>
-        <ul class="nav pull-right">
-          <li><%= link_to "Home", root_path %></li>
-          <% if @tournament %>
-              <li><%= link_to "Brackets" , "/static_pages/weights?tournament=#{@tournament.id}" %></li>
-              <li><%= link_to "Upcoming Matches" , "/static_pages/up_matches?tournament=#{@tournament.id}" %></li>
-              <li><%= link_to "Results" , "/static_pages/results?tournament=#{@tournament.id}" %></li>
-              <li><%= link_to "Team Scores" , "/static_pages/team_scores?tournament=#{@tournament.id}" %></li>
-          <% end %>
-          <% if user_signed_in? %>
-            <li><%= link_to "Log Out",  destroy_user_session_path, method: :delete %></li>
-          <% else %>
-            <li><%= link_to "Log In" , new_user_session_path %></li>
-          <% end %>
+<nav class="navbar navbar-inverse navbar-fixed-top navbar-custom">
+  <div class="container">
+      <div class="navbar-header navbar-custom-header">
+        <a class="navbar-brand navbar-custom-brand" href="/">WrestlingApp</a>
+      </div>
+        <ul class="nav navbar-nav navbar-right navbar-custom-link">
+            <li><%= link_to "Home", root_path %></li>
+            <% if @tournament %>
+                <li><%= link_to "Brackets" , "/static_pages/weights?tournament=#{@tournament.id}" %></li>
+                <li><%= link_to "Upcoming Matches" , "/static_pages/up_matches?tournament=#{@tournament.id}" %></li>
+                <li><%= link_to "Results" , "/static_pages/results?tournament=#{@tournament.id}" %></li>
+                <li><%= link_to "Team Scores" , "/static_pages/team_scores?tournament=#{@tournament.id}" %></li>
+            <% end %>
+            <% if user_signed_in? %>
+                <li><%= link_to "Log Out",  destroy_user_session_path, method: :delete %></li>
+            <% else %>
+                <li><%= link_to "Log In" , new_user_session_path %></li>
+            <% end %>
         </ul>
-      </nav>
-    </div>
   </div>
-</header>
+</nav>
