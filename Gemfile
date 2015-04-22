@@ -45,13 +45,16 @@ gem 'spring',        group: :development
 		  gem 'pg'
 		  gem 'rails_12factor'
 		  gem 'mysql2'
+      gem 'passenger'
 		end
 	#Other
 		gem 'devise'
 		gem 'cancan'
 		gem 'round_robin_tournament'
 		gem 'rb-readline'
-		gem 'puma'
+		group :development do
+      gem 'puma'
+    end
 
 
 
