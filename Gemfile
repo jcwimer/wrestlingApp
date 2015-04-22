@@ -47,13 +47,10 @@ gem 'spring',        group: :development
 		  gem 'mysql2'
 		end
 	#Other
-		gem 'bootstrap-sass', '2.3.2.0'
 		gem 'devise'
 		gem 'cancan'
 		gem 'round_robin_tournament'
 		gem 'rb-readline'
-		gem 'jquery-datatables-rails', github: 'rweng/jquery-datatables-rails'
-		gem 'jquery-ui-rails'
 		gem 'puma'
 
 
