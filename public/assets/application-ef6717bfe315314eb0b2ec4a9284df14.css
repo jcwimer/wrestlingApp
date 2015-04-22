@@ -6849,42 +6849,42 @@ a.label:hover, a.label:focus, a.badge:hover, a.badge:focus {
 
 /* mixins, variables, etc. */
 /* universal */
-/* line 20, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 20, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 html {
   overflow-y: scroll;
 }
 
-/* line 24, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 24, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 body {
   padding-top: 60px;
 }
 
-/* line 28, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 28, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 section {
   overflow: auto;
 }
 
-/* line 32, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 32, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 textarea {
   resize: vertical;
 }
 
-/* line 36, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 36, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 .center {
   text-align: center;
 }
-/* line 38, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 38, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 .center h1 {
   margin-bottom: 10px;
 }
 
 /* typography */
-/* line 45, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 45, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 h1, h2, h3, h4, h5, h6 {
   line-height: 1;
 }
 
-/* line 49, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 49, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 h1 {
   font-size: 3em;
   letter-spacing: -2px;
@@ -6892,7 +6892,7 @@ h1 {
   text-align: center;
 }
 
-/* line 56, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 56, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 h2 {
   font-size: 1.2em;
   letter-spacing: -1px;
@@ -6902,14 +6902,14 @@ h2 {
   color: #999999;
 }
 
-/* line 65, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 65, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 p {
   font-size: 1.1em;
   line-height: 1.7em;
 }
 
 /* header */
-/* line 73, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 73, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 #logo {
   float: left;
   margin-right: 10px;
@@ -6921,45 +6921,45 @@ p {
   font-weight: bold;
   line-height: 1;
 }
-/* line 83, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 83, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 #logo:hover {
   color: white;
   text-decoration: none;
 }
 
 /* footer */
-/* line 91, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 91, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 footer {
   margin-top: 45px;
   padding-top: 5px;
   border-top: 1px solid #eaeaea;
   color: #999999;
 }
-/* line 96, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 96, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 footer a {
   color: #555555;
 }
-/* line 98, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 98, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 footer a:hover {
   color: darkslategrey;
 }
-/* line 102, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 102, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 footer small {
   float: left;
 }
-/* line 105, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 105, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 footer ul {
   float: right;
   list-style: none;
 }
-/* line 108, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 108, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 footer ul li {
   float: left;
   margin-left: 10px;
 }
 
 /* miscellaneous */
-/* line 117, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 117, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 .debug_dump {
   clear: both;
   float: left;
@@ -6970,16 +6970,16 @@ footer ul li {
   box-sizing: border-box;
 }
 
-/* line 126, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 126, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 #error_explanation {
   color: #f00;
 }
-/* line 128, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css.scss */
+/* line 128, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/custom.css */
 #error_explanation ul {
   list-style: none;
   margin: 0 0 18px 0;
 }
-/* line 1, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 1, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 body {
   background-color: #fff;
   color: #333;
@@ -6988,52 +6988,52 @@ body {
   line-height: 18px;
 }
 
-/* line 9, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 9, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 p, ol, ul, td {
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 13px;
   line-height: 18px;
 }
 
-/* line 15, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 15, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 pre {
   background-color: #eee;
   padding: 10px;
   font-size: 11px;
 }
 
-/* line 21, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 21, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 a {
   color: #000;
 }
-/* line 23, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 23, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 a:visited {
   color: #666;
 }
-/* line 26, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 26, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 a:hover {
   color: #fff;
   background-color: #000;
 }
 
-/* line 33, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 33, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 div.field, div.actions {
   margin-bottom: 10px;
 }
 
-/* line 38, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 38, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 #notice {
   color: green;
 }
 
-/* line 42, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 42, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 .field_with_errors {
   padding: 2px;
   background-color: red;
   display: table;
 }
 
-/* line 48, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 48, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 #error_explanation {
   width: 450px;
   border: 2px solid red;
@@ -7042,7 +7042,7 @@ div.field, div.actions {
   margin-bottom: 20px;
   background-color: #f0f0f0;
 }
-/* line 55, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 55, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 #error_explanation h2 {
   text-align: left;
   font-weight: bold;
@@ -7053,7 +7053,7 @@ div.field, div.actions {
   background-color: #c00;
   color: #fff;
 }
-/* line 65, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css.scss */
+/* line 65, /home/cabox/workspace/code/wrestling/app/assets/stylesheets/scaffolds.css */
 #error_explanation ul li {
   font-size: 12px;
   list-style: square;
