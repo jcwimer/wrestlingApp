@@ -59,8 +59,8 @@
            <% end %></td>
           <td>
             <% if user_signed_in? %>
-              <%= link_to 'Show', wrestler , :class=>"btn" %>
-              <%= link_to 'Edit', edit_wrestler_path(wrestler), :class=>"btn" %>
+              <%= link_to 'Show', wrestler , :class=>"btn btn-default" %>
+              <%= link_to 'Edit', edit_wrestler_path(wrestler), :class=>"btn btn-default" %>
               <%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %>
             <% end %>
           </td>

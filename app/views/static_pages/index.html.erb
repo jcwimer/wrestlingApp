@@ -1,6 +1,6 @@
 <h1>Pick A Tournament</h1>
 <% if user_signed_in? %>
-  <%= link_to 'New Tournament', new_tournament_path, :class=>"btn" %>
+  <%= link_to 'New Tournament', new_tournament_path, :class=>"btn btn-default" %>
 <% end %>
 </br>
 </br>
@@ -16,9 +16,9 @@
     <% @tournaments.each do |tournament| %>
       <tr>
         <td><%= tournament.name %></td>
-        <td><%= link_to 'Show', tournament, :class=>"btn" %>
+        <td><%= link_to 'Show', tournament, :class=>"btn btn-default" %>
           <% if user_signed_in? %>
-            <%= link_to 'Edit', edit_tournament_path(tournament), :class=>"btn" %>
+            <%= link_to 'Edit', edit_tournament_path(tournament), :class=>"btn btn-default" %>
             <%= link_to 'Destroy', tournament, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
           <% end %>
         </td>

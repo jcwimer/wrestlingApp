@@ -38,9 +38,9 @@
     <% @schools.each do |school| %>
       <tr>
         <td><%= school.name %></td>
-        <td><%= link_to 'Show', school, :class=>"btn" %>
+        <td><%= link_to 'Show', school, :class=>"btn btn-default" %>
           <% if user_signed_in? %>
-            <%= link_to 'Edit', edit_school_path(school), :class=>"btn" %>
+            <%= link_to 'Edit', edit_school_path(school), :class=>"btn btn-default" %>
             <%= link_to 'Destroy', school, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
           <% end %>
         </td>
@@ -70,9 +70,9 @@
       <tr>
         <td><%= weight.max %></td>
         <td><%= weight.bracket_size %></td>
-        <td><%= link_to 'Show', weight, :class=>"btn" %>
+        <td><%= link_to 'Show', weight, :class=>"btn btn-default" %>
           <% if user_signed_in? %>
-            <%= link_to 'Edit', edit_weight_path(weight), :class=>"btn" %>
+            <%= link_to 'Edit', edit_weight_path(weight), :class=>"btn btn-default" %>
             <%= link_to 'Destroy', weight, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
           <% end %>
         </td>

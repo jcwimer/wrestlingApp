@@ -12,7 +12,7 @@
     <% @weights.each do |weight| %>
       <tr>
         <td><%= weight.max %></td>
-        <td><%= link_to 'Show', weight, :class=>"btn"  %><%= link_to 'Edit', edit_weight_path(weight), :class=>"btn"  %><%= link_to 'Destroy', weight, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %></td>
+        <td><%= link_to 'Show', weight, :class=>"btn btn-default"  %><%= link_to 'Edit', edit_weight_path(weight), :class=>"btn btn-default"  %><%= link_to 'Destroy', weight, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %></td>
       </tr>
     <% end %>
   </tbody>

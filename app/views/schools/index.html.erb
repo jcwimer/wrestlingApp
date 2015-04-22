@@ -14,7 +14,7 @@
       <tr>
         <td><%= school.name %></td>
         <td><%= school.score %></td>
-        <td><%= link_to 'Show', school , :class=>"btn" %><%= link_to 'Edit', edit_school_path(school), :class=>"btn" %><%= link_to 'Destroy', school, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %></td>
+        <td><%= link_to 'Show', school , :class=>"btn btn-default" %><%= link_to 'Edit', edit_school_path(school), :class=>"btn btn-default" %><%= link_to 'Destroy', school, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %></td>
       </tr>
     <% end %>
   </tbody>
