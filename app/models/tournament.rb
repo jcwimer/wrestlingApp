@@ -9,13 +9,12 @@ class Tournament < ActiveRecord::Base
 
 	def upcomingMatches
 		# @matches = generateMatchups
-		if self.matches.nil?
-			return self.matches
+		if self.matchups_array
+			return matchupHashesToObjects(self.matchups_array)
 		else
 			@matches = generateMatchups
-			puts @matches.inspect
-			saveMatchups(@matches)
-			return @matches
+		    saveMatchups(@matches)
+		    return @matches
 		end
 	end
 
@@ -35,18 +34,8 @@ class Tournament < ActiveRecord::Base
 	end
 	
 	def saveMatchups(matches)
-		matches.each do |m|
-			@match = Match.new
-			@match.w1 = m.w1
-			@match.w2 = m.w2
-			@match.round = m.round
-			@match.boutNumber = m.boutNumber
-			@match.bracket_position = m.bracket_position
-			@match.bracket_position_number = m.bracket_position_number
-			@match.tournament_id = self.id
-			puts @match.inspect
-	    @match.save
-		end
+		self.matchups_array = matchupObjectsToHash(matches)
+	    self.save	
 	end
 	
 	
