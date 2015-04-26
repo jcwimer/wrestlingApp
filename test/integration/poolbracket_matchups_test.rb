@@ -4,7 +4,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
     @tournament.upcomingMatches
-    @genMatchups = @tournament.generateMatchups
+    @genMatchups = @tournament.upcomingMatches
   end
   
   def createTournament(numberOfWrestlers)
@@ -24,7 +24,6 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     @school3.save
     @weight3 = Weight.new
     @weight3.id = @id
-    @weight3.max = 350
     @weight3.tournament_id = @id
     @weight3.save
     until @count > numberOfWrestlers do
@@ -105,13 +104,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     @twentysix_matches = @genMatchups.select{|m| m.weight_max == 132}
     assert_equal 32, @twentysix_matches.length
   end
-  
-  test "tests serialization for matchups" do
-    @tournament_saved = Tournament.find(1)
-    @genMatchup = @genMatchups.select{|m| m.boutNumber == 4000}.first
-    @matchup = @tournament_saved.upcomingMatches.select{|m| m.boutNumber == 4000}.first
-    assert_equal @genMatchup.w1_name, @matchup.w1_name
-  end
+
   
   test "test if a wrestler can exceed five matches" do
     @count = 5

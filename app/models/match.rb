@@ -4,11 +4,23 @@ class Match < ActiveRecord::Base
 
 
 	def w1_name
-		Wrestler.find(self.w1).name
+		if self.w1
+			Wrestler.find(self.w1).name
+		else
+			self.loser1_name
+		end
 	end
 
 	def w2_name
-		Wrestler.find(self.w2).name
+		if self.w2
+			Wrestler.find(self.w2).name
+		else
+			self.loser2_name
+		end
+	end
+
+	def weight_max
+		Weight.find(self.weight_id).max
 	end
 
 end

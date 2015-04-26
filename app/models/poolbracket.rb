@@ -64,14 +64,13 @@ class Poolbracket
     end
     
     def createMatchup(matches,weight,round,w1_name,w2_name,bracket_position,bracket_position_number)
-        @match = Matchup.new
-		@match.w1_name = w1_name
-		@match.w2_name = w2_name
+    @match = Match.new
+		@match.loser1_name = w1_name
+		@match.loser2_name = w2_name
 		@match.weight_id = weight.id
 		@match.round = round
 		@match.bracket_position = bracket_position
 		@match.bracket_position_number = bracket_position_number
-		@match.weight_max = weight.max
 		matches << @match
 		return matches
     end
