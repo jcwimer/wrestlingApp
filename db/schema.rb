@@ -11,11 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150328183257) do
+ActiveRecord::Schema.define(version: 20150425173224) do
 
   create_table "matches", force: :cascade do |t|
-    t.integer  "r_id"
-    t.integer  "g_id"
+    t.integer  "w1"
+    t.integer  "w2"
     t.text     "g_stat"
     t.text     "r_stat"
     t.integer  "winner_id"
@@ -27,6 +27,9 @@ ActiveRecord::Schema.define(version: 20150328183257) do
     t.integer  "round"
     t.integer  "finished"
     t.integer  "boutNumber"
+    t.integer  "weight_id"
+    t.string   "bracket_position"
+    t.integer  "bracket_position_number"
   end
 
   create_table "mats", force: :cascade do |t|
