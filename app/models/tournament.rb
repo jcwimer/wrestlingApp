@@ -5,7 +5,6 @@ class Tournament < ActiveRecord::Base
 	has_many :mats, dependent: :destroy	
 	has_many :wrestlers, through: :weights
 
-	serialize :matchups_array
 
 	def upcomingMatches
 		if self.matches.nil?
