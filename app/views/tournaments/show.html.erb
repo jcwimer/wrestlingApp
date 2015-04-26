@@ -33,7 +33,11 @@
       <th></th>
     </tr>
   </thead>
-
+<br>
+  <% if user_signed_in? %>
+      <%= link_to "New #{@tournament.name} School" , "/schools/new?tournament=#{@tournament.id}" %>
+  <% end %>
+<br>
   <tbody>
     <% @schools.each do |school| %>
       <tr>
