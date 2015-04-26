@@ -5,7 +5,6 @@ class School < ActiveRecord::Base
 
 	#calculate score here
 	def score
-		@matches = self.tournament.upcomingMatches
 		return 0
 	end
 end
