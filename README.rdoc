@@ -30,6 +30,8 @@ What the app does now:
 
 Things that need to be done:
 
+* CLEAN UP MATCH GENERATION WITH MATCH MODEL BEING USED AGAIN
+
 * Create a printable page for all brackets
 
 * Allow coaches to modify lineups
