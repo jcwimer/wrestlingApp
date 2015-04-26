@@ -8,6 +8,8 @@ Development details:
 
 * Rails 4.2.0
 
+* Install gems without production <tt>bundle install --without production</tt>
+
 * Test with minitest <tt>rake test</tt>
 
 * Seeds created for development <tt>rake db:seed</tt>
