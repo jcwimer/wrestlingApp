@@ -8,6 +8,9 @@ class StaticPagesController < ApplicationController
 	      @tournament = Tournament.find(params[:tournament])
 		end
 	    if @tournament
+				if @tournamnet.matches == nil
+					render 'noMatches'
+				end
 	    	@matches = @tournament.upcomingMatches
 	    end
 	end
@@ -37,9 +40,12 @@ class StaticPagesController < ApplicationController
 	    	@weight = Weight.find(params[:weight])
 	    	@bracketType = @weight.pool_bracket_type
 	    	@tournament = Tournament.find(@weight.tournament_id)
-	    	@matches = @tournament.upcomingMatches.select{|m| m.weight_id == @weight.id}
+	    	@matches = @tournament.matches.select{|m| m.weight_id == @weight.id}
 	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
 				@pools = @weight.poolRounds(@matches)
+				if @matches == nil or @wrestlers == nil
+					render 'noMatches'
+				end
 	    end
 	end
 	
