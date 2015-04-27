@@ -1,14 +1,17 @@
 class Tournament < ActiveRecord::Base
 	has_many :schools, dependent: :destroy
 	has_many :weights, dependent: :destroy
-	has_many :matches, dependent: :destroy
-	has_many :mats, dependent: :destroy	
+	has_many :mats, dependent: :destroy
 	has_many :wrestlers, through: :weights
 
 
+	def matches
+		@matches = Match.where(tournament_id: self.id)
+	end
+
 	def upcomingMatches
-		if self.matches.nil?
-			return self.matches
+		if matches.nil?
+			return matches
 		else
 			@matches = generateMatchups
 			saveMatchups(@matches)
@@ -17,6 +20,7 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def generateMatchups
+		destroyAllMatches
 		@matches = []
 		self.weights.map.sort_by{|x|[x.max]}.each do |weight|
     		@matches = weight.generateMatchups(@matches)
@@ -34,7 +38,14 @@ class Tournament < ActiveRecord::Base
 	
 	def saveMatchups(matches)
 		matches.each do |m|
+			m.tournament_id = self.id
 	    m.save
+		end
+	end
+
+	def destroyAllMatches
+		matches.each do |m|
+			m.destroy
 		end
 	end
 

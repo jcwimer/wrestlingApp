@@ -5,8 +5,7 @@ class Wrestler < ActiveRecord::Base
 	attr_accessor :poolNumber
 	
 	before_save do
-		self.tournament.matchups_array = nil
-		self.tournament.save
+		self.tournament.destroyAllMatches
 	end
 	
 	

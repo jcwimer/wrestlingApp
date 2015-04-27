@@ -5,8 +5,7 @@ class Weight < ActiveRecord::Base
 	attr_accessor :pools
 
 	before_save do
-		self.tournament.matchups_array = nil
-		self.tournament.save
+		self.tournament.destroyAllMatches
 	end
 
 	def pools

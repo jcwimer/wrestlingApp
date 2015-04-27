@@ -42,7 +42,8 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   end
   
   def checkForByeInPool(tournament)
-    @matchups = tournament.generateMatchups
+    tournament.upcomingMatches
+    @matchups = tournament.matches
     tournament.weights.each do |w|
       w.wrestlers.each do |wr|
         @round = 1
