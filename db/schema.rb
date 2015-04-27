@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150426195714) do
+ActiveRecord::Schema.define(version: 20150427163818) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "w1"
@@ -55,6 +55,7 @@ ActiveRecord::Schema.define(version: 20150426195714) do
     t.string   "director_email"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "tournament_type"
   end
 
   create_table "users", force: :cascade do |t|

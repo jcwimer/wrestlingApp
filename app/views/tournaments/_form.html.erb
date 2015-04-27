@@ -27,6 +27,12 @@
     <%= f.label :director_email %><br>
     <%= f.text_field :director_email %>
   </div>
+  <div>
+    <%= f.label :tournament_type %><br>
+    <%= f.select :tournament_type, @tournament.tournament_types %>
+  </div>
+    <br>
+    <br>
   <div class="actions">
     <%= f.submit %>
   </div>

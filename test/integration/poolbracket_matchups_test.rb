@@ -12,6 +12,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     @id = 6000 + numberOfWrestlers
     @tournament3 = Tournament.new
     @tournament3.id = @id
+    @tournament3.tournament_type = "Pool to bracket"
     @tournament3.name = "Something"
     @tournament3.address = "Some Place"
     @tournament3.director = "Some Guy"

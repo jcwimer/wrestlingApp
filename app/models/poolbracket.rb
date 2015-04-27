@@ -28,6 +28,7 @@ class Poolbracket
        @round = round + 1 
        matches = createMatchup(matches,weight,@round,"Winner Pool 1","Winner Pool 2","1/2",1)
        matches = createMatchup(matches,weight,@round,"Runner Up Pool 1","Runner Up Pool 2","3/4",1)
+      return matches
     end
     
     def fourPoolsToQuarter(matches,weight,round)
