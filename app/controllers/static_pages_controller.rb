@@ -8,10 +8,11 @@ class StaticPagesController < ApplicationController
 	      @tournament = Tournament.find(params[:tournament])
 		end
 	    if @tournament
-				if @tournamnet.matches == nil
-					render 'noMatches'
+				if @tournament.matches.empty?
+					redirect_to "/static_pages/noMatches?tournament=#{@tournament.id}"
+				else
+	    		@matches = @tournament.upcomingMatches
 				end
-	    	@matches = @tournament.upcomingMatches
 	    end
 	end
 
@@ -38,13 +39,14 @@ class StaticPagesController < ApplicationController
 	def brackets
 	    if params[:weight]
 	    	@weight = Weight.find(params[:weight])
-	    	@bracketType = @weight.pool_bracket_type
 	    	@tournament = Tournament.find(@weight.tournament_id)
 	    	@matches = @tournament.matches.select{|m| m.weight_id == @weight.id}
 	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
-				@pools = @weight.poolRounds(@matches)
-				if @matches == nil or @wrestlers == nil
-					render 'noMatches'
+				if @matches.empty? or @wrestlers.empty?
+					redirect_to "/static_pages/noMatches?tournament=#{@tournament.id}"
+				else
+					@pools = @weight.poolRounds(@matches)
+					@bracketType = @weight.pool_bracket_type
 				end
 	    end
 	end
@@ -63,5 +65,11 @@ class StaticPagesController < ApplicationController
 	    	@weights = Weight.where(tournament_id: @tournament.id)
 	    	@weights = @weights.sort_by{|x|[x.max]}
 	    end
+	end
+
+	def noMatches
+		if params[:tournament]
+			@tournament = Tournament.find(params[:tournament])
+		end
 	end
 end

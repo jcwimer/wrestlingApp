@@ -29,6 +29,7 @@ Wrestling::Application.routes.draw do
   get 'static_pages/control_match'
   get 'static_pages/results'
   get 'static_pages/team_scores'
+  get 'static_pages/noMatches'
 
 
   # Example of regular route:
