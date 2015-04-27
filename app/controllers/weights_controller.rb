@@ -42,15 +42,16 @@ class WeightsController < ApplicationController
     end
     @weight = Weight.new(weight_params)
     @tournament = Tournament.find(weight_params[:tournament_id])
-    respond_to do |format|
-      if @weight.save
-        format.html { redirect_to @tournament, notice: 'Weight was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @weight }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @weight.errors, status: :unprocessable_entity }
+
+      respond_to do |format|
+        if @weight.save
+          format.html { redirect_to @tournament, notice: 'Weight was successfully created.' }
+          format.json { render action: 'show', status: :created, location: @weight }
+        else
+          format.html { render action: 'new' }
+          format.json { render json: @weight.errors, status: :unprocessable_entity }
+        end
       end
-    end
   end
 
   # PATCH/PUT /weights/1

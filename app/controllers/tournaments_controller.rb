@@ -61,6 +61,14 @@ class TournamentsController < ApplicationController
     end
   end
 
+  def createHsWeights
+      if params[:tournament]
+        if user_signed_in?
+          @tournament.createHsWeights
+        end
+        redirect_to "/tournaments/#{@tournament.id}"
+      end
+  end
   # DELETE /tournaments/1
   # DELETE /tournaments/1.json
   def destroy

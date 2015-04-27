@@ -13,7 +13,18 @@ class Tournament < ActiveRecord::Base
 		@matches = Match.where(tournament_id: self.id)
 	end
 
-
+  def createCustomWeights(value)
+		self.weights.destroy_all
+		if value == 'hs'
+			@weights = [106,113,120,132,138,145,152,160,170,182,195,220,285]
+		end
+		@weights.each do |w|
+			newWeight = Weight.new
+			newWeight.max = w
+			newWeight.tournament_id = self.id
+			newWeight.save
+		end
+	end
 
 	def upcomingMatches
 		if matches.nil?

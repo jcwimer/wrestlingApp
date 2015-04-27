@@ -55,12 +55,14 @@
         </td>
       </tr>
     <% end %>
-  </tbody>
-</table>
+   </tbody>
+  </table>
 <br>
 <br>
 <% if user_signed_in? %>
   <%= link_to "New #{@tournament.name} Weight" , "/weights/new?tournament=#{@tournament.id}" %>
+<br>
+    <%= link_to "Create HS Weights" , "/static_pages/createCustomWeights?tournament=#{@tournament.id}&customValue=hs" %>
 <% end %>
 <br>
 <br>
