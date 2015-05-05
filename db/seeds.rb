@@ -73,8 +73,6 @@ if Rails.env.development?
 	Wrestler.create(name: 'Guy 52', school_id: 204, weight_id: 204, original_seed: 8, season_win: 0, season_loss: 0, criteria: 'N/A')
 end
 
-if Rails.env.production?
-	User.create(email: 'jacob.wimer@gmail.com', password: 'Welcome12', password_confirmation: 'Welcome12')
-end
+
 
 
