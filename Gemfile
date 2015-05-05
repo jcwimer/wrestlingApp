@@ -49,10 +49,11 @@ gem 'spring',        group: :development
 		end
 	#Other
 		gem 'devise'
-		gem 'cancan'
+		gem 'cancancan'
 		gem 'round_robin_tournament'
 		gem 'rb-readline'
-		group :development do
+		gem 'jquery-datatables-rails'
+	group :development do
       gem 'puma'
     end
 

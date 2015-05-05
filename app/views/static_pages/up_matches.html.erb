@@ -1,10 +1,15 @@
 <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}" %>
+<script>
+  $(document).ready(function() {
+     $('#matchList').dataTable();
+  } );
+</script>
 <br>
 <br>
 <h3>Upcoming Matches</h3>
 <br>
 <br>
-<table class="display compact cell-border" id="matches">
+<table class="display compact cell-border" id="matchList">
   <thead>
     <tr>
       <th>Round</th>

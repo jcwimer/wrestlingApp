@@ -1,10 +1,15 @@
 <h1>Pick A Tournament</h1>
+<script>
+  $(document).ready(function() {
+     $('#tournamentList').dataTable();
+  } );
+</script>
 <% if user_signed_in? %>
   <%= link_to 'New Tournament', new_tournament_path, :class=>"btn btn-default" %>
 <% end %>
 </br>
 </br>
-<table class="display compact cell-border" id="tournaments">
+<table class="display compact cell-border" id="tournamentList">
   <thead>
     <tr>
       <th>Name</th>

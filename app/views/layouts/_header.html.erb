@@ -11,7 +11,7 @@
                 <li><%= link_to "Team Scores" , "/static_pages/team_scores?tournament=#{@tournament.id}" %></li>
             <% end %>
             <% if user_signed_in? %>
-                <li><%= link_to "Log Out",  destroy_user_session_path, method: :delete %></li>
+                <li><%=link_to "Log out", destroy_user_session_url ,:method => 'delete' %></li>
             <% else %>
                 <li><%= link_to "Log In" , new_user_session_path %></li>
             <% end %>
