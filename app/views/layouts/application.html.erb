@@ -10,11 +10,12 @@
   <% else %>
         <head>
           <title>Wrestling App</title>
-          <%= render 'layouts/cdn' %>
+          
           <%= stylesheet_link_tag "application", media: "all",
                                                  "data-turbolinks-track" => true %>
           <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
           <%= csrf_meta_tags %>
+          <%= render 'layouts/cdn' %>
           <%= render 'layouts/shim' %>
         </head>
         <body style="padding-top: 70px;">
