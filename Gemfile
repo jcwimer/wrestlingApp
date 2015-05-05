@@ -52,7 +52,6 @@ gem 'spring',        group: :development
 		gem 'cancancan'
 		gem 'round_robin_tournament'
 		gem 'rb-readline'
-		gem 'jquery-datatables-rails'
 	group :development do
       gem 'puma'
     end
