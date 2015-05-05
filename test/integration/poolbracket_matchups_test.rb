@@ -3,7 +3,6 @@ require 'test_helper'
 class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
-    @tournament.upcomingMatches
     @genMatchups = @tournament.upcomingMatches
   end
   
