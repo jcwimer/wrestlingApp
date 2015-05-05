@@ -44,7 +44,8 @@ gem 'spring',        group: :development
 		  gem 'pg'
 		  gem 'rails_12factor'
 		  gem 'mysql2'
-      gem 'passenger'
+      	  gem 'passenger'
+      	  gem 'therubyracer'
 		end
 	#Other
 		gem 'devise'
