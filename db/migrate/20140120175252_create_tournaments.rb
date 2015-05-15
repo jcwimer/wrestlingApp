@@ -6,7 +6,7 @@ class CreateTournaments < ActiveRecord::Migration
       t.string :director
       t.string :director_email
 
-      t.timestamps
+      t.timestamps null: true
     end
   end
 end

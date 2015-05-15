@@ -7,7 +7,7 @@ class CreateWrestlers < ActiveRecord::Migration
       t.integer :seed
       t.integer :original_seed
 
-      t.timestamps
+      t.timestamps null: true
     end
   end
 end
