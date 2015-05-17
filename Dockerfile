@@ -1,7 +1,7 @@
 FROM ruby:2.2.2
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y build-essential
-RUN apt-get install -y nodejs
+RUN apt-get install -y nodejs sqlite3
 
 ENV APP_HOME /wrestlingApp
 ENV PORT 3000
