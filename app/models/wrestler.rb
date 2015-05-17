@@ -27,7 +27,7 @@ class Wrestler < ActiveRecord::Base
 		if @match.blank?
 			return "BYE"
 		else
-			return @match.boutNumber
+			return @match.bout_number
 		end
 	end
 	
