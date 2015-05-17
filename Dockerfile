@@ -15,6 +15,7 @@ RUN bundle install
 
 ADD . $APP_HOME
 
+RUN rake db:drop
 RUN rake db:migrate RAILS_ENV=test
 RUN rake db:migrate RAILS_ENV=development
 RUN rake db:seed
