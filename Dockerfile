@@ -18,6 +18,7 @@ ADD . $APP_HOME
 RUN rake db:migrate RAILS_ENV=test
 RUN rake db:migrate RAILS_ENV=development
 RUN rake db:seed
+RUN rake assets:precompile
 RUN rake test
 
 #CMD rails s puma --binding 0.0.0.0
