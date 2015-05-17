@@ -3,7 +3,7 @@ class CreateWeights < ActiveRecord::Migration
     create_table :weights do |t|
       t.integer :max
 
-      t.timestamps
+      t.timestamps null: true
     end
   end
 end

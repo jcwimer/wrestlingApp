@@ -8,7 +8,7 @@ Heroku production:
 
 Development details:
 
-* Ruby 2.2.0
+* Ruby 2.2.2
 
 * Rails 4.2.0
 
@@ -20,6 +20,16 @@ Development details:
 
 * Development login email: <tt>test@test.com</tt> password: <tt>password</tt>
 
+Docker instructions:
+
+* Building the image
+```
+docker build -t wrestling .
+```
+* Running the image (as development)
+```
+docker run -it --rm -p 3000:3000 wrestling
+```
 
 What the app does now:
 

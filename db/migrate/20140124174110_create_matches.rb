@@ -9,7 +9,7 @@ class CreateMatches < ActiveRecord::Migration
       t.string :win_type
       t.string :score
 
-      t.timestamps
+      t.timestamps null: true
     end
   end
 end

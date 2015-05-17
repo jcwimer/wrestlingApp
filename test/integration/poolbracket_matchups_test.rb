@@ -70,14 +70,14 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     refute_nil @tournament
   end
   
-  test "tests boutNumber matches round" do
-    @matchup_to_test = @genMatchups.select{|m| m.boutNumber == 4000}.first
+  test "tests bout_number matches round" do
+    @matchup_to_test = @genMatchups.select{|m| m.bout_number == 4000}.first
     assert_equal 4, @matchup_to_test.round
   end
   
-  test "tests boutNumbers are generated with smallest weight first regardless of id" do
+  test "tests bout_numbers are generated with smallest weight first regardless of id" do
     @weight = @tournament.weights.map.sort_by{|x|[x.max]}.first
-    @matchup = @genMatchups.select{|m| m.boutNumber == 1000}.first
+    @matchup = @genMatchups.select{|m| m.bout_number == 1000}.first
     assert_equal @weight.max, @matchup.weight_max
   end
   

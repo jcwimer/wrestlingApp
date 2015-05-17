@@ -4,7 +4,7 @@ class CreateMats < ActiveRecord::Migration
       t.string :name
       t.integer :tournament_id
 
-      t.timestamps
+      t.timestamps null: true
     end
   end
 end

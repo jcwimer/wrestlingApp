@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150427163818) do
+ActiveRecord::Schema.define(version: 20150517075923) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "w1"
@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20150427163818) do
     t.integer  "tournament_id"
     t.integer  "round"
     t.integer  "finished"
-    t.integer  "boutNumber"
+    t.integer  "bout_number"
     t.integer  "weight_id"
     t.string   "bracket_position"
     t.integer  "bracket_position_number"
