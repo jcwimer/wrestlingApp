@@ -20,7 +20,7 @@ class Tournamentmatchgen
 
   def buildTournamentWeights(tournament_id, weight)
     @wrestlers = weight.wrestlers
-    @matches = Pool.new.generatePools(weight.pools, weight.wrestlers, weight, tournament_id, @matches)
+    @matches = Pool.new.generatePools(weight, tournament_id, @matches)
     @weight_matches = @matches.select{|m| m.weight_id == weight.id }
     @last_match = @weight_matches.sort_by{|m| m.round}.last
     @highest_round = @last_match.round

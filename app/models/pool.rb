@@ -1,10 +1,10 @@
 class Pool
-	def generatePools(pools,wrestlers,weight,tournament,matches)
-		@pools = pools
+	def generatePools(weight, tournament, matches)
+		@pools = weight.pools
 		@pool = 1
 		while @pool <= @pools
-			matches = roundRobin(@pool,wrestlers,weight,tournament,matches)
-			@pool = @pool + 1
+			matches = roundRobin(@pool, weight.wrestlers, weight, tournament , matches)
+			@pool += 1
 		end
 		return matches
 	end
