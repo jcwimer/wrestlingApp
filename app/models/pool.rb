@@ -3,14 +3,14 @@ class Pool
 		@pools = weight.pools
 		@pool = 1
 		while @pool <= @pools
-			matches = roundRobin(@pool, weight.wrestlers, weight, tournament , matches)
+			matches = roundRobin(weight.wrestlers, weight, tournament , matches)
 			@pool += 1
 		end
 		return matches
 	end
 
-	def roundRobin(pool,wrestlers,weight,tournament,matches)
-		@wrestlers = wrestlers.select{|w| w.generatePoolNumber == pool}.to_a
+	def roundRobin(wrestlers,weight,tournament,matches)
+		@wrestlers = wrestlers.select{|w| w.generatePoolNumber == @pool}.to_a
 		@poolMatches = RoundRobinTournament.schedule(@wrestlers).reverse
 		@poolMatches.each_with_index do |b,index|
 			@bout = b.map
