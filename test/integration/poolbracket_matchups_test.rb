@@ -8,26 +8,44 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
 
   def createTournament(numberOfWrestlers)
     @id = 6000 + numberOfWrestlers
-    @tournament3 = Tournament.new
-    @tournament3.id = @id
-    @tournament3.tournament_type = "Pool to bracket"
-    @tournament3.name = "Something"
-    @tournament3.address = "Some Place"
-    @tournament3.director = "Some Guy"
-    @tournament3.director_email = "test@test.com"
-    @tournament3.save
-    @school3 = School.new
-    @school3.id = @id
-    @school3.name = "Shit Show"
-    @school3.tournament_id = @id
-    @school3.save
-    @weight3 = Weight.new
-    @weight3.id = @id
-    @weight3.tournament_id = @id
-    @weight3.save
-    numberOfWrestlers.times do |x|
-      count = x + 1
-      @wrestler2 = Wrestler.new(
+    tournament = create_tournament
+    create_school
+    create_weight
+    create_wrestlers(numberOfWrestlers)
+    tournament
+  end
+
+  def create_tournament
+    tournament = Tournament.new(
+      id: @id,
+      tournament_type: "Pool to bracket",
+      name: "Something",
+      address: "Some Place",
+      director: "Some Guy",
+      director_email: "test@test.com"
+    )
+    tournament.save
+    tournament
+  end
+
+  def create_school
+    School.new(
+      id: @id,
+      name: "Shit Show",
+      tournament_id: @id
+    ).save!
+  end
+
+  def create_weight
+    Weight.new(
+      id: @id,
+      tournament_id: @id
+    ).save!
+  end
+
+  def create_wrestlers(numberOfWrestlers)
+    (1..numberOfWrestlers).each do |count|
+      Wrestler.new(
         name: "Guy #{count}",
         school_id: @id,
         weight_id: @id,
@@ -35,27 +53,25 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
         season_loss: 0,
         season_win: 0,
         criteria: nil
-      )
-      @wrestler2.save
+      ).save!
     end
-    return @tournament3
   end
 
   def checkForByeInPool(tournament)
     tournament.upcomingMatches
-    @matchups = tournament.matches
+    matchups = tournament.matches
     tournament.weights.each do |w|
       w.wrestlers.each do |wr|
-        @round = 1
-        if w.totalRounds(@matchups) > 5
-          until @round > w.poolRounds(@matchups) do
-            if wr.boutByRound(@round,@matchups) == "BYE"
-              @message = "BYE"
+        round = 1
+        if w.totalRounds(matchups) > 5
+          until round > w.poolRounds(matchups) do
+            if wr.boutByRound(round, matchups) == "BYE"
+              message = "BYE"
             end
-            @round = @round + 1
+            round += 1
           end
-          assert_equal "BYE", @message
-          @message = nil
+          assert_equal "BYE", message
+          message = nil
         end
       end
     end
