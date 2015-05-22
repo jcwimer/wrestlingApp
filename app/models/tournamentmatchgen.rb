@@ -10,17 +10,21 @@ class Tournamentmatchgen
     tournament.destroyAllMatches
     @matches = []
     tournament.weights.sort_by{|x|[x.max]}.each do |w|
-      @wrestlers = w.wrestlers
-      @matches = Pool.new.generatePools(w.pools,@wrestlers,w,tournament.id,@matches)
-      @weight_matches = @matches.select{|m|m.weight_id == w.id}
-      @last_match = @weight_matches.sort_by{|m| m.round}.last
-      @highest_round = @last_match.round
-      @matches = Poolbracket.new.generateBracketMatches(@matches,w,@highest_round)
+      buildTournamentWeights(tournament.id, w)
     end
     @matches = Boutgen.new.assignBouts(@matches,tournament.weights)
     @matches = Losernamegen.new.assignLoserNames(@matches,tournament.weights)
     saveMatches(tournament,@matches)
     return @matches
+  end
+
+  def buildTournamentWeights(tournament_id, weight)
+    @wrestlers = weight.wrestlers
+    @matches = Pool.new.generatePools(weight, tournament_id, @matches)
+    @weight_matches = @matches.select{|m| m.weight_id == weight.id }
+    @last_match = @weight_matches.sort_by{|m| m.round}.last
+    @highest_round = @last_match.round
+    @matches = Poolbracket.new.generateBracketMatches(@matches, weight, @highest_round)
   end
 
   def saveMatches(tournament,matches)
@@ -30,4 +34,3 @@ class Tournamentmatchgen
     end
   end
 end
-
