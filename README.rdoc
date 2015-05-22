@@ -22,14 +22,11 @@ Development details:
 
 Docker instructions:
 
-* Building the image
-```
-docker build -t wrestling .
-```
-* Running the image (as development)
-```
-docker run -it --rm -p 3000:3000 wrestling
-```
+* Building the image <tt>docker build -t wrestling .</tt>
+
+* Running the image (as development) <tt>docker run -it --rm -p 3000:3000 wrestling</tt>
+
+* Developing in docker by mapping your work directory <tt>docker run -it -p 3000:3000 -v /Your/path/to/wrestlingApp:/wrestlingApp --rm wrestling /bin/bash</tt>
 
 What the app does now:
 
