@@ -44,30 +44,6 @@ What the app does now:
 * Shows view of pools/brackets
 
 
-Things that need to be done:
+Public Trello page
 
-* CLEAN UP MATCH GENERATION WITH MATCH MODEL BEING USED AGAIN
-
-* Create a printable page for all brackets
-
-* Allow coaches to modify lineups
-
-* Give coaches more specific seed criteria guidlines
-
-* Give tournament director option to include extras or not
-
-* Give table workers access to run match stats
-
-* Create pages for running match stats
-
-* Create logic to determine pool winners and move them on to the brackets
-
-* Create logic to move winners along in the brackets
-
-* Create logic to calculate team scores
-
-* Create logic to assign unfinished bouts to a mat
-
-* Create logic to allow finals matches to be sent to a specific mat
-
-* ?
+<tt>https://trello.com/b/OIF9s2Gw</tt>
