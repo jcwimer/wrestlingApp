@@ -9,7 +9,7 @@ class Tournamentmatchgen
     if @tournament.tournament_type == "Pool to bracket"
       @matches = poolToBracket()
     end
-    return @matches
+    @matches
   end
 
   def poolToBracket
@@ -17,7 +17,7 @@ class Tournamentmatchgen
     buildTournamentWeights
     generateMatches
     saveMatches
-    return @matches
+    @matches
   end
 
   def destroyMatches
@@ -27,12 +27,11 @@ class Tournamentmatchgen
 
   def buildTournamentWeights
     @tournament.weights.sort_by{|x|[x.max]}.each do |weight|
-      @wrestlers = weight.wrestlers
       @matches = Pool.new.generatePools(weight, @tournament.id, @matches)
-      @weight_matches = @matches.select{|m| m.weight_id == weight.id }
-      @last_match = @weight_matches.sort_by{|m| m.round}.last
-      @highest_round = @last_match.round
-      @matches = Poolbracket.new.generateBracketMatches(@matches, weight, @highest_round)
+      weight_matches = @matches.select{|m| m.weight_id == weight.id }
+      last_match = weight_matches.sort_by{|m| m.round}.last
+      highest_round = last_match.round
+      @matches = Poolbracket.new.generateBracketMatches(@matches, weight, highest_round)
     end
   end
 
