@@ -8,22 +8,26 @@ class Pool
 		matches = []
 		pools = @weight.pools
 		while @pool <= pools
-			matches += roundRobin(@weight)
+			matches += roundRobin()
 			@pool += 1
 		end
 		return matches
 	end
 
-	def roundRobin(weight)
+	def roundRobin
 		matches = []
-		@wrestlers = weight.wrestlers.select{|w| w.generatePoolNumber == @pool}.to_a
-		@poolMatches = RoundRobinTournament.schedule(@wrestlers).reverse
-		@poolMatches.each_with_index do |b, index|
+		wrestlers = @weight.wrestlers.select{|w| w.generatePoolNumber == @pool}.to_a
+		poolMatches = RoundRobinTournament.schedule(wrestlers).reverse
+		poolMatches.each_with_index do |b, index|
 			round = index + 1
-			@bout = b.map
-			@bout.each do |bout|
+			bouts = b.map
+			bouts.each do |bout|
 				if bout[0] != nil and bout[1] != nil
-					match = Match.new(w1: bout[0].id, w2: bout[1].id, weight_id: weight.id, round: round)
+					match = Match.new(
+						w1: bout[0].id,
+						w2: bout[1].id,
+						weight_id: @weight.id,
+						round: round)
 					matches << match
 				end
 			end
