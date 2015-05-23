@@ -28,8 +28,7 @@ class Tournamentmatchgen
   def buildTournamentWeights
     @tournament.weights.sort_by{|x|[x.max]}.each do |weight|
       matches = Pool.new(weight).generatePools()
-      weight_matches = matches.select{|m| m.weight_id == weight.id }
-      last_match = weight_matches.sort_by{|m| m.round}.last
+      last_match = matches.sort_by{|m| m.round}.last
       highest_round = last_match.round
       @matches += Poolbracket.new.generateBracketMatches(matches, weight, highest_round)
     end

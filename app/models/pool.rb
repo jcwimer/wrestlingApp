@@ -16,7 +16,7 @@ class Pool
 
 	def roundRobin
 		matches = []
-		wrestlers = @weight.wrestlers.select{|w| w.generatePoolNumber == @pool}.to_a
+		wrestlers = @weight.wrestlers_for_pool(@pool)
 		poolMatches = RoundRobinTournament.schedule(wrestlers).reverse
 		poolMatches.each_with_index do |b, index|
 			round = index + 1

@@ -8,6 +8,10 @@ class Weight < ActiveRecord::Base
 		self.tournament.destroyAllMatches
 	end
 
+	def wrestlers_for_pool(pool)
+		wrestlers.select{|w| w.generatePoolNumber == pool}.to_a
+	end
+
 	def pools
 		@wrestlers = self.wrestlers
 		if @wrestlers.size <= 6

@@ -28,10 +28,10 @@ class Tournament < ActiveRecord::Base
 
 	def upcomingMatches
 		if matches.nil?
-			return matches
+			return nil
 		else
 			generateMatchups
-			return matches
+			matches
 		end
 	end
 
