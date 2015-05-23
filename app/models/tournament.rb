@@ -36,7 +36,7 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def generateMatchups
-		@matches = Tournamentmatchgen.new.genMatches(self)
+		@matches = Tournamentmatchgen.new(self).genMatches()
 	end
 
 	def destroyAllMatches
@@ -44,6 +44,3 @@ class Tournament < ActiveRecord::Base
 	end
 
 end
-
-
-
