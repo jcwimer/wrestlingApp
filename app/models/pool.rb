@@ -1,18 +1,22 @@
 class Pool
-	def generatePools(weight, tournament)
-		matches = []
-		@pools = weight.pools
+	def initialize(weight)
+		@weight = weight
 		@pool = 1
-		while @pool <= @pools
-			matches += roundRobin(weight.wrestlers, weight, tournament)
+	end
+
+	def generatePools
+		matches = []
+		pools = @weight.pools
+		while @pool <= pools
+			matches += roundRobin(@weight)
 			@pool += 1
 		end
 		return matches
 	end
 
-	def roundRobin(wrestlers,weight,tournament)
+	def roundRobin(weight)
 		matches = []
-		@wrestlers = wrestlers.select{|w| w.generatePoolNumber == @pool}.to_a
+		@wrestlers = weight.wrestlers.select{|w| w.generatePoolNumber == @pool}.to_a
 		@poolMatches = RoundRobinTournament.schedule(@wrestlers).reverse
 		@poolMatches.each_with_index do |b, index|
 			round = index + 1
