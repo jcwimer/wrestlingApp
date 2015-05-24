@@ -28,15 +28,15 @@ class Tournament < ActiveRecord::Base
 
 	def upcomingMatches
 		if matches.nil?
-			return matches
+			return nil
 		else
 			generateMatchups
-			return matches
+			matches
 		end
 	end
 
 	def generateMatchups
-		@matches = Tournamentmatchgen.new.genMatches(self)
+		@matches = Tournamentmatchgen.new(self).genMatches()
 	end
 
 	def destroyAllMatches
@@ -44,6 +44,3 @@ class Tournament < ActiveRecord::Base
 	end
 
 end
-
-
-
