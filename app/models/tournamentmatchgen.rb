@@ -30,8 +30,10 @@ class Tournamentmatchgen
       matches = Pool.new(weight).generatePools()
       last_match = matches.sort_by{|m| m.round}.last
       highest_round = last_match.round
-      @matches += Poolbracket.new.generateBracketMatches(matches, weight, highest_round)
+      Poolbracket.new(weight, highest_round).generateBracketMatches()
     end
+    @tournament.save!
+    @matches = @tournament.matches
   end
 
   def generateMatches
