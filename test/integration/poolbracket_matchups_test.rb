@@ -39,7 +39,8 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   def create_weight
     Weight.new(
       id: @id,
-      tournament_id: @id
+      tournament_id: @id,
+      max: @id
     ).save!
   end
 
