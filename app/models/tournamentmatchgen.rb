@@ -42,6 +42,7 @@ class Tournamentmatchgen
   end
 
   def saveMatches
+    @tournament.save!
     @matches.each do |m|
       m.tournament_id = @tournament.id
       m.save

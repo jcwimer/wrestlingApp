@@ -1,6 +1,7 @@
 class Pool
 	def initialize(weight)
 		@weight = weight
+		@tournament = @weight.tournament
 		@pool = 1
 	end
 
@@ -23,7 +24,7 @@ class Pool
 			bouts = b.map
 			bouts.each do |bout|
 				if bout[0] != nil and bout[1] != nil
-					match = Match.new(
+					match = @tournament.matches.create(
 						w1: bout[0].id,
 						w2: bout[1].id,
 						weight_id: @weight.id,
