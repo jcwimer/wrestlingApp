@@ -1,5 +1,8 @@
 class Match < ActiveRecord::Base
 	belongs_to :tournament
+	belongs_to :weight
+
+
 	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ"]
 
 

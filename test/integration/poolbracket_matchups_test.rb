@@ -3,7 +3,7 @@ require 'test_helper'
 class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
-    @genMatchups = @tournament.upcomingMatches
+    @genMatchups = @tournament.generateMatchups
   end
 
   def createTournament(numberOfWrestlers)
@@ -88,15 +88,15 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     assert_equal Weight::HS_WEIGHT_CLASSES.size, @tournament.weights.size
   end
 
-  test "tests bout_number matches round" do
-    @matchup_to_test = @genMatchups.select{|m| m.bout_number == 4000}.first
-    assert_equal 4, @matchup_to_test.round
+  test "tests bout numbers correspond to round" do
+    matchup_to_test = @genMatchups.select{|m| m.bout_number == 4000}.first
+    assert_equal 4, matchup_to_test.round
   end
 
   test "tests bout_numbers are generated with smallest weight first regardless of id" do
-    @weight = @tournament.weights.order(:max).limit(1).first
-    @matchup = @genMatchups.select{|m| m.bout_number == 1000}.first
-    assert_equal @weight.max, @matchup.weight_max
+    weight = @tournament.weights.order(:max).limit(1).first
+    matchup = @tournament.matches.where(bout_number: 1000).limit(1).first
+    assert_equal weight.max, matchup.weight.max
   end
 
   test "tests number of matches in 5 man one pool" do

@@ -1,6 +1,7 @@
 class Weight < ActiveRecord::Base
 	belongs_to :tournament
 	has_many :wrestlers, dependent: :destroy
+	has_many :matches, dependent: :destroy
 
 	attr_accessor :pools
 

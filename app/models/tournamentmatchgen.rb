@@ -2,52 +2,36 @@ class Tournamentmatchgen
 
   def initialize(tournament)
     @tournament = tournament
-    @matches = @tournament.matches
   end
 
   def genMatches
     if @tournament.tournament_type == "Pool to bracket"
-      @matches = poolToBracket()
+      poolToBracket()
     end
-    @matches
+    @tournament.matches
   end
 
   def poolToBracket
     destroyMatches
     buildTournamentWeights
     generateMatches
-    saveMatches
-    @matches
   end
 
   def destroyMatches
     @tournament.destroyAllMatches
-    @matches = []
   end
 
   def buildTournamentWeights
-    @tournament.weights.sort_by{|x|[x.max]}.each do |weight|
-      matches = Pool.new(weight).generatePools()
-      last_match = matches.sort_by{|m| m.round}.last
+    @tournament.weights.order(:max).each do |weight|
+      Pool.new(weight).generatePools()
+      last_match = @tournament.matches.where(weight: weight).order(round: :desc).limit(1).first
       highest_round = last_match.round
       Poolbracket.new(weight, highest_round).generateBracketMatches()
     end
-    @tournament.save!
-    @matches = @tournament.matches
   end
 
   def generateMatches
-    @matches =
-      Losernamegen.new.assignLoserNames(
-        Boutgen.new.assignBouts(@matches, @tournament.weights),
-        @tournament.weights)
+    Boutgen.new.assignBouts(@tournament)
+    Losernamegen.new.assignLoserNames(@tournament)
   end
-
-  def saveMatches
-    @tournament.save!
-    @matches.each do |m|
-      m.save
-    end
-  end
-
 end
