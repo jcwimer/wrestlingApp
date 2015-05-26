@@ -13,7 +13,7 @@ class Tournament < ActiveRecord::Base
 		@matches = Match.where(tournament_id: self.id)
 	end
 
-  def createCustomWeights(value)
+  	def createCustomWeights(value)
 		self.weights.destroy_all
 		if value == 'hs'
 			@weights = [106,113,120,132,138,145,152,160,170,182,195,220,285]
@@ -30,7 +30,6 @@ class Tournament < ActiveRecord::Base
 		if matches.nil?
 			return nil
 		else
-			generateMatchups
 			matches
 		end
 	end

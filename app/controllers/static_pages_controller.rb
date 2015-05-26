@@ -87,15 +87,15 @@ class StaticPagesController < ApplicationController
 	end
 	
 	def generate_matches
-		if user_signed_in?
-	    else
+		if !user_signed_in?
 	      redirect_to root_path
-	    end
-		if params[:tournament]
-	      @tournament = Tournament.find(params[:tournament])
-	    end
-	    if @tournament
-	 		@tournament.generateMatchups
-	    end
+	    elsif user_signed_in?
+			if params[:tournament]
+	      		@tournament = Tournament.find(params[:tournament])
+			end
+	    	if @tournament
+	 			@tournament.generateMatchups
+	    	end
+		end
 	end
 end
