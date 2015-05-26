@@ -29,7 +29,13 @@
   <strong>Tournament Type:</strong>
   <%= @tournament.tournament_type %>
 </p>
+<br>
+<br>
 
+<% if user_signed_in? %>
+<br>
+<%= link_to "Generate Pool Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}", :class=>"btn btn-danger" %>
+<% end %>
 <br>
 <br>
 <h3>School Lineups</h3>

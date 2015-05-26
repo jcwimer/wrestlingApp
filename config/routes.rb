@@ -32,6 +32,8 @@ Wrestling::Application.routes.draw do
   get 'static_pages/team_scores'
   get 'static_pages/noMatches'
   get 'static_pages/createCustomWeights'
+  get 'static_pages/generate_matches'
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
