@@ -1,8 +1,11 @@
 class Weight < ActiveRecord::Base
 	belongs_to :tournament
 	has_many :wrestlers, dependent: :destroy
+	has_many :matches, dependent: :destroy
 
 	attr_accessor :pools
+
+	HS_WEIGHT_CLASSES = [106,113,120,132,138,145,152,160,170,182,195,220,285]
 
 	before_save do
 		self.tournament.destroyAllMatches
@@ -43,7 +46,7 @@ class Weight < ActiveRecord::Base
 	end
 
 
-	def twoPoolNumbers(wrestlers)		
+	def twoPoolNumbers(wrestlers)
 		pool = 1
 		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
 			if w.original_seed == 1
@@ -65,8 +68,8 @@ class Weight < ActiveRecord::Base
 		end
 		return wrestlers
 	end
-	
-	def fourPoolNumbers(wrestlers)		
+
+	def fourPoolNumbers(wrestlers)
 		pool = 1
 		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
 			if w.original_seed == 1
@@ -98,20 +101,20 @@ class Weight < ActiveRecord::Base
 		if self.wrestlers.size > 6 && self.wrestlers.size <= 8
 			return "twoPoolsToSemi"
 		elsif self.wrestlers.size > 8 && self.wrestlers.size <= 10
-			return "twoPoolsToFinal"			
+			return "twoPoolsToFinal"
 		elsif self.wrestlers.size == 11 || self.wrestlers.size == 12
 			return "fourPoolsToQuarter"
 		elsif self.wrestlers.size > 12 && self.wrestlers.size <= 16
 			return "fourPoolsToSemi"
 		end
 	end
-	
+
 	def poolRounds(matches)
 		@matchups = matches.select{|m| m.weight_id == self.id}
 		@poolMatches = @matchups.select{|m| m.bracket_position == nil}
 		return @poolMatches.sort_by{|m| m.round}.last.round
 	end
-	
+
 	def totalRounds(matches)
 		@matchups = matches.select{|m| m.weight_id == self.id}
 		@lastRound = matches.sort_by{|m| m.round}.last.round
@@ -125,5 +128,5 @@ class Weight < ActiveRecord::Base
 		end
 		return @count
 	end
-	
+
 end

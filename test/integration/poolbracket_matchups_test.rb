@@ -3,7 +3,7 @@ require 'test_helper'
 class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
-    @genMatchups = @tournament.upcomingMatches
+    @genMatchups = @tournament.generateMatchups
   end
 
   def createTournament(numberOfWrestlers)
@@ -39,7 +39,8 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   def create_weight
     Weight.new(
       id: @id,
-      tournament_id: @id
+      tournament_id: @id,
+      max: @id
     ).save!
   end
 
@@ -58,7 +59,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   end
 
   def checkForByeInPool(tournament)
-    tournament.upcomingMatches
+    tournament.generateMatchups
     matchups = tournament.matches
     tournament.weights.each do |w|
       w.wrestlers.each do |wr|
@@ -81,15 +82,21 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     refute_nil @tournament
   end
 
-  test "tests bout_number matches round" do
-    @matchup_to_test = @genMatchups.select{|m| m.bout_number == 4000}.first
-    assert_equal 4, @matchup_to_test.round
+  test "tournament can be set to high school weight classes" do
+    @tournament.weights.destroy_all
+    @tournament.createCustomWeights("hs")
+    assert_equal Weight::HS_WEIGHT_CLASSES.size, @tournament.weights.size
+  end
+
+  test "tests bout numbers correspond to round" do
+    matchup_to_test = @genMatchups.select{|m| m.bout_number == 4000}.first
+    assert_equal 4, matchup_to_test.round
   end
 
   test "tests bout_numbers are generated with smallest weight first regardless of id" do
-    @weight = @tournament.weights.map.sort_by{|x|[x.max]}.first
-    @matchup = @genMatchups.select{|m| m.bout_number == 1000}.first
-    assert_equal @weight.max, @matchup.weight_max
+    weight = @tournament.weights.order(:max).limit(1).first
+    matchup = @tournament.matches.where(bout_number: 1000).limit(1).first
+    assert_equal weight.max, matchup.weight.max
   end
 
   test "tests number of matches in 5 man one pool" do
@@ -117,13 +124,10 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     assert_equal 32, @twentysix_matches.length
   end
 
-
   test "test if a wrestler can exceed five matches" do
-    @count = 5
-    until @count > 16 do
-      @tournament2 = createTournament(@count)
-      checkForByeInPool(@tournament2)
-      @count = @count + 1
+    (5...16).each do |count|
+      tourney = createTournament(count)
+      checkForByeInPool(tourney)
     end
   end
 
