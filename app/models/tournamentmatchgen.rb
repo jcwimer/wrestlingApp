@@ -31,7 +31,7 @@ class Tournamentmatchgen
   end
 
   def generateMatches
-    Boutgen.new.assignBouts(@tournament)
+    @tournament.assignBouts
     Losernamegen.new.assignLoserNames(@tournament)
   end
 end

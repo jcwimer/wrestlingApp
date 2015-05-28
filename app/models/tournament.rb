@@ -40,4 +40,17 @@ class Tournament < ActiveRecord::Base
 		matches.destroy_all
 	end
 
+	def matchesByRound(round)
+		matches.joins(:weight).where(round: round).order("weights.max")
+	end
+
+	def assignBouts
+		bout_counts = Hash.new(0)
+		matches.each do |m|
+			m.bout_number = m.round * 1000 + bout_counts[m.round]
+			bout_counts[m.round] += 1
+			m.save!
+		end
+	end
+
 end
