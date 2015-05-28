@@ -24,10 +24,6 @@ class Tournament < ActiveRecord::Base
 		end
 	end
 
-	def upcomingMatches
-			matches
-	end
-
 	def destroyAllMatches
 		matches.destroy_all
 	end

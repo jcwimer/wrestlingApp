@@ -8,10 +8,9 @@ class StaticPagesController < ApplicationController
 	      @tournament = Tournament.find(params[:tournament])
 		end
 	    if @tournament
-				if @tournament.matches.empty?
+				@matches = @tournament.matches
+				if @matches.empty?
 					redirect_to "/static_pages/noMatches?tournament=#{@tournament.id}"
-				else
-	    		@matches = @tournament.upcomingMatches
 				end
 	    end
 	end
@@ -30,12 +29,12 @@ class StaticPagesController < ApplicationController
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
 		end
-	    if @tournament
-	    	@matches = Match.where(tournament_id: @tournament.id)
-	    end
+    if @tournament
+    	@matches = @tournament.matches
+    end
 		@matches = @matches.where(finished: 1)
-
 	end
+
 	def brackets
 	    if params[:weight]
 	    	@weight = Weight.find(params[:weight])
@@ -50,7 +49,7 @@ class StaticPagesController < ApplicationController
 				end
 	    end
 	end
-	
+
 	def all_brackets
 	    if params[:tournament]
 	    	@tournament = Tournament.find(params[:tournament])
@@ -85,7 +84,7 @@ class StaticPagesController < ApplicationController
 			@tournament = Tournament.find(params[:tournament])
 		end
 	end
-	
+
 	def generate_matches
 		if !user_signed_in?
 	      redirect_to root_path

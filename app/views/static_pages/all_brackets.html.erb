@@ -1,5 +1,5 @@
 <style>
-.pagebreak { page-break-after: always; width:100%;} 
+.pagebreak { page-break-after: always; width:100%;}
 #html, #body, #wrapper { width:100%; }
 
 </style>
@@ -26,11 +26,11 @@
 <% @tournament.weights.sort_by{|w| w.max}.each do |w| %>
     <div class="pagebreak">
         <% @weight = w %>
-        <% @matches = @tournament.upcomingMatches.select{|m| m.weight_id == @weight.id} %>
+        <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
         <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
        <% @pools = w.poolRounds(@matches) %>
         <h5><%= @weight.max %> lbs Bracket</h5>
-        
+
         <%= render 'pool' %>
     </div>
     <div class="pagebreak">
