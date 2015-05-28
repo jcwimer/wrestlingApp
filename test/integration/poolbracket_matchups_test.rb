@@ -131,5 +131,13 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "test loser name for 16 man bracket 3/4th place match" do
+    @matches = @tournament.matches.where(weight_id: 5)
+    @semi_bouts = @matches.where(bracket_position: 'Semis')
+    @third_fourth_match = @matches.where(bracket_position: '3/4').first
+    assert_equal "Loser of #{@semi_bouts.first.bout_number}", @third_fourth_match.loser1_name
+  end
+  
   #todo test crazy movements through each bracket?
+
 end

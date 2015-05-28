@@ -10,8 +10,8 @@ module GeneratesLoserNames
       elsif w.pool_bracket_type == "fourPoolsToSemi"
         fourPoolsToSemiLoser(matches_by_weight)
       end
+      saveMatches(matches_by_weight)
     end
-    return matches_by_weight
   end
 
   def twoPoolsToSemiLoser(matches_by_weight)
@@ -53,5 +53,11 @@ module GeneratesLoserNames
     thirdFourth.loser2_name = "Loser of #{semis.select{|m| m.bracket_position_number == 2}.first.bout_number}"
     seventhEighth.loser1_name = "Loser of #{consoSemis.select{|m| m.bracket_position_number == 1}.first.bout_number}"
     seventhEighth.loser2_name = "Loser of #{consoSemis.select{|m| m.bracket_position_number == 2}.first.bout_number}"
+  end
+  
+  def saveMatches(matches)
+      matches.each do |m|
+        m.save!
+      end
   end
 end
