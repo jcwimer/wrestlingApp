@@ -1,4 +1,7 @@
 class Tournament < ActiveRecord::Base
+
+	include GeneratesLoserNames
+
 	has_many :schools, dependent: :destroy
 	has_many :weights, dependent: :destroy
 	has_many :mats, dependent: :destroy

@@ -32,6 +32,6 @@ class Tournamentmatchgen
 
   def generateMatches
     @tournament.assignBouts
-    Losernamegen.new.assignLoserNames(@tournament)
+    @tournament.assignLoserNames
   end
 end
