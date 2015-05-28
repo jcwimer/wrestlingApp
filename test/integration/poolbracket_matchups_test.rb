@@ -124,7 +124,6 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     assert_equal 32, @twentysix_matches.length
   end
 
-
   test "test if a wrestler can exceed five matches" do
     (5...16).each do |count|
       tourney = createTournament(count)
