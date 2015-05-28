@@ -59,7 +59,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   end
 
   def checkForByeInPool(tournament)
-    tournament.upcomingMatches
+    tournament.generateMatchups
     matchups = tournament.matches
     tournament.weights.each do |w|
       w.wrestlers.each do |wr|
@@ -126,11 +126,9 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
 
 
   test "test if a wrestler can exceed five matches" do
-    @count = 5
-    until @count > 16 do
-      @tournament2 = createTournament(@count)
-      checkForByeInPool(@tournament2)
-      @count = @count + 1
+    (5...16).each do |count|
+      tourney = createTournament(count)
+      checkForByeInPool(tourney)
     end
   end
 
