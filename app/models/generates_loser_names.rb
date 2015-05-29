@@ -10,7 +10,6 @@ module GeneratesLoserNames
       elsif w.pool_bracket_type == "fourPoolsToSemi"
         fourPoolsToSemiLoser(matches_by_weight)
       end
-      saveMatches(matches_by_weight)
     end
   end
 
@@ -18,8 +17,24 @@ module GeneratesLoserNames
     match1 = matches_by_weight.select{|m| m.loser1_name == "Winner Pool 1"}.first
     match2 = matches_by_weight.select{|m| m.loser1_name == "Winner Pool 2"}.first
     matchChange = matches_by_weight.select{|m| m.bracket_position == "3/4"}.first
-    matchChange.loser1_name = "Loser of #{match1.bout_number}"
-    matchChange.loser2_name = "Loser of #{match2.bout_number}"
+    matchChange.loser1_name = "Loser of #{match1}"
+    matchChange.loser2_name = "Loser of #{match2}"
+    matchChange.save!
+  end
+
+  def updateLosers(updated, group1, position1, group2, position2)
+    match1 = bracket_position_bout_number(group1, position1)
+    match2 = bracket_position_bout_number(group2, position2)
+    updated.loser1_name = "Loser of #{match1}"
+    updated.loser2_name = "Loser of #{match2}"
+    updated.save!
+  end
+
+  def bracket_position_bout_number(group, bracket_position)
+    bracket_matches = group.select do |m|
+      m.bracket_position_number == bracket_position
+    end
+    bracket_matches.first.bout_number
   end
 
   def fourPoolsToQuarterLoser(matches_by_weight)
@@ -30,18 +45,14 @@ module GeneratesLoserNames
     seventhEighth = matches_by_weight.select{|m| m.bracket_position == "7/8"}.first
     consoSemis.each do |m|
       if m.bracket_position_number == 1
-        m.loser1_name = "Loser of #{quarters.select{|m| m.bracket_position_number == 1}.first.bout_number}"
-        m.loser2_name = "Loser of #{quarters.select{|m| m.bracket_position_number == 2}.first.bout_number}"
+        updateLosers(m, quarters, 1, quarters, 2)
       elsif m.bracket_position_number == 2
-        m.loser1_name = "Loser of #{quarters.select{|m| m.bracket_position_number == 3}.first.bout_number}"
-        m.loser2_name = "Loser of #{quarters.select{|m| m.bracket_position_number == 4}.first.bout_number}"
+        updateLosers(m, quarters, 3, quarters, 4)
       end
     end
-    thirdFourth.loser1_name = "Loser of #{semis.select{|m| m.bracket_position_number == 1}.first.bout_number}"
-    thirdFourth.loser2_name = "Loser of #{semis.select{|m| m.bracket_position_number == 2}.first.bout_number}"
+    updateLosers(thirdFourth, semis, 1, semis, 2)
     consoSemis = matches_by_weight.select{|m| m.bracket_position == "Conso Semis"}
-    seventhEighth.loser1_name = "Loser of #{consoSemis.select{|m| m.bracket_position_number == 1}.first.bout_number}"
-    seventhEighth.loser2_name = "Loser of #{consoSemis.select{|m| m.bracket_position_number == 2}.first.bout_number}"
+    updateLosers(seventhEighth, consoSemis, 1, consoSemis, 2)
   end
 
   def fourPoolsToSemiLoser(matches_by_weight)
@@ -49,15 +60,8 @@ module GeneratesLoserNames
     thirdFourth = matches_by_weight.select{|m| m.bracket_position == "3/4"}.first
     consoSemis = matches_by_weight.select{|m| m.bracket_position == "Conso Semis"}
     seventhEighth = matches_by_weight.select{|m| m.bracket_position == "7/8"}.first
-    thirdFourth.loser1_name = "Loser of #{semis.select{|m| m.bracket_position_number == 1}.first.bout_number}"
-    thirdFourth.loser2_name = "Loser of #{semis.select{|m| m.bracket_position_number == 2}.first.bout_number}"
-    seventhEighth.loser1_name = "Loser of #{consoSemis.select{|m| m.bracket_position_number == 1}.first.bout_number}"
-    seventhEighth.loser2_name = "Loser of #{consoSemis.select{|m| m.bracket_position_number == 2}.first.bout_number}"
+    updateLosers(thirdFourth, semis, 1, semis, 2)
+    updateLosers(seventhEighth, consoSemis, 1, consoSemis, 2)
   end
-  
-  def saveMatches(matches)
-      matches.each do |m|
-        m.save!
-      end
-  end
+
 end
