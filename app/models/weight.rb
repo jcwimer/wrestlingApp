@@ -98,15 +98,12 @@ class Weight < ActiveRecord::Base
 	end
 
 	def pool_bracket_type
-		if self.wrestlers.size > 6 && self.wrestlers.size <= 8
-			return "twoPoolsToSemi"
-		elsif self.wrestlers.size > 8 && self.wrestlers.size <= 10
-			return "twoPoolsToFinal"
-		elsif self.wrestlers.size == 11 || self.wrestlers.size == 12
-			return "fourPoolsToQuarter"
-		elsif self.wrestlers.size > 12 && self.wrestlers.size <= 16
-			return "fourPoolsToSemi"
-		end
+		wrestlers_size = wrestlers.size
+		return "twoPoolsToSemi" if wrestlers_size.between?(7, 8)
+		return "twoPoolsToFinal" if wrestlers_size.between?(9, 10)
+		return "fourPoolsToQuarter" if wrestlers_size.between?(11, 12)
+		return "fourPoolsToSemi" if wrestlers_size.between?(13, 16)
+		return "invalid pool bracket type"
 	end
 
 	def poolRounds(matches)
