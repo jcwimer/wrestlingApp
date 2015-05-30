@@ -1,6 +1,5 @@
 module GeneratesLoserNames
   def assignLoserNames
-    matches_by_weight = nil
     weights.each do |w|
       matches_by_weight = matches.where(weight_id: w.id)
       if w.pool_bracket_type == "twoPoolsToSemi"
@@ -22,9 +21,9 @@ module GeneratesLoserNames
     matchChange.save!
   end
 
-  def updateLosers(updated, group1, position1, group2, position2)
-    match1 = bracket_position_bout_number(group1, position1)
-    match2 = bracket_position_bout_number(group2, position2)
+  def updateLosers(updated, group, position1, position2)
+    match1 = bracket_position_bout_number(group, position1)
+    match2 = bracket_position_bout_number(group, position2)
     updated.loser1_name = "Loser of #{match1}"
     updated.loser2_name = "Loser of #{match2}"
     updated.save!
@@ -45,14 +44,14 @@ module GeneratesLoserNames
     seventhEighth = matches_by_weight.select{|m| m.bracket_position == "7/8"}.first
     consoSemis.each do |m|
       if m.bracket_position_number == 1
-        updateLosers(m, quarters, 1, quarters, 2)
+        updateLosers(m, quarters, 1, 2)
       elsif m.bracket_position_number == 2
-        updateLosers(m, quarters, 3, quarters, 4)
+        updateLosers(m, quarters, 3, 4)
       end
     end
-    updateLosers(thirdFourth, semis, 1, semis, 2)
+    updateLosers(thirdFourth, semis, 1, 2)
     consoSemis = matches_by_weight.select{|m| m.bracket_position == "Conso Semis"}
-    updateLosers(seventhEighth, consoSemis, 1, consoSemis, 2)
+    updateLosers(seventhEighth, consoSemis, 1, 2)
   end
 
   def fourPoolsToSemiLoser(matches_by_weight)
@@ -60,8 +59,8 @@ module GeneratesLoserNames
     thirdFourth = matches_by_weight.select{|m| m.bracket_position == "3/4"}.first
     consoSemis = matches_by_weight.select{|m| m.bracket_position == "Conso Semis"}
     seventhEighth = matches_by_weight.select{|m| m.bracket_position == "7/8"}.first
-    updateLosers(thirdFourth, semis, 1, semis, 2)
-    updateLosers(seventhEighth, consoSemis, 1, consoSemis, 2)
+    updateLosers(thirdFourth, semis, 1, 2)
+    updateLosers(seventhEighth, consoSemis, 1, 2)
   end
 
 end
