@@ -2,25 +2,19 @@ module GeneratesLoserNames
   def assignLoserNames
     weights.each do |w|
       if w.pool_bracket_type == "twoPoolsToSemi"
-        twoPoolsToSemiLoser(matches_by_weight(w))
+        twoPoolsToSemiLoser(w)
       elsif w.pool_bracket_type == "fourPoolsToQuarter"
-        fourPoolsToQuarterLoser(matches_by_weight(w))
+        fourPoolsToQuarterLoser(w)
       elsif w.pool_bracket_type == "fourPoolsToSemi"
-        fourPoolsToSemiLoser(matches_by_weight(w))
+        fourPoolsToSemiLoser(w)
       end
     end
   end
 
-  def matches_by_weight(weight)
-    matches.where(weight_id: weight.id)
-  end
-
-  def twoPoolsToSemiLoser(matches_by_weight)
-    match1 = matches_by_weight.select{|m| m.loser1_name == "Winner Pool 1"}.first
-    match2 = matches_by_weight.select{|m| m.loser1_name == "Winner Pool 2"}.first
-    matchChange = matches_by_weight.select{|m| m.bracket_position == "3/4"}.first
-    matchChange.loser1_name = "Loser of #{match1}"
-    matchChange.loser2_name = "Loser of #{match2}"
+  def twoPoolsToSemiLoser(weight)
+    matchChange = thirdFourth(weight)
+    matchChange.loser1_name = "Loser of #{winner_pool_1_match(weight).bout_number}"
+    matchChange.loser2_name = "Loser of #{winner_pool_2_match(weight).bout_number}"
     matchChange.save!
   end
 
@@ -33,37 +27,58 @@ module GeneratesLoserNames
   end
 
   def bracket_position_bout_number(group, bracket_position)
-    bracket_matches = group.select do |m|
+    bracket_match = group.detect do |m|
       m.bracket_position_number == bracket_position
     end
-    bracket_matches.first.bout_number
+    bracket_match.bout_number
   end
 
-  def fourPoolsToQuarterLoser(matches_by_weight)
-    quarters = matches_by_weight.select{|m| m.bracket_position == "Quarter"}
-    consoSemis = matches_by_weight.select{|m| m.bracket_position == "Conso Semis"}
-    semis = matches_by_weight.select{|m| m.bracket_position == "Semis"}
-    thirdFourth = matches_by_weight.select{|m| m.bracket_position == "3/4"}.first
-    seventhEighth = matches_by_weight.select{|m| m.bracket_position == "7/8"}.first
-    consoSemis.each do |m|
+  def matches_by_weight(weight)
+    matches.where(weight_id: weight.id)
+  end
+
+  def winner_pool_1_match(weight)
+    matches_by_weight(weight).where(loser1_name: "Winner Pool 1").limit(1).first
+  end
+
+  def winner_pool_2_match(weight)
+    matches_by_weight(weight).where(loser1_name: "Winner Pool 2").limit(1).first
+  end
+
+  def quarters(weight)
+    matches_by_weight(weight).where(bracket_position: "Quarter")
+  end
+
+  def consoSemis(weight)
+    matches_by_weight(weight).where(bracket_position: "Conso Semis")
+  end
+
+  def semis(weight)
+    matches_by_weight(weight).where(bracket_position: "Semis")
+  end
+
+  def thirdFourth(weight)
+    matches_by_weight(weight).where(bracket_position: "3/4").limit(1).first
+  end
+
+  def seventhEighth(weight)
+    matches_by_weight(weight).where(bracket_position: "7/8").limit(1).first
+  end
+
+  def fourPoolsToQuarterLoser(weight)
+    consoSemis(weight).each do |m|
       if m.bracket_position_number == 1
-        updateLosers(m, quarters, 1, 2)
+        updateLosers(m, quarters(weight), 1, 2)
       elsif m.bracket_position_number == 2
-        updateLosers(m, quarters, 3, 4)
+        updateLosers(m, quarters(weight), 3, 4)
       end
     end
-    updateLosers(thirdFourth, semis, 1, 2)
-    consoSemis = matches_by_weight.select{|m| m.bracket_position == "Conso Semis"}
-    updateLosers(seventhEighth, consoSemis, 1, 2)
+    fourPoolsToSemiLoser(weight)
   end
 
-  def fourPoolsToSemiLoser(matches_by_weight)
-    semis = matches_by_weight.select{|m| m.bracket_position == "Semis"}
-    thirdFourth = matches_by_weight.select{|m| m.bracket_position == "3/4"}.first
-    consoSemis = matches_by_weight.select{|m| m.bracket_position == "Conso Semis"}
-    seventhEighth = matches_by_weight.select{|m| m.bracket_position == "7/8"}.first
-    updateLosers(thirdFourth, semis, 1, 2)
-    updateLosers(seventhEighth, consoSemis, 1, 2)
+  def fourPoolsToSemiLoser(weight)
+    updateLosers(thirdFourth(weight), semis(weight), 1, 2)
+    updateLosers(seventhEighth(weight), consoSemis(weight), 1, 2)
   end
 
 end
