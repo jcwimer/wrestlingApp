@@ -1,15 +1,18 @@
 module GeneratesLoserNames
   def assignLoserNames
     weights.each do |w|
-      matches_by_weight = matches.where(weight_id: w.id)
       if w.pool_bracket_type == "twoPoolsToSemi"
-        twoPoolsToSemiLoser(matches_by_weight)
+        twoPoolsToSemiLoser(matches_by_weight(w))
       elsif w.pool_bracket_type == "fourPoolsToQuarter"
-        fourPoolsToQuarterLoser(matches_by_weight)
+        fourPoolsToQuarterLoser(matches_by_weight(w))
       elsif w.pool_bracket_type == "fourPoolsToSemi"
-        fourPoolsToSemiLoser(matches_by_weight)
+        fourPoolsToSemiLoser(matches_by_weight(w))
       end
     end
+  end
+
+  def matches_by_weight(weight)
+    matches.where(weight_id: weight.id)
   end
 
   def twoPoolsToSemiLoser(matches_by_weight)
