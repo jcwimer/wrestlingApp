@@ -5,9 +5,9 @@ class Weight < ActiveRecord::Base
 
 	HS_WEIGHT_CLASSES = [106,113,120,132,138,145,152,160,170,182,195,220,285]
 
-	before_save do
-		tournament.destroyAllMatches
-	end
+	# before_save do
+	# 	tournament.destroyAllMatches
+	# end
 
 	def wrestlers_for_pool(pool)
 		wrestlers.select{|w| returnPoolNumber(w) == pool}.to_a
@@ -25,7 +25,7 @@ class Weight < ActiveRecord::Base
 	end
 
 	def assignPoolNumbers
-		@wrestlers = wrestlers.order(original_seed: :desc)
+		@pooled_wrestlers = wrestlers.order(original_seed: :desc)
 		return fourPoolNumbers() if pools == 4
 		return twoPoolNumbers() if pools == 2
 		return onePoolNumbers() if pools == 1
@@ -33,8 +33,9 @@ class Weight < ActiveRecord::Base
   end
 
 	def returnPoolNumber(wrestler)
+		wrestler.pool_number
 		target = assignPoolNumbers().detect {|w| w.id == wrestler.id}
-		return target.poolNumber
+		return target.pool_number
 	end
 
 	def pool_bracket_type
@@ -63,30 +64,30 @@ class Weight < ActiveRecord::Base
   protected
 
 	def onePoolNumbers()
-		return @wrestlers.each do |w|
-			w.poolNumber = 1
+		return @pooled_wrestlers.each do |w|
+			w.pool_number = 1
 		end
 	end
 
 	TWO_POOL_SEED_CONVERSION = { 1 => 1, 2 => 2, 3 => 2, 4 => 1 }
 
 	def twoPoolNumbers()
-		@wrestlers.each_with_index do |w, i|
+		@pooled_wrestlers.each_with_index do |w, i|
 			if w.original_seed && w.original_seed.between?(1, 4)
-				w.poolNumber = TWO_POOL_SEED_CONVERSION[w.original_seed]
+				w.pool_number = TWO_POOL_SEED_CONVERSION[w.original_seed]
 			else
-				w.poolNumber = (i % 2) + 1
+				w.pool_number = (i % 2) + 1
 			end
 		end
-		return @wrestlers
+		return @pooled_wrestlers
 	end
 
 	def fourPoolNumbers()
-		return @wrestlers.each_with_index do |w, i|
+		return @pooled_wrestlers.each_with_index do |w, i|
       if w.original_seed && w.original_seed.between?(1, 4)
-			  w.poolNumber = w.original_seed
+			  w.pool_number = w.original_seed
 			else
-				w.poolNumber = (i % 4) + 1
+				w.pool_number = (i % 4) + 1
 			end
 		end
 	end

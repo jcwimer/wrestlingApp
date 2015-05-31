@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150523121319) do
+ActiveRecord::Schema.define(version: 20150531161830) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "w1"
@@ -104,6 +104,7 @@ ActiveRecord::Schema.define(version: 20150523121319) do
     t.integer  "season_loss"
     t.string   "criteria"
     t.boolean  "extra"
+    t.integer  "pool_number"
   end
 
   add_index "wrestlers", ["weight_id"], name: "index_wrestlers_on_weight_id"

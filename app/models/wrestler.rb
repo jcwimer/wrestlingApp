@@ -2,7 +2,6 @@ class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
 	has_one :tournament, through: :weight
-	attr_accessor :poolNumber
 
 	before_save do
 		tournament.destroyAllMatches
