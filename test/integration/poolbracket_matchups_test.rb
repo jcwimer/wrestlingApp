@@ -64,8 +64,8 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     tournament.weights.each do |w|
       w.wrestlers.each do |wr|
         round = 1
-        if w.totalRounds(matchups) > 5
-          until round > w.poolRounds(matchups) do
+        if w.totalRounds > 5
+          until round > w.poolRounds do
             if wr.boutByRound(round, matchups) == "BYE"
               message = "BYE"
             end

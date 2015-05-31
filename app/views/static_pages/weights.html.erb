@@ -1,8 +1,24 @@
 <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}" %>
 <br>
 <br>
-<% @weights.each do |weight| %>
-<%= link_to "#{weight.max}" , "/static_pages/brackets?weight=#{weight.id}" %>
-<br>
-<% end %>
-<%= link_to "All Brackets", "/static_pages/all_brackets?print=true&tournament=#{@tournament.id}" %>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>Weight</th>
+      <th>Wrestlers</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @weights.each do |weight| %>
+    <% location = "/static_pages/brackets?weight=#{weight.id}" %>
+    <tr onclick="document.location = '<%= location %>'">
+      <td><%= link_to "#{weight.max}", location %></td>
+      <td><%= weight.wrestlers.count() %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+
+<%= link_to "All Brackets", "/static_pages/all_brackets?print=true&tournament=#{@tournament.id}", :class => "btn btn-default" %>

@@ -8,7 +8,7 @@ class Weight < ActiveRecord::Base
 	HS_WEIGHT_CLASSES = [106,113,120,132,138,145,152,160,170,182,195,220,285]
 
 	before_save do
-		self.tournament.destroyAllMatches
+		tournament.destroyAllMatches
 	end
 
 	def wrestlers_for_pool(pool)
@@ -16,114 +16,78 @@ class Weight < ActiveRecord::Base
 	end
 
 	def pools
-		@wrestlers = self.wrestlers
-		if @wrestlers.size <= 6
-			self.pools = 1
-		elsif  (@wrestlers.size > 6) && (@wrestlers.size <= 10)
-			self.pools = 2
-		elsif (@wrestlers.size > 10) && (@wrestlers.size <= 16)
-			self.pools = 4
+		if wrestlers.size <= 6
+			return 1
+		elsif  wrestlers.size.between?(7, 10)
+			return 2
+		elsif  wrestlers.size.between?(11, 16)
+			return 4
 		end
+		raise "Unexpected pool size"
 	end
 
 	def returnPoolNumber(wrestler)
-		if self.pools == 4
-			@wrestlers = fourPoolNumbers(self.wrestlers)
-		elsif self.pools == 2
-			@wrestlers = twoPoolNumbers(self.wrestlers)
-		elsif self.pools == 1
-			@wrestlers = onePoolNumbers(self.wrestlers)
+		if pools == 4
+			wr = fourPoolNumbers()
+		elsif pools == 2
+			wr = twoPoolNumbers()
+		elsif pools == 1
+			wr = onePoolNumbers()
 		end
-		@wrestler = @wrestlers.select{|w| w.id == wrestler.id}.first
-		return @wrestler.poolNumber
+		target = wr.detect {|w| w.id == wrestler.id}
+		return target.poolNumber
 	end
 
-	def onePoolNumbers(wrestlers)
-		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
+	def onePoolNumbers()
+		return wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
 			w.poolNumber = 1
 		end
-		return wrestlers
 	end
 
+	TWO_POOL_CONVERSION = { 1 => 1, 2 => 2, 3 => 2, 4 => 1 }
 
-	def twoPoolNumbers(wrestlers)
-		pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
-			if w.original_seed == 1
-				w.poolNumber = 1
-			elsif w.original_seed == 2
-				w.poolNumber = 2
-			elsif w.original_seed == 3
-				w.poolNumber = 2
-			elsif w.original_seed == 4
-				w.poolNumber = 1
+	def twoPoolNumbers()
+		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each_with_index do |w, i|
+			if w.original_seed && w.original_seed.between?(1, 4)
+				w.poolNumber = TWO_POOL_CONVERSION[w.original_seed]
 			else
-				w.poolNumber = pool
-			end
-			if pool < 2
-				pool = pool + 1
-			else
-				pool =1
+				w.poolNumber = (i % 2) + 1
 			end
 		end
 		return wrestlers
 	end
 
-	def fourPoolNumbers(wrestlers)
-		pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
-			if w.original_seed == 1
-				w.poolNumber = 1
-			elsif w.original_seed == 2
-				w.poolNumber = 2
-			elsif w.original_seed == 3
-				w.poolNumber = 3
-			elsif w.original_seed == 4
-				w.poolNumber = 4
+	def fourPoolNumbers()
+		return wrestlers.order(original_seed: :desc).each_with_index do |w, i|
+      if w.original_seed && w.original_seed.between?(1, 4)
+			  w.poolNumber = w.original_seed
 			else
-				w.poolNumber = pool
-			end
-			if pool < 4
-				pool = pool + 1
-			else
-				pool =1
+				w.poolNumber = (i % 4) + 1
 			end
 		end
-		return wrestlers
 	end
 
 	def bracket_size
-		@wrestlers = Wrestler.where(weight_id: self.id)
-		return @wrestlers.size
+		wrestlers.size
 	end
 
 	def pool_bracket_type
-		wrestlers_size = wrestlers.size
-		return "twoPoolsToSemi" if wrestlers_size.between?(7, 8)
-		return "twoPoolsToFinal" if wrestlers_size.between?(9, 10)
-		return "fourPoolsToQuarter" if wrestlers_size.between?(11, 12)
-		return "fourPoolsToSemi" if wrestlers_size.between?(13, 16)
-		return "invalid pool bracket type"
+		return "" if bracket_size < 7
+		return "twoPoolsToSemi" if bracket_size.between?(7, 8)
+		return "twoPoolsToFinal" if bracket_size.between?(9, 10)
+		return "fourPoolsToQuarter" if bracket_size.between?(11, 12)
+		return "fourPoolsToSemi" if bracket_size.between?(13, 16)
+		raise "invalid pool bracket size"
 	end
 
-	def poolRounds(matches)
-		@matchups = matches.select{|m| m.weight_id == self.id}
-		@poolMatches = @matchups.select{|m| m.bracket_position == nil}
-		return @poolMatches.sort_by{|m| m.round}.last.round
+	def poolRounds()
+		poolMatch = matches.where(bracket_position: nil).order(:round).last
+		return poolMatch.round if poolMatch
+		0
 	end
 
-	def totalRounds(matches)
-		@matchups = matches.select{|m| m.weight_id == self.id}
-		@lastRound = matches.sort_by{|m| m.round}.last.round
-		@count = 0
-		@round =1
-		until @round > @lastRound do
-			if @matchups.select{|m| m.round == @round}
-				@count = @count + 1
-			end
-			@round = @round + 1
-		end
-		return @count
+	def totalRounds()
+		matches.maximum(:round)
 	end
 
 end
