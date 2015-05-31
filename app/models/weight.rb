@@ -3,8 +3,6 @@ class Weight < ActiveRecord::Base
 	has_many :wrestlers, dependent: :destroy
 	has_many :matches, dependent: :destroy
 
-	attr_accessor :pools
-
 	HS_WEIGHT_CLASSES = [106,113,120,132,138,145,152,160,170,182,195,220,285]
 
 	before_save do
@@ -12,11 +10,11 @@ class Weight < ActiveRecord::Base
 	end
 
 	def wrestlers_for_pool(pool)
-		wrestlers.select{|w| w.generatePoolNumber == pool}.to_a
+		wrestlers.select{|w| returnPoolNumber(w) == pool}.to_a
 	end
 
 	def pools
-		if wrestlers.size <= 6
+		if wrestlers.size < 7
 			return 1
 		elsif  wrestlers.size.between?(7, 10)
 			return 2
@@ -26,49 +24,17 @@ class Weight < ActiveRecord::Base
 		raise "Unexpected pool size"
 	end
 
+	def assignPoolNumbers
+		@wrestlers = wrestlers.order(original_seed: :desc)
+		return fourPoolNumbers() if pools == 4
+		return twoPoolNumbers() if pools == 2
+		return onePoolNumbers() if pools == 1
+		raise "Unexpected number of pools"
+  end
+
 	def returnPoolNumber(wrestler)
-		if pools == 4
-			wr = fourPoolNumbers()
-		elsif pools == 2
-			wr = twoPoolNumbers()
-		elsif pools == 1
-			wr = onePoolNumbers()
-		end
-		target = wr.detect {|w| w.id == wrestler.id}
+		target = assignPoolNumbers().detect {|w| w.id == wrestler.id}
 		return target.poolNumber
-	end
-
-	def onePoolNumbers()
-		return wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
-			w.poolNumber = 1
-		end
-	end
-
-	TWO_POOL_CONVERSION = { 1 => 1, 2 => 2, 3 => 2, 4 => 1 }
-
-	def twoPoolNumbers()
-		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each_with_index do |w, i|
-			if w.original_seed && w.original_seed.between?(1, 4)
-				w.poolNumber = TWO_POOL_CONVERSION[w.original_seed]
-			else
-				w.poolNumber = (i % 2) + 1
-			end
-		end
-		return wrestlers
-	end
-
-	def fourPoolNumbers()
-		return wrestlers.order(original_seed: :desc).each_with_index do |w, i|
-      if w.original_seed && w.original_seed.between?(1, 4)
-			  w.poolNumber = w.original_seed
-			else
-				w.poolNumber = (i % 4) + 1
-			end
-		end
-	end
-
-	def bracket_size
-		wrestlers.size
 	end
 
 	def pool_bracket_type
@@ -80,14 +46,49 @@ class Weight < ActiveRecord::Base
 		raise "invalid pool bracket size"
 	end
 
+	def totalRounds()
+		matches.maximum(:round)
+	end
+
 	def poolRounds()
 		poolMatch = matches.where(bracket_position: nil).order(:round).last
 		return poolMatch.round if poolMatch
 		0
 	end
 
-	def totalRounds()
-		matches.maximum(:round)
+	def bracket_size
+		wrestlers.size
+	end
+
+  protected
+
+	def onePoolNumbers()
+		return @wrestlers.each do |w|
+			w.poolNumber = 1
+		end
+	end
+
+	TWO_POOL_SEED_CONVERSION = { 1 => 1, 2 => 2, 3 => 2, 4 => 1 }
+
+	def twoPoolNumbers()
+		@wrestlers.each_with_index do |w, i|
+			if w.original_seed && w.original_seed.between?(1, 4)
+				w.poolNumber = TWO_POOL_SEED_CONVERSION[w.original_seed]
+			else
+				w.poolNumber = (i % 2) + 1
+			end
+		end
+		return @wrestlers
+	end
+
+	def fourPoolNumbers()
+		return @wrestlers.each_with_index do |w, i|
+      if w.original_seed && w.original_seed.between?(1, 4)
+			  w.poolNumber = w.original_seed
+			else
+				w.poolNumber = (i % 4) + 1
+			end
+		end
 	end
 
 end

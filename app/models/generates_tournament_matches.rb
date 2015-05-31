@@ -5,6 +5,8 @@ module GeneratesTournamentMatches
     matches
   end
 
+  protected
+
   def poolToBracket
     destroyAllMatches
     buildTournamentWeights

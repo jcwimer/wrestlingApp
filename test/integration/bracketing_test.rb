@@ -46,7 +46,7 @@ class BracketingTest < ActionDispatch::IntegrationTest
     3.times { add_wrestler }
     @tournament.generateMatchups
     assert_equal 3, @tournament.matches.size
-    bout_numbers = @tournament.matches.inject([]) { |c, m| c << m.bout_number }
+    bout_numbers = @tournament.matches.collect { |m| m.bout_number }
     assert_equal [1000, 2000, 3000], bout_numbers
   end
 
@@ -54,7 +54,7 @@ class BracketingTest < ActionDispatch::IntegrationTest
     4.times { add_wrestler }
     @tournament.generateMatchups
     assert_equal 6, @tournament.matches.size
-    bout_numbers = @tournament.matches.inject([]) { |c, m| c << m.bout_number }
+    bout_numbers = @tournament.matches.collect { |m| m.bout_number }
     assert_equal [1000, 1001, 2000, 2001, 3000, 3001], bout_numbers
   end
 
@@ -62,7 +62,7 @@ class BracketingTest < ActionDispatch::IntegrationTest
     5.times { add_wrestler }
     @tournament.generateMatchups
     assert_equal 10, @tournament.matches.size
-    bout_numbers = @tournament.matches.inject([]) { |c, m| c << m.bout_number }
+    bout_numbers = @tournament.matches.collect { |m| m.bout_number }
     assert_equal [1000, 1001, 2000, 2001,
        3000, 3001, 4000, 4001, 5000, 5001],
       bout_numbers
@@ -90,7 +90,7 @@ class BracketingTest < ActionDispatch::IntegrationTest
     assert_equal 2, @weight.pools
     assert_equal 13, @tournament.matches.size
 
-    bout_numbers = @tournament.matches.inject([]) { |c, m| c << m.bout_number }
+    bout_numbers = @tournament.matches.collect { |m| m.bout_number }
 
     assert_equal [1000, 1001, 2000, 2001, 3000, 3001,
       1002, 2002, 3002,
@@ -105,7 +105,7 @@ class BracketingTest < ActionDispatch::IntegrationTest
     assert_equal 4, @weight.pools
     assert_equal 22, @tournament.matches.size
 
-    bout_numbers = @tournament.matches.inject([]) { |c, m| c << m.bout_number }
+    bout_numbers = @tournament.matches.collect { |m| m.bout_number }
 
     assert_equal [1000, 2000, 3000,
     1001, 2001, 3001,
@@ -126,11 +126,13 @@ class BracketingTest < ActionDispatch::IntegrationTest
 
   test "all sixteen wrestlers in a weight class" do
     16.times { add_wrestler }
+
     @tournament.generateMatchups
+
     assert_equal 4, @weight.pools
     assert_equal 32, @tournament.matches.size
 
-    bout_numbers = @tournament.matches.inject([]) { |c, m| c << m.bout_number }
+    bout_numbers = @tournament.matches.collect { |m| m.bout_number }
 
     assert_equal [1000, 1001, 2000, 2001, 3000, 3001, 1002, 1003,
       2002, 2003, 3002, 3003, 1004, 1005, 2004, 2005, 3004, 3005,
