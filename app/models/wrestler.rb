@@ -2,23 +2,9 @@ class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
 	has_one :tournament, through: :weight
-	attr_accessor :poolNumber
 
 	before_save do
-		self.tournament.destroyAllMatches
-	end
-
-
-	def isWrestlingThisRound(matchRound)
-		if allMatches.blank?
-			return false
-		else
-			return true
-		end
-	end
-
-	def generatePoolNumber
-		@pool = self.weight.returnPoolNumber(self)
+		tournament.destroyAllMatches
 	end
 
 	def boutByRound(round,matches)
@@ -31,10 +17,14 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def allMatches
-		@matches = Match.where("w1 = ? or w2 = ?",self.id,self.id)
-		return @matches
+		Match.where("w1 = ? or w2 = ?",self.id, self.id)
 	end
 
+	# TODO:  Kill this evil thing
+	def generatePoolNumber
+		weight.returnPoolNumber(self)
+		#tournament.destroyAllMatches
+ 	end
 
 	def seasonWinPercentage
 		@win = self.season_win.to_f

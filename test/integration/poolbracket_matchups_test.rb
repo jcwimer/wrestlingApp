@@ -64,8 +64,8 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     tournament.weights.each do |w|
       w.wrestlers.each do |wr|
         round = 1
-        if w.totalRounds(matchups) > 5
-          until round > w.poolRounds(matchups) do
+        if w.totalRounds > 5
+          until round > w.poolRounds do
             if wr.boutByRound(round, matchups) == "BYE"
               message = "BYE"
             end
@@ -85,11 +85,11 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   test "tournament can be set to high school weight classes" do
     @tournament.weights.destroy_all
     @tournament.createCustomWeights("hs")
-    assert_equal Weight::HS_WEIGHT_CLASSES.size, @tournament.weights.size
+    assert_equal Weight::HS_WEIGHT_CLASSES, @tournament.weights.collect {|w| w.max }
   end
 
   test "tests bout numbers correspond to round" do
-    matchup_to_test = @genMatchups.select{|m| m.bout_number == 4000}.first
+    matchup_to_test = @genMatchups.detect {|m| m.bout_number == 4000}
     assert_equal 4, matchup_to_test.round
   end
 
@@ -137,7 +137,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     @third_fourth_match = @matches.where(bracket_position: '3/4').first
     assert_equal "Loser of #{@semi_bouts.first.bout_number}", @third_fourth_match.loser1_name
   end
-  
+
   #todo test crazy movements through each bracket?
 
 end

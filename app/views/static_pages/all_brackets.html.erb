@@ -28,7 +28,7 @@
         <% @weight = w %>
         <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
         <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
-       <% @pools = w.poolRounds(@matches) %>
+       <% @pools = w.poolRounds() %>
         <h5><%= @weight.max %> lbs Bracket</h5>
 
         <%= render 'pool' %>

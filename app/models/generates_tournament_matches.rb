@@ -5,6 +5,8 @@ module GeneratesTournamentMatches
     matches
   end
 
+  protected
+
   def poolToBracket
     destroyAllMatches
     buildTournamentWeights
@@ -15,7 +17,11 @@ module GeneratesTournamentMatches
     weights.order(:max).each do |weight|
       Pool.new(weight).generatePools()
       last_match = matches.where(weight: weight).order(round: :desc).limit(1).first
-      highest_round = last_match.round
+      if (last_match.nil?)
+        highest_round = 0
+      else
+        highest_round = last_match.round
+      end
       Poolbracket.new(weight, highest_round).generateBracketMatches()
     end
   end
