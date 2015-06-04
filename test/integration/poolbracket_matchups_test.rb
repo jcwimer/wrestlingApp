@@ -131,13 +131,108 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "test loser name for 16 man bracket 3/4th place match" do
+  test "test loser names for 16 man bracket 3/4th place match" do
     @matches = @tournament.matches.where(weight_id: 5)
     @semi_bouts = @matches.where(bracket_position: 'Semis')
     @third_fourth_match = @matches.where(bracket_position: '3/4').first
     assert_equal "Loser of #{@semi_bouts.first.bout_number}", @third_fourth_match.loser1_name
+    assert_equal "Loser of #{@semi_bouts.second.bout_number}", @third_fourth_match.loser2_name
   end
   
-  #todo test crazy movements through each bracket?
+  test "test loser names for 16 man bracket 7/8th place match" do
+    @matches = @tournament.matches.where(weight_id: 5)
+    @conso_semi_bouts = @matches.where(bracket_position: 'Conso Semis')
+    @seven_eight_match = @matches.where(bracket_position: '7/8').first
+    assert_equal "Loser of #{@conso_semi_bouts.first.bout_number}", @seven_eight_match.loser1_name
+    assert_equal "Loser of #{@conso_semi_bouts.second.bout_number}", @seven_eight_match.loser2_name
+  end
+  
+  test "test loser names for 16 man bracket semis" do
+    @matches = @tournament.matches.where(weight_id: 5)
+    @semi_bouts = @matches.where(bracket_position: 'Semis')
+    assert_equal "Winner Pool 1", @semi_bouts.first.loser1_name
+    assert_equal "Winner Pool 4", @semi_bouts.first.loser2_name
+    assert_equal "Winner Pool 2", @semi_bouts.second.loser1_name
+    assert_equal "Winner Pool 3", @semi_bouts.second.loser2_name
+  end
+  
+  test "test loser names for 16 man bracket conso semis" do
+    @matches = @tournament.matches.where(weight_id: 5)
+    @conso_semi_bouts = @matches.where(bracket_position: 'Conso Semis')
+    assert_equal "Runner Up Pool 1", @conso_semi_bouts.first.loser1_name
+    assert_equal "Runner Up Pool 4", @conso_semi_bouts.first.loser2_name
+    assert_equal "Runner Up Pool 2", @conso_semi_bouts.second.loser1_name
+    assert_equal "Runner Up Pool 3", @conso_semi_bouts.second.loser2_name
+  end
+  
+  
+  test "test loser names for 11 man bracket 3/4th place match" do
+    @matches = @tournament.matches.where(weight_id: 4)
+    @semi_bouts = @matches.where(bracket_position: 'Semis')
+    @third_fourth_match = @matches.where(bracket_position: '3/4').first
+    assert_equal "Loser of #{@semi_bouts.first.bout_number}", @third_fourth_match.loser1_name
+    assert_equal "Loser of #{@semi_bouts.second.bout_number}", @third_fourth_match.loser2_name
+  end
+  
+  test "test loser names for 11 man bracket 7/8th place match" do
+    @matches = @tournament.matches.where(weight_id: 4)
+    @conso_semi_bouts = @matches.where(bracket_position: 'Conso Semis')
+    @seven_eight_match = @matches.where(bracket_position: '7/8').first
+    assert_equal "Loser of #{@conso_semi_bouts.first.bout_number}", @seven_eight_match.loser1_name
+    assert_equal "Loser of #{@conso_semi_bouts.second.bout_number}", @seven_eight_match.loser2_name
+  end
 
+  test "test loser names for 11 man bracket quarters" do
+    @matches = @tournament.matches.where(weight_id: 4)
+    @quarters = @matches.where(bracket_position: 'Quarter')
+    assert_equal "Winner Pool 1", @quarters.first.loser1_name
+    assert_equal "Runner Up Pool 2", @quarters.first.loser2_name
+    assert_equal "Winner Pool 4", @quarters.second.loser1_name
+    assert_equal "Runner Up Pool 3", @quarters.second.loser2_name
+    assert_equal "Winner Pool 2", @quarters.third.loser1_name
+    assert_equal "Runner Up Pool 1", @quarters.third.loser2_name
+    assert_equal "Winner Pool 3", @quarters.fourth.loser1_name
+    assert_equal "Runner Up Pool 4", @quarters.fourth.loser2_name
+  end
+  
+  test "test loser names for 11 man bracket conso semis" do
+    @matches = @tournament.matches.where(weight_id: 4)
+    @quarters = @matches.where(bracket_position: 'Quarter')
+    @conso_semi_bouts = @matches.where(bracket_position: 'Conso Semis')
+    assert_equal "Loser of #{@quarters.first.bout_number}", @conso_semi_bouts.first.loser1_name
+    assert_equal "Loser of #{@quarters.second.bout_number}", @conso_semi_bouts.first.loser2_name
+    assert_equal "Loser of #{@quarters.third.bout_number}", @conso_semi_bouts.second.loser1_name
+    assert_equal "Loser of #{@quarters.fourth.bout_number}", @conso_semi_bouts.second.loser2_name
+  end
+  
+ test "test loser names for 9 man bracket 3/4th place match" do
+    @matches = @tournament.matches.where(weight_id: 3)
+    @third_fourth_match = @matches.where(bracket_position: '3/4').first
+    assert_equal "Runner Up Pool 1", @third_fourth_match.loser1_name
+    assert_equal "Runner Up Pool 2", @third_fourth_match.loser2_name
+  end
+  
+  test "test loser names for 9 man bracket 1/2 place match" do
+    @matches = @tournament.matches.where(weight_id: 3)
+    @final_match = @matches.where(bracket_position: '1/2').first
+    assert_equal "Winner Pool 1", @final_match.loser1_name
+    assert_equal "Winner Pool 2", @final_match.loser2_name
+  end
+  
+  test "test loser names for 7 man bracket 3/4th place match" do
+    @matches = @tournament.matches.where(weight_id: 2)
+    @semi_bouts = @matches.where(bracket_position: 'Semis')
+    @third_fourth_match = @matches.where(bracket_position: '3/4').first
+    assert_equal "Loser of #{@semi_bouts.first.bout_number}", @third_fourth_match.loser1_name
+    assert_equal "Loser of #{@semi_bouts.second.bout_number}", @third_fourth_match.loser2_name
+  end
+  
+  test "test loser names for 7 man bracket semis" do
+    @matches = @tournament.matches.where(weight_id: 2)
+    @semi_bouts = @matches.where(bracket_position: 'Semis')
+    assert_equal "Winner Pool 1", @semi_bouts.first.loser1_name
+    assert_equal "Runner Up Pool 2", @semi_bouts.first.loser2_name
+    assert_equal "Winner Pool 2", @semi_bouts.second.loser1_name
+    assert_equal "Runner Up Pool 1", @semi_bouts.second.loser2_name
+  end
 end
