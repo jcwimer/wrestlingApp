@@ -40,5 +40,13 @@ class Tournament < ActiveRecord::Base
 			m.save!
 		end
 	end
+	
+	def assignFirstMatchesToMats
+		until mats.order(:id).last.matches.count == 4
+			mats.order(:id).each do |m|
+				m.assignNextMatch	
+			end
+		end
+	end
 
 end

@@ -8,7 +8,8 @@ class StaticPagesController < ApplicationController
 	      @tournament = Tournament.find(params[:tournament])
 		end
 	    if @tournament
-				@matches = @tournament.matches
+				@matches = @tournament.matches.where(mat_id: nil)
+				@mats = @tournament.mats
 				if @matches.empty?
 					redirect_to "/static_pages/noMatches?tournament=#{@tournament.id}"
 				end

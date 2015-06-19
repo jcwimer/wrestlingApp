@@ -23,6 +23,7 @@ module GeneratesTournamentMatches
   def generateMatches
     assignBouts
     assignLoserNames
+    assignFirstMatchesToMats
   end
 
 end
