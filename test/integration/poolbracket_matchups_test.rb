@@ -7,10 +7,11 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   end
 
   def createTournament(numberOfWrestlers)
-    @id = 6000 + numberOfWrestlers
+    @id = 600 + numberOfWrestlers
     tournament = create_tournament
     create_school
     create_weight
+    create_mat
     create_wrestlers(numberOfWrestlers)
     tournament
   end
@@ -32,6 +33,14 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     School.new(
       id: @id,
       name: "Shit Show",
+      tournament_id: @id
+    ).save!
+  end
+  
+  def create_mat
+    Mat.new(
+      id: @id,
+      name: "Mat 1",
       tournament_id: @id
     ).save!
   end
