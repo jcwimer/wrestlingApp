@@ -4,7 +4,7 @@ class IntroduceIndexes < ActiveRecord::Migration
     add_index :schools, :tournament_id
     add_index :mats, :tournament_id
     add_index :matches, :tournament_id
-    add_index :matches, [:w1, :w2], :unique => true
+    add_index :matches, [:w1, :w2]
     add_index :wrestlers, :weight_id
   end
 end
