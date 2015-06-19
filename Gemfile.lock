@@ -83,7 +83,6 @@ GEM
     passenger (5.0.7)
       rack
       rake (>= 0.8.1)
-    pg (0.18.1)
     puma (2.11.2)
       rack (>= 1.1, < 2.0)
     rack (1.6.0)
@@ -163,7 +162,6 @@ DEPENDENCIES
   jquery-rails
   mysql2
   passenger
-  pg
   puma
   rails (= 4.2.0)
   rails_12factor

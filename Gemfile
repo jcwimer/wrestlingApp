@@ -1,5 +1,4 @@
 source 'https://rubygems.org'
-ruby '2.2.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
@@ -41,7 +40,6 @@ gem 'spring',        group: :development
 #Installed by me
 	#For Heroku
 		group :production do
-		  gem 'pg'
 		  gem 'rails_12factor'
 		  gem 'mysql2'
       	  gem 'passenger'
