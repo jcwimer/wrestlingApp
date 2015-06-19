@@ -29,7 +29,7 @@
   <tbody>
     <% @mats.each.map do |m| %>
       <tr>
-        <td>Mat <%= m.name %></td>
+        <td><%= m.name %></td>
         <td><%=m.unfinishedMatches.first.bout_number%><br><%= m.unfinishedMatches.first.w1_name %> vs. <%= m.unfinishedMatches.first.w2_name %></td>
         <td><%=m.unfinishedMatches.second.bout_number%><br><%= m.unfinishedMatches.second.w1_name %> vs. <%= m.unfinishedMatches.second.w2_name %></td>
         <td><%=m.unfinishedMatches.third.bout_number%><br><%= m.unfinishedMatches.third.w1_name %> vs. <%= m.unfinishedMatches.third.w2_name %></td>
