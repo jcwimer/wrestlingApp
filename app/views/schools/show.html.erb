@@ -1,5 +1,10 @@
 <p id="notice"><%= notice %></p>
-
+<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}",:class=>"btn btn-default" %> |
+<% if user_signed_in? %>
+  <%= link_to "Edit #{@school.name}", edit_school_path(@school),:class=>"btn btn-primary" %>
+<% end %>
+<br>
+<br>
 <p>
   <strong>Name:</strong>
   <%= @school.name %>
@@ -15,17 +20,13 @@
   <%= Tournament.find(@school.tournament_id).name %>
 </p>
 
-<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}" %> |
-<% if user_signed_in? %>
-  <%= link_to "Edit #{@school.name}", edit_school_path(@school) %> |
-<% end %>
+
 
 
 
 <br>
-<br>
 <% if user_signed_in? %>
-  <%= link_to "New #{@school.name} Wrestler" , "/wrestlers/new?school=#{@school.id}" %>
+  <%= link_to "New #{@school.name} Wrestler" , "/wrestlers/new?school=#{@school.id}", :class=>"btn btn-success"%>
 <% end %>
 <br>
 <br>

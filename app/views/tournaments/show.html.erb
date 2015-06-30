@@ -1,8 +1,8 @@
 <p id="notice"><%= notice %></p>
 <% if user_signed_in? %>
-  <%= link_to "Edit #{@tournament.name}", edit_tournament_path(@tournament) %> |
+  <%= link_to "Edit #{@tournament.name}", edit_tournament_path(@tournament), :class=>"btn btn-primary" %> |
 <% end %>
-<%= link_to 'Back', root_path %>
+<%= link_to 'Back', root_path, :class=>"btn btn-default" %>
 
 <h1>
   <%= @tournament.name %>
@@ -31,7 +31,7 @@
 </p>
 <br>
 <% if user_signed_in? %>
-<%= link_to "Generate Pool Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}", :class=>"btn btn-danger" %>
+<%= link_to "Generate Pool Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}", data: { confirm: 'Are you sure? This will delete all current matches.' }, :class=>"btn btn-success" %>
 <br>
 <br>
 <% end %>
@@ -39,7 +39,7 @@
 <h3>School Lineups</h3>
 <br>
 <% if user_signed_in? %>
-  <%= link_to "New #{@tournament.name} School" , "/schools/new?tournament=#{@tournament.id}", :class=>"btn btn-default" %>
+  <%= link_to "New #{@tournament.name} School" , "/schools/new?tournament=#{@tournament.id}", :class=>"btn btn-success" %>
   <br>
   <br>
 <% end %>
@@ -58,7 +58,7 @@
         <td><%= school.name %></td>
         <td><%= link_to 'Show', school, :class=>"btn btn-default" %>
           <% if user_signed_in? %>
-            <%= link_to 'Edit', edit_school_path(school), :class=>"btn btn-default" %>
+            <%= link_to 'Edit', edit_school_path(school), :class=>"btn btn-primary" %>
             <%= link_to 'Destroy', school, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
           <% end %>
         </td>
@@ -73,9 +73,9 @@
 <h3>Weight Class Seeds</h3>
 <br>
 <% if user_signed_in? %>
-    <%= link_to "New #{@tournament.name} Weight" , "/weights/new?tournament=#{@tournament.id}", :class=>"btn btn-default" %>
-    <br>
-    <%= link_to "Create HS Weights" , "/static_pages/createCustomWeights?tournament=#{@tournament.id}&customValue=hs", :class=>"btn btn-default" %>
+    <%= link_to "New #{@tournament.name} Weight" , "/weights/new?tournament=#{@tournament.id}", :class=>"btn btn-success" %>
+    <br><br>
+    <%= link_to "Create HS Weights" , "/static_pages/createCustomWeights?tournament=#{@tournament.id}&customValue=hs",data: { confirm: 'Are you sure? This will delete all current weights.' }, :class=>"btn btn-success" %>
 <br>
 <br>
 <% end %>
@@ -95,7 +95,7 @@
         <td><%= weight.bracket_size %></td>
         <td><%= link_to 'Show', weight, :class=>"btn btn-default" %>
           <% if user_signed_in? %>
-            <%= link_to 'Edit', edit_weight_path(weight), :class=>"btn btn-default" %>
+            <%= link_to 'Edit', edit_weight_path(weight), :class=>"btn btn-primary" %>
             <%= link_to 'Destroy', weight, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
           <% end %>
         </td>
@@ -109,7 +109,7 @@
   <br>
   <h3>Mats</h3>
   <br>
-      <%= link_to "New #{@tournament.name} Mat" , "/mats/new?tournament=#{@tournament.id}", :class=>"btn btn-default" %>
+      <%= link_to "New #{@tournament.name} Mat" , "/mats/new?tournament=#{@tournament.id}", :class=>"btn btn-success" %>
       <br>
       <br>
   <table class="table table-striped table-bordered">

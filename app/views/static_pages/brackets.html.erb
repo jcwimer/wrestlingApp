@@ -2,7 +2,7 @@
 </br>
 </br>
 
-<%= link_to "Back to #{@tournament.name} weights", "/static_pages/weights?tournament=#{@tournament.id}" %>
+<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %>
 <br>
 <br>
 <h1><%= @weight.max %> lbs Bracket</h1>

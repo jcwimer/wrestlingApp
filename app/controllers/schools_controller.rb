@@ -26,6 +26,7 @@ class SchoolsController < ApplicationController
   # GET /schools/1/edit
   def edit
     @tournament_field = @school.tournament_id
+    @tournament = Tournament.find(@school.tournament_id)
   end
 
   # POST /schools

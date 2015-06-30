@@ -31,6 +31,7 @@ class WeightsController < ApplicationController
   def edit
     @tournament_field = @weight.tournament_id
     @mats = Mat.where(tournament_id: @weight.tournament.id)
+    @tournament = Tournament.find(@weight.tournament_id)
   end
 
   # POST /weights
