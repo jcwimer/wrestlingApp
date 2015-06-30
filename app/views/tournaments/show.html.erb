@@ -30,19 +30,19 @@
   <%= @tournament.tournament_type %>
 </p>
 <br>
-<br>
-
 <% if user_signed_in? %>
-<br>
 <%= link_to "Generate Pool Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}", :class=>"btn btn-danger" %>
-<% end %>
 <br>
+<br>
+<% end %>
 <br>
 <h3>School Lineups</h3>
 <br>
-<% if user_signed_in? %><%= link_to "New #{@tournament.name} School" , "/schools/new?tournament=#{@tournament.id}", :class=>"btn btn-default" %><% end %>
-<br>
-<br>
+<% if user_signed_in? %>
+  <%= link_to "New #{@tournament.name} School" , "/schools/new?tournament=#{@tournament.id}", :class=>"btn btn-default" %>
+  <br>
+  <br>
+<% end %>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
@@ -76,9 +76,9 @@
     <%= link_to "New #{@tournament.name} Weight" , "/weights/new?tournament=#{@tournament.id}", :class=>"btn btn-default" %>
     <br>
     <%= link_to "Create HS Weights" , "/static_pages/createCustomWeights?tournament=#{@tournament.id}&customValue=hs", :class=>"btn btn-default" %>
+<br>
+<br>
 <% end %>
-<br>
-<br>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
@@ -104,37 +104,36 @@
   </tbody>
 </table>
 
-
-<br>
-<br>
-<h3>Mats</h3>
-<br>
 <% if user_signed_in? %>
-    <%= link_to "New #{@tournament.name} Mat" , "/mats/new?tournament=#{@tournament.id}", :class=>"btn btn-default" %>
-    <br>
-    <br>
-<% end %>
-<table class="table table-striped table-bordered">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @mats.each do |mat| %>
+  <br>
+  <br>
+  <h3>Mats</h3>
+  <br>
+      <%= link_to "New #{@tournament.name} Mat" , "/mats/new?tournament=#{@tournament.id}", :class=>"btn btn-default" %>
+      <br>
+      <br>
+  <table class="table table-striped table-bordered">
+    <thead>
       <tr>
-        <td><%= mat.name %></td>
-        <td>
-          <% if user_signed_in? %>
-            <%= link_to 'Destroy', mat, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
-          <% end %>
-        </td>
+        <th>Name</th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+  
+    <tbody>
+      <% @mats.each do |mat| %>
+        <tr>
+          <td><%= mat.name %></td>
+          <td>
+            <% if user_signed_in? %>
+              <%= link_to 'Destroy', mat, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 
 
 
