@@ -39,8 +39,8 @@
           			<tr>
           				<td><%= wrestler.name %></td>
           				<td><%= School.find(wrestler.school_id).name %></td>
-          				<td><%= wrestler.weight.max %></td>
           				<td><%= wrestler.original_seed %></td>
+          				<td><%= wrestler.weight.max %></td>
           				<td>
                     <% if user_signed_in? %>
                       <%= fields_for "wrestler[]", wrestler do |w| %>
