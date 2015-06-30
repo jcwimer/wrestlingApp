@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150630170119) do
+ActiveRecord::Schema.define(version: 20150630180257) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "w1"
@@ -68,6 +68,8 @@ ActiveRecord::Schema.define(version: 20150630170119) do
     t.text     "weigh_in_ref"
   end
 
+  add_index "tournaments", ["weigh_in_ref"], name: "index_tournaments_on_weigh_in_ref"
+
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
     t.string   "encrypted_password",     default: "", null: false
@@ -110,6 +112,7 @@ ActiveRecord::Schema.define(version: 20150630170119) do
     t.decimal  "offical_weight"
   end
 
+  add_index "wrestlers", ["offical_weight"], name: "index_wrestlers_on_offical_weight"
   add_index "wrestlers", ["weight_id"], name: "index_wrestlers_on_weight_id"
 
 end
