@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150619142023) do
+ActiveRecord::Schema.define(version: 20150630170119) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "w1"
@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(version: 20150619142023) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "tournament_type"
+    t.text     "weigh_in_ref"
   end
 
   create_table "users", force: :cascade do |t|
@@ -106,6 +107,7 @@ ActiveRecord::Schema.define(version: 20150619142023) do
     t.integer  "season_loss"
     t.string   "criteria"
     t.boolean  "extra"
+    t.decimal  "offical_weight"
   end
 
   add_index "wrestlers", ["weight_id"], name: "index_wrestlers_on_weight_id"

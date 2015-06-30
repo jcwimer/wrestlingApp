@@ -83,6 +83,6 @@ class TournamentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def tournament_params
-      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type)
+      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref)
     end
 end

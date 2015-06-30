@@ -32,6 +32,8 @@
 <br>
 <% if user_signed_in? %>
 <%= link_to "Generate Pool Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}", data: { confirm: 'Are you sure? This will delete all current matches.' }, :class=>"btn btn-success" %>
+<br><br>
+<%= link_to "Weigh In Page" , "/static_pages/weigh_in?tournament=#{@tournament.id}", :class=>"btn btn-primary" %>
 <br>
 <br>
 <% end %>
