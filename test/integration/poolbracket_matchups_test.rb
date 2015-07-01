@@ -244,4 +244,9 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     assert_equal "Winner Pool 2", @semi_bouts.second.loser1_name
     assert_equal "Runner Up Pool 1", @semi_bouts.second.loser2_name
   end
+  test 'test mat assignment after match generation' do
+    @matches = @tournament.matches.order(:bout_number)
+    assert_equal 'Mat1', @matches.first.mat.name
+  end
+
 end
