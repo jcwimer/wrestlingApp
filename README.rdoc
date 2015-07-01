@@ -6,9 +6,13 @@ Heroku production:
 
 <tt>https://wrestlingapp.herokuapp.com</tt>
 
+Public production page:
+
+<tt>https://wrestlingapp.cometwrestling.com</tt>
+
 Development details:
 
-* Ruby 2.2.2
+* Ruby 2.2.0
 
 * Rails 4.2.0
 
@@ -39,6 +43,8 @@ What the app does now:
 * Assigns bout numbers for each match based on round and weight class
 
 * Shows view of pools/brackets
+
+* Assigns matches to a mat based on next available bout number
 
 
 Public Trello page
