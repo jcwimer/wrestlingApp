@@ -40,7 +40,9 @@
       <th>Record</th>
       <th>Seed Criteria</th>
       <th>Extra?</th>
+      <% if user_signed_in? %>
       <th>Actions</th>
+      <% end %>
     </tr>
   </thead>
 
@@ -58,13 +60,13 @@
           <td><% if wrestler.extra? == true %>
             Yes
            <% end %></td>
-          <td>
             <% if user_signed_in? %>
+              <td>
               <%= link_to 'Show', wrestler , :class=>"btn btn-default" %>
               <%= link_to 'Edit', edit_wrestler_path(wrestler), :class=>"btn btn-default" %>
               <%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %>
-            <% end %>
-          </td>
+              </td>
+            <% end %>          
         </tr>
       <% end %>
     <% end %>
