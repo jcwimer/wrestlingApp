@@ -27,8 +27,8 @@ class MatchesController < ApplicationController
       @match = Match.find (params[:match])
     end
     if @match
-      @w1 = Wrestler.find(@match.r_id)
-      @w2 = Wrestler.find(@match.g_id)
+      @w1 = Wrestler.find(@match.w1)
+      @w2 = Wrestler.find(@match.w2)
     end
   end
 
@@ -92,6 +92,6 @@ class MatchesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def match_params
-      params.require(:match).permit(:r_id, :g_id, :g_stat, :r_stat, :winner_id, :win_type, :score, :finished)
+      params.require(:match).permit(:w1, :w2, :g_stat, :r_stat, :winner_id, :win_type, :score, :finished)
     end
 end
