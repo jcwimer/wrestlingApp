@@ -2,10 +2,6 @@
 
 This application is being created to run a wrestling tournament.
 
-Heroku production:
-
-<tt>https://wrestlingapp.herokuapp.com</tt>
-
 Public production page:
 
 <tt>https://wrestlingapp.cometwrestling.com</tt>
