@@ -22,9 +22,11 @@ Development details:
 
 Docker instructions:
 
-* Building and run the image: <tt>bash rails-dev.sh wrestlingapp</tt> This will mount your local directory to /rails inside the container and will open port 3000 to port 3000 on your local machine.
+* Building and running the image: <tt>bash rails-dev.sh wrestlingapp</tt> This will mount your local directory to /rails inside the container and will open port 3000 to port 3000 on your local machine.
 
 * After running the above script, you'll be presented a shell. You'll need to run <tt>bash rails-dev-db.sh</tt> to set up the development db's. After those are set up, you can run <tt>rake test</tt> to run the tests or <tt>rails s -b 0.0.0.0</tt> to run a development server. You can also run any other rails commands from here.
+
+* Production docker image: Run <tt>bash rails-prod.sh wrestlingapp</tt>. This will create a self-signed ssl certificate and set up wrestlingapp on passenger/apache. The container will run with port 80 and port 443 open and will have a restart policy of always.
 
 What the app does now:
 
