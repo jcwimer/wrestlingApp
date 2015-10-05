@@ -1,19 +1,18 @@
 FROM ruby:2.2.3
 
 RUN apt-get update
-RUN apt-get -y upgrade
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y build-essential
+RUN apt-get install -y build-essential
 RUN apt-get install -y nodejs sqlite3
 
 RUN gem install --no-rdoc --no-ri bundler
+ADD Gemfile* /tmp/
+WORKDIR /tmp
+RUN bundle install --without production
+
 RUN mkdir /rails
 WORKDIR /rails
 VOLUME ["/rails"]
-
-ADD Gemfile* /rails/
-RUN bundle install --without production
-ADD . /rails/
 
 EXPOSE 3000
 
