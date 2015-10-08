@@ -28,6 +28,7 @@ class Pool
 						w1: bout[0].id,
 						w2: bout[1].id,
 						weight_id: @weight.id,
+						bracket_position: "Pool",
 						round: round)
 					matches << match
 				end

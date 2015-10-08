@@ -34,8 +34,25 @@ class Wrestler < ActiveRecord::Base
 		@matches = Match.where("w1 = ? or w2 = ?",self.id,self.id)
 		return @matches
 	end
+       
+	def poolMatches
+		allMatches.select{|m| m.bracket_position == "Pool"}
+	end
+	
+	def finishedMatches
+		allMatches.select{|m| m.finished == 1}
+	end
 
+	def finishedBracketMatches
+		finishedMatches.select{|m| m.bracket_position != "Pool"}
+	end	
 
+	def finishedPoolMatches
+		finishedMatches.select{|m| m.bracket_position == "Pool"}
+	end
+	def poolWins
+		allMatches.select{|m| m.winner_id == self.id && m.bracket_position == "Pool"}
+	end
 	def seasonWinPercentage
 		@win = self.season_win.to_f
 		@loss = self.season_loss.to_f

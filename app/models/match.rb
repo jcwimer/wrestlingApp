@@ -26,5 +26,15 @@ class Match < ActiveRecord::Base
 	def weight_max
 		Weight.find(self.weight_id).max
 	end
-
+	
+	def replaceLoserNameWithWrestler(w,loserName)
+		if self.loser1_name == loserName
+			self.w1 = w.id
+			self.save
+		end
+		if self.loser2_name == loserName
+			self.w2 = w.id
+			self.save
+		end
+	end
 end

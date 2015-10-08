@@ -5,6 +5,7 @@ class School < ActiveRecord::Base
 
 	#calculate score here
 	def score
+		#Add score per wrestler. Calculate score in wrestler model.
 		return 0
 	end
 end

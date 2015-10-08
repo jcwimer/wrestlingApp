@@ -111,7 +111,7 @@ class Weight < ActiveRecord::Base
 
 	def poolRounds(matches)
 		@matchups = matches.select{|m| m.weight_id == self.id}
-		@poolMatches = @matchups.select{|m| m.bracket_position == nil}
+		@poolMatches = @matchups.select{|m| m.bracket_position == "Pool"}
 		return @poolMatches.sort_by{|m| m.round}.last.round
 	end
 
@@ -128,5 +128,9 @@ class Weight < ActiveRecord::Base
 		end
 		return @count
 	end
-
+	
+	def poolOrder
+		@wrestlers = self.wrestlers
+		@wrestlers.sort_by{|w| w.poolWins}.reverse
+	end
 end
