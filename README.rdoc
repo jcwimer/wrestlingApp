@@ -6,6 +6,9 @@ Public production page:
 
 <tt>https://wrestlingapp.cometwrestling.com</tt>
 
+<tt>https://wrestlingapp.herokuapp.com</tt>
+
+
 Development details:
 
 * Ruby 2.2.0
