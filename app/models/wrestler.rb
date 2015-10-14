@@ -8,6 +8,19 @@ class Wrestler < ActiveRecord::Base
 		self.tournament.destroyAllMatches
 	end
 
+	def resultByBout(bout)
+	   @match = Match.where("bout_number = ? AND finished = ?",bout,1)
+	   if @match.size == 0
+ 		return ""
+	   end
+	   if @match.first.winner_id == self.id
+		return "W #{@match.first.score}"
+	   end
+	   if @match.first.winner_id != self.id
+		return "L #{@match.first.score}"
+	   end
+	end
+
 
 	def isWrestlingThisRound(matchRound)
 		if allMatches.blank?

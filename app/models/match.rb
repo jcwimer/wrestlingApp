@@ -3,9 +3,31 @@ class Match < ActiveRecord::Base
 	belongs_to :weight
 	belongs_to :mat
 
+	after_save do 
+	   if self.finished == 1
+		advance_wrestlers
+	   end
+	end
 
 	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ"]
 
+	def advance_wrestlers
+	   if self.w1? && self.w2?	
+		@w1 = Wrestler.find(self.w1)
+		@w2 = Wrestler.find(self.w2)
+		@w1.advanceInBracket
+		@w2.advanceInBracket
+	   end
+	end
+
+	def bracketScore
+		if self.finished != 1
+		  return ""
+		end
+		if self.finished == 1
+		  return "(#{self.score})"
+		end
+	end
 
 	def w1_name
 		if self.w1
@@ -38,7 +60,7 @@ class Match < ActiveRecord::Base
 		end
 	end
 	def poolNumber
-		if self.w1 
+		if self.w1?
 			Wrestler.find(self.w1).generatePoolNumber
 		end
 	end

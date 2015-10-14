@@ -11,8 +11,18 @@ class Weight < ActiveRecord::Base
 		self.tournament.destroyAllMatches
 	end
 
-	def wrestlers_for_pool(pool)
-		wrestlers.select{|w| w.generatePoolNumber == pool}.to_a
+	def wrestlersForPool(pool)
+		self.wrestlers.select{|w| w.generatePoolNumber == pool}
+	end
+	
+	def allPoolMatchesFinished(pool)
+		@wrestlers = wrestlersForPool(pool)
+		@wrestlers.each do |w|
+			if w.poolMatches.size != w.finishedPoolMatches.size
+				return false
+			end
+   		end
+		return true
 	end
 
 	def pools
@@ -118,19 +128,19 @@ class Weight < ActiveRecord::Base
 	def totalRounds(matches)
 		@matchups = matches.select{|m| m.weight_id == self.id}
 		@lastRound = matches.sort_by{|m| m.round}.last.round
-		@count = 0
+		count = 0
 		@round =1
 		until @round > @lastRound do
 			if @matchups.select{|m| m.round == @round}
-				@count = @count + 1
+				count = count + 1
 			end
 			@round = @round + 1
 		end
-		return @count
+		return count
 	end
 	
-	def poolOrder
-		@wrestlers = self.wrestlers
-		@wrestlers.sort_by{|w| w.poolWins.count}.reverse!
+	def poolOrder(pool)
+		@wrestlers = wrestlersForPool(pool)
+		@wrestlers.sort_by{|w| w.poolWins.size}.reverse!
 	end
 end

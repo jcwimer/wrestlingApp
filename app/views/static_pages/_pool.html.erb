@@ -21,7 +21,7 @@
     			<% @round = 1 %>
     			<% until @matches.select{|m| m.round == @round}.blank? %>
     			    <% if @round <= @pools %>
-    			        <td><%= w.boutByRound(@round) %><br>Result</td>
+    			        <td><%= w.boutByRound(@round) %><br><%= w.resultByBout(w.boutByRound(@round)) %></td>
     			    <% end %>
     			    <% @round = @round + 1 %>
     			<% end %>
