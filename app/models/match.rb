@@ -37,4 +37,9 @@ class Match < ActiveRecord::Base
 			self.save
 		end
 	end
+	def poolNumber
+		if self.w1 
+			Wrestler.find(self.w1).generatePoolNumber
+		end
+	end
 end

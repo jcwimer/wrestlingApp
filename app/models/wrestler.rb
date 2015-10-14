@@ -21,7 +21,7 @@ class Wrestler < ActiveRecord::Base
 		@pool = self.weight.returnPoolNumber(self)
 	end
 
-	def boutByRound(round,matches)
+	def boutByRound(round)
 		@match = allMatches.select{|m| m.round == round}.first
 		if @match.blank?
 			return "BYE"
@@ -36,7 +36,8 @@ class Wrestler < ActiveRecord::Base
 	end
        
 	def poolMatches
-		allMatches.select{|m| m.bracket_position == "Pool"}
+		@poolMatches = allMatches.select{|m| m.bracket_position == "Pool"}
+		@poolMatches.select{|m| m.poolNumber == self.generatePoolNumber}
 	end
 	
 	def finishedMatches
@@ -66,5 +67,11 @@ class Wrestler < ActiveRecord::Base
 		elsif self.season_win == nil or self.season_loss == nil
 			return 0
 		end
+	end
+
+	def advanceInBracket
+		@advance = Pooladvance.new
+		@advance.wrestler = self
+		@advance.advanceWrestler
 	end
 end

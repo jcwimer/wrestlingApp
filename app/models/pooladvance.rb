@@ -11,7 +11,7 @@ class Pooladvance
 
  def advanceWrestler
    if self.wrestler.poolMatches.size > self.wrestler.finishedMatches.size
-	exit
+	return nil
    end
    poolToBracketAdvancment
    bracketAdvancment
@@ -22,7 +22,7 @@ class Pooladvance
    @poolWrestlers = self.wrestler.weight.wrestlers_for_pool(@pool)
    @poolWrestlers.each do |w|  
      if w.finishedBracketMatches.size > 0
-	exit
+	return nil
      end
    end
    #Move to correct spot in bracket from pool
@@ -49,8 +49,29 @@ class Pooladvance
 end
 
  def bracketAdvancment
+   if self.wrestler.finishedBracketMatches.size == 0
+	return nil
+   end
    #Move to next correct spot in bracket
+   @matches = self.wrestler.finishedMatches.sort_by{|m| m.round}.reverse
+   @last_match = @matches.first
+   if @last_match.winner_id == self.wrestler.id
+	winnerAdvance(@last_match)
+   end
+   if @last_match.winner_id != self.wrestler.id
+	loserAdvance(@last_match)
+   end
  end
 
+ def winnerAdvance(last_match)
 
+ end
+
+ def loserAdvance(last_match)
+    @bout = last_match.bout_number
+    @next_match = Match.where("loser_name = ?","Loser of #{@bout}")
+    if @next_match.size > 0
+	@next_match.first.replaceLoserNameWithWrestler(self.wrestler,"Loser of #{@bout}")
+    end
+ end
 end

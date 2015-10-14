@@ -75,7 +75,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
         round = 1
         if w.totalRounds(matchups) > 5
           until round > w.poolRounds(matchups) do
-            if wr.boutByRound(round, matchups) == "BYE"
+            if wr.boutByRound(round) == "BYE"
               message = "BYE"
             end
             round += 1
