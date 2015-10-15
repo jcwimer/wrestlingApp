@@ -44,7 +44,17 @@ class Match < ActiveRecord::Base
 			self.loser2_name
 		end
 	end
-
+	def winnerName
+		if self.finished != 1
+			return ""
+		end
+		if self.winner_id == self.w1
+			return self.w1_name
+		end
+		if self.winner_id == self.w2
+			return self.w2_name
+		end
+	end
 	def weight_max
 		Weight.find(self.weight_id).max
 	end

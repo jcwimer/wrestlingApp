@@ -71,16 +71,16 @@ li.game{
 
 		<li class="spacer">&nbsp;</li>
 		
-		<% end %>
 	</ul>
 	<ul class="round round-2">
 		<li class="spacer">&nbsp;</li>
 		
-		<li class="game game-top "> <span></span></li>
+		<li class="game game-top "> <%= match.winnerName %><span></span></li>
 		1st
 
 		<li class="spacer">&nbsp;</li>
 	</ul>
+		<% end %>
 </main>
 
 <h5>3rd/4th</h5>
@@ -95,15 +95,15 @@ li.game{
 
 		<li class="spacer">&nbsp;</li>
 		
-		<% end %>
 	</ul>
 	<ul class="round round-2">
 		<li class="spacer">&nbsp;</li>
 		
-		<li class="game game-top "> <span></span></li>
+		<li class="game game-top "><%= match.winnerName %> <span></span></li>
 		3rd
 
 		<li class="spacer">&nbsp;</li>
 	</ul>
+		<% end %>
 </main>
 
