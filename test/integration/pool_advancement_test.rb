@@ -1,9 +1,6 @@
 require 'test_helper'
 
 class PoolAdvancementTest < ActionDispatch::IntegrationTest
-  test "the truth" do
-    assert true
-  end
 
   def setup
     @tournament = Tournament.find(1)
@@ -30,6 +27,9 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      @match.finished = 1
      @match.winner_id = translateNameToId(winner)
      @match.win_type = "Decision"
+     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
+     @mat = @tournament.mats.first
+     @match.mat_id = @mat.id
      @match.save
   end
   def translateNameToId(wrestler)

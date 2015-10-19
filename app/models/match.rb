@@ -17,6 +17,7 @@ class Match < ActiveRecord::Base
 		@w2 = Wrestler.find(self.w2)
 		@w1.advanceInBracket
 		@w2.advanceInBracket
+		self.mat.assignNextMatch
 	   end
 	end
 
