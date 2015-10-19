@@ -39,6 +39,9 @@ GEM
     arel (6.0.0)
     bcrypt (3.1.10)
     builder (3.2.2)
+    bullet (4.14.9)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.9.0)
     cancancan (1.10.1)
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
@@ -149,6 +152,7 @@ GEM
     uglifier (2.7.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    uniform_notifier (1.9.0)
     warden (1.2.3)
       rack (>= 1.0)
 
@@ -156,6 +160,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bullet
   cancancan
   coffee-rails (~> 4.0.0)
   devise
