@@ -41,7 +41,7 @@ class StaticPagesController < ApplicationController
 	    	@weight = Weight.find(params[:weight])
 	    	@tournament = Tournament.find(@weight.tournament_id)
 	    	@matches = @tournament.matches.select{|m| m.weight_id == @weight.id}
-	    	@wrestlers = Wrestler.where(weight_id: @weight.id)
+	    	@wrestlers = Wrestler.where(weight_id: @weight.id).includes(:weight,:school)
 				if @matches.empty? or @wrestlers.empty?
 					redirect_to "/static_pages/noMatches?tournament=#{@tournament.id}"
 				else
