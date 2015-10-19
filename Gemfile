@@ -53,4 +53,5 @@ gem 'spring', :group => :development
 		gem 'rb-readline'
 	group :development do
       gem 'puma'
+	gem 'bullet'
     end
