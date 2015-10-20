@@ -21,7 +21,8 @@ Wrestling::Application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'static_pages#index'
+  root 'static_pages#home'
+  get 'static_pages/tournaments'
   get 'static_pages/brackets'
   get 'static_pages/all_brackets'
   get 'static_pages/weights'
