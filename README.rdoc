@@ -4,9 +4,7 @@ This application is being created to run a wrestling tournament.
 
 Public production page:
 
-<tt>https://wrestlingapp.cometwrestling.com</tt>
-
-<tt>https://wrestlingapp.herokuapp.com</tt>
+<tt>https://wrestlingdev.com</tt>
 
 
 Development details:
