@@ -1,6 +1,6 @@
 class StaticPagesController < ApplicationController
 
-	def index
+	def tournaments
 		@tournaments = Tournament.all
 	end
 	def up_matches
