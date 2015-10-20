@@ -25,14 +25,14 @@
 
                   <div id="page-content">
                     <div class="row no-margin">
-                      <div class="col-md-6">
+                      <div class="col-md-8">
                         <div id="view"><%= yield %></div>
                       </div>
+		      <div class="col-md-4">
+			<%= render 'layouts/rsidebar' %>
+		      </div>
                     </div>
                   </div>
-		<div class="col-md-3">
-			<%= render 'layouts/rsidebar' %>
-	        </div>
             </div>
         </body>
     <% end %>
