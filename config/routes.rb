@@ -36,7 +36,7 @@ Wrestling::Application.routes.draw do
   get 'static_pages/generate_matches'
   get 'static_pages/weigh_in'
   post 'static_pages/weigh_in'
-
+  get ENV['LOADERIO_API_KEY']
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
