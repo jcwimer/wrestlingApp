@@ -15,7 +15,7 @@ app:
 db:
   extends:
     file: docker-compose-common.yml
-    service: app
+    service: db
   environment:
     - MYSQL_ROOT_PASSWORD=password
   restart: always
