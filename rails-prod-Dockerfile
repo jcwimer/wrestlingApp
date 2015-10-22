@@ -49,7 +49,7 @@ RUN rm -rf /var/www
 
 WORKDIR /var/www/
 ADD . /var/www/
-RUN RAILS_ENV=production bundle exec rake db:migrate
+#RUN RAILS_ENV=production bundle exec rake db:migrate
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
 

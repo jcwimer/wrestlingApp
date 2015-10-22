@@ -1,0 +1,14 @@
+app:
+  extends:
+    file: docker-compose-common.yml
+    service: app
+  links:
+    - db
+  restart: always
+  env_file: prod.env
+db:
+  extends:
+    file: docker-compose-common.yml
+    service: app
+  restart: always
+  env_file: prod.env

@@ -27,7 +27,10 @@ test:
   timeout: 5000
 
 production:
-  adapter: sqlite3
-  database: db/production.sqlite3
-  pool: 5
-  timeout: 5000
+  adapter: mysql2
+  encoding: utf8
+  database: <%= ENV['WRESTLINGDEV_DB_NAME'] %>
+  username: <%= ENV['WRESTLINGDEV_DB_USR'] %>
+  password: <%= ENV['WRESTLINGDEV_DB_PWD'] %>
+  host: <%= ENV['WRESTLINGDEV_DB_HOST'] %>
+  port: <%= ENV['WRESTLINGDEV_DB_PORT'] %>

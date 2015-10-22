@@ -1,0 +1,21 @@
+app:
+  extends:
+    file: docker-compose-common.yml
+    service: app
+  environment:
+    - WRESTLINGDEV_DB_NAME=wrestlingtourney
+    - WRESTLINGDEV_DB_USR=root
+    - WRESTLINGDEV_DB_PWD=password
+    - WRESTLINGDEV_DB_HOST=db
+    - WRESTLINGDEV_DB_PORT=3306
+    - WRESTLINGDEV_DEVISE_SECRET_KEY=2f29d49db6704377ba263f7cb9db085b386bcb301c0cd501126a674686ab1a109754071165b08cd72af03cec4642a4dd04361c994462254dd5d85e9594e8b9aa
+  links:
+    - db
+  restart: always
+db:
+  extends:
+    file: docker-compose-common.yml
+    service: app
+  environment:
+    - MYSQL_ROOT_PASSWORD=password
+  restart: always
