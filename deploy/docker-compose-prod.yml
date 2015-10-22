@@ -9,6 +9,6 @@ app:
 db:
   extends:
     file: docker-compose-common.yml
-    service: app
+    service: db
   restart: always
   env_file: prod.env
