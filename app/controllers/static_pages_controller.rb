@@ -68,12 +68,11 @@ class StaticPagesController < ApplicationController
 	end
 
 	def createCustomWeights
-		if user_signed_in?
-		else
-			redirect_to root_path
-		end
 			@tournament = Tournament.find(params[:tournament])
-		  @custom = params[:customValue].to_s
+		if current_user != @tournament.user
+			redirect_to root_path
+		end  
+		@custom = params[:customValue].to_s
 			@tournament.createCustomWeights(@custom)
 
 		redirect_to "/tournaments/#{@tournament.id}"
@@ -92,6 +91,9 @@ class StaticPagesController < ApplicationController
 	    elsif user_signed_in?
 			if params[:tournament]
 	      		@tournament = Tournament.find(params[:tournament])
+			if current_user != @tournament.user
+				redirect_to root_path
+			end 	
 			end
 	    	if @tournament
 	 			@tournament.generateMatchups
@@ -108,6 +110,9 @@ class StaticPagesController < ApplicationController
     	end
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
+	     if current_user != @tournament.user
+			redirect_to root_path
+		end  
 	      @tournament_id = @tournament.id
 	      @tournament_name = @tournament.name
 		end

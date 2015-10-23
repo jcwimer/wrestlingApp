@@ -43,11 +43,10 @@ class WrestlersController < ApplicationController
   # POST /wrestlers
   # POST /wrestlers.json
   def create
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @wrestler = Wrestler.new(wrestler_params)
+    if current_user != @wrestler.tournament.user
+	redirect_to root_path
+    end
     @school = School.find(wrestler_params[:school_id])
     respond_to do |format|
       if @wrestler.save
@@ -63,10 +62,9 @@ class WrestlersController < ApplicationController
   # PATCH/PUT /wrestlers/1
   # PATCH/PUT /wrestlers/1.json
   def update
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
+   if current_user != @wrestler.tournament.user
+	redirect_to root_path
+    end 
     @school = School.find(@wrestler.school_id)
     respond_to do |format|
       if @wrestler.update(wrestler_params)
@@ -82,10 +80,9 @@ class WrestlersController < ApplicationController
   # DELETE /wrestlers/1
   # DELETE /wrestlers/1.json
   def destroy
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
+   if current_user != @wrestler.tournament.user
+	redirect_to root_path
+    end 
     @school = School.find(@wrestler.school_id)
     @wrestler.destroy
     respond_to do |format|

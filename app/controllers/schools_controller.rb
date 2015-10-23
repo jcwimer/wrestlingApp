@@ -32,12 +32,11 @@ class SchoolsController < ApplicationController
   # POST /schools
   # POST /schools.json
   def create
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @school = School.new(school_params)
     @tournament = Tournament.find(school_params[:tournament_id])
+    if current_user != @tournament.user
+	redirect_to root_path
+    end
     respond_to do |format|
       if @school.save
         format.html { redirect_to @tournament, notice: 'School was successfully created.' }
@@ -52,11 +51,10 @@ class SchoolsController < ApplicationController
   # PATCH/PUT /schools/1
   # PATCH/PUT /schools/1.json
   def update
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @tournament = Tournament.find(@school.tournament_id)
+    if current_user != @tournament.user
+	redirect_to root_path
+    end
     respond_to do |format|
       if @school.update(school_params)
         format.html { redirect_to @tournament, notice: 'School was successfully updated.' }
@@ -71,11 +69,10 @@ class SchoolsController < ApplicationController
   # DELETE /schools/1
   # DELETE /schools/1.json
   def destroy
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @tournament = Tournament.find(@school.tournament_id)
+    if current_user != @tournament.user
+	redirect_to root_path
+    end
     @school.destroy
     respond_to do |format|
       format.html { redirect_to @tournament }

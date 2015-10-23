@@ -19,12 +19,12 @@ class MatchesController < ApplicationController
 
   # GET /matches/1/edit
   def edit
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     if params[:match]
       @match = Match.find (params[:match])
+    end
+    if current_user == @match.tournament.user
+    else
+      redirect_to root_path
     end
     if @match
       @w1 = Wrestler.find(@match.w1)
@@ -55,7 +55,7 @@ class MatchesController < ApplicationController
   # PATCH/PUT /matches/1
   # PATCH/PUT /matches/1.json
   def update
-    if user_signed_in?
+    if current_user == @match.tournament.user
     else
       redirect_to root_path
     end

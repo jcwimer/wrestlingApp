@@ -6,8 +6,8 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 if Rails.env.development?
-	User.create(email: 'test@test.com', password: 'password', password_confirmation: 'password')
-	Tournament.create(id: 200, name: 'test', address: 'some place', director: 'some guy', director_email: 'hismail@email.com', tournament_type: 'Pool to bracket')
+	User.create(id: 1, email: 'test@test.com', password: 'password', password_confirmation: 'password')
+	Tournament.create(id: 200, name: 'test', address: 'some place', director: 'some guy', director_email: 'hismail@email.com', tournament_type: 'Pool to bracket', user_id: 1)
 	School.create(id: 200, name: 'Central Crossing', tournament_id: 200)
 	School.create(id: 201, name: 'Turd Town', tournament_id: 200)
 	School.create(id: 202, name: 'Shit Show', tournament_id: 200)

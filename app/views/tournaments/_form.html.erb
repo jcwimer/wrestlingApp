@@ -33,6 +33,7 @@
   </div>
     <br>
     <br>
+  <%= f.hidden_field :user_id, :value => current_user.id %>
   <div class="actions">
     <%= f.submit 'Submit',:class=>"btn btn-success" %>
   </div>

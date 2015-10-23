@@ -37,13 +37,11 @@ class WeightsController < ApplicationController
   # POST /weights
   # POST /weights.json
   def create
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @weight = Weight.new(weight_params)
     @tournament = Tournament.find(weight_params[:tournament_id])
-
+    if current_user != @tournament.user
+	redirect_to root_path
+    end
       respond_to do |format|
         if @weight.save
           format.html { redirect_to @tournament, notice: 'Weight was successfully created.' }
@@ -58,11 +56,10 @@ class WeightsController < ApplicationController
   # PATCH/PUT /weights/1
   # PATCH/PUT /weights/1.json
   def update
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @tournament = Tournament.find(@weight.tournament_id)
+   if current_user != @tournament.user
+	redirect_to root_path
+    end 
     respond_to do |format|
       if @weight.update(weight_params)
         format.html { redirect_to @tournament, notice: 'Weight was successfully updated.' }
@@ -77,11 +74,10 @@ class WeightsController < ApplicationController
   # DELETE /weights/1
   # DELETE /weights/1.json
   def destroy
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @tournament = Tournament.find(@weight.tournament_id)
+   if current_user != @tournament.user
+	redirect_to root_path
+    end 
     @weight.destroy
     respond_to do |format|
       format.html { redirect_to @tournament }

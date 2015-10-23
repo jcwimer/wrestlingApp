@@ -18,6 +18,9 @@ class MatsController < ApplicationController
     if params[:tournament]
       @tournament_field = params[:tournament]
       @tournament = Tournament.find(params[:tournament])
+      if current_user != @tournament.user
+	redirect_to root_path
+      end
     end
   end
 
@@ -29,12 +32,11 @@ class MatsController < ApplicationController
   # POST /mats
   # POST /mats.json
   def create
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @mat = Mat.new(mat_params)
     @tournament = Tournament.find(mat_params[:tournament_id])
+    if current_user != @tournament.user
+	redirect_to root_path
+    end
     respond_to do |format|
       if @mat.save
         format.html { redirect_to @tournament, notice: 'Mat was successfully created.' }
@@ -49,11 +51,10 @@ class MatsController < ApplicationController
   # PATCH/PUT /mats/1
   # PATCH/PUT /mats/1.json
   def update
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @tournament = Tournament.find(@mat.tournament_id)
+    if current_user != @tournament.user
+	redirect_to root_path
+    end
     respond_to do |format|
       if @mat.update(mat_params)
         format.html { redirect_to @tournament, notice: 'Mat was successfully updated.' }
@@ -68,11 +69,10 @@ class MatsController < ApplicationController
   # DELETE /mats/1
   # DELETE /mats/1.json
   def destroy
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
     @tournament = Tournament.find(@mat.tournament_id)
+    if current_user != @tournament.user
+	redirect_to root_path
+    end 
     @mat.destroy
     respond_to do |format|
       format.html { redirect_to @tournament }

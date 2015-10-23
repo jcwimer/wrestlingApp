@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150630170119) do
+ActiveRecord::Schema.define(version: 20151023123932) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "w1"
@@ -66,7 +66,10 @@ ActiveRecord::Schema.define(version: 20150630170119) do
     t.datetime "updated_at"
     t.text     "tournament_type"
     t.text     "weigh_in_ref"
+    t.integer  "user_id"
   end
+
+  add_index "tournaments", ["user_id"], name: "index_tournaments_on_user_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
