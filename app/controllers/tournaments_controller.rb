@@ -1,5 +1,6 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [:show, :edit, :update, :destroy]
+  before_filter :check_access, only: [:update,:edit,:destroy]
 
   # GET /tournaments
   # GET /tournaments.json
@@ -46,9 +47,6 @@ class TournamentsController < ApplicationController
   # PATCH/PUT /tournaments/1
   # PATCH/PUT /tournaments/1.json
   def update
-   if current_user != @tournament.user
-			redirect_to root_path
-		end  
     respond_to do |format|
       if @tournament.update(tournament_params)
         format.html { redirect_to @tournament, notice: 'Tournament was successfully updated.' }
@@ -63,9 +61,6 @@ class TournamentsController < ApplicationController
   # DELETE /tournaments/1
   # DELETE /tournaments/1.json
   def destroy
-  if current_user != @tournament.user
-			redirect_to root_path
-		end  
     @tournament.destroy
     respond_to do |format|
       format.html { redirect_to tournaments_url }
@@ -81,6 +76,11 @@ class TournamentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def tournament_params
-      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref)
+      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id)
     end
+  def check_access
+    if current_user != @tournament.user
+	redirect_to root_path
+    end
+  end
 end

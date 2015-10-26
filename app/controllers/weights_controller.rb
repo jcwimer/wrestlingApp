@@ -1,5 +1,6 @@
 class WeightsController < ApplicationController
   before_action :set_weight, only: [:show, :edit, :update, :destroy]
+  before_filter :check_access, only: [:new,:create,:update,:destroy]
 
   # GET /weights
   # GET /weights.json
@@ -95,4 +96,15 @@ class WeightsController < ApplicationController
     def weight_params
       params.require(:weight).permit(:max, :tournament_id, :mat_id)
     end
+    def check_access
+	if params[:tournament]
+	   @tournament = params[:tournament]
+	else
+	   @tournament = @weight.tournament
+	end
+	if current_user != @tournament.user
+	  redirect_to root_path
+	end
+    end
+
 end

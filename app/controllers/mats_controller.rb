@@ -1,6 +1,6 @@
 class MatsController < ApplicationController
   before_action :set_mat, only: [:show, :edit, :update, :destroy]
-
+  before_filter :check_access, only: [:new,:create,:update,:destroy]
   # GET /mats
   # GET /mats.json
   def index
@@ -18,9 +18,6 @@ class MatsController < ApplicationController
     if params[:tournament]
       @tournament_field = params[:tournament]
       @tournament = Tournament.find(params[:tournament])
-      if current_user != @tournament.user
-	redirect_to root_path
-      end
     end
   end
 
@@ -34,9 +31,6 @@ class MatsController < ApplicationController
   def create
     @mat = Mat.new(mat_params)
     @tournament = Tournament.find(mat_params[:tournament_id])
-    if current_user != @tournament.user
-	redirect_to root_path
-    end
     respond_to do |format|
       if @mat.save
         format.html { redirect_to @tournament, notice: 'Mat was successfully created.' }
@@ -52,9 +46,6 @@ class MatsController < ApplicationController
   # PATCH/PUT /mats/1.json
   def update
     @tournament = Tournament.find(@mat.tournament_id)
-    if current_user != @tournament.user
-	redirect_to root_path
-    end
     respond_to do |format|
       if @mat.update(mat_params)
         format.html { redirect_to @tournament, notice: 'Mat was successfully updated.' }
@@ -70,9 +61,6 @@ class MatsController < ApplicationController
   # DELETE /mats/1.json
   def destroy
     @tournament = Tournament.find(@mat.tournament_id)
-    if current_user != @tournament.user
-	redirect_to root_path
-    end 
     @mat.destroy
     respond_to do |format|
       format.html { redirect_to @tournament }
@@ -89,5 +77,16 @@ class MatsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def mat_params
       params.require(:mat).permit(:name, :tournament_id)
+    end
+
+    def check_access
+	if params[:tournament]
+	   @tournament = params[:tournament]
+	else
+	   @tournament = @mat.tournament
+	end
+	if current_user != @tournament.user
+	  redirect_to root_path
+	end
     end
 end

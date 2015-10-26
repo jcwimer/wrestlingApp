@@ -1,7 +1,7 @@
 <p id="notice"><%= notice %></p>
 
 <%= link_to "Back to #{@school.name}", "/schools/#{@school.id}" %> |
-<% if user_signed_in? %>
+<% if tournament_permissions(@wrestler.tournament)  %>
   <%= link_to "Edit #{@wrestler.name}", edit_wrestler_path(@wrestler) %> |
 <% end %>
 

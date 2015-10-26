@@ -2,13 +2,12 @@ class Tournament < ActiveRecord::Base
 
   include GeneratesLoserNames
   include GeneratesTournamentMatches
-
+	belongs_to :user
 	has_many :schools, dependent: :destroy
 	has_many :weights, dependent: :destroy
 	has_many :mats, dependent: :destroy
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
-	belongs_to :user
 
 	def tournament_types
 		["Pool to bracket"]
@@ -49,5 +48,4 @@ class Tournament < ActiveRecord::Base
 			end
 		end
 	end
-
 end

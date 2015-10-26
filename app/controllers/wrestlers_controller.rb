@@ -1,5 +1,6 @@
 class WrestlersController < ApplicationController
   before_action :set_wrestler, only: [:show, :edit, :update, :destroy]
+  before_filter :check_access, only: [:new,:create,:update,:destroy]
 
   # GET /wrestlers
   # GET /wrestlers.json
@@ -101,4 +102,15 @@ class WrestlersController < ApplicationController
     def wrestler_params
       params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win, :season_loss,:criteria,:extra,:offical_weight)
     end
+    def check_access
+	if params[:tournament]
+	   @tournament = params[:tournament]
+	else
+	   @tournament = @wrestler.tournament
+	end
+	if current_user != @tournament.user
+	  redirect_to root_path
+	end
+    end
+
 end

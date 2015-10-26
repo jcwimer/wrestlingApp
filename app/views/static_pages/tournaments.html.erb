@@ -23,7 +23,7 @@
       <tr>
         <td><%= tournament.name %></td>
         <td><%= link_to 'Show', tournament, :class=>"btn btn-default" %>
-          <% if user_signed_in? %>
+          <% if tournament_permissions(tournament) %>
             <%= link_to 'Edit', edit_tournament_path(tournament), :class=>"btn btn-primary" %>
             <%= link_to 'Destroy', tournament, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
           <% end %>

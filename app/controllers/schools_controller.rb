@@ -1,5 +1,6 @@
 class SchoolsController < ApplicationController
   before_action :set_school, only: [:show, :edit, :update, :destroy]
+  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
 
   # GET /schools
   # GET /schools.json
@@ -34,9 +35,6 @@ class SchoolsController < ApplicationController
   def create
     @school = School.new(school_params)
     @tournament = Tournament.find(school_params[:tournament_id])
-    if current_user != @tournament.user
-	redirect_to root_path
-    end
     respond_to do |format|
       if @school.save
         format.html { redirect_to @tournament, notice: 'School was successfully created.' }
@@ -52,9 +50,6 @@ class SchoolsController < ApplicationController
   # PATCH/PUT /schools/1.json
   def update
     @tournament = Tournament.find(@school.tournament_id)
-    if current_user != @tournament.user
-	redirect_to root_path
-    end
     respond_to do |format|
       if @school.update(school_params)
         format.html { redirect_to @tournament, notice: 'School was successfully updated.' }
@@ -70,9 +65,6 @@ class SchoolsController < ApplicationController
   # DELETE /schools/1.json
   def destroy
     @tournament = Tournament.find(@school.tournament_id)
-    if current_user != @tournament.user
-	redirect_to root_path
-    end
     @school.destroy
     respond_to do |format|
       format.html { redirect_to @tournament }
@@ -90,4 +82,16 @@ class SchoolsController < ApplicationController
     def school_params
       params.require(:school).permit(:name, :score, :tournament_id)
     end
+
+    def check_access
+	if params[:tournament]
+	   @tournament = params[:tournament]
+	else
+	   @tournament = @school.tournament
+	end
+	if current_user != @tournament.user
+	  redirect_to root_path
+	end
+    end
+
 end

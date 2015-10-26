@@ -7,7 +7,7 @@
         <br>
     <% end %>
     <br>
-    <% if user_signed_in? %>
+    <% if tournament_permissions(@tournament) %>
         <%= form_for(@tournament) do |f| %>
             <div class="field">
                 <%= f.label :weigh_in_ref %><br>
@@ -56,7 +56,7 @@
       	</tbody>
     </table>
     <%= hidden_field_tag :tournament, @tournament_id %>
-    		<% if user_signed_in? %>
+    		<% if tournament_permissions(@tournament)   %>
     	      <%= submit_tag "Save", :class=>"btn btn-success"%>
     	    <% end %>
         <% end %>

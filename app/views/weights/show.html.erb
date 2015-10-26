@@ -3,7 +3,7 @@
 <h1>Weight Class:<%= @weight.max %></h1>
  
  <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %> |
-<% if user_signed_in? %>
+<% if tournament_permissions(@tournament)  %>
   <%= link_to "Edit #{@weight.max} Weight Class", edit_weight_path(@weight), :class=>"btn btn-primary" %>
 <% end %>
 
@@ -19,7 +19,7 @@
 			<th>Record</th>
 			<th>Seed Criteria</th>
 			<th>Extra?</th>
-			<% if user_signed_in? %><th>Actions for wrestler</th><% end %>
+			<% if tournament_permissions(@tournament)  %><th>Actions for wrestler</th><% end %>
 		</tr>
 	</thead>
 	<tbody>
@@ -30,7 +30,7 @@
       				<td><%= wrestler.name %></td>
       				<td><%= School.find(wrestler.school_id).name %></td>
       				<td>
-                <% if user_signed_in? %>
+                <% if tournament_permissions(@tournament)  %>
                   <%= fields_for "wrestler[]", wrestler do |w| %>
                     <%= w.text_field :original_seed %>
                   <% end %> 
@@ -43,7 +43,7 @@
       				<td><% if wrestler.extra? == true %>
            				 Yes
           			<% end %></td>
-      				<% if user_signed_in? %> 
+      				<% if tournament_permissions(@tournament)  %> 
                                         <td><%= link_to 'Show', wrestler , :class=>"btn btn-default" %>
       					<%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' } , :class=>"btn btn-danger" %></td>
 	      			<% end %>
@@ -52,7 +52,7 @@
     	<% end %>
   	</tbody>
 </table>
-		<% if user_signed_in? %>
+		<% if tournament_permissions(@tournament)  %>
 	      <%= submit_tag "Save", :class=>"btn btn-success"%>
 	    <% end %>
     <% end %>

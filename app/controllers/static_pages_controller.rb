@@ -1,7 +1,8 @@
 class StaticPagesController < ApplicationController
+  before_filter :check_access, only: [:createCustomWeights,:generate_matches,:weigh_in]
 
 	def tournaments
-		@tournaments = Tournament.all
+		@tournaments = Tournament.all.includes(:user)
 	end
 	def up_matches
 		if params[:tournament]
@@ -69,9 +70,6 @@ class StaticPagesController < ApplicationController
 
 	def createCustomWeights
 			@tournament = Tournament.find(params[:tournament])
-		if current_user != @tournament.user
-			redirect_to root_path
-		end  
 		@custom = params[:customValue].to_s
 			@tournament.createCustomWeights(@custom)
 
@@ -86,33 +84,20 @@ class StaticPagesController < ApplicationController
 	end
 
 	def generate_matches
-		if !user_signed_in?
-	      redirect_to root_path
-	    elsif user_signed_in?
 			if params[:tournament]
 	      		@tournament = Tournament.find(params[:tournament])
-			if current_user != @tournament.user
-				redirect_to root_path
-			end 	
 			end
 	    	if @tournament
 	 			@tournament.generateMatchups
 	    	end
-		end
 	end
 	
 	def weigh_in
-		if !user_signed_in?
-	      redirect_to root_path
-	    end
 		if params[:wrestler]
     		 Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
     	end
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
-	     if current_user != @tournament.user
-			redirect_to root_path
-		end  
 	      @tournament_id = @tournament.id
 	      @tournament_name = @tournament.name
 		end
@@ -129,5 +114,12 @@ class StaticPagesController < ApplicationController
 	    	@wrestlers = @weight.wrestlers
 	    	
 	    end
+	end
+
+	private
+	def check_access
+	  if params[:tournament]
+	     @tournament = params[:tournament]	
+	  end
 	end
 end
