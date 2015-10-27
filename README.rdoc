@@ -2,17 +2,17 @@
 
 This application is being created to run a wrestling tournament.
 
-License:
+<b>License:</b>
 
 MIT License
 
 
-Public production page:
+<b>Public production page:</b>
 
 <tt>https://wrestlingdev.com</tt>
 
 
-Development details:
+<b>Development details:</b>
 
 * Ruby 2.2.0
 
@@ -26,7 +26,7 @@ Development details:
 
 * Development login email: <tt>test@test.com</tt> password: <tt>password</tt>
 
-Docker instructions:
+<b>Docker instructions:</b>
 
 * Building and running the image: <tt>bash rails-dev.sh wrestlingapp</tt> This will mount your local directory to /rails inside the container and will open port 3000 to port 3000 on your local machine.
 
@@ -35,6 +35,6 @@ Docker instructions:
 * Production docker image: Run <tt>bash rails-prod.sh wrestlingapp</tt>. This will create a self-signed ssl certificate and set up wrestlingapp on passenger/apache. The container will run with port 80 and port 443 open and will have a restart policy of always.
 
 
-Public Trello page
+<b>Public Trello page:</b>
 
 <tt>https://trello.com/b/OIF9s2Gw</tt>
