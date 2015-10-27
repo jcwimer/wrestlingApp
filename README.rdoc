@@ -2,6 +2,8 @@
 
 This application is being created to run a wrestling tournament.
 
+
+
 Public production page:
 
 <tt>https://wrestlingdev.com</tt>
@@ -28,20 +30,6 @@ Docker instructions:
 * After running the above script, you'll be presented a shell. You'll need to run <tt>bash rails-dev-db.sh</tt> to set up the development db's. After those are set up, you can run <tt>rake test</tt> to run the tests or <tt>rails s -b 0.0.0.0</tt> to run a development server. You can also run any other rails commands from here.
 
 * Production docker image: Run <tt>bash rails-prod.sh wrestlingapp</tt>. This will create a self-signed ssl certificate and set up wrestlingapp on passenger/apache. The container will run with port 80 and port 443 open and will have a restart policy of always.
-
-What the app does now:
-
-* Allows tournaments to be set up by someone logged in
-
-* Allows schools, wrestlers, weights, and mats to be created by someone logged in
-
-* Generates matchups for a pool to bracket type tournament for 2-16 wrestlers
-
-* Assigns bout numbers for each match based on round and weight class
-
-* Shows view of pools/brackets
-
-* Assigns matches to a mat based on next available bout number
 
 
 Public Trello page
