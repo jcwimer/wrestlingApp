@@ -2,12 +2,6 @@ class WrestlersController < ApplicationController
   before_action :set_wrestler, only: [:show, :edit, :update, :destroy]
   before_filter :check_access, only: [:new,:create,:update,:destroy]
 
-  # GET /wrestlers
-  # GET /wrestlers.json
-  def index
-    @wrestlers = Wrestler.all
-    @school = School.find(@wrestler.school_id)
-  end
 
   # GET /wrestlers/1
   # GET /wrestlers/1.json

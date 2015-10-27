@@ -2,11 +2,6 @@ class SchoolsController < ApplicationController
   before_action :set_school, only: [:show, :edit, :update, :destroy]
   before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
 
-  # GET /schools
-  # GET /schools.json
-  def index
-    @schools = School.all
-  end
 
   # GET /schools/1
   # GET /schools/1.json

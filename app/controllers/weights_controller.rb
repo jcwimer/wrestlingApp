@@ -2,11 +2,6 @@ class WeightsController < ApplicationController
   before_action :set_weight, only: [:show, :edit, :update, :destroy]
   before_filter :check_access, only: [:new,:create,:update,:destroy]
 
-  # GET /weights
-  # GET /weights.json
-  def index
-    @weights = Weight.all
-  end
 
   # GET /weights/1
   # GET /weights/1.json

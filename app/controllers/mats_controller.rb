@@ -1,11 +1,6 @@
 class MatsController < ApplicationController
   before_action :set_mat, only: [:show, :edit, :update, :destroy]
   before_filter :check_access, only: [:new,:create,:update,:destroy]
-  # GET /mats
-  # GET /mats.json
-  def index
-    @mats = Mat.all
-  end
 
   # GET /mats/1
   # GET /mats/1.json
