@@ -2,6 +2,9 @@
 
 This application is being created to run a wrestling tournament.
 
+License:
+
+MIT License
 
 
 Public production page:
