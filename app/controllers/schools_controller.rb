@@ -6,8 +6,8 @@ class SchoolsController < ApplicationController
   # GET /schools/1
   # GET /schools/1.json
   def show
-    @wrestlers = Wrestler.where(school_id: @school.id)
-    @tournament = Tournament.find(@school.tournament_id)
+    @wrestlers = @school.wrestlers
+    @tournament = @school.tournament
   end
 
   # GET /schools/new
@@ -44,7 +44,7 @@ class SchoolsController < ApplicationController
   # PATCH/PUT /schools/1
   # PATCH/PUT /schools/1.json
   def update
-    @tournament = Tournament.find(@school.tournament_id)
+    @tournament = @school.tournament
     respond_to do |format|
       if @school.update(school_params)
         format.html { redirect_to @tournament, notice: 'School was successfully updated.' }
@@ -59,7 +59,7 @@ class SchoolsController < ApplicationController
   # DELETE /schools/1
   # DELETE /schools/1.json
   def destroy
-    @tournament = Tournament.find(@school.tournament_id)
+    @tournament = @school.tournament
     @school.destroy
     respond_to do |format|
       format.html { redirect_to @tournament }
