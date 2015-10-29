@@ -116,6 +116,10 @@ class StaticPagesController < ApplicationController
 	    end
 	end
 
+
+	def not_allowed
+	end
+
 	private
 	def check_access
 	  if params[:tournament]

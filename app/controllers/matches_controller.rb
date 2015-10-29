@@ -25,7 +25,7 @@ class MatchesController < ApplicationController
   def update
     respond_to do |format|
       if @match.update(match_params)
-        format.html { redirect_to root_path, notice: 'Match was successfully updated.' }
+        format.html { redirect_to tournament_path(@match.tournament_id), notice: 'Match was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -48,7 +48,7 @@ class MatchesController < ApplicationController
 
     def check_access
 	if current_user != @match.tournament.user
-	  redirect_to root_path
+	  redirect_to '/static_pages/not_allowed'
         end
     end
 end
