@@ -1,6 +1,6 @@
 class WeightsController < ApplicationController
   before_action :set_weight, only: [:show, :edit, :update, :destroy]
-  before_filter :check_access, only: [:new,:create,:update,:destroy]
+  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
 
 
   # GET /weights/1
@@ -91,15 +91,19 @@ class WeightsController < ApplicationController
     def weight_params
       params.require(:weight).permit(:max, :tournament_id, :mat_id)
     end
-    def check_access
+   def check_access
 	if params[:tournament]
-	   @tournament = params[:tournament]
-	else
+	   @tournament = Tournament.find(params[:tournament])
+	elsif params[:weight]
+	   @weight = Weight.new(weight_params)
+	   @tournament = Tournament.find(@weight.tournament_id)
+	elsif @weight
 	   @tournament = @weight.tournament
 	end
 	if current_user != @tournament.user
-	  redirect_to root_path
+	  redirect_to '/static_pages/not_allowed'
 	end
     end
+
 
 end

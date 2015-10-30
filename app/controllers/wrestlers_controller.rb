@@ -1,6 +1,6 @@
 class WrestlersController < ApplicationController
   before_action :set_wrestler, only: [:show, :edit, :update, :destroy]
-  before_filter :check_access, only: [:new,:create,:update,:destroy]
+  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
 
 
   # GET /wrestlers/1
@@ -39,9 +39,6 @@ class WrestlersController < ApplicationController
   # POST /wrestlers.json
   def create
     @wrestler = Wrestler.new(wrestler_params)
-    if current_user != @wrestler.tournament.user
-	redirect_to root_path
-    end
     @school = School.find(wrestler_params[:school_id])
     respond_to do |format|
       if @wrestler.save
@@ -57,9 +54,6 @@ class WrestlersController < ApplicationController
   # PATCH/PUT /wrestlers/1
   # PATCH/PUT /wrestlers/1.json
   def update
-   if current_user != @wrestler.tournament.user
-	redirect_to root_path
-    end 
     @school = School.find(@wrestler.school_id)
     respond_to do |format|
       if @wrestler.update(wrestler_params)
@@ -75,9 +69,6 @@ class WrestlersController < ApplicationController
   # DELETE /wrestlers/1
   # DELETE /wrestlers/1.json
   def destroy
-   if current_user != @wrestler.tournament.user
-	redirect_to root_path
-    end 
     @school = School.find(@wrestler.school_id)
     @wrestler.destroy
     respond_to do |format|
@@ -97,14 +88,18 @@ class WrestlersController < ApplicationController
       params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win, :season_loss,:criteria,:extra,:offical_weight)
     end
     def check_access
-	if params[:tournament]
-	   @tournament = params[:tournament]
-	else
+	if params[:school]
+	   @school = School.find(params[:school])
+	   @tournament = Tournament.find(@school.tournament.id)
+	elsif params[:wrestler]
+	   @wrestler = Wrestler.new(wrestler_params)
+	   @school = School.find(@wrestler.school_id)
+	   @tournament = Tournament.find(@school.tournament.id)
+	elsif @wrestler
 	   @tournament = @wrestler.tournament
 	end
 	if current_user != @tournament.user
-	  redirect_to root_path
+	  redirect_to '/static_pages/not_allowed'
 	end
     end
-
 end

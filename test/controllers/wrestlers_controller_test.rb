@@ -1,11 +1,113 @@
 require 'test_helper'
 
 class WrestlersControllerTest < ActionController::TestCase
-  # setup do
-  #   @wrestler = wrestlers(:one)
-  # end
+  include Devise::TestHelpers
 
-  test "the truth" do
-     assert true
-   end
+  setup do
+     @tournament = Tournament.find(1)
+     @tournament.generateMatchups
+     @school = @tournament.schools.first
+     @wrestler = @school.wrestlers.first
+  end
+ 
+  def create
+    post :create, wrestler: {name: 'Testaasdf', weight_id: 1, school_id: 1}
+  end
+
+  def new
+    get :new, school: @wrestler.school.id
+  end
+
+  def post_update
+    patch :update, id: @wrestler.id, wrestler: {name: @wrestler.name, weight_id: 1, school_id: 1}
+  end
+
+  def destroy
+    delete :destroy, id: @wrestler.id
+  end
+
+  def get_edit
+    get :edit, id: @wrestler.id
+  end
+  
+  def sign_in_owner
+    sign_in users(:one)
+  end
+
+  def sign_in_non_owner
+    sign_in users(:two)
+  end
+
+  def success
+    assert_response :success
+  end
+
+  def redirect
+    assert_redirected_to '/static_pages/not_allowed'
+  end
+
+  test "logged in tournament owner should get edit wrestler page" do
+    sign_in_owner
+    get_edit
+    success
+  end
+
+  test "logged in user should not get edit wrestler page if not owner" do
+    sign_in_non_owner
+    get_edit
+    redirect
+  end
+
+  test "non logged in user should not get edit wrestler page" do
+    get_edit
+    redirect
+  end
+
+  test "non logged in user should get post update wrestler" do
+    post_update
+    redirect
+  end 
+
+  test "logged in user should not post update wrestler if not owner" do
+    sign_in_non_owner
+    post_update
+    redirect
+  end 
+
+  test "logged in tournament owner should post update wrestler" do
+    sign_in_owner
+    post_update
+    assert_redirected_to school_path(@school.id) 
+  end
+
+  test "logged in tournament owner can create a new wrestler" do
+    sign_in_owner
+    new
+    success 
+    create
+    assert_redirected_to school_path(@school.id) 
+  end
+
+  test "logged in user not tournament owner cannot create a wrestler" do
+    sign_in_non_owner
+    new
+    redirect
+    create
+    redirect
+  end
+
+  test "logged in tournament owner can destroy a wrestler" do
+    sign_in_owner
+    destroy
+    assert_redirected_to school_path(@school.id)
+  end
+
+  test "logged in user not tournament owner cannot destroy wrestler" do
+    sign_in_non_owner
+    destroy
+    redirect
+  end
+
+
+
 end

@@ -1,6 +1,6 @@
 class MatsController < ApplicationController
   before_action :set_mat, only: [:show, :edit, :update, :destroy]
-  before_filter :check_access, only: [:new,:create,:update,:destroy]
+  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
 
   # GET /mats/1
   # GET /mats/1.json
@@ -76,12 +76,15 @@ class MatsController < ApplicationController
 
     def check_access
 	if params[:tournament]
-	   @tournament = params[:tournament]
-	else
+	   @tournament = Tournament.find(params[:tournament])
+	elsif params[:mat]
+	   @mat = Mat.new(mat_params) 
+	   @tournament = Tournament.find(@mat.tournament_id)
+	elsif @mat
 	   @tournament = @mat.tournament
 	end
 	if current_user != @tournament.user
-	  redirect_to root_path
+	  redirect_to '/static_pages/not_allowed'
 	end
     end
 end

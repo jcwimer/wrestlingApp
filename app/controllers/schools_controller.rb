@@ -80,12 +80,15 @@ class SchoolsController < ApplicationController
 
     def check_access
 	if params[:tournament]
-	   @tournament = params[:tournament]
-	else
+	   @tournament = Tournament.find(params[:tournament])
+	elsif params[:school]
+	   @school = School.new(school_params)
+	   @tournament = Tournament.find(@school.tournament_id)
+	elsif @school
 	   @tournament = @school.tournament
 	end
 	if current_user != @tournament.user
-	  redirect_to root_path
+	  redirect_to '/static_pages/not_allowed'
 	end
     end
 
