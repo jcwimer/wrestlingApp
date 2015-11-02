@@ -6,7 +6,7 @@ class StaticPagesController < ApplicationController
 	end
 	def up_matches
 		if params[:tournament]
-	      @tournament = Tournament.where(:id => params[:tournament]).includes(:matches).first
+	      @tournament = Tournament.where(:id => params[:tournament]).includes(:matches,:mats).first
 		end
 	    if @tournament
 				@matches = @tournament.matches.where(mat_id: nil).order('bout_number ASC').limit(10).includes(:wrestlers)
