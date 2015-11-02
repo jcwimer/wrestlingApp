@@ -41,7 +41,7 @@ class Match < ActiveRecord::Base
 
 	def w1_name
 		if self.w1
-			Wrestler.find(self.w1).name
+			wrestler1.name
 		else
 			self.loser1_name
 		end
@@ -49,7 +49,7 @@ class Match < ActiveRecord::Base
 
 	def w2_name
 		if self.w2
-			Wrestler.find(self.w2).name
+			wrestler2.name
 		else
 			self.loser2_name
 		end
