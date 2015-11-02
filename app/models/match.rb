@@ -14,8 +14,8 @@ class Match < ActiveRecord::Base
 
 	def advance_wrestlers
 	   if self.w1? && self.w2?	
-		@w1 = Wrestler.find(self.w1)
-		@w2 = Wrestler.find(self.w2)
+		@w1 = wrestler1
+		@w2 = wrestler2
 		@w1.advanceInBracket
 		@w2.advanceInBracket
 		self.mat.assignNextMatch
@@ -66,7 +66,7 @@ class Match < ActiveRecord::Base
 		end
 	end
 	def weight_max
-		Weight.find(self.weight_id).max
+		self.weight.max
 	end
 	
 	def replaceLoserNameWithWrestler(w,loserName)
@@ -81,7 +81,7 @@ class Match < ActiveRecord::Base
 	end
 	def poolNumber
 		if self.w1?
-			Wrestler.find(self.w1).generatePoolNumber
+			wrestler1.generatePoolNumber
 		end
 	end
 end

@@ -2,6 +2,7 @@ class Wrestler < ActiveRecord::Base
 	belongs_to :school
 	belongs_to :weight
 	has_one :tournament, through: :weight
+	has_many :matches, through: :weight
 	attr_accessor :poolNumber
 
 	before_save do
@@ -44,7 +45,7 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def allMatches
-		@matches = Match.where("w1 = ? or w2 = ?",self.id,self.id)
+		@matches = matches.select{|m| m.w1 == self.id or m.w2 == self.id}
 		return @matches
 	end
        

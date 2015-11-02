@@ -103,8 +103,7 @@ class Weight < ActiveRecord::Base
 	end
 
 	def bracket_size
-		@wrestlers = Wrestler.where(weight_id: self.id)
-		return @wrestlers.size
+		wrestlers.size
 	end
 
 	def pool_bracket_type
