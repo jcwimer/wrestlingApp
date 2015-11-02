@@ -32,11 +32,11 @@ class Match < ActiveRecord::Base
 	end
 
 	def wrestler1
-		wrestlers.where(id: self.w1)
+		wrestlers.select{|w| w.id == self.w1}.first
 	end
 
 	def wrestler2
-		wrestlers.where(id: self.w2)
+		wrestlers.select{|w| w.id == self.w2}.first
 	end
 
 	def w1_name
