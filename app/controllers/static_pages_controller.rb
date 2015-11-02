@@ -6,7 +6,7 @@ class StaticPagesController < ApplicationController
 	end
 	def up_matches
 		if params[:tournament]
-	      @tournament = Tournament.find(params[:tournament])
+	      @tournament = Tournament.where(:id => params[:tournament]).includes(:matches).first
 		end
 	    if @tournament
 				@matches = @tournament.matches.where(mat_id: nil).order('bout_number ASC').limit(10).includes(:wrestlers)
@@ -39,8 +39,8 @@ class StaticPagesController < ApplicationController
 
 	def brackets
 	    if params[:weight]
-	    	@weight = Weight.find(params[:weight]).includes(:matches,:wrestlers)
-	    	@tournament = Tournament.find(@weight.tournament_id)
+	    	@weight = Weight.where(:id => params[:weight]).includes(:matches,:wrestlers,:tournament).first
+	    	@tournament = @weight.tournament
 	    	@matches = @weight.matches
 	    	@wrestlers = @weight.wrestlers.includes(:school)
 				if @matches.empty? or @wrestlers.empty?
