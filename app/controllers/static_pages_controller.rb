@@ -2,15 +2,15 @@ class StaticPagesController < ApplicationController
   before_filter :check_access, only: [:createCustomWeights,:generate_matches,:weigh_in]
 
 	def tournaments
-		@tournaments = Tournament.all.includes(:user)
+		@tournaments = Tournament.all.includes(:user,:matches,:mats)
 	end
 	def up_matches
 		if params[:tournament]
 	      @tournament = Tournament.find(params[:tournament])
 		end
 	    if @tournament
-				@matches = @tournament.matches.where(mat_id: nil).order('bout_number ASC').limit(10)
-				@mats = @tournament.mats
+				@matches = @tournament.matches.where(mat_id: nil).order('bout_number ASC').limit(10).includes(:wrestlers)
+				@mats = @tournament.mats.includes(:matches)
 				if @tournament.matches.empty?
 					redirect_to "/static_pages/noMatches?tournament=#{@tournament.id}"
 				end

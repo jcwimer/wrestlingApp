@@ -2,6 +2,7 @@ class Match < ActiveRecord::Base
 	belongs_to :tournament
 	belongs_to :weight
 	belongs_to :mat
+	has_many :wrestlers, :through => :weight
 
 	after_save do 
 	   if self.finished == 1
@@ -28,6 +29,14 @@ class Match < ActiveRecord::Base
 		if self.finished == 1
 		  return "(#{self.score})"
 		end
+	end
+
+	def wrestler1
+		wrestlers.where(id: self.w1)
+	end
+
+	def wrestler2
+		wrestlers.where(id: self.w2)
 	end
 
 	def w1_name
