@@ -5,10 +5,12 @@ app:
   links:
     - db
   restart: always
-  env_file: prod.env
+  env_file: 
+    - ./prod.env
 db:
   extends:
     file: docker-compose-common.yml
     service: db
   restart: always
-  env_file: prod.env
+  env_file: 
+    - ./prod.env
