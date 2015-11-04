@@ -22,7 +22,7 @@ class SchoolsController < ApplicationController
   # GET /schools/1/edit
   def edit
     @tournament_field = @school.tournament_id
-    @tournament = Tournament.find(@school.tournament_id)
+    @tournament = @school.tournament
   end
 
   # POST /schools
@@ -70,7 +70,7 @@ class SchoolsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_school
-      @school = School.find(params[:id])
+      @school = School.where(:id => params[:id]).includes(:tournament,:wrestlers).first
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

@@ -6,7 +6,7 @@ class WrestlersController < ApplicationController
   # GET /wrestlers/1
   # GET /wrestlers/1.json
   def show
-    @school = School.find(@wrestler.school_id)
+    @school = @wrestler.school
   end
 
   # GET /wrestlers/new
@@ -20,9 +20,7 @@ class WrestlersController < ApplicationController
       @tournament = Tournament.find(@school.tournament_id)
     end
     if @tournament
-      @weight = Weight.where(tournament_id: @tournament.id)
-    else
-      @weight = Weight.all
+      @weights = Weight.where(tournament_id: @tournament.id)
     end
 
   end
@@ -30,9 +28,10 @@ class WrestlersController < ApplicationController
   # GET /wrestlers/1/edit
   def edit
     @school_field = @wrestler.school_id
-    @school = School.find(@wrestler.school_id)
-    @tournament = Tournament.find(@school.tournament_id)
-    @weight = Weight.where(tournament_id: @tournament.id)
+    @school = @wrestler.school
+    @tournament = @wrestler.tournament
+    @weight = @wrestler.weight
+    @weights = @tournament.weights
   end
 
   # POST /wrestlers
@@ -54,7 +53,7 @@ class WrestlersController < ApplicationController
   # PATCH/PUT /wrestlers/1
   # PATCH/PUT /wrestlers/1.json
   def update
-    @school = School.find(@wrestler.school_id)
+    @school = @wrestler.school
     respond_to do |format|
       if @wrestler.update(wrestler_params)
         format.html { redirect_to @school, notice: 'Wrestler was successfully updated.' }
@@ -69,7 +68,7 @@ class WrestlersController < ApplicationController
   # DELETE /wrestlers/1
   # DELETE /wrestlers/1.json
   def destroy
-    @school = School.find(@wrestler.school_id)
+    @school = @wrestler.school
     @wrestler.destroy
     respond_to do |format|
       format.html { redirect_to @school }
@@ -80,7 +79,7 @@ class WrestlersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_wrestler
-      @wrestler = Wrestler.find(params[:id])
+      @wrestler = Wrestler.where(:id => params[:id]).includes(:tournament,:school,:weight).first
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

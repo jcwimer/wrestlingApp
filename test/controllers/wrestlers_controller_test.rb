@@ -15,7 +15,7 @@ class WrestlersControllerTest < ActionController::TestCase
   end
 
   def new
-    get :new, school: @wrestler.school.id
+    get :new, school: 1
   end
 
   def post_update

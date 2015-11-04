@@ -97,18 +97,20 @@ class StaticPagesController < ApplicationController
     		 Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
     	end
 		if params[:tournament]
-	      @tournament = Tournament.find(params[:tournament])
+	      @tournament = Tournament.where(:id => params[:tournament]).includes(:weights).first
 	      @tournament_id = @tournament.id
 	      @tournament_name = @tournament.name
 		end
 	    if @tournament
-	    	@weights = Weight.where(tournament_id: @tournament.id)
+	    	@weights = @tournament.weights
 	    	@weights = @weights.sort_by{|x|[x.max]}
 	    end
 	    if params[:weight]
-	      @weight = Weight.find(params[:weight])
-	      @tournament_id = @weight.tournament_id
-	      @tournament_name = Tournament.find(@tournament_id).name
+	      @weight = Weight.where(:id => params[:weight]).includes(:tournament,:wrestlers).first
+	      @tournament_id = @weight.tournament.id
+	      @tournament_name = @weight.tournament.name
+	      @tournament = @weight.tournament
+	      @weights = @tournament.weights
 		end
 	    if @weight
 	    	@wrestlers = @weight.wrestlers

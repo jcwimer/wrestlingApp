@@ -9,8 +9,8 @@ class WeightsController < ApplicationController
     if params[:wrestler]
       Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
     end
-    @wrestlers = Wrestler.all
-    @tournament = Tournament.find(@weight.tournament_id)
+    @wrestlers = @weight.wrestlers
+    @tournament = @weight.tournament
 
   end
 
@@ -26,8 +26,8 @@ class WeightsController < ApplicationController
   # GET /weights/1/edit
   def edit
     @tournament_field = @weight.tournament_id
-    @mats = Mat.where(tournament_id: @weight.tournament.id)
-    @tournament = Tournament.find(@weight.tournament_id)
+    @tournament = @weight.tournament
+    @mats = @tournament.mats
   end
 
   # POST /weights
@@ -52,7 +52,7 @@ class WeightsController < ApplicationController
   # PATCH/PUT /weights/1
   # PATCH/PUT /weights/1.json
   def update
-    @tournament = Tournament.find(@weight.tournament_id)
+    @tournament = @weight.tournament
    if current_user != @tournament.user
 	redirect_to root_path
     end 
@@ -84,7 +84,7 @@ class WeightsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_weight
-      @weight = Weight.find(params[:id])
+      @weight = Weight.where(:id => params[:id]).includes(:tournament,:wrestlers).first
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

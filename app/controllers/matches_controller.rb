@@ -11,11 +11,11 @@ class MatchesController < ApplicationController
   # GET /matches/1/edit
   def edit
     if params[:match]
-      @match = Match.find (params[:match])
+      @match = Match.where(:id => params[:match]).includes(:wrestlers).first
     end
     if @match
-      @w1 = Wrestler.find(@match.w1)
-      @w2 = Wrestler.find(@match.w2)
+      @w1 = @match.wrestler1
+      @w2 = @match.wrestler2
     end
   end
 

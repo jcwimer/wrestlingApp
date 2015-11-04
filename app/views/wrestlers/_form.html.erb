@@ -21,12 +21,12 @@
   <% else %>
       <div class="field">
         <%= f.label 'School' %><br>
-        <%= f.collection_select :school_id, School.all, :id, :name %>
+        <%= f.collection_select :school_id, @tournament.schools, :id, :name %>
       </div>
   <% end %>
   <div class="field">
     <%= f.label 'Weight Class' %><br>
-    <%= f.collection_select :weight_id, @weight, :id, :max %>
+    <%= f.collection_select :weight_id, @weights, :id, :max %>
 
   </div>
   <div class="field">
