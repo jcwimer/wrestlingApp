@@ -22,22 +22,23 @@ Wrestling::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'static_pages#home'
-  get 'static_pages/tournaments'
   get 'static_pages/brackets'
   get 'static_pages/all_brackets'
-  get 'static_pages/weights'
   get 'admin/index'
-  get 'static_pages/up_matches'
   get 'static_pages/control_match'
   get 'static_pages/results'
-  get 'static_pages/team_scores'
-  get 'static_pages/noMatches'
   get 'static_pages/createCustomWeights'
-  get 'static_pages/generate_matches'
   get 'static_pages/weigh_in'
   post 'static_pages/weigh_in'
   get 'static_pages/not_allowed'
 
+
+  get 'tournaments/:id/generate_matches' => 'tournaments#generate_matches'
+  get 'tournaments/:id/weights' => 'tournaments#weights'
+  get 'tournaments/:id/team_scores' => 'tournaments#team_scores'
+  get 'tournaments/:id/up_matches' => 'tournaments#up_matches'
+  get 'tournaments/:id/no_matches' => 'tournaments#no_matches'
+  
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

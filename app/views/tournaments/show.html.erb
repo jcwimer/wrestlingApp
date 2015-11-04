@@ -2,7 +2,7 @@
 <% if tournament_permissions(@tournament)  %>
   <%= link_to "Edit #{@tournament.name}", edit_tournament_path(@tournament), :class=>"btn btn-primary" %> |
 <% end %>
-<%= link_to 'Back', '/static_pages/tournaments', :class=>"btn btn-default" %>
+<%= link_to 'Back', '/tournaments', :class=>"btn btn-default" %>
 
 <h1>
   <%= @tournament.name %>
@@ -31,7 +31,7 @@
 </p>
 <br>
 <% if tournament_permissions(@tournament)  %>
-<%= link_to "Generate Pool Matches" , "/static_pages/generate_matches?tournament=#{@tournament.id}", data: { confirm: 'Are you sure? This will delete all current matches.' }, :class=>"btn btn-success" %>
+<%= link_to "Generate Brackets" , "/tournaments/#{@tournament.id}/generate_matches", data: { confirm: 'Are you sure? This will delete all current matches.' }, :class=>"btn btn-success" %>
 <br><br>
 <%= link_to "Weigh In Page" , "/static_pages/weigh_in?tournament=#{@tournament.id}", :class=>"btn btn-primary" %>
 <br>

@@ -1,14 +1,19 @@
-<h1>Listing tournaments</h1>
-
-<table>
+<h1>Pick A Tournament</h1>
+<script>
+  $(document).ready(function() {
+     $('#tournamentList').dataTable();
+     pagingType: "bootstrap";
+  } );
+</script>
+<% if user_signed_in? %>
+  <%= link_to 'New Tournament', new_tournament_path, :class=>"btn btn-success" %>
+<% end %>
+</br>
+</br>
+<table class="display compact cell-border" id="tournamentList">
   <thead>
     <tr>
       <th>Name</th>
-      <th>Address</th>
-      <th>Director</th>
-      <th>Director email</th>
-      <th></th>
-      <th></th>
       <th></th>
     </tr>
   </thead>
@@ -17,12 +22,12 @@
     <% @tournaments.each do |tournament| %>
       <tr>
         <td><%= tournament.name %></td>
-        <td><%= tournament.address %></td>
-        <td><%= tournament.director %></td>
-        <td><%= tournament.director_email %></td>
-        <td><%= link_to 'Show', tournament %></td>
-        <td><%= link_to 'Edit', edit_tournament_path(tournament) %></td>
-        <td><%= link_to 'Destroy', tournament, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Show', tournament, :class=>"btn btn-default" %>
+          <% if tournament_permissions(tournament) %>
+            <%= link_to 'Edit', edit_tournament_path(tournament), :class=>"btn btn-primary" %>
+            <%= link_to 'Destroy', tournament, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
+          <% end %>
+        </td>
       </tr>
     <% end %>
   </tbody>
@@ -30,4 +35,4 @@
 
 <br>
 
-<%= link_to 'New Tournament', new_tournament_path %>
+

@@ -1,31 +1,7 @@
 class StaticPagesController < ApplicationController
   before_filter :check_access, only: [:createCustomWeights,:generate_matches,:weigh_in]
 
-	def tournaments
-		@tournaments = Tournament.all.includes(:user,:matches,:mats)
-	end
-	def up_matches
-		if params[:tournament]
-	      @tournament = Tournament.where(:id => params[:tournament]).includes(:matches,:mats).first
-		end
-	    if @tournament
-				@matches = @tournament.matches.where(mat_id: nil).order('bout_number ASC').limit(10).includes(:wrestlers)
-				@mats = @tournament.mats.includes(:matches)
-				if @tournament.matches.empty?
-					redirect_to "/static_pages/noMatches?tournament=#{@tournament.id}"
-				end
-	    end
-	end
 
-	def team_scores
-		if params[:tournament]
-	      @tournament = Tournament.find(params[:tournament])
-		end
-	    if @tournament
-	    	@schools = School.where(tournament_id: @tournament.id)
-	    	@schools.sort_by{|x|[x.score]}
-	    end
-	end
 
 	def results
 		if params[:tournament]
@@ -58,15 +34,6 @@ class StaticPagesController < ApplicationController
 	    end
 	end
 
-	def weights
-		if params[:tournament]
-	      @tournament = Tournament.find(params[:tournament])
-		end
-	    if @tournament
-	    	@weights = Weight.where(tournament_id: @tournament.id)
-	    	@weights = @weights.sort_by{|x|[x.max]}
-	    end
-	end
 
 	def createCustomWeights
 			@tournament = Tournament.find(params[:tournament])
@@ -77,20 +44,6 @@ class StaticPagesController < ApplicationController
 	end
 
 
-	def noMatches
-		if params[:tournament]
-			@tournament = Tournament.find(params[:tournament])
-		end
-	end
-
-	def generate_matches
-			if params[:tournament]
-	      		@tournament = Tournament.find(params[:tournament])
-			end
-	    	if @tournament
-	 			@tournament.generateMatchups
-	    	end
-	end
 	
 	def weigh_in
 		if params[:wrestler]

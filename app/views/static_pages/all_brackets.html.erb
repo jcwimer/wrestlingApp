@@ -13,7 +13,7 @@
     }
 </script>
 
-<%= link_to "Back to #{@tournament.name} weights", "/static_pages/weights?tournament=#{@tournament.id}" %>
+<%= link_to "Back to #{@tournament.name} weights", "/tournaments/#{@tournament.id}/weights" %>
 <br>
 <br>
 <button type="submit" class="btn btn-primary" onclick="exportDataToRtf()">Export to file for printing</button>

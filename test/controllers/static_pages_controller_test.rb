@@ -9,10 +9,6 @@ class StaticPagesControllerTest < ActionController::TestCase
      @school = @tournament.schools.first
   end
  
-  def new
-    get :new, tournament: @tournament.id
-  end
-
   def sign_in_owner
     sign_in users(:one)
   end
@@ -29,17 +25,6 @@ class StaticPagesControllerTest < ActionController::TestCase
     assert_redirected_to '/static_pages/not_allowed'
   end
 
-  test "logged in tournament owner can generate matches" do
-    sign_in_owner
-    get :generate_matches, tournament: 1
-    success
-  end
-
-  test "logged in non tournament owner cannot generate matches" do
-    sign_in_non_owner
-    get :generate_matches, tournament: 1
-    redirect
-  end
 
   test "logged in tournament owner can access weigh_ins" do
     sign_in_owner
