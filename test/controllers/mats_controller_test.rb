@@ -16,6 +16,10 @@ class MatsControllerTest < ActionController::TestCase
   def new
     get :new, tournament: @tournament.id
   end
+  
+  def show
+    get :show, id: 1
+  end
 
   def post_update
     patch :update, id: @mat.id, mat: {name: @mat.name, tournament_id: @mat.tournament_id}
@@ -43,6 +47,14 @@ class MatsControllerTest < ActionController::TestCase
 
   def redirect
     assert_redirected_to '/static_pages/not_allowed'
+  end
+  
+  def no_matches
+    assert_redirected_to "/tournaments/#{@tournament.id}/no_matches"
+  end
+  
+  def wipe
+    @tournament.destroyAllMatches
   end
 
   test "logged in tournament owner should get edit mat page" do
@@ -105,5 +117,26 @@ class MatsControllerTest < ActionController::TestCase
     sign_in_non_owner
     destroy
     redirect
+  end
+  
+  test "logged in user should not get show mat" do
+    sign_in_non_owner
+    show
+    redirect 
+  end 
+
+  test "logged in tournament owner should get show mat" do
+    sign_in_owner
+    show
+    success
+  end
+
+
+#TESTS THAT NEED MATCHES PUT ABOVE THIS
+  test "redirect show if no matches" do
+    sign_in_owner
+    wipe
+    show
+    no_matches
   end
 end

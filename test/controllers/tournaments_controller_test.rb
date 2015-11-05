@@ -37,6 +37,13 @@ include Devise::TestHelpers
     delete :destroy, id: 1
   end
 
+  def no_matches
+    assert_redirected_to "/tournaments/#{@tournament.id}/no_matches"
+  end
+  
+  def wipe
+    @tournament.destroyAllMatches
+  end
 
   test "logged in tournament owner can generate matches" do
     sign_in_owner
@@ -134,6 +141,21 @@ include Devise::TestHelpers
     destroy
     redirect
   end
+  
 
+#TESTS THAT NEED MATCHES PUT ABOVE THIS
+  test "redirect up_matches if no matches" do
+    sign_in_owner
+    wipe
+    get :up_matches, id: 1
+    no_matches
+  end
+  
+  test "redirect bracket if no matches" do
+    sign_in_owner
+    wipe
+    get :bracket, id: 1, weight: 1
+    no_matches
+  end
 
 end
