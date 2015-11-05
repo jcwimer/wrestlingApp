@@ -1,0 +1,37 @@
+<%= form_for(@match) do |f| %>
+  <% if @match.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@match.errors.count, "error") %> prohibited this match from being saved:</h2>
+
+      <ul>
+      <% @match.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<h4>Bout <%= @match.bout_number %> <%= @w1.name %> VS. <%= @w2.name %></h4>
+<br>
+  <div class="field">
+    <%= f.label "Win Type" %><br>
+    <%= f.select(:win_type, Match::WIN_TYPES) %>
+  </div>
+  <div class="field">
+    <%= f.label "Winner" %> Please put in the id of the winner<br>
+    <%= f.collection_select :winner_id, @wrestlers, :id, :name %>
+  </div>
+  <div class="field">
+    <%= f.label "Score" %> Also put pin time here if applicable. If default or forfeit, leave blank<br>
+    <%= f.text_field :score %>
+  </div>
+
+  <%= f.hidden_field :finished, :value => 1 %>
+    <%= f.hidden_field :round, :value => @match.round %>
+
+<br>
+
+  <div class="actions">
+    <%= f.submit data: { confirm: "Did you confirm the winner before submitting? If not, please hit cancel."}, :class=>"btn btn-success" %>
+  </div>
+<% end %>

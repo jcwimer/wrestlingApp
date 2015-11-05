@@ -1,13 +1,19 @@
 <p id="notice"><%= notice %></p>
 
+<%= link_to "Back to #{@mat.tournament.name}", "/tournaments/#{@mat.tournament.id}", :class=>"btn btn-default" %>
+<br>
+<br>
 <p>
-  <strong>Name:</strong>
-  <%= @mat.name %>
+  <strong>Mat <%= @mat.name %></strong>
 </p>
 
 <p>
   <strong>Tournament:</strong>
-  <%= @mat.tournament_id %>
+  <%= @mat.tournament.name %>
 </p>
 
-<%= link_to 'Edit', edit_mat_path(@mat) %> |
+<br>
+<br>
+
+<%= render 'match_edit_form' %>
+

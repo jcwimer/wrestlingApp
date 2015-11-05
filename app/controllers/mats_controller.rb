@@ -1,10 +1,14 @@
 class MatsController < ApplicationController
   before_action :set_mat, only: [:show, :edit, :update, :destroy]
-  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
+  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit,:show]
 
   # GET /mats/1
   # GET /mats/1.json
   def show
+    @match = @mat.unfinishedMatches.first
+    @w1 = @match.wrestler1
+    @w2 = @match.wrestler2
+    @wrestlers = [@w1,@w2]
   end
 
   # GET /mats/new

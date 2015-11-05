@@ -128,7 +128,8 @@
           <td><%= mat.name %></td>
           <td>
             <% if tournament_permissions(@tournament)  %>
-              <%= link_to 'Destroy', mat, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
+             <%= link_to 'Show', mat, :class=>"btn btn-default" %>
+ <%= link_to 'Destroy', mat, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger" %>
             <% end %>
           </td>
         </tr>
