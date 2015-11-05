@@ -1,6 +1,8 @@
 == README 
 
-This application is being created to run a wrestling tournament. <img src=https://travis-ci.org/jcwimer/wrestlingApp.svg?branch=master />
+{<img src="https://travis-ci.org/jcwimer/wrestlingApp.svg" alt="Build Status" />}[https://travis-ci.org/jcwimer/wrestlingApp]
+
+This application is being created to run a wrestling tournament.
 
 <b>License:</b>
 
