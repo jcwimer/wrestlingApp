@@ -1,0 +1,20 @@
+<%= link_to "Back to #{@tournament_name}", "/tournaments/#{@tournament_id}", :class=>"btn btn-default" %>
+<br>
+<br>
+    <% @weights.each do |weight| %>
+        <%= link_to "#{weight.max}" , "/tournaments/#{@tournament.id}/weigh_in/#{weight.id}" %>
+        <br>
+    <% end %>
+    <br>
+    <% if tournament_permissions(@tournament) %>
+        <%= form_for(@tournament) do |f| %>
+            <div class="field">
+                <%= f.label :weigh_in_ref %><br>
+                <%= f.text_field :weigh_in_ref %>
+              </div>
+              <br>
+              <%= f.submit 'Submit', :class=>"btn btn-success" %>
+        <% end %>
+    <% end %>
+
+

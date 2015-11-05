@@ -1,14 +1,60 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:show, :edit, :update, :destroy,:up_matches,:no_matches,:team_scores,:weights,:generate_matches]
-  before_filter :check_access, only: [:update,:edit,:destroy,:generate_matches]
-  before_filter :check_for_matches, only: [:up_matches]
+  before_action :set_tournament, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:results,:all_brackets]
+  before_filter :check_access, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:destroy,:generate_matches]
+  before_filter :check_for_matches, only: [:up_matches,:bracket]
  
+  def weigh_in_weight
+    if params[:wrestler]
+      Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
+    end
+    if params[:weight]
+        @weight = Weight.where(:id => params[:weight]).includes(:wrestlers).first
+        @tournament_id = @tournament.id
+        @tournament_name = @tournament.name
+        @weights = @tournament.weights
+    end
+    if @weight
+      @wrestlers = @weight.wrestlers 
+    end
+  end
+
+  def weigh_in
+      if @tournament
+        @weights = @tournament.weights
+        @weights = @weights.sort_by{|x|[x.max]}
+      end
+  end
+
+  def create_custom_weights
+    @custom = params[:customValue].to_s
+    @tournament.createCustomWeights(@custom)
+    redirect_to "/tournaments/#{@tournament.id}"
+  end
+
+
+  def all_brackets
+    
+  end
+
+  def results
+    @matches = @tournament.matches
+  end
+
+  def bracket
+      if params[:weight]
+        @weight = Weight.where(:id => params[:weight]).includes(:matches,:wrestlers).first
+        @matches = @weight.matches
+        @wrestlers = @weight.wrestlers.includes(:school)
+        @pools = @weight.poolRounds(@matches)
+        @bracketType = @weight.pool_bracket_type
+      end
+  end
 
   def generate_matches
     @tournament.generateMatchups
   end
 
-  def weights
+  def brackets
     @weights = @tournament.weights
     @weights.sort_by{|w| w.max}
   end

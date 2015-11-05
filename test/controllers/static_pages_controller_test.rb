@@ -26,28 +26,5 @@ class StaticPagesControllerTest < ActionController::TestCase
   end
 
 
-  test "logged in tournament owner can access weigh_ins" do
-    sign_in_owner
-    get :weigh_in, tournament: 1
-    success
-  end
-
-  test "logged in non tournament owner cannot access weigh_ins" do
-    sign_in_non_owner
-    get :weigh_in, tournament: 1
-    redirect    
-  end
-
-  test "logged in tournament owner can create custom weights" do
-    sign_in_owner
-    get :createCustomWeights, tournament: 1, customValue: 'hs' 
-    assert_redirected_to '/tournaments/1'
-  end
-
-  test "logged in non tournament owner cannot create custom weights" do
-    sign_in_non_owner
-    get :createCustomWeights, tournament: 1, customValue: 'hs' 
-    redirect
-  end
 
 end

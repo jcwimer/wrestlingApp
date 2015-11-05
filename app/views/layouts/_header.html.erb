@@ -5,9 +5,9 @@
       </div>
         <ul class="nav navbar-nav navbar-right navbar-custom-link">
             <% if @tournament %>
-                <li><%= link_to "Brackets" , "/tournaments/#{@tournament.id}/weights" %></li>
+                <li><%= link_to "Brackets" , "/tournaments/#{@tournament.id}/brackets" %></li>
                 <li><%= link_to "Upcoming Matches" , "/tournaments/#{@tournament.id}/up_matches" %></li>
-                <li><%= link_to "Results" , "/static_pages/results?tournament=#{@tournament.id}" %></li>
+                <li><%= link_to "Results" , "/tournaments/#{@tournament.id}/results" %></li>
                 <li><%= link_to "Team Scores" , "/tournaments/#{@tournament.id}/team_scores" %></li>
             <% end %>
             <% if user_signed_in? %>
