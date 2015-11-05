@@ -1,5 +1,7 @@
+<%= link_to "Back to #{@school.name}", "/schools/#{@school.id}", :class=>"btn btn-default" %>
+<br>
+<br>
 <h1>Editing wrestler</h1>
 
 <%= render 'form' %>
 
-<%= link_to 'Back', "/schools/#{@school.id}" %>

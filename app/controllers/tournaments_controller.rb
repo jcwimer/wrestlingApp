@@ -55,8 +55,7 @@ class TournamentsController < ApplicationController
   end
 
   def brackets
-    @weights = @tournament.weights
-    @weights.sort_by{|w| w.max}
+    @weights = @tournament.weights.sort_by{|w| w.max}
   end
 
   def team_scores

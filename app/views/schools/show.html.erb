@@ -1,7 +1,7 @@
 <p id="notice"><%= notice %></p>
-<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}",:class=>"btn btn-default" %> |
+<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}",:class=>"btn btn-default" %> 
 <% if tournament_permissions(@school.tournament)  %>
-  <%= link_to "Edit #{@school.name}", edit_school_path(@school),:class=>"btn btn-primary" %>
+| <%= link_to "Edit #{@school.name}", edit_school_path(@school),:class=>"btn btn-primary" %>
 <% end %>
 <br>
 <br>
@@ -63,7 +63,7 @@
             <% if tournament_permissions(@school.tournament)  %>
               <td>
               <%= link_to 'Show', wrestler , :class=>"btn btn-default" %>
-              <%= link_to 'Edit', edit_wrestler_path(wrestler), :class=>"btn btn-default" %>
+              <%= link_to 'Edit', edit_wrestler_path(wrestler),:class=>"btn btn-primary" %>
               <%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %>
               </td>
             <% end %>          

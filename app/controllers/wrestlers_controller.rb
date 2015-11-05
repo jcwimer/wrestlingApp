@@ -20,7 +20,7 @@ class WrestlersController < ApplicationController
       @tournament = Tournament.find(@school.tournament_id)
     end
     if @tournament
-      @weights = Weight.where(tournament_id: @tournament.id)
+      @weights = Weight.where(tournament_id: @tournament.id).sort_by{|w| w.max}
     end
 
   end
@@ -31,7 +31,7 @@ class WrestlersController < ApplicationController
     @school = @wrestler.school
     @tournament = @wrestler.tournament
     @weight = @wrestler.weight
-    @weights = @tournament.weights
+    @weights = @tournament.weights.sort_by{|w| w.max}
   end
 
   # POST /wrestlers
