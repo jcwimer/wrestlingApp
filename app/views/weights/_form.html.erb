@@ -18,12 +18,6 @@
 
   <% if @weight %>
       <%= f.hidden_field :tournament_id, :value => @tournament_field %>
-  <% else %>
-    <div class="field">
-      <%= f.label 'Tournament' %><br>
-      <%= f.collection_select :tournament_id, Tournament.all, :id, :name %>
-    </div>
-  <% end %>
   <br>
   <div class="actions">
     <%= f.submit 'Submit', :class=>"btn btn-success" %>
