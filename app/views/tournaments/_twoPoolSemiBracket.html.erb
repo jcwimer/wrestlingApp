@@ -65,9 +65,9 @@ li.game{
 		<% @matches.select{|m|m.bracket_position == "Semis"}.sort_by{|m| m.bracket_position_number}.each do |match| %>
 		<li class="spacer">&nbsp;</li>
 		
-		<li class="game game-top "><%= match.w1_name %> <span>Score</span></li>
+		<li class="game game-top "><%= match.w1_name %> <span></span></li>
 		<li class="game game-spacer"><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_name %><span>Score</span></li>
+		<li class="game game-bottom "><%= match.w2_name %><span></span></li>
 
 		<li class="spacer">&nbsp;</li>
 		
@@ -77,9 +77,9 @@ li.game{
 		<% @matches.select{|m|m.bracket_position == "1/2"}.each do |match| %>
 		<li class="spacer">&nbsp;</li>
 		
-		<li class="game game-top "><%= match.w1_name %> <span>Score</span></li>
+		<li class="game game-top "><%= match.w1_name %> <span></span></li>
 		<li class="game game-spacer"><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_name %><span>Score</span></li>
+		<li class="game game-bottom "><%= match.w2_name %><span></span></li>
 
 		<li class="spacer">&nbsp;</li>
 		
@@ -103,9 +103,9 @@ li.game{
 		<% @matches.select{|m|m.bracket_position == "3/4"}.each do |match| %>
 		<li class="spacer">&nbsp;</li>
 		
-		<li class="game game-top "><%= match.w1_name %> <span>Score</span></li>
+		<li class="game game-top "><%= match.w1_name %> <span></span></li>
 		<li class="game game-spacer"><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_name %><span>Score</span></li>
+		<li class="game game-bottom "><%= match.w2_name %><span></span></li>
 
 		<li class="spacer">&nbsp;</li>
 		
