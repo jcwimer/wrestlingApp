@@ -1,6 +1,7 @@
 class MatsController < ApplicationController
   before_action :set_mat, only: [:show, :edit, :update, :destroy]
   before_filter :check_access, only: [:new,:create,:update,:destroy,:edit,:show]
+  before_filter :check_for_matches, only: [:show]
 
   # GET /mats/1
   # GET /mats/1.json
@@ -91,4 +92,13 @@ class MatsController < ApplicationController
 	  redirect_to '/static_pages/not_allowed'
 	end
     end
+    
+    
+  def check_for_matches
+    if @mat
+    	if @mat.tournament.matches.empty?
+    	  redirect_to "/tournaments/#{@tournament.id}/no_matches"
+    	end
+    end
+  end
 end
