@@ -7,6 +7,7 @@ include Devise::TestHelpers
      @tournament = Tournament.find(1)
      @tournament.generateMatchups
      @school = @tournament.schools.first
+     @wrestlers = @tournament.weights.first.wrestlers
   end
 
   def post_update
@@ -91,6 +92,17 @@ include Devise::TestHelpers
   test "logged in non tournament owner cannot access weigh_in_weight" do
     sign_in_non_owner
     get :weigh_in_weight, id: 1, weight: 1
+    redirect    
+  end
+  
+  test "logged in tournament owner can access post weigh_in_weight" do
+    sign_in_owner
+    post :weigh_in, id: 1, weight: 1, wrestler: @wrestlers
+  end
+
+  test "logged in non tournament owner cannot access post weigh_in_weight" do
+    sign_in_non_owner
+    post :weigh_in_weight, id: 1, weight: 1, wrestler: @wrestlers
     redirect    
   end
 

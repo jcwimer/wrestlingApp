@@ -107,5 +107,9 @@ class WeightsControllerTest < ActionController::TestCase
     redirect
   end
 
+  test "view wegiht" do
+    get :show, id: 1
+    success
+  end
 
 end

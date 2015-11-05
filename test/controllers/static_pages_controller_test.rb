@@ -25,6 +25,10 @@ class StaticPagesControllerTest < ActionController::TestCase
     assert_redirected_to '/static_pages/not_allowed'
   end
 
-
+  test "get root page" do
+    get :home
+    success
+  end
+  
 
 end

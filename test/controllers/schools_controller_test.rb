@@ -106,5 +106,10 @@ class SchoolsControllerTest < ActionController::TestCase
     destroy
     redirect
   end
+  
+  test "view school" do
+    get :show, id: 1
+    success
+  end
 
 end

@@ -108,6 +108,10 @@ class WrestlersControllerTest < ActionController::TestCase
     redirect
   end
 
+  test "view wrestler" do
+    get :show, id: @wrestler.id
+    success
+  end
 
 
 end
