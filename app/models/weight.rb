@@ -139,7 +139,6 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def poolOrder(pool)
-		@wrestlers = wrestlersForPool(pool)
-		@wrestlers.sort_by{|w| w.poolWins.size}.reverse!
+		Poolorder.new(wrestlersForPool(pool)).getPoolOrder
 	end
 end

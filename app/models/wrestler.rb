@@ -3,7 +3,7 @@ class Wrestler < ActiveRecord::Base
 	belongs_to :weight
 	has_one :tournament, through: :weight
 	has_many :matches, through: :weight
-	attr_accessor :poolNumber
+	attr_accessor :poolNumber, :poolAdvancePoints
 
 	before_save do
 		self.tournament.destroyAllMatches
@@ -22,6 +22,9 @@ class Wrestler < ActiveRecord::Base
 	   end
 	end
 
+	def matchAgainst(opponent)
+		allMatches.select{|m| m.w1 == opponent.id or m.w2 == opponent.id}
+	end
 
 	def isWrestlingThisRound(matchRound)
 		if allMatches.blank?
