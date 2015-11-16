@@ -6,13 +6,20 @@ class School < ActiveRecord::Base
 
 	#calculate score here
 	def score
-		#Add score per wrestler. Calculate score in wrestler model.
-		return 0
+		calcScore
 	end
 	
 	def calcScore
-    	#calc and save score
+    	totalWrestlerPoints - totalDeductedPoints
    	end
+	
+	def totalWrestlerPoints
+		points = 0
+		self.wrestlers.each do |w|
+			points = points + w.totalTeamPoints
+		end
+		points
+	end
 	
 	def totalDeductedPoints
 		points = 0
@@ -21,48 +28,4 @@ class School < ActiveRecord::Base
 		end
 		points
 	end
-	
-	def poolWins
-		
-	end
-	
-	def pinDefaultDqWins
-		
-	end
-	
-	def techFallWins
-		
-	end
-	
-	def majorWins
-		
-   	end
-    
-    def firstPlace
-    	
-    end
-    
-    def secondPlace
-    	
-    end
-    
-    def thirdPlace
-    	
-    end
-    
-    def fourthPlace
-    	
-    end
-    
-    def fifthPlace
-    	
-    end
-    
-    def sixthPlace
-    	
-    end
-    
-    def seventhPlace
-    	
-    end
 end

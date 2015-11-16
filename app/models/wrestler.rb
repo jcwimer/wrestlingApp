@@ -14,6 +14,11 @@ class Wrestler < ActiveRecord::Base
 		allMatches.select{|m| m.finished == 1}.sort_by{|m| m.bout_number}.last
 	end
 
+	def totalTeamPoints
+		points = 0.0
+		points = points + (poolWins.size * 1) + (pinWins.size * 2) + (techWins.size * 1.5)	+ (majorWins.size * 1)
+	end
+
 	def totalDeductedPoints
 		points = 0
 		self.deductedPoints.each do |d|
@@ -81,9 +86,27 @@ class Wrestler < ActiveRecord::Base
 	def finishedPoolMatches
 		finishedMatches.select{|m| m.bracket_position == "Pool"}
 	end
-	def poolWins
-		allMatches.select{|m| m.winner_id == self.id && m.bracket_position == "Pool"}
+	
+	def matchesWon
+		allMatches.select{|m| m.winner_id == self.id}	
 	end
+	
+	def poolWins
+		matchesWon.select{|m| m.bracket_position == "Pool"}
+	end
+	
+	def pinWins
+		matchesWon.select{|m| m.win_type == "Pin" ||  m.win_type == "Forfeit" ||  m.win_type == "Injury Default" ||  m.win_type == "Default" ||  m.win_type == "DQ"}
+	end
+	
+	def techWins
+		matchesWon.select{|m| m.win_type == "Tech Fall" }
+	end
+	
+	def majorWins
+		matchesWon.select{|m| m.win_type == "Major" }
+	end
+	
 	def seasonWinPercentage
 		@win = self.season_win.to_f
 		@loss = self.season_loss.to_f

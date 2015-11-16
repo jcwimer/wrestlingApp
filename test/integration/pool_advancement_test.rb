@@ -67,6 +67,16 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     deduct.save
   end
   
+  def nineManBracketPoolTwoGuyThreeTeamPoints
+    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    endMatch(1004,"Guy9",matches)
+    endMatch(1005,"Guy7",matches)
+    endMatchWithMajor(2004,"Guy3",matches)
+    endMatch(2005,"Guy9",matches)
+    endMatch(3004,"Guy7",matches)
+    endMatch(3005,"Guy3",matches)
+  end
+  
   def endMatch(bout,winner,matches)
      match = matches.select{|m| m.bout_number == bout}.first
      match.finished = 1
@@ -77,6 +87,18 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.mat_id = mat.id
      match.save
   end
+  
+  def endMatchWithMajor(bout,winner,matches)
+     match = matches.select{|m| m.bout_number == bout}.first
+     match.finished = 1
+     match.winner_id = translateNameToId(winner)
+     match.win_type = "Major"
+     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
+     mat = @tournament.mats.first
+     match.mat_id = mat.id
+     match.save
+  end
+  
   def translateNameToId(wrestler)
     Wrestler.where("name = ?", wrestler).first.id
   end
@@ -125,6 +147,18 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   
   test "nine man conso finals deductedPoints tie breaker guy 9" do
     nineManBracketPoolTwoGuyThreeDeductedPoints
+    wrestler = Wrestler.where("name = ?", "Guy9").first
+    assert_equal 6001, wrestler.boutByRound(6)
+  end
+  
+  test "nine man pool 2 teamPoints tie breaker finalist guy 3" do
+    wrestler = Wrestler.where("name = ?", "Guy3").first
+    nineManBracketPoolTwoGuyThreeTeamPoints
+    assert_equal 6000, wrestler.boutByRound(6)
+  end
+  
+  test "nine man conso finals teamPoints tie breaker guy 9" do
+    nineManBracketPoolTwoGuyThreeTeamPoints
     wrestler = Wrestler.where("name = ?", "Guy9").first
     assert_equal 6001, wrestler.boutByRound(6)
   end

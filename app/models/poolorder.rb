@@ -45,6 +45,7 @@ class Poolorder
 	    	ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { headToHead }
 		end
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { teamPoints }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { coinFlip }
 	end
 	
@@ -81,6 +82,19 @@ class Poolorder
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	
 		end
+	end
+	
+	def teamPoints
+		pointsArray = []
+		wrestlersWithSamePoints.each do |w|
+			pointsArray << w.totalTeamPoints
+		end
+		mostPoints = pointsArray.max
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.totalTeamPoints == mostPoints}
+		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
+		wrestlersWithLeastDeductedPoints.each do |wr|
+			addPoints(wr)	
+		end	
 	end
 	
 	def coinFlip
