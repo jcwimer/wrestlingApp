@@ -10,6 +10,10 @@ class Wrestler < ActiveRecord::Base
 		self.tournament.destroyAllMatches
 	end
 
+	def lastFinishedMatch
+		allMatches.select{|m| m.finished == 1}.sort_by{|m| m.bout_number}.last
+	end
+
 	def totalDeductedPoints
 		points = 0
 		self.deductedPoints.each do |d|

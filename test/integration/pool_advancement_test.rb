@@ -59,13 +59,12 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatch(1005,"Guy7",@matches)
     endMatch(2004,"Guy3",@matches)
     endMatch(2005,"Guy9",@matches)
-    #DEDUCT HAS TO HAPPEN BEFORE LAST MATCH IN POOL OR ELSE ITS NOT AVAILABLE FOR POOLORDER TO CHECK
+    endMatch(3004,"Guy7",@matches)
+    endMatch(3005,"Guy3",@matches)
     @deduct = Teampointadjust.new
     @deduct.wrestler_id = translateNameToId("Guy7")
     @deduct.points = 1
     @deduct.save
-    endMatch(3004,"Guy7",@matches)
-    endMatch(3005,"Guy3",@matches)
   end
   
   def endMatch(bout,winner,matches)

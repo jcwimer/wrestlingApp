@@ -45,6 +45,7 @@ class Poolorder
 	    	ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { headToHead }
 		end
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { coinFlip }
 	end
 	
 	
@@ -80,5 +81,11 @@ class Poolorder
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	
 		end
+	end
+	
+	def coinFlip
+		wrestler = wrestlersWithSamePoints.sample
+		addPointsToWrestlersAhead(wrestler)
+	    addPoints(wrestler)
 	end
 end
