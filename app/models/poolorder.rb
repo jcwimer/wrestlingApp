@@ -2,11 +2,10 @@ class Poolorder
 	def initialize(wrestlers)
 		@wrestlers = wrestlers
 	end
-	attr_accessor :wrestlersWithSamePoints
-	
+
 	def getPoolOrder
 	    setOriginalPoints
-	    until checkForTieBreakers == false
+	    while checkForTieBreakers == true
 	        breakTie
 	    end
 	    @wrestlers.sort_by{|w| w.poolAdvancePoints}.reverse!
@@ -19,28 +18,67 @@ class Poolorder
 	end
 	
 	def checkForTieBreakers
-	   @wrestlers.each do |w|
-	       self.wrestlersWithSamePoints = @wrestlers.select{|wr| wr.poolAdvancePoints == w.poolAdvancePoints}
-	       if self.wrestlersWithSamePoints.size > 1
-	           return true
-	       end
-	    end 
+	    if wrestlersWithSamePoints.size > 1
+	       return true
+	    end
 	    return false
 	end
 	
+	def wrestlersWithSamePoints
+		@wrestlers.each do |w|
+	       wrestlersWithSamePoints = @wrestlers.select{|wr| wr.poolAdvancePoints == w.poolAdvancePoints}
+	       if wrestlersWithSamePoints.size > 0
+	       	 return wrestlersWithSamePoints
+	       end
+	    end
+	end
+	
+	def ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
+		if wrestlersWithSamePoints.size == originalTieSize
+			yield	
+		end
+	end
+	
 	def breakTie
-	    headToHead
+		originalTieSize = wrestlersWithSamePoints.size
+		if originalTieSize == 2
+	    	ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { headToHead }
+		end
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
 	end
 	
 	
 	def headToHead
-	   self.wrestlersWithSamePoints.each do |wr|
-	        @otherWrestlers = self.wrestlersWithSamePoints.select{|w| w.id != wr.id}
-	        @otherWrestlers.each do |ow|
-	            if wr.matchAgainst(ow).first.winner_id == wr.id
-	                wr.poolAdvancePoints = wr.poolAdvancePoints + 1
-	            end
+	   wrestlersWithSamePoints.each do |wr|
+	        otherWrestler = wrestlersWithSamePoints.select{|w| w.id != wr.id}.first
+	        if wr.matchAgainst(otherWrestler).first.winner_id == wr.id
+	        	addPointsToWrestlersAhead(wr)
+	            addPoints(wr)
 	        end
 	   end
+	end
+	
+	def addPoints(wrestler)
+		wrestler.poolAdvancePoints = wrestler.poolAdvancePoints + 1
+	end
+	
+	def addPointsToWrestlersAhead(wrestler)
+		wrestlersAhead = @wrestlers.select{|w| w.poolAdvancePoints > wrestler.poolAdvancePoints}
+		wrestlersAhead.each do |wr|
+			wr.poolAdvancePoints = wr.poolAdvancePoints + 1
+		end
+	end
+	
+	def deductedPoints
+		pointsArray = []
+		wrestlersWithSamePoints.each do |w|
+			pointsArray << w.totalDeductedPoints
+		end
+		leastPoints = pointsArray.min
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.totalDeductedPoints == leastPoints}
+		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
+		wrestlersWithLeastDeductedPoints.each do |wr|
+			addPoints(wr)	
+		end
 	end
 end

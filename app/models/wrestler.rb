@@ -3,14 +3,23 @@ class Wrestler < ActiveRecord::Base
 	belongs_to :weight
 	has_one :tournament, through: :weight
 	has_many :matches, through: :weight
+	has_many :deductedPoints, class_name: "Teampointadjust"
 	attr_accessor :poolNumber, :poolAdvancePoints
 
 	before_save do
 		self.tournament.destroyAllMatches
 	end
 
+	def totalDeductedPoints
+		points = 0
+		self.deductedPoints.each do |d|
+			points = points + d.points
+		end
+		points
+	end
+
 	def resultByBout(bout)
-	   @match = Match.where("bout_number = ? AND finished = ?",bout,1)
+	   @match = allMatches.select{|m| m.bout_number == bout and m.finished == 1}
 	   if @match.size == 0
  		return ""
 	   end

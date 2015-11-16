@@ -45,6 +45,26 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatch(2004,"Guy4",@matches)
     endMatch(2005,"Guy9",@matches)
     endMatch(3004,"Guy7",@matches)
+    #DEDUCTED POINTS SHOULD NOT MATTER FOR HEAD TO HEAD
+    @deduct = Teampointadjust.new
+    @deduct.wrestler_id = translateNameToId("Guy3")
+    @deduct.points = 1
+    @deduct.save
+    endMatch(3005,"Guy3",@matches)
+  end
+  
+  def nineManBracketPoolTwoGuyThreeDeductedPoints
+    @matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    endMatch(1004,"Guy9",@matches)
+    endMatch(1005,"Guy7",@matches)
+    endMatch(2004,"Guy3",@matches)
+    endMatch(2005,"Guy9",@matches)
+    #DEDUCT HAS TO HAPPEN BEFORE LAST MATCH IN POOL OR ELSE ITS NOT AVAILABLE FOR POOLORDER TO CHECK
+    @deduct = Teampointadjust.new
+    @deduct.wrestler_id = translateNameToId("Guy7")
+    @deduct.points = 1
+    @deduct.save
+    endMatch(3004,"Guy7",@matches)
     endMatch(3005,"Guy3",@matches)
   end
   
@@ -65,7 +85,6 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   test "nine man outright finals advance" do
     nineManBracketPoolOneOutrightWinner
     @wrestler = Wrestler.where("name = ?", "Guy2").first
-    @match = Match.where("bout_number = ?",6000).first
     assert_equal 6000, @wrestler.boutByRound(6)
   end
 
@@ -78,26 +97,40 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   test "nine man pool 2 man to man tie breaker finalist guy 9" do
     @wrestler = Wrestler.where("name = ?", "Guy9").first
     nineManBracketPoolTwoGuyNineHeadToHead
-    @match = Match.where("bout_number = ?",6000).first
     assert_equal 6000, @wrestler.boutByRound(6)
   end
   
   test "nine man pool 2 man to man tie breaker finalist guy 3" do
     @wrestler = Wrestler.where("name = ?", "Guy3").first
     nineManBracketPoolTwoGuyThreeHeadToHead
-    @match = Match.where("bout_number = ?",6000).first
     assert_equal 6000, @wrestler.boutByRound(6)
   end
   
-  test "nine man outright conso finals man to man tie breaker guy 3" do
+  test "nine man conso finals man to man tie breaker guy 3" do
     nineManBracketPoolTwoGuyNineHeadToHead
     @wrestler = Wrestler.where("name = ?", "Guy3").first
     assert_equal 6001, @wrestler.boutByRound(6)
   end
   
-  test "nine man outright conso finals man to man tie breaker guy 9" do
+  test "nine man conso finals man to man tie breaker guy 9" do
     nineManBracketPoolTwoGuyThreeHeadToHead
     @wrestler = Wrestler.where("name = ?", "Guy9").first
+    # @match = Match.where(bout_number: 6001).first
+    # puts "#{@match.w1_name} v #{@match.w2_name}"
+    assert_equal 6001, @wrestler.boutByRound(6)
+  end
+  
+  test "nine man pool 2 deductedPoints tie breaker finalist guy 3" do
+    @wrestler = Wrestler.where("name = ?", "Guy3").first
+    nineManBracketPoolTwoGuyThreeDeductedPoints
+    assert_equal 6000, @wrestler.boutByRound(6)
+  end
+  
+  test "nine man conso finals deductedPoints tie breaker guy 9" do
+    nineManBracketPoolTwoGuyThreeDeductedPoints
+    @wrestler = Wrestler.where("name = ?", "Guy9").first
+    # @match = Match.where(bout_number: 6001).first
+    # puts "#{@match.w1_name} v #{@match.w2_name}"
     assert_equal 6001, @wrestler.boutByRound(6)
   end
 
