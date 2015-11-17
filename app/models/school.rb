@@ -5,9 +5,6 @@ class School < ActiveRecord::Base
 	
 
 	#calculate score here
-	def score
-		calcScore
-	end
 	
 	def calcScore
     	totalWrestlerPoints - totalDeductedPoints

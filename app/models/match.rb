@@ -7,6 +7,8 @@ class Match < ActiveRecord::Base
 	after_save do 
 	   if self.finished == 1
 		advance_wrestlers
+		self.wrestler1.school.calcScore
+		self.wrestler2.school.calcScore
 	   end
 	end
 
