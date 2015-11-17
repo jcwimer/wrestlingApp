@@ -16,7 +16,11 @@ class Wrestler < ActiveRecord::Base
 
 	def totalTeamPoints
 		points = 0.0
-		points = points + (poolWins.size * 1) + (pinWins.size * 2) + (techWins.size * 1.5)	+ (majorWins.size * 1)
+		points = points + (poolWins.size * 1) + (pinWins.size * 2) + (techWins.size * 1.5)	+ (majorWins.size * 1) + placementPoints
+	end
+	
+	def placementPoints
+		PoolBracketTeamPointsCalc.new(self).calcPoints
 	end
 
 	def totalDeductedPoints
