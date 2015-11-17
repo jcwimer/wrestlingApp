@@ -39,10 +39,9 @@
       <th>Seed</th>
       <th>Record</th>
       <th>Seed Criteria</th>
+      <th>Team Points Scored</th>
       <th>Extra?</th>
-      <% if tournament_permissions(@school.tournament)  %>
       <th>Actions</th>
-      <% end %>
     </tr>
   </thead>
 
@@ -57,16 +56,17 @@
           </td>
           <td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
           <td><%= wrestler.criteria %> Win <%= wrestler.seasonWinPercentage %>%</td>
+          <td><%= wrestler.totalTeamPoints - wrestler.totalDeductedPoints %></td>
           <td><% if wrestler.extra? == true %>
             Yes
            <% end %></td>
+           <td>
+            <%= link_to 'Show', wrestler , :class=>"btn btn-default" %>
             <% if tournament_permissions(@school.tournament)  %>
-              <td>
-              <%= link_to 'Show', wrestler , :class=>"btn btn-default" %>
               <%= link_to 'Edit', edit_wrestler_path(wrestler),:class=>"btn btn-primary" %>
               <%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger"  %>
-              </td>
-            <% end %>          
+            <% end %>   
+          </td>
         </tr>
       <% end %>
     <% end %>
