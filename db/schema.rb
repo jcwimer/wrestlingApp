@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(version: 20151117152454) do
 
   add_index "matches", ["mat_id"], name: "index_matches_on_mat_id"
   add_index "matches", ["tournament_id"], name: "index_matches_on_tournament_id"
-  add_index "matches", ["w1", "w2"], name: "index_matches_on_w1_and_w2", unique: true
+  add_index "matches", ["w1", "w2"], name: "index_matches_on_w1_and_w2"
 
   create_table "mats", force: :cascade do |t|
     t.string   "name"
@@ -80,7 +80,6 @@ ActiveRecord::Schema.define(version: 20151117152454) do
   end
 
   add_index "tournaments", ["user_id"], name: "index_tournaments_on_user_id"
-  add_index "tournaments", ["weigh_in_ref"], name: "index_tournaments_on_weigh_in_ref"
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
@@ -124,7 +123,6 @@ ActiveRecord::Schema.define(version: 20151117152454) do
     t.decimal  "offical_weight"
   end
 
-  add_index "wrestlers", ["offical_weight"], name: "index_wrestlers_on_offical_weight"
   add_index "wrestlers", ["weight_id"], name: "index_wrestlers_on_weight_id"
 
 end
