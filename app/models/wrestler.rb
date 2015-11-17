@@ -20,7 +20,7 @@ class Wrestler < ActiveRecord::Base
 	end
 	
 	def placementPoints
-		PoolBracketTeamPointsCalc.new(self).calcPoints
+		Poolbracketplacementpoints.new(self).calcPoints
 	end
 
 	def totalDeductedPoints
