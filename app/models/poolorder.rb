@@ -46,6 +46,9 @@ class Poolorder
 		end
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { teamPoints }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostFalls }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostTechs }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostMajors }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { coinFlip }
 	end
 	
@@ -91,6 +94,45 @@ class Poolorder
 		end
 		mostPoints = pointsArray.max
 		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.totalTeamPoints == mostPoints}
+		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
+		wrestlersWithLeastDeductedPoints.each do |wr|
+			addPoints(wr)	
+		end	
+	end
+	
+	def mostFalls
+		pointsArray = []
+		wrestlersWithSamePoints.each do |w|
+			pointsArray << w.pinWins.size
+		end
+		mostPoints = pointsArray.max
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.pinWins.size == mostPoints}
+		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
+		wrestlersWithLeastDeductedPoints.each do |wr|
+			addPoints(wr)	
+		end	
+	end
+	
+	def mostTechs
+		pointsArray = []
+		wrestlersWithSamePoints.each do |w|
+			pointsArray << w.techWins.size
+		end
+		mostPoints = pointsArray.max
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.techWins.size == mostPoints}
+		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
+		wrestlersWithLeastDeductedPoints.each do |wr|
+			addPoints(wr)	
+		end	
+	end
+	
+	def mostMajors
+		pointsArray = []
+		wrestlersWithSamePoints.each do |w|
+			pointsArray << w.majorWins.size
+		end
+		mostPoints = pointsArray.max
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.majorWins.size == mostPoints}
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	

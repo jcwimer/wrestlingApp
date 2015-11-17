@@ -77,6 +77,30 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatch(3005,"Guy3",matches)
   end
   
+  def nineManBracketPoolTwoGuyThreeMostPins
+    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    endMatchWithMajor(1004,"Guy9",matches)
+    endMatch(1005,"Guy7",matches)
+    endMatchWithPin(2004,"Guy3",matches)
+    endMatchWithMajor(2005,"Guy9",matches)
+    endMatch(3004,"Guy7",matches)
+    endMatch(3005,"Guy3",matches)
+  end
+  
+  def nineManBracketPoolOneGuyEightMostTechs
+    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    endMatchWithTech(1002,"Guy8",matches)
+    endMatchWithMajor(1003,"Guy10",matches)
+    endMatchWithMajor(2002,"Guy2",matches)
+    endMatchWithTech(2003,"Guy8",matches)
+    endMatchWithMajor(3002,"Guy10",matches)
+    endMatchWithMajor(3003,"Guy2",matches)
+    endMatch(4002,"Guy8",matches)
+    endMatchWithMajor(4003,"Guy2",matches)
+    endMatchWithMajor(5002,"Guy10",matches)
+    endMatch(5003,"Guy5",matches)
+  end
+  
   def endMatch(bout,winner,matches)
      match = matches.select{|m| m.bout_number == bout}.first
      match.finished = 1
@@ -93,6 +117,28 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Major"
+     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
+     mat = @tournament.mats.first
+     match.mat_id = mat.id
+     match.save
+  end
+  
+  def endMatchWithTech(bout,winner,matches)
+     match = matches.select{|m| m.bout_number == bout}.first
+     match.finished = 1
+     match.winner_id = translateNameToId(winner)
+     match.win_type = "Tech Fall"
+     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
+     mat = @tournament.mats.first
+     match.mat_id = mat.id
+     match.save
+  end
+  
+  def endMatchWithPin(bout,winner,matches)
+     match = matches.select{|m| m.bout_number == bout}.first
+     match.finished = 1
+     match.winner_id = translateNameToId(winner)
+     match.win_type = "Pin"
      #Need to manually assign mat_id because thise weight class is not currently assigned a mat
      mat = @tournament.mats.first
      match.mat_id = mat.id
@@ -162,4 +208,29 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     wrestler = Wrestler.where("name = ?", "Guy9").first
     assert_equal 6001, wrestler.boutByRound(6)
   end
+  
+  test "nine man pool 2 mostPins tie breaker finalist guy 3" do
+    wrestler = Wrestler.where("name = ?", "Guy3").first
+    nineManBracketPoolTwoGuyThreeMostPins
+    assert_equal 6000, wrestler.boutByRound(6)
+  end
+  
+  test "nine man conso finals mostPins tie breaker guy 9" do
+    nineManBracketPoolTwoGuyThreeMostPins
+    wrestler = Wrestler.where("name = ?", "Guy9").first
+    assert_equal 6001, wrestler.boutByRound(6)
+  end
+  
+  test "nine man pool 1 mostTechs tie breaker finalist guy 8" do
+    nineManBracketPoolOneGuyEightMostTechs
+    wrestler = Wrestler.where("name = ?", "Guy8").first
+    assert_equal 6000, wrestler.boutByRound(6)
+  end
+  
+  test "nine man conso finals mostTechs tie breaker guy 10" do
+    nineManBracketPoolOneGuyEightMostTechs
+    wrestler = Wrestler.where("name = ?", "Guy10").first
+    assert_equal 6001, wrestler.boutByRound(6)
+  end
+  
 end
