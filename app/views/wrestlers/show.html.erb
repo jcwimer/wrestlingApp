@@ -12,16 +12,22 @@
 
 <p>
   <strong>School:</strong>
-  <%= School.find(@wrestler.school_id).name %>
+  <%= @wrestler.school.name %>
 </p>
 
 <p>
   <strong>Weight:</strong>
-  <%= Weight.find(@wrestler.weight_id).max %>
+  <%= @wrestler.weight.max %>
 </p>
 
 <p>
-  <strong>Original seed:</strong>
-  <%= @wrestler.original_seed %>
+  <strong>Team Points Scored:</strong>
+  <%= @wrestler.totalTeamPoints - @wrestler.totalDeductedPoints %>
 </p>
 
+<br>
+<br>
+
+<% @wrestler.allMatches.each do |m| %>
+<div> Bout: <%= m.bout_number %> <%= m.bracket_position %> <%= m.wrestler1.name %> vs. <%= m.wrestler2.name %> <%= m.bracketScore %></div>
+<% end %>

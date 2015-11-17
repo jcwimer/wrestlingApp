@@ -79,7 +79,7 @@ class WrestlersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_wrestler
-      @wrestler = Wrestler.where(:id => params[:id]).includes(:tournament,:school,:weight).first
+      @wrestler = Wrestler.where(:id => params[:id]).includes(:tournament,:school,:weight,:matches).first
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
