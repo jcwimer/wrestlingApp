@@ -5,9 +5,18 @@ class School < ActiveRecord::Base
 	
 
 	#calculate score here
+	def pageScore
+		if self.score == nil
+			return 0.0
+		else
+			return self.score
+		end
+	end
 	
 	def calcScore
-    	totalWrestlerPoints - totalDeductedPoints
+    	newScore = totalWrestlerPoints - totalDeductedPoints
+    	self.score = newScore
+    	self.save
    	end
 	
 	def totalWrestlerPoints

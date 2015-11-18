@@ -60,7 +60,7 @@ class TournamentsController < ApplicationController
 
   def team_scores
     @schools = @tournament.schools
-    @schools.sort_by{|s| s.score}.reverse!
+    @schools = @schools.sort_by{|s| s.pageScore}.reverse!
   end
 
 

@@ -29,7 +29,7 @@
 <br>
 
 <% @wrestler.allMatches.each do |m| %>
-<div> Bout: <%= m.bout_number %> <%= m.bracket_position %> <%= m.wrestler1.name %> vs. <%= m.wrestler2.name %> <%= m.bracketScore %></div>
+<div> Bout: <%= m.bout_number %> <%= m.bracket_position %> <%= m.wrestler1.name %> vs. <%= m.wrestler2.name %> <%= @wrestler.resultByBout(m.bout_number) %></div>
 <% end %>
 <% @wrestler.deductedPoints.each do |w| %>
 <div> Deducted points: <%= w.points %></div>
