@@ -34,6 +34,30 @@ class Wrestler < ActiveRecord::Base
 		end
 		points
 	end
+	
+	def nextMatch
+		unfinishedMatches.first
+	end
+	
+	def nextMatchBoutNumber
+		if nextMatch
+			nextMatch.bout_number
+		else
+			""
+		end
+	end
+	
+	def nextMatchMatName
+		if nextMatch
+			nextMatch.mat_assigned
+		else
+			""
+		end
+	end
+
+	def unfinishedMatches
+		allMatches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
+	end
 
 	def resultByBout(bout)
 	   @match = allMatches.select{|m| m.bout_number == bout and m.finished == 1}

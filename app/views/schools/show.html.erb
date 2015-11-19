@@ -41,6 +41,7 @@
       <th>Seed Criteria</th>
       <th>Team Points Scored</th>
       <th>Extra?</th>
+      <th>Next Bout/Mat</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -60,6 +61,7 @@
           <td><% if wrestler.extra? == true %>
             Yes
            <% end %></td>
+           <td><%= wrestler.nextMatchBoutNumber %> <%= wrestler.nextMatchMatName %></td>
            <td>
             <%= link_to 'Show', wrestler , :class=>"btn btn-default" %>
             <% if tournament_permissions(@school.tournament)  %>

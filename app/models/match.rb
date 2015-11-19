@@ -20,6 +20,14 @@ class Match < ActiveRecord::Base
 	   	end	
 	end
 
+	def mat_assigned
+		if self.mat
+			"Mat #{self.mat.name}"
+		else
+			""
+		end
+	end
+
 	def advance_wrestlers
 	   if self.w1? && self.w2?	
 		@w1 = wrestler1
