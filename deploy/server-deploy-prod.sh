@@ -1,6 +1,6 @@
-if [ -z "$1" ]
+if [ -z "$2" ]
   then
-    echo "usage) server-deploy-prod.sh user@server"
+    echo "usage) server-deploy-prod.sh user@server docker-compose-file-name.yml"
     exit 1
 fi
 
@@ -18,5 +18,5 @@ docker kill $(docker ps -q)
 
 bash rails-prod.sh wrestlingdev
 cd deploy
-docker-compose -f docker-compose-prod.yml up -d
+docker-compose -f ${2} up -d
 '"
