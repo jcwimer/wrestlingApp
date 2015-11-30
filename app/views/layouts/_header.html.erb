@@ -10,9 +10,10 @@
                 <li><%= link_to "Results" , "/tournaments/#{@tournament.id}/results" %></li>
                 <li><%= link_to "Team Scores" , "/tournaments/#{@tournament.id}/team_scores" %></li>
             <% end %>
+            <li><%= link_to "About", "/static_pages/about" %></li>
             <% if user_signed_in? %>
                 <li><%=link_to "Log out", destroy_user_session_url ,:method => 'delete' %></li>
-		<li><%=link_to "Edit user", edit_user_registration_path %></li>
+		            <li><%=link_to "Edit user", edit_user_registration_path %></li>
             <% else %>
                 <li><%= link_to "Log In" , new_user_session_path %></li>
             <% end %>
