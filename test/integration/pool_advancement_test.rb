@@ -5,17 +5,19 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
     @tournament.generateMatchups
+    @matches = @tournament.matches
   end
 
-  def showNineManWeightThreePoolTwoMatches
-    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool" && m.poolNumber == 2}
+  def showMatches
+    matches = Match.where(weight_id: 4)
+    # matches = @matches.select{|m| m.weight_id == 4}
     matches.each do |m|
-      puts "Bout: #{m.bout_number} #{m.w1_name} vs #{m.w2_name} Pool: #{m.poolNumber}"
+      puts "Bout: #{m.bout_number} #{m.w1_name} vs #{m.w2_name} #{m.bracket_position} #{m.poolNumber}"
     end
   end
 
   def nineManBracketPoolOneOutrightWinnerGuyTwo
-     matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+     matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
      endMatch(1002,"Guy8",matches)
      endMatch(1003,"Guy10",matches)
      endMatch(2002,"Guy2",matches)
@@ -29,7 +31,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def nineManBracketPoolTwoGuyNineHeadToHead
-    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
     endMatch(1004,"Guy4",matches)
     endMatch(1005,"Guy3",matches)
     endMatch(2004,"Guy3",matches)
@@ -39,7 +41,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def nineManBracketPoolTwoGuyThreeHeadToHead
-    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
     endMatch(1004,"Guy9",matches)
     endMatch(1005,"Guy3",matches)
     endMatch(2004,"Guy4",matches)
@@ -54,7 +56,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def nineManBracketPoolTwoGuyThreeDeductedPoints
-    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
     endMatch(1004,"Guy9",matches)
     endMatch(1005,"Guy7",matches)
     endMatch(2004,"Guy3",matches)
@@ -68,7 +70,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def nineManBracketPoolTwoGuyThreeTeamPoints
-    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
     endMatch(1004,"Guy9",matches)
     endMatch(1005,"Guy7",matches)
     endMatchWithMajor(2004,"Guy3",matches)
@@ -78,7 +80,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def nineManBracketPoolTwoGuyThreeMostPins
-    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
     endMatchWithMajor(1004,"Guy9",matches)
     endMatch(1005,"Guy7",matches)
     endMatchWithPin(2004,"Guy3",matches)
@@ -88,7 +90,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def nineManBracketPoolOneGuyEightMostTechs
-    matches = @tournament.matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
     endMatchWithTech(1002,"Guy8",matches)
     endMatchWithMajor(1003,"Guy10",matches)
     endMatchWithMajor(2002,"Guy2",matches)
@@ -99,6 +101,43 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatchWithMajor(4003,"Guy2",matches)
     endMatchWithMajor(5002,"Guy10",matches)
     endMatch(5003,"Guy5",matches)
+  end
+  
+  def elevenManBracketToQuarter
+    matches = @matches
+    endMatch(1009,"Guy11",matches)
+    endMatch(2009,"Guy11",matches)
+    endMatch(3009,"Guy17",matches)
+    endMatch(1010,"Guy12",matches)
+    endMatch(2010,"Guy12",matches)
+    endMatch(3010,"Guy16",matches)
+    endMatch(1011,"Guy15",matches)
+    endMatch(2011,"Guy15",matches)
+    endMatch(3011,"Guy19",matches)
+    endMatch(1012,"Guy14",matches)
+  end
+  def elevenManBracketToSemis
+    matches = @matches
+    endMatch(4006,"Guy11",matches)
+    endMatch(4007,"Guy14",matches)
+    endMatch(4008,"Guy12",matches)
+    endMatch(4009,"Guy15",matches)
+  end
+  
+  def elevenManBracketToFinals
+    matches = @matches
+    endMatch(5006,"Guy11",matches)
+    endMatch(5007,"Guy12",matches)
+    endMatch(5008,"Guy16",matches)
+    endMatch(5009,"Guy17",matches)
+  end
+  
+  def elevenManBracketFinished
+    matches = @matches
+    endMatch(6002,"Guy11",matches)
+    endMatch(6003,"Guy14",matches)
+    endMatch(6004,"Guy16",matches)
+    endMatch(6005,"Guy19",matches)
   end
   
   def endMatch(bout,winner,matches)
@@ -267,7 +306,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   test "advancement points winner 1/2" do
     nineManBracketPoolOneOutrightWinnerGuyTwo
     nineManBracketPoolTwoGuyThreeHeadToHead
-    endMatch(6000,"Guy2",@tournament.matches)
+    endMatch(6000,"Guy2",@matches)
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
     assert_equal 16, wrestler1.placementPoints
   end
@@ -275,13 +314,13 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   test "advancement points winner 3/4" do
     nineManBracketPoolOneOutrightWinnerGuyTwo
     nineManBracketPoolTwoGuyThreeHeadToHead
-    endMatch(6001,"Guy8",@tournament.matches)
+    endMatch(6001,"Guy8",@matches)
     wrestler1 = Wrestler.where("name = ?", "Guy8").first
     assert_equal 10, wrestler1.placementPoints
   end
   
   test "advancement points winner 5/6" do
-  
+    
   end
   
   test "advancement points winner 7/8" do
@@ -289,35 +328,74 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   test "bonus points major" do
-    endMatchWithMajor(2002,"Guy2",@tournament.matches)
+    endMatchWithMajor(2002,"Guy2",@matches)
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
     assert_equal 2, wrestler1.teamPointsEarned
   end
   
   test "bonus points pin" do
-    endMatchWithPin(2002,"Guy2",@tournament.matches)
+    endMatchWithPin(2002,"Guy2",@matches)
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
     assert_equal 3, wrestler1.teamPointsEarned
   end
   
   test "bonus points tech fall" do
-    endMatchWithTech(2002,"Guy2",@tournament.matches)
+    endMatchWithTech(2002,"Guy2",@matches)
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
     assert_equal 2.5, wrestler1.teamPointsEarned
   end
   
   test "pool team points win" do
-    endMatch(2002,"Guy2",@tournament.matches)
+    endMatch(2002,"Guy2",@matches)
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
     assert_equal 1, wrestler1.teamPointsEarned
   end
   
   test "advancement points fourPoolsToQuarter Quarter" do
-  
+    elevenManBracketToQuarter
+    wrestler1 = Wrestler.where("name = ?", "Guy11").first
+    assert_equal 3, wrestler1.placementPoints
   end
   
   test "advancement points fourPoolsToQuarter Semis" do
-  
+    # elevenManBracketToQuarter
+    # elevenManBracketToSemis
+    # showMatches
+    
+    matches = @matches
+    endMatch(1009,"Guy11",matches)
+    endMatch(2009,"Guy11",matches)
+    endMatch(3009,"Guy17",matches)
+    endMatch(1010,"Guy12",matches)
+    endMatch(2010,"Guy12",matches)
+    endMatch(3010,"Guy16",matches)
+    endMatch(1011,"Guy15",matches)
+    endMatch(2011,"Guy15",matches)
+    endMatch(3011,"Guy19",matches)
+    endMatch(1012,"Guy14",matches)
+
+    endMatch(4006,"Guy11",matches)
+    endMatch(4007,"Guy14",matches)
+    endMatch(4008,"Guy12",matches)
+    endMatch(4009,"Guy15",matches)
+
+    # showMatches
+
+    wrestler = Wrestler.where("name = ?", "Guy11").first
+    match = Match.where(bout_number: 4006).first
+    puts match.inspect
+    # puts Wrestler.find(match.winner_id).name
+    # match = Match.where(bout_number: 5006).first
+    # puts match.inspect
+    puts wrestler.weight.allPoolMatchesFinished(wrestler.generatePoolNumber)
+    puts wrestler.finishedBracketMatches.size
+    puts wrestler.lastMatch.bout_number
+    puts wrestler.winnerOfLastMatch?
+    puts wrestler.nextMatchPositionNumber.ceil
+    puts wrestler.nextMatchPositionNumber
+    match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Semis",wrestler.nextMatchPositionNumber,wrestler.weight_id).first
+    puts match.bout_number
+    assert_equal 9, wrestler.placementPoints
   end
   
   test "advancement points twoPoolsToSemi Semis" do

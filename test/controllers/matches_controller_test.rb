@@ -68,7 +68,7 @@ class MatchesControllerTest < ActionController::TestCase
   test "logged in tournament owner should post update match" do
     sign_in_owner
     post_update
-    assert_redirected_to tournament_path(@match.tournament_id) 
+    assert_redirected_to mat_path(1) 
   end
 
 
