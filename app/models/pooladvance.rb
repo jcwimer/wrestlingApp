@@ -1,22 +1,24 @@
 class Pooladvance
 
- attr_accessor :wrestler
+ def initialize(wrestler)
+		@wrestler = wrestler
+ end
 
  def advanceWrestler
-   if self.wrestler.weight.allPoolMatchesFinished(self.wrestler.generatePoolNumber) && self.wrestler.finishedBracketMatches.size == 0
+   if @wrestler.weight.allPoolMatchesFinished(@wrestler.generatePoolNumber) && @wrestler.finishedBracketMatches.size == 0
      poolToBracketAdvancment
    end
-   if self.wrestler.finishedBracketMatches.size != 0
-	bracketAdvancment
+   if @wrestler.finishedBracketMatches.size > 0
+	    bracketAdvancment
    end
  end
 
  def poolToBracketAdvancment
-   pool = self.wrestler.generatePoolNumber
-   if self.wrestler.weight.wrestlers.size > 6
-     poolOrder = self.wrestler.weight.poolOrder(pool)
+   pool = @wrestler.generatePoolNumber
+   if @wrestler.weight.wrestlers.size > 6
+     poolOrder = @wrestler.weight.poolOrder(pool)
      #Take pool order and move winner and runner up to correct match based on w1_name and w2_name
-     matches = self.wrestler.weight.matches
+     matches = @wrestler.weight.matches
      winnerMatch = matches.select{|m| m.loser1_name == "Winner Pool #{pool}" || m.loser2_name == "Winner Pool #{pool}"}.first
      runnerUpMatch = matches.select{|m| m.loser1_name == "Runner Up Pool #{pool}" || m.loser2_name == "Runner Up Pool #{pool}"}.first
      winner = poolOrder.first
@@ -27,49 +29,46 @@ class Pooladvance
  end
 
  def bracketAdvancment
-   #Move to next correct spot in bracket
-   matches = self.wrestler.finishedMatches.sort_by{|m| m.round}.reverse
-   last_match = matches.first
-   if last_match.winner_id == self.wrestler.id
-	    winnerAdvance(last_match)
+   if @wrestler.winnerOfLastMatch?
+	    winnerAdvance
    end
-   if last_match.winner_id != self.wrestler.id
-	    loserAdvance(last_match)
+   if !@wrestler.winnerOfLastMatch?
+	    loserAdvance
    end
  end
 
- def winnerAdvance(last_match)
-   #Quarter to Semis
-   #Semis to 1/2
-   #Conso Semis to 5/6
-   pos = last_match.bracket_position_number
-   new_pos = (pos/2.0)
-   if last_match.bracket_position == "Quarter"
-     new_match = Match.where("bracket_position = ? AND bracket_position_number = ?","Semis",new_pos.ceil).first
+ def winnerAdvance
+   if @wrestler.lastMatch.bracket_position == "Quarter"
+     new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Semis",@wrestler.nextMatchPositionNumber.ceil,@wrestler.weight_id).first
+     updateNewMatch(new_match)
    end
-  if last_match.bracket_position == "Semis"
-     new_match = Match.where("bracket_position = ? AND bracket_position_number = ?","1/2",new_pos.ceil).first
+  if @wrestler.lastMatch.bracket_position == "Semis"
+     new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","1/2",@wrestler.nextMatchPositionNumber.ceil,@wrestler.weight_id).first
+     updateNewMatch(new_match)
   end
-  if last_match.bracket_position == "Conso Semis"
-     new_match = Match.where("bracket_position = ? AND bracket_position_number = ?","5/6",new_pos.ceil).first
+  if @wrestler.lastMatch.bracket_position == "Conso Semis"
+     new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","5/6",@wrestler.nextMatchPositionNumber.ceil,@wrestler.weight_id).first
+     updateNewMatch(new_match)
   end
-  if new_match
-     if new_pos == new_pos.ceil
-	      new_match.w2 = self.wrestler.id
-      	new_match.save
+
+ end
+ 
+ def updateNewMatch(match)
+     if @wrestler.nextMatchPositionNumber == @wrestler.nextMatchPositionNumber.ceil
+	      match.w2 = @wrestler.id
+      	match.update
      end
-     if new_pos != new_pos.ceil
-	      new_match.w1 = self.wrestler.id
-	      new_match.save
+     if @wrestler.nextMatchPositionNumber != @wrestler.nextMatchPositionNumber.ceil
+	      match.w1 = @wrestler.id
+	      match.update
      end
-  end
  end
 
- def loserAdvance(last_match)
-    bout = last_match.bout_number
-    next_match = Match.where("loser1_name = ? or loser2_name = ?","Loser of #{bout}","Loser of #{bout}")
+ def loserAdvance
+    bout = @wrestler.lastMatch.bout_number
+    next_match = Match.where("loser1_name = ? OR loser2_name = ? AND weight_id = ?","Loser of #{bout}","Loser of #{bout}",@wrestler.weight_id)
     if next_match.size > 0
-     	next_match.first.replaceLoserNameWithWrestler(self.wrestler,"Loser of #{bout}")
+     	next_match.first.replaceLoserNameWithWrestler(@wrestler,"Loser of #{bout}")
     end
  end
 end

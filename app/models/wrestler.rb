@@ -39,6 +39,23 @@ class Wrestler < ActiveRecord::Base
 		unfinishedMatches.first
 	end
 	
+	def nextMatchPositionNumber
+		pos = lastMatch.bracket_position_number
+		return (pos/2.0)	
+	end
+	
+	def lastMatch
+		finishedMatches.sort_by{|m| m.round}.reverse.first
+	end
+	
+	def winnerOfLastMatch?
+		if lastMatch.winner_id == self.id
+			return true
+		else 
+			return false
+		end
+	end
+	
 	def nextMatchBoutNumber
 		if nextMatch
 			nextMatch.bout_number
@@ -155,8 +172,6 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def advanceInBracket
-		@advance = Pooladvance.new
-		@advance.wrestler = self
-		@advance.advanceWrestler
+		Pooladvance.new(self).advanceWrestler
 	end
 end

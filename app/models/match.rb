@@ -5,7 +5,7 @@ class Match < ActiveRecord::Base
 	has_many :wrestlers, :through => :weight
 
 	after_save do 
-	   if self.finished == 1
+	   if self.finished == 1 && self.winner_id != nil
 		advance_wrestlers
 		calcSchoolPoints
 	   end
@@ -14,7 +14,7 @@ class Match < ActiveRecord::Base
 	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ"]
 
 	def calcSchoolPoints
-		if self.w1? && self.w2?	
+		if self.w1 && self.w2
 			wrestler1.school.calcScore
 			wrestler2.school.calcScore
 	   	end	
@@ -29,7 +29,7 @@ class Match < ActiveRecord::Base
 	end
 
 	def advance_wrestlers
-	   if self.w1? && self.w2?	
+	   if self.w1 && self.w2	
 		@w1 = wrestler1
 		@w2 = wrestler2
 		@w1.advanceInBracket
@@ -56,7 +56,7 @@ class Match < ActiveRecord::Base
 	end
 
 	def w1_name
-		if self.w1
+		if self.w1 != nil
 			wrestler1.name
 		else
 			self.loser1_name
@@ -64,7 +64,7 @@ class Match < ActiveRecord::Base
 	end
 
 	def w2_name
-		if self.w2
+		if self.w2 != nil
 			wrestler2.name
 		else
 			self.loser2_name
