@@ -393,7 +393,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     puts wrestler.winnerOfLastMatch?
     puts wrestler.nextMatchPositionNumber.ceil
     puts wrestler.nextMatchPositionNumber
-    match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Semis",wrestler.nextMatchPositionNumber,wrestler.weight_id).first
+    match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Semis",wrestler.nextMatchPositionNumber.ceil,wrestler.weight_id).first
     puts match.bout_number
     assert_equal 9, wrestler.placementPoints
   end
