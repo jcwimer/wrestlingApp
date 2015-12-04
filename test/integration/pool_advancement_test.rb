@@ -299,11 +299,17 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   test "advancement points 5/6" do
-  
+    elevenManBracketToFinals
+    wrestler = Wrestler.where("name = ?", "Guy16").first
+
+    assert_equal 6, wrestler.placementPoints
   end
   
   test "advancement points 7/8" do
-  
+    elevenManBracketToFinals
+    wrestler = Wrestler.where("name = ?", "Guy19").first
+
+    assert_equal 3, wrestler.placementPoints
   end
   
   test "advancement points winner 1/2" do
@@ -323,11 +329,17 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   test "advancement points winner 5/6" do
-    
+    elevenManBracketFinished
+    wrestler = Wrestler.where("name = ?", "Guy16").first
+
+    assert_equal 7, wrestler.placementPoints
   end
   
   test "advancement points winner 7/8" do
-  
+    elevenManBracketFinished
+    wrestler = Wrestler.where("name = ?", "Guy19").first
+
+    assert_equal 4, wrestler.placementPoints
   end
   
   test "bonus points major" do
