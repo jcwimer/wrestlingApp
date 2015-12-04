@@ -3,9 +3,9 @@
         
         <!-- sidebar -->
         <% if @tournament %>
-            <div class="affix" style="border-right:1px solid #000; padding-right: 1%;">
+            <div class="" style="padding-right: 1%;">
                 <ul class="">
-                     <h5>Tournament Links</h5>
+                     <h4>Tournament Links</h4>
                     <li><%= link_to "Brackets" , "/tournaments/#{@tournament.id}/brackets" %></li>
                     <li><%= link_to "Upcoming Matches" , "/tournaments/#{@tournament.id}/up_matches" %></li>
                     <li><%= link_to "Team Scores" , "/tournaments/#{@tournament.id}/team_scores" %></li>
