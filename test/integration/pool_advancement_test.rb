@@ -117,6 +117,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatch(1012,"Guy14",matches)
   end
   def elevenManBracketToSemis
+    elevenManBracketToQuarter
     matches = @matches
     endMatch(4006,"Guy11",matches)
     endMatch(4007,"Guy14",matches)
@@ -125,6 +126,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def elevenManBracketToFinals
+    elevenManBracketToSemis
     matches = @matches
     endMatch(5006,"Guy11",matches)
     endMatch(5007,"Guy12",matches)
@@ -133,6 +135,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def elevenManBracketFinished
+    elevenManBracketToFinals
     matches = @matches
     endMatch(6002,"Guy11",matches)
     endMatch(6003,"Guy14",matches)
@@ -141,7 +144,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def endMatch(bout,winner,matches)
-     match = matches.select{|m| m.bout_number == bout}.first
+     match = Match.where(bout_number: bout).first
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Decision"
@@ -152,7 +155,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def endMatchWithMajor(bout,winner,matches)
-     match = matches.select{|m| m.bout_number == bout}.first
+     match = Match.where(bout_number: bout).first
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Major"
@@ -163,7 +166,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def endMatchWithTech(bout,winner,matches)
-     match = matches.select{|m| m.bout_number == bout}.first
+     match = Match.where(bout_number: bout).first
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Tech Fall"
@@ -174,7 +177,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def endMatchWithPin(bout,winner,matches)
-     match = matches.select{|m| m.bout_number == bout}.first
+     match = Match.where(bout_number: bout).first
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Pin"
@@ -358,43 +361,9 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   test "advancement points fourPoolsToQuarter Semis" do
-    # elevenManBracketToQuarter
-    # elevenManBracketToSemis
-    # showMatches
-    
-    matches = @matches
-    endMatch(1009,"Guy11",matches)
-    endMatch(2009,"Guy11",matches)
-    endMatch(3009,"Guy17",matches)
-    endMatch(1010,"Guy12",matches)
-    endMatch(2010,"Guy12",matches)
-    endMatch(3010,"Guy16",matches)
-    endMatch(1011,"Guy15",matches)
-    endMatch(2011,"Guy15",matches)
-    endMatch(3011,"Guy19",matches)
-    endMatch(1012,"Guy14",matches)
-
-    endMatch(4006,"Guy11",matches)
-    endMatch(4007,"Guy14",matches)
-    endMatch(4008,"Guy12",matches)
-    endMatch(4009,"Guy15",matches)
-
-    # showMatches
-
+    elevenManBracketToSemis
     wrestler = Wrestler.where("name = ?", "Guy11").first
-    match = Match.where(bout_number: 4006).first
-    puts match.inspect
-    # puts Wrestler.find(match.winner_id).name
-    # match = Match.where(bout_number: 5006).first
-    # puts match.inspect
-    puts wrestler.weight.allPoolMatchesFinished(wrestler.generatePoolNumber)
-    puts wrestler.finishedBracketMatches.size
-    puts wrestler.lastMatch.bout_number
-    puts wrestler.winnerOfLastMatch?
-    puts wrestler.nextMatchPositionNumber.ceil
-    puts wrestler.nextMatchPositionNumber
-    match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Semis",wrestler.nextMatchPositionNumber.ceil,wrestler.weight_id).first
-    puts match.bout_number
+
     assert_equal 9, wrestler.placementPoints
   end
   
