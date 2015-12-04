@@ -7,6 +7,7 @@ class WrestlersController < ApplicationController
   # GET /wrestlers/1.json
   def show
     @school = @wrestler.school
+    @tournament = @wrestler.tournament
   end
 
   # GET /wrestlers/new

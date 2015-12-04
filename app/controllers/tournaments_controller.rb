@@ -1,5 +1,5 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:results,:all_brackets]
+  before_action :set_tournament, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
   before_filter :check_access, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:destroy,:generate_matches]
   before_filter :check_for_matches, only: [:up_matches,:bracket]
  
@@ -34,10 +34,6 @@ class TournamentsController < ApplicationController
 
   def all_brackets
     
-  end
-
-  def results
-    @matches = @tournament.matches
   end
 
   def bracket

@@ -13,7 +13,7 @@ class Tournament < ActiveRecord::Base
 		["Pool to bracket"]
 	end
 
-  def createCustomWeights(value)
+	def createCustomWeights(value)
 		weights.destroy_all
 		if value == 'hs'
 			Weight::HS_WEIGHT_CLASSES.each do |w|
@@ -47,5 +47,9 @@ class Tournament < ActiveRecord::Base
 				m.assignNextMatch	
 			end
 		end
+	end
+	
+	def totalRounds
+		self.matches.sort_by{|m| m.bout_number}.last.round	
 	end
 end

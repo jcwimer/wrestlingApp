@@ -1,10 +1,11 @@
 <p id="notice"><%= notice %></p>
 
-<%= link_to "Back to #{@school.name}", "/schools/#{@school.id}" %> |
+<%= link_to "Back to #{@school.name}", "/schools/#{@school.id}", :class=>"btn btn-default" %>
 <% if tournament_permissions(@wrestler.tournament)  %>
-  <%= link_to "Edit #{@wrestler.name}", edit_wrestler_path(@wrestler) %> |
+  | <%= link_to "Edit #{@wrestler.name}", edit_wrestler_path(@wrestler), :class=>"btn btn-primary" %>
 <% end %>
-
+<br>
+<br>
 <p>
   <strong>Name:</strong>
   <%= @wrestler.name %>
@@ -27,7 +28,8 @@
 
 <br>
 <br>
-
+<h4>Matches</h4>
+<br>
 <% @wrestler.allMatches.each do |m| %>
 <div> Bout: <%= m.bout_number %> <%= m.bracket_position %> <%= m.wrestler1.name %> vs. <%= m.wrestler2.name %> <%= @wrestler.resultByBout(m.bout_number) %></div>
 <% end %>

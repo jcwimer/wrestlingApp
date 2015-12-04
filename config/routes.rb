@@ -32,7 +32,6 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/weigh_in'  => 'tournaments#weigh_in'
   get 'tournaments/:id/create_custom_weights' => 'tournaments#create_custom_weights'
   get 'tournaments/:id/all_brackets' => 'tournaments#all_brackets'
-  get 'tournaments/:id/results' => 'tournaments#results'
   get 'tournaments/:id/brackets' => 'tournaments#brackets'
   get 'tournaments/:id/brackets/:weight' => 'tournaments#bracket'
   get 'tournaments/:id/generate_matches' => 'tournaments#generate_matches'
