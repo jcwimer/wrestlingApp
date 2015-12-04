@@ -56,11 +56,11 @@ class Pooladvance
  def updateNewMatch(match)
      if @wrestler.nextMatchPositionNumber == @wrestler.nextMatchPositionNumber.ceil
 	      match.w2 = @wrestler.id
-      	match.update
+      	match.save
      end
      if @wrestler.nextMatchPositionNumber != @wrestler.nextMatchPositionNumber.ceil
 	      match.w1 = @wrestler.id
-	      match.update
+	      match.save
      end
  end
 

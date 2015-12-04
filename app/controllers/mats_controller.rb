@@ -7,9 +7,11 @@ class MatsController < ApplicationController
   # GET /mats/1.json
   def show
     @match = @mat.unfinishedMatches.first
-    @w1 = @match.wrestler1
-    @w2 = @match.wrestler2
-    @wrestlers = [@w1,@w2]
+    if @match
+      @w1 = @match.wrestler1
+      @w2 = @match.wrestler2
+      @wrestlers = [@w1,@w2]
+    end
   end
 
   # GET /mats/new

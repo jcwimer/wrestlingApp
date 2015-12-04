@@ -30,10 +30,10 @@
     <% @mats.each.map do |m| %>
       <tr>
         <td><%= m.name %></td>
-        <td><%=m.unfinishedMatches.first.bout_number%><br><%= m.unfinishedMatches.first.w1_name %> vs. <%= m.unfinishedMatches.first.w2_name %></td>
-        <td><%=m.unfinishedMatches.second.bout_number%><br><%= m.unfinishedMatches.second.w1_name %> vs. <%= m.unfinishedMatches.second.w2_name %></td>
-        <td><%=m.unfinishedMatches.third.bout_number%><br><%= m.unfinishedMatches.third.w1_name %> vs. <%= m.unfinishedMatches.third.w2_name %></td>
-        <td><%=m.unfinishedMatches.fourth.bout_number%><br><%= m.unfinishedMatches.fourth.w1_name %> vs. <%= m.unfinishedMatches.fourth.w2_name %></td>
+        <td><% if m.unfinishedMatches.first %><%=m.unfinishedMatches.first.bout_number%><br><%= m.unfinishedMatches.first.w1_name %> vs. <%= m.unfinishedMatches.first.w2_name %><% end %></td>
+        <td><% if m.unfinishedMatches.second %><%=m.unfinishedMatches.second.bout_number%><br><%= m.unfinishedMatches.second.w1_name %> vs. <%= m.unfinishedMatches.second.w2_name %><% end %></td>
+        <td><% if m.unfinishedMatches.third %><%=m.unfinishedMatches.third.bout_number%><br><%= m.unfinishedMatches.third.w1_name %> vs. <%= m.unfinishedMatches.third.w2_name %><% end %></td>
+        <td><% if m.unfinishedMatches.fourth %><%=m.unfinishedMatches.fourth.bout_number%><br><%= m.unfinishedMatches.fourth.w1_name %> vs. <%= m.unfinishedMatches.fourth.w2_name %><% end %></td>
       </tr>
     <% end %>
   </tbody>
@@ -54,6 +54,7 @@
   </thead>
 
   <tbody>
+    <% if @matches.size > 0 %>
     <% @matches.each.map do |m| %>
       <tr>
         <td>Round <%= m.round %></td>
@@ -61,6 +62,7 @@
         <td><%= m.weight_max %> lbs</td>
         <td><%= m.w1_name %> vs. <%= m.w2_name %></td>
       </tr>
+    <% end %>
     <% end %>
   </tbody>
 </table>

@@ -4,9 +4,11 @@ class Mat < ActiveRecord::Base
 	
 	def assignNextMatch
 		t_matches = tournament.matches.where(mat_id: nil)
-		match = t_matches.order(:bout_number).first
-		match.mat_id = self.id
-		match.save
+		if t_matches.size > 0
+			match = t_matches.order(:bout_number).first
+			match.mat_id = self.id
+			match.save
+		end
 	end
 	
 	def unfinishedMatches
