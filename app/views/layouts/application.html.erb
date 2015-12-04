@@ -25,12 +25,15 @@
 
                   <div id="page-content">
                     <div class="row no-margin">
-                      <div class="col-md-10">
-                        <div id="view"><%= yield %></div>
-                      </div>
-		      <div class="col-md-2" style="padding-top: 2%;">
-			<%= render 'layouts/rsidebar' %>
-		      </div>
+                        <div class="col-md-2">
+              			      <%= render 'layouts/lsidebar' %>
+              		      </div>
+                        <div class="col-md-8" style="padding-left: 2%;">
+                          <div id="view"><%= yield %></div>
+                        </div>
+            		      <div class="col-md-2" >
+            			      <%= render 'layouts/rsidebar' %>
+            		      </div>
                     </div>
                   </div>
                   <%= render 'layouts/footer' %>
