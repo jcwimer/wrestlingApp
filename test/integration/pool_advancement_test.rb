@@ -9,11 +9,60 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
 
   def showMatches
-    matches = Match.where(weight_id: 4)
+    matches = Match.where(weight_id: 5)
     # matches = @matches.select{|m| m.weight_id == 4}
     matches.each do |m|
       puts "Bout: #{m.bout_number} #{m.w1_name} vs #{m.w2_name} #{m.bracket_position} #{m.poolNumber}"
     end
+  end
+  
+  def sixteenManToSemi
+    matches = @matches
+    endMatch(1013,"Guy22",matches)
+    endMatch(1014,"Guy29",matches)
+    endMatch(2012,"Guy37",matches)
+    endMatch(2013,"Guy22",matches)
+    endMatch(3012,"Guy29",matches)
+    endMatch(3013,"Guy22",matches)
+    endMatch(1015,"Guy36",matches)
+    endMatch(1016,"Guy32",matches)
+    endMatch(2014,"Guy23",matches)
+    endMatch(2015,"Guy36",matches)
+    endMatch(3014,"Guy32",matches)
+    endMatch(3015,"Guy36",matches)
+    endMatch(1017,"Guy31",matches)
+    endMatch(1018,"Guy35",matches)
+    endMatch(2016,"Guy27",matches)
+    endMatch(2017,"Guy31",matches)
+    endMatch(3016,"Guy35",matches)
+    endMatch(3017,"Guy31",matches)
+    endMatch(1019,"Guy34",matches)
+    endMatch(1020,"Guy26",matches)
+    endMatch(2018,"Guy30",matches)
+    endMatch(2019,"Guy34",matches)
+    endMatch(3018,"Guy26",matches)
+    endMatch(3019,"Guy34",matches)
+  end
+  
+  
+  def sevenManTwoPoolToSemi
+    matches = @matches
+    endMatch(1006,"Casey Davis",matches)
+    endMatch(1007,"Ethan Leapley",matches)
+    endMatch(2006,"Ethan Leapley",matches)
+    endMatch(2007,"Casey Davis",matches)
+    endMatch(3006,"Clayton Ray",matches)
+    endMatch(3007,"Ethan Leapley",matches)
+    endMatch(1008,"Kameron Teacher",matches)
+    endMatch(2008,"Kameron Teacher",matches)
+    endMatch(3008,"Robbie Fusner",matches)
+  end
+  
+  def sevenManTwoPoolSemiToFinals
+    sevenManTwoPoolToSemi
+    matches = @matches
+    endMatch(4005,"Casey Davis",matches)
+    endMatch(4004,"Ethan Leapley",matches)
   end
 
   def nineManBracketPoolOneOutrightWinnerGuyTwo
@@ -380,19 +429,31 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   test "advancement points twoPoolsToSemi Semis" do
-  
+    sevenManTwoPoolToSemi
+    wrestler = Wrestler.where("name = ?", "Casey Davis").first
+
+    assert_equal 9, wrestler.placementPoints
   end
   
-  test "advancement points twoPoolsToSemi Conso Semis" do
-  
+  test "advancement points twoPoolsToSemi Finals" do
+    sevenManTwoPoolSemiToFinals
+    wrestler = Wrestler.where("name = ?", "Casey Davis").first
+
+    assert_equal 12, wrestler.placementPoints
   end
   
   test "advancement points fourPoolsToSemi Semis" do
-  
+    sixteenManToSemi
+    wrestler = Wrestler.where("name = ?", "Guy22").first
+
+    assert_equal 9, wrestler.placementPoints
   end
   
   test "advancement points fourPoolsToSemi Conso Semis" do
-  
+    sixteenManToSemi
+    wrestler = Wrestler.where("name = ?", "Guy29").first
+
+    assert_equal 3, wrestler.placementPoints
   end
   
   
