@@ -248,5 +248,13 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     matches = @tournament.matches.order(:bout_number)
     assert_equal 'Mat1', matches.first.mat.name
   end
+  
+  test "finals matches in last round" do
+    lastRound = @tournament.totalRounds
+    finalsMatches = @tournament.matches.select{|m| m.bracket_position == "1/2" || m.bracket_position == "3/4" || m.bracket_position == "5/6" || m.bracket_position == "7/8"} 
+    finalsMatches.each do |m|
+      assert_equal lastRound, m.round
+    end
+  end
 
 end

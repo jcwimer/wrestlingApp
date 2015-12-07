@@ -9,7 +9,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
 
   def showMatches
-    matches = Match.where(weight_id: 5)
+    matches = Match.where(weight_id: 4)
     # matches = @matches.select{|m| m.weight_id == 4}
     matches.each do |m|
       puts "Bout: #{m.bout_number} #{m.w1_name} vs #{m.w2_name} #{m.bracket_position} #{m.poolNumber}"
@@ -177,19 +177,19 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   def elevenManBracketToFinals
     elevenManBracketToSemis
     matches = @matches
-    endMatch(5006,"Guy11",matches)
-    endMatch(5007,"Guy12",matches)
-    endMatch(5008,"Guy16",matches)
-    endMatch(5009,"Guy17",matches)
+    endMatch(5004,"Guy11",matches)
+    endMatch(5005,"Guy12",matches)
+    endMatch(5006,"Guy16",matches)
+    endMatch(5007,"Guy17",matches)
   end
   
   def elevenManBracketFinished
     elevenManBracketToFinals
     matches = @matches
-    endMatch(6002,"Guy11",matches)
-    endMatch(6003,"Guy14",matches)
-    endMatch(6004,"Guy16",matches)
-    endMatch(6005,"Guy19",matches)
+    endMatch(6004,"Guy11",matches)
+    endMatch(6005,"Guy14",matches)
+    endMatch(6006,"Guy16",matches)
+    endMatch(6007,"Guy19",matches)
   end
   
   def endMatch(bout,winner,matches)
@@ -455,7 +455,6 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
 
     assert_equal 3, wrestler.placementPoints
   end
-  
   
   
 end

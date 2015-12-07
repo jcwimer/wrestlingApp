@@ -50,6 +50,6 @@ class Tournament < ActiveRecord::Base
 	end
 	
 	def totalRounds
-		self.matches.sort_by{|m| m.bout_number}.last.round	
+		self.matches.sort_by{|m| m.round}.last.round	
 	end
 end
