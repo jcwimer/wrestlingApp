@@ -3,6 +3,8 @@
   <% if params[:print] %>
       <head>
         <title>WrestlingDev</title>
+        <%= render 'layouts/cdn' %>
+          <%= render 'layouts/shim' %>
       </head>
       <body>
         <%= yield %>
