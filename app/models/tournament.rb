@@ -9,6 +9,8 @@ class Tournament < ActiveRecord::Base
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
 
+	
+
 	def tournament_types
 		["Pool to bracket"]
 	end
@@ -42,14 +44,29 @@ class Tournament < ActiveRecord::Base
 	end
 	
 	def assignFirstMatchesToMats
-		until mats.order(:id).last.matches.count == 4
-			mats.order(:id).each do |m|
-				m.assignNextMatch	
-			end
-		end
+		assignMats(mats)
 	end
 	
 	def totalRounds
 		self.matches.sort_by{|m| m.round}.last.round	
+	end
+	
+	def assignMats(matsToAssign)
+		if matsToAssign.count > 0
+			until matsToAssign.sort_by{|m| m.id}.last.matches.count == 4
+				matsToAssign.sort_by{|m| m.id}.each do |m|
+					m.assignNextMatch	
+				end
+			end	
+		end
+	end
+	
+	def resetMats
+		matchesToReset = matches.select{|m| m.finished != 1 && m.mat_id != nil}
+		# matchesToReset.update_all( {:mat_id => nil } )
+		matchesToReset.each do |m|
+			m.mat_id = nil
+			m.save
+		end
 	end
 end
