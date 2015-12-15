@@ -6,7 +6,7 @@ class Wrestler < ActiveRecord::Base
 	has_many :deductedPoints, class_name: "Teampointadjust"
 	attr_accessor :poolNumber, :poolAdvancePoints
 
-	before_save do
+	before_create do
 		self.tournament.destroyAllMatches
 	end
 
