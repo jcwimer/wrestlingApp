@@ -1,4 +1,4 @@
-class Pooladvance
+class PoolAdvance
 
  def initialize(wrestler)
 		@wrestler = wrestler

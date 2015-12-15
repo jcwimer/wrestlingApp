@@ -24,7 +24,7 @@ class Wrestler < ActiveRecord::Base
 	end
 	
 	def placementPoints
-		Poolbracketplacementpoints.new(self).calcPoints
+		PoolBracketPlacementPoints.new(self).calcPoints
 	end
 
 	def totalDeductedPoints
@@ -172,6 +172,6 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def advanceInBracket
-		Pooladvance.new(self).advanceWrestler
+		PoolAdvance.new(self).advanceWrestler
 	end
 end

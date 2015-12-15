@@ -1,4 +1,4 @@
-class Poolbracket
+class PoolBracket
 
   def initialize(weight, highest_round)
     @weight = weight

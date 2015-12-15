@@ -1,4 +1,4 @@
-class Poolbracketplacementpoints
+class PoolBracketPlacementPoints
     def initialize(wrestler)
 		@wrestler = wrestler
 		@bracket = wrestler.weight.pool_bracket_type

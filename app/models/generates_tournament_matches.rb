@@ -16,7 +16,7 @@ module GeneratesTournamentMatches
       Pool.new(weight).generatePools()
       last_match = matches.where(weight: weight).order(round: :desc).limit(1).first
       highest_round = last_match.round
-      Poolbracket.new(weight, highest_round).generateBracketMatches()
+      PoolBracket.new(weight, highest_round).generateBracketMatches()
     end
   end
 

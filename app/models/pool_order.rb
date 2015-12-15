@@ -1,4 +1,4 @@
-class Poolorder
+class PoolOrder
 	def initialize(wrestlers)
 		@wrestlers = wrestlers
 	end

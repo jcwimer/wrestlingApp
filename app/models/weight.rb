@@ -139,6 +139,6 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def poolOrder(pool)
-		Poolorder.new(wrestlersForPool(pool)).getPoolOrder
+		PoolOrder.new(wrestlersForPool(pool)).getPoolOrder
 	end
 end
