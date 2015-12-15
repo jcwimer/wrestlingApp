@@ -29,6 +29,10 @@ class StaticPagesControllerTest < ActionController::TestCase
     get :home
     success
   end
-  
 
+  test "get my_tournaments" do
+    sign_in_owner
+    get :my_tournaments  
+    success
+  end
 end

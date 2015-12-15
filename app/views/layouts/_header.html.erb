@@ -8,7 +8,8 @@
             <li><%= link_to "About", "/static_pages/about" %></li>
             <% if user_signed_in? %>
                 <li><%=link_to "Log out", destroy_user_session_url ,:method => 'delete' %></li>
-		            <li><%=link_to "Edit user", edit_user_registration_path %></li>
+		<li><%=link_to "Edit user", edit_user_registration_path %></li>
+		<li><%=link_to "My tournaments","/static_pages/my_tournaments" %></li>
             <% else %>
                 <li><%= link_to "Log In" , new_user_session_path %></li>
             <% end %>
