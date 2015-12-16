@@ -82,10 +82,10 @@ class Wrestler < ActiveRecord::Base
  		return ""
 	   end
 	   if @match.first.winner_id == self.id
-		return "W #{@match.first.score}"
+		return "W #{@match.first.bracketScore}"
 	   end
 	   if @match.first.winner_id != self.id
-		return "L #{@match.first.score}"
+		return "L #{@match.first.bracketScore}"
 	   end
 	end
 

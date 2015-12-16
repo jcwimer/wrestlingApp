@@ -43,7 +43,17 @@ class Match < ActiveRecord::Base
 		  return ""
 		end
 		if self.finished == 1
-		  return "(#{self.score})"
+		  if self.win_type == "Default"
+		  	return "Def"
+		  elsif self.win_type == "Injury Default"
+		  	return "Inj"
+		  elsif self.win_type == "DQ"
+		  	return "DQ"
+		  elsif self.win_type == "Forfeit"
+		  	return "For"
+		  else
+		  	return "(#{self.score})"
+		  end
 		end
 	end
 
