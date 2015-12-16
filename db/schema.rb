@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151117152454) do
+ActiveRecord::Schema.define(version: 20151216154211) do
 
   create_table "matches", force: :cascade do |t|
     t.integer  "w1"
     t.integer  "w2"
-    t.text     "g_stat"
-    t.text     "r_stat"
+    t.text     "w1_stat"
+    t.text     "w2_stat"
     t.integer  "winner_id"
     t.string   "win_type"
     t.string   "score"
