@@ -45,7 +45,6 @@ gem 'spring', :group => :development
       	  	  gem 'passenger'
       	  	  gem 'therubyracer'
 	  	  gem 'newrelic_rpm'
-	  	  gem 'dalli'
 		end
 	#Other
 		gem 'devise'

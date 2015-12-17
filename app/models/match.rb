@@ -1,7 +1,7 @@
 class Match < ActiveRecord::Base
-	belongs_to :tournament, touch: true
-	belongs_to :weight, touch: true
-	belongs_to :mat, touch: true
+	belongs_to :tournament
+	belongs_to :weight
+	belongs_to :mat
 	has_many :wrestlers, :through => :weight
 
 	after_save do 
