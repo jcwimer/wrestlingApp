@@ -118,6 +118,26 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     deduct.save
   end
   
+  def nineManBracketPoolTwoGuyThreeMostDecisionPoints
+    matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    endMatchExtraPoints(1004,"Guy9",matches)
+    endMatch(1005,"Guy7",matches)
+    endMatchExtraPoints(2004,"Guy3",matches)
+    endMatch(2005,"Guy9",matches)
+    endMatch(3004,"Guy7",matches)
+    endMatchExtraPoints(3005,"Guy3",matches)
+  end
+  
+  def nineManBracketPoolTwoGuyThreeQuickestPin
+    matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
+    endMatchWithQuickPin(1004,"Guy9",matches)
+    endMatch(1005,"Guy7",matches)
+    endMatchWithQuickPin(2004,"Guy3",matches)
+    endMatch(2005,"Guy9",matches)
+    endMatch(3004,"Guy7",matches)
+    endMatchWithQuickestPin(3005,"Guy3",matches)
+  end
+  
   def nineManBracketPoolTwoGuyThreeTeamPoints
     matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
     endMatch(1004,"Guy9",matches)
@@ -197,6 +217,19 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Decision"
+     match.score = 1-0
+     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
+     mat = @tournament.mats.first
+     match.mat_id = mat.id
+     match.save
+  end
+  
+  def endMatchExtraPoints(bout,winner,matches)
+     match = Match.where(bout_number: bout).first
+     match.finished = 1
+     match.winner_id = translateNameToId(winner)
+     match.win_type = "Decision"
+     match.score = 0-2
      #Need to manually assign mat_id because thise weight class is not currently assigned a mat
      mat = @tournament.mats.first
      match.mat_id = mat.id
@@ -208,6 +241,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Major"
+     match.score = 8-0
      #Need to manually assign mat_id because thise weight class is not currently assigned a mat
      mat = @tournament.mats.first
      match.mat_id = mat.id
@@ -230,6 +264,31 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Pin"
+     match.score = "5:00"
+     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
+     mat = @tournament.mats.first
+     match.mat_id = mat.id
+     match.save
+  end
+  
+  def endMatchWithQuickestPin(bout,winner,matches)
+     match = Match.where(bout_number: bout).first
+     match.finished = 1
+     match.winner_id = translateNameToId(winner)
+     match.win_type = "Pin"
+     match.score = "0:20"
+     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
+     mat = @tournament.mats.first
+     match.mat_id = mat.id
+     match.save
+  end
+  
+  def endMatchWithQuickPin(bout,winner,matches)
+     match = Match.where(bout_number: bout).first
+     match.finished = 1
+     match.winner_id = translateNameToId(winner)
+     match.win_type = "Pin"
+     match.score = "1:20"
      #Need to manually assign mat_id because thise weight class is not currently assigned a mat
      mat = @tournament.mats.first
      match.mat_id = mat.id
@@ -284,6 +343,32 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   
   test "nine man conso finals deductedPoints tie breaker guy 9" do
     nineManBracketPoolTwoGuyThreeDeductedPoints
+    wrestler = Wrestler.where("name = ?", "Guy9").first
+    assert_equal 6001, wrestler.boutByRound(6)
+  end
+  
+  
+  
+  test "nine man pool 2 mostDecisionPointsScored tie breaker finalist guy 3" do
+    wrestler = Wrestler.where("name = ?", "Guy3").first
+    nineManBracketPoolTwoGuyThreeMostDecisionPoints
+    assert_equal 6000, wrestler.boutByRound(6)
+  end
+  
+  test "nine man conso finals mostDecisionPointsScored tie breaker guy 9" do
+    nineManBracketPoolTwoGuyThreeMostDecisionPoints
+    wrestler = Wrestler.where("name = ?", "Guy9").first
+    assert_equal 6001, wrestler.boutByRound(6)
+  end
+  
+  test "nine man pool 2 QuickestPin tie breaker finalist guy 3" do
+    wrestler = Wrestler.where("name = ?", "Guy3").first
+    nineManBracketPoolTwoGuyThreeQuickestPin
+    assert_equal 6000, wrestler.boutByRound(6)
+  end
+  
+  test "nine man conso finals QuickestPin tie breaker guy 9" do
+    nineManBracketPoolTwoGuyThreeQuickestPin
     wrestler = Wrestler.where("name = ?", "Guy9").first
     assert_equal 6001, wrestler.boutByRound(6)
   end

@@ -27,6 +27,17 @@ class Match < ActiveRecord::Base
 			""
 		end
 	end
+	
+	def pinTime
+		if self.win_type == "Pin"
+			time = self.score.delete("")
+			minInSeconds = time.partition(':').first.to_i * 60
+			sec = time.partition(':').last.to_i
+			return minInSeconds + sec
+		else
+			nil
+		end
+	end
 
 	def advance_wrestlers
 	   if self.w1 && self.w2	

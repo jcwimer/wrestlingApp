@@ -157,6 +157,29 @@ class Wrestler < ActiveRecord::Base
 		matchesWon.select{|m| m.win_type == "Major" }
 	end
 	
+	def decisionWins
+		matchesWon.select{|m| m.win_type == "Decision" }
+	end
+	
+	def decisionPointsScored
+		pointsScored = 0
+		decisionWins.each do |m|
+			scoreOfMatch = m.score.delete(" ")
+			scoreOne = scoreOfMatch.partition('-').first.to_i
+			scoreTwo = scoreOfMatch.partition('-').last.to_i
+			if scoreOne > scoreTwo
+				pointsScored = pointsScored + scoreOne
+			elsif scoreTwo > scoreOne
+				pointsScored = pointsScored + scoreTwo
+			end
+		end
+		pointsScored
+	end
+	
+	def fastestPin
+		pinWins.sort_by{|m| m.pinTime}.reverse.first
+	end
+	
 	def seasonWinPercentage
 		win = self.season_win.to_f
 		loss = self.season_loss.to_f

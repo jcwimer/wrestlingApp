@@ -49,6 +49,8 @@ class PoolOrder
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostFalls }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostTechs }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostMajors }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostDecisionPointsScored }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { fastestPin }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { coinFlip }
 	end
 	
@@ -84,6 +86,44 @@ class PoolOrder
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	
+		end
+	end
+	
+	def mostDecisionPointsScored
+		pointsArray = []
+		wrestlersWithSamePoints.each do |w|
+			pointsArray << w.decisionPointsScored
+		end
+		mostPoints = pointsArray.max
+		wrestlersWithMostPoints = wrestlersWithSamePoints.select{|w| w.decisionPointsScored == mostPoints}
+		addPointsToWrestlersAhead(wrestlersWithMostPoints.first)
+		wrestlersWithMostPoints.each do |wr|
+			addPoints(wr)
+		end
+		secondPoints = pointsArray.sort[-2]
+		wrestlersWithSecondMostPoints = wrestlersWithSamePoints.select{|w| w.decisionPointsScored == secondPoints}
+		addPointsToWrestlersAhead(wrestlersWithSecondMostPoints.first)
+		wrestlersWithSecondMostPoints.each do |wr|
+			addPoints(wr)
+		end
+	end
+	
+	def fastestPin
+		timeArray = []
+		wrestlersWithSamePoints.each do |w|
+			timeArray << w.fastestPin
+		end
+		fastest = timeArray.max
+		wrestlersWithFastestPin = wrestlersWithSamePoints.select{|w| w.fastestPin == fastest}
+		addPointsToWrestlersAhead(wrestlersWithFastestPin.first)
+		wrestlersWithFastestPin.each do |wr|
+			addPoints(wr)
+		end
+		secondFastest = timeArray.sort[-2]
+		wrestlersWithSecondFastestPin = wrestlersWithSamePoints.select{|w| w.fastestPin == secondFastest}
+		addPointsToWrestlersAhead(wrestlersWithSecondFastestPin.first)
+		wrestlersWithSecondFastestPin.each do |wr|
+			addPoints(wr)
 		end
 	end
 	
