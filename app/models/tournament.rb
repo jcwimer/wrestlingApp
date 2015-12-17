@@ -9,7 +9,14 @@ class Tournament < ActiveRecord::Base
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
 
+	def cached_matches
+		cache_timestamp = self.updated_at
+	    cache_key = "tournamentMatches|#{id}|#{cache_timestamp}"
 	
+	    Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
+	      self.matches.includes(:wrestlers)
+	    end
+	end
 
 	def tournament_types
 		["Pool to bracket"]

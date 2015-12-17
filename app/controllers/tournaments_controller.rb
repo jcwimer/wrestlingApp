@@ -66,8 +66,8 @@ class TournamentsController < ApplicationController
 
  
   def up_matches
-    @matches = @tournament.matches.where(mat_id: nil).order('bout_number ASC').limit(10).includes(:wrestlers)
-    @mats = @tournament.mats.includes(:matches)
+    @matches = @tournament.cached_matches.select{|m| m.mat_id == nil}.sort_by{|m| m.bout_number}
+    @mats = @tournament.mats
   end
 
   def index
@@ -144,7 +144,7 @@ class TournamentsController < ApplicationController
 
   def check_for_matches
     if @tournament
-    	if @tournament.matches.empty?
+    	if @tournament.cached_matches.empty?
     	  redirect_to "/tournaments/#{@tournament.id}/no_matches"
     	end
     end
