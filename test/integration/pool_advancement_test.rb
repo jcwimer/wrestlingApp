@@ -131,10 +131,10 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   def nineManBracketPoolTwoGuyThreeQuickestPin
     matches = @matches.select{|m| m.weight_id == 3 && m.bracket_position == "Pool"}
     endMatchWithQuickPin(1004,"Guy9",matches)
-    endMatch(1005,"Guy7",matches)
+    endMatchWithPin(1005,"Guy7",matches)
     endMatchWithQuickPin(2004,"Guy3",matches)
-    endMatch(2005,"Guy9",matches)
-    endMatch(3004,"Guy7",matches)
+    endMatchWithPin(2005,"Guy9",matches)
+    endMatchWithPin(3004,"Guy7",matches)
     endMatchWithQuickestPin(3005,"Guy3",matches)
   end
   

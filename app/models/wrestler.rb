@@ -177,7 +177,7 @@ class Wrestler < ActiveRecord::Base
 	end
 	
 	def fastestPin
-		pinWins.sort_by{|m| m.pinTime}.reverse.first
+		pinWins.sort_by{|m| m.pinTime}.first
 	end
 	
 	def seasonWinPercentage
