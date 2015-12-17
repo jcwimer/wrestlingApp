@@ -9,6 +9,7 @@ class Wrestler < ActiveRecord::Base
 	before_create do
 		self.tournament.destroyAllMatches
 	end
+		
 
 	def lastFinishedMatch
 		allMatches.select{|m| m.finished == 1}.sort_by{|m| m.bout_number}.last

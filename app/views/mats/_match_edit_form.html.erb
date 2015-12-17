@@ -17,11 +17,11 @@
         <th><%= @w1.name %> <select id="w1-color" onchange="changeW1Color(this)">
             <option value="green">Green</option>
             <option value="red">Red</option>
-        </select></th>
+        </select><br>Last Match: <%= if @w1.lastMatch != nil then time_ago_in_words(@w1.lastMatch.updated_at) end%></th>
         <th><%= @w2.name %> <select id="w2-color" onchange="changeW2Color(this)">
             <option value="red">Red</option>
             <option value="green">Green</option>
-        </select></th>
+        </select><br>Last Match: <%= if @w2.lastMatch != nil then time_ago_in_words(@w2.lastMatch.updated_at) end%></th>
       </tr>
     </thead>
     <tbody>
