@@ -6,7 +6,7 @@ class SchoolsController < ApplicationController
   # GET /schools/1
   # GET /schools/1.json
   def show
-    @wrestlers = @school.wrestlers
+    @wrestlers = @school.wrestlers.includes(:deductedPoints,:matches,:weight)
     @tournament = @school.tournament
   end
 
