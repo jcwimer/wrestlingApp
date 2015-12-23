@@ -71,7 +71,7 @@ class TournamentsController < ApplicationController
   end
 
   def index
-    @tournaments = Tournament.all.limit(50).includes(:schools,:weights,:mats,:matches,:user,:wrestlers)
+    @tournaments = Tournament.all.limit(50).includes(:schools,:weights,:mats,:matches,:user,:wrestlers).order('updated_at desc')
   end
 
   def show
