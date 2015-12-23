@@ -9,7 +9,9 @@ class Tournament < ActiveRecord::Base
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
 
-	
+	def resetSchoolScores
+		schools.update_all("score = 0.0")
+	end
 
 	def tournament_types
 		["Pool to bracket"]

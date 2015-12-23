@@ -6,6 +6,7 @@ module GeneratesTournamentMatches
   end
 
   def poolToBracket
+    resetSchoolScores
     destroyAllMatches
     buildTournamentWeights
     generateMatches
