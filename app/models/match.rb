@@ -4,7 +4,7 @@ class Match < ActiveRecord::Base
 	belongs_to :mat, touch: true
 	has_many :wrestlers, :through => :weight
 
-	after_save do 
+	after_update do 
 	   if self.finished == 1 && self.winner_id != nil
 	   	if self.w1 && self.w2
 		   	wrestler1.touch
