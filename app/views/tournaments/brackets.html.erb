@@ -5,4 +5,6 @@
 <%= link_to "#{weight.max}" , "/tournaments/#{@tournament.id}/brackets/#{weight.id}" %>
 <br>
 <% end %>
-<%= link_to "All Brackets", "/tournaments/#{@tournament.id}/all_brackets?print=true" %>
+<% if tournament_permissions(@tournament)  %>
+  <%= link_to "All Brackets (Printable)", "/tournaments/#{@tournament.id}/all_brackets?print=true" %>
+<% end %>
