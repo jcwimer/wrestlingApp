@@ -1,5 +1,5 @@
 class School < ActiveRecord::Base
-	belongs_to :tournament
+	belongs_to :tournament, touch: true
 	has_many :wrestlers, dependent: :destroy
 	has_many :deductedPoints, through: :wrestlers
 	
