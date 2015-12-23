@@ -42,9 +42,10 @@ gem 'spring', :group => :development
 		group :production do
 		  gem 'rails_12factor'
 		  gem 'mysql2'
-      	  	  gem 'passenger'
-      	  	  gem 'therubyracer'
+      	  gem 'passenger'
+      	  gem 'therubyracer'
 	  	  gem 'newrelic_rpm'
+	  	  gem 'dalli'
 		end
 	#Other
 		gem 'devise'

@@ -1,23 +1,25 @@
-</br>
-</br>
-</br>
-
-<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %>
-<br>
-<br>
-<h1><%= @weight.max %> lbs Bracket</h1>
-
-<%= render 'pool' %>
-
-<% if @bracketType == "twoPoolsToFinal" %>
-	<%= render 'twoPoolFinalBracket' %>
-<% end %>
-<% if @bracketType == "twoPoolsToSemi" %>
-	<%= render 'twoPoolSemiBracket' %>
-<% end %>
-<% if @bracketType == "fourPoolsToQuarter" %>
-	<%= render 'fourPoolQuarterBracket' %>
-<% end %>
-<% if @bracketType == "fourPoolsToSemi" %>
-	<%= render 'fourPoolSemiBracket' %>
+<% cache ["brackets", @weight] do %>
+	</br>
+	</br>
+	</br>
+	
+	<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %>
+	<br>
+	<br>
+	<h1><%= @weight.max %> lbs Bracket</h1>
+	
+	<%= render 'pool' %>
+	
+	<% if @bracketType == "twoPoolsToFinal" %>
+		<%= render 'twoPoolFinalBracket' %>
+	<% end %>
+	<% if @bracketType == "twoPoolsToSemi" %>
+		<%= render 'twoPoolSemiBracket' %>
+	<% end %>
+	<% if @bracketType == "fourPoolsToQuarter" %>
+		<%= render 'fourPoolQuarterBracket' %>
+	<% end %>
+	<% if @bracketType == "fourPoolsToSemi" %>
+		<%= render 'fourPoolSemiBracket' %>
+	<% end %>
 <% end %>
