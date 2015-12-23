@@ -6,6 +6,8 @@ class Match < ActiveRecord::Base
 
 	after_save do 
 	   if self.finished == 1 && self.winner_id != nil
+	   	wrestler1.touch
+	   	wrestler2.touch
 		advance_wrestlers
 		calcSchoolPoints
 	   end
