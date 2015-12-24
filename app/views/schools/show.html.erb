@@ -1,9 +1,10 @@
-<% cache ["schools", @school] do %>  
+ 
   <p id="notice"><%= notice %></p>
   <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}",:class=>"btn btn-default" %> 
   <% if tournament_permissions(@school.tournament)  %>
   | <%= link_to "Edit #{@school.name}", edit_school_path(@school),:class=>"btn btn-primary" %>
   <% end %>
+<% cache ["schools", @school] do %> 
   <br>
   <br>
   <p>
