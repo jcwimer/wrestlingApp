@@ -1,2 +1,2 @@
 worker: bundle exec rake jobs:work
-web: bundle exec puma -t 5:5 -p $PORT -e $RACK_ENV
+web: bundle exec passenger start -p $PORT --max-pool-size 3
