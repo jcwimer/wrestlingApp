@@ -53,7 +53,8 @@ gem 'spring', :group => :development
 		gem 'round_robin_tournament'
 		gem 'rb-readline'
 		gem 'delayed_job_active_record'
+		gem 'puma'
 	group :development do
-      gem 'puma'
+      
 	#gem 'bullet'
     end
