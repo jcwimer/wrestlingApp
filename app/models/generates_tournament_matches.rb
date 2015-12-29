@@ -4,6 +4,9 @@ module GeneratesTournamentMatches
     poolToBracket() if tournament_type == "Pool to bracket"
     matches
   end
+  if Rails.env.production?
+		handle_asynchronously :generateMatchups
+	end
 
   def poolToBracket
     resetSchoolScores
