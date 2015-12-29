@@ -11,6 +11,20 @@
                     <li><%= link_to "Team Scores" , "/tournaments/#{@tournament.id}/team_scores" %></li>
                 </ul>
             </div>
+            <% if tournament_permissions(@tournament)  %>
+                <br><br>
+                <div class="" style="padding-right: 1%;">
+                    <ul class="">
+                         <h4>Tournament Director Links</h4>
+                        <li><%= link_to "Generate Brackets" , "/tournaments/#{@tournament.id}/generate_matches", data: { confirm: 'Are you sure? This will delete all current matches.' } %></li>
+                        <li><%= link_to "Weigh In Page" , "/tournaments/#{@tournament.id}/weigh_in" %></li>
+                        <li><%= link_to "Create High School Weights" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=hs",data: { confirm: 'Are you sure? This will delete all current weights.' } %></li>
+                    </ul>
+                </div>
+            <% end %>
         <% end %>
+        <br><br>
+        
+        
         
         

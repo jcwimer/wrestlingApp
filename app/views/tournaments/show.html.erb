@@ -31,13 +31,6 @@
   <%= @tournament.tournament_type %>
 </p>
 <br>
-<% if tournament_permissions(@tournament)  %>
-<%= link_to "Generate Brackets" , "/tournaments/#{@tournament.id}/generate_matches", data: { confirm: 'Are you sure? This will delete all current matches.' }, :class=>"btn btn-success" %>
-<br><br>
-<%= link_to "Weigh In Page" , "/tournaments/#{@tournament.id}/weigh_in", :class=>"btn btn-primary" %>
-<br>
-<br>
-<% end %>
 <br>
 <h3>School Lineups</h3>
 <br>
@@ -77,8 +70,6 @@
 <br>
 <% if tournament_permissions(@tournament)  %>
     <%= link_to "New #{@tournament.name} Weight" , "/weights/new?tournament=#{@tournament.id}", :class=>"btn btn-success" %>
-    <br><br>
-    <%= link_to "Create HS Weights" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=hs",data: { confirm: 'Are you sure? This will delete all current weights.' }, :class=>"btn btn-success" %>
 <br>
 <br>
 <% end %>
