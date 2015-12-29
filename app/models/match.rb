@@ -4,6 +4,11 @@ class Match < ActiveRecord::Base
 	belongs_to :mat, touch: true
 	has_many :wrestlers, :through => :weight
 
+	if Rails.env.production?
+		handle_asynchronously :advance_wrestlers
+		handle_asynchronously :calcSchoolPoints
+	end
+
 	after_update do 
 	   if self.finished == 1 && self.winner_id != nil
 	   	if self.w1 && self.w2

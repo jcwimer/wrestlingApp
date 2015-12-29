@@ -9,6 +9,10 @@ class Tournament < ActiveRecord::Base
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
 
+	if Rails.env.production?
+		handle_asynchronously :generateMatchups
+	end
+
 	def resetSchoolScores
 		schools.update_all("score = 0.0")
 	end

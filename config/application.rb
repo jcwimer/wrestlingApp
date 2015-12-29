@@ -26,6 +26,7 @@ module Wrestling
     config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)
   #gzip assets
     config.middleware.use Rack::Deflater
+    config.active_job.queue_adapter = :delayed_job
   end
 
   
