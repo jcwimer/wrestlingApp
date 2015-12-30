@@ -49,7 +49,7 @@
     </thead>
   
     <tbody>
-      <% @wrestlers.order("weight_id asc").each do |wrestler| %>
+      <% @wrestlers.sort_by{|w| w.weight.max}.each do |wrestler| %>
         <% if wrestler.school_id == @school.id %>
           <tr>
             <td><%= wrestler.name %></td>
