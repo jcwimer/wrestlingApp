@@ -71,7 +71,7 @@ class TournamentsController < ApplicationController
   end
 
   def index
-    @tournaments = Tournament.all.limit(50).includes(:schools,:weights,:mats,:matches,:user,:wrestlers).order('updated_at desc')
+    @tournaments = Tournament.all.sort_by{|t| t.daysUntil}
   end
 
   def show
@@ -132,7 +132,7 @@ class TournamentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def tournament_params
-      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id)
+      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id, :date)
     end
   
   #Check for tournament owner

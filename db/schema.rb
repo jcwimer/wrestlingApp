@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151230163202) do
+ActiveRecord::Schema.define(version: 20151230164000) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -94,6 +94,7 @@ ActiveRecord::Schema.define(version: 20151230163202) do
     t.text     "weigh_in_ref"
     t.integer  "user_id"
     t.integer  "curently_generating_matches"
+    t.date     "date"
   end
 
   add_index "tournaments", ["user_id"], name: "index_tournaments_on_user_id"

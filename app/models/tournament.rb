@@ -9,7 +9,15 @@ class Tournament < ActiveRecord::Base
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
 
-	
+	validates :date, presence: true
+
+	def daysUntil
+		time = (Date.today - self.date).to_i
+		if time < 0
+			time = time * -1
+		end
+		time
+	end
 
 	def resetSchoolScores
 		schools.update_all("score = 0.0")

@@ -23,7 +23,8 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
       name: "Something",
       address: "Some Place",
       director: "Some Guy",
-      director_email: "test@test.com"
+      director_email: "test@test.com",
+      date: Date.today
     )
     tournament.save
     tournament
