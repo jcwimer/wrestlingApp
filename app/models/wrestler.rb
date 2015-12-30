@@ -16,7 +16,11 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def totalTeamPoints
-		teamPointsEarned - totalDeductedPoints
+		if self.extra
+			return 0
+		else
+			teamPointsEarned - totalDeductedPoints
+		end
 	end
 	
 	def teamPointsEarned

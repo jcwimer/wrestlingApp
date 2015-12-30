@@ -212,6 +212,15 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatch(6007,"Guy19",matches)
   end
   
+  def extraDoesNotScoreTeamPoints
+    matches = @matches
+    wrestlerName = "Guy22"
+    wrestler = Wrestler.find(translateNameToId(wrestlerName))
+    wrestler.extra = true
+    wrestler.save
+    endMatch(1013,"Guy22",matches)
+  end
+  
   def endMatch(bout,winner,matches)
      match = Match.where(bout_number: bout).first
      match.finished = 1
@@ -540,6 +549,15 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
 
     assert_equal 3, wrestler.placementPoints
   end
+  
+  test "extra does not score points but does get pool criteria" do
+    extraDoesNotScoreTeamPoints
+    wrestler = Wrestler.where("name = ?", "Guy22").first
+    
+    assert_equal 0, wrestler.totalTeamPoints
+    assert_equal 1, wrestler.teamPointsEarned
+  end
+    
   
   
 end
