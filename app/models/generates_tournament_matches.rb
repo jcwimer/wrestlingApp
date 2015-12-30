@@ -6,7 +6,7 @@ module GeneratesTournamentMatches
   end
   if Rails.env.production?
 		handle_asynchronously :generateMatchups
-	end
+  end
 
   def poolToBracket
     resetSchoolScores

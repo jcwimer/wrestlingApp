@@ -26,7 +26,11 @@ module Wrestling
     config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)
   #gzip assets
     config.middleware.use Rack::Deflater
+    
     config.active_job.queue_adapter = :delayed_job
+    
+    config.action_mailer.delivery_method   = :postmark
+    config.action_mailer.postmark_settings = { :api_token => ENV['POSTMARK_API_TOKEN'] }
   end
 
   

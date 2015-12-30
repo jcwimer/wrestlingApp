@@ -54,6 +54,7 @@ gem 'spring', :group => :development
 		gem 'rb-readline'
 		gem 'delayed_job_active_record'
 		gem 'puma'
+		gem 'postmark-rails'
 	group :development do
       
 	#gem 'bullet'
