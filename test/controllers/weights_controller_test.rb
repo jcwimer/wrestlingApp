@@ -18,7 +18,7 @@ class WeightsControllerTest < ActionController::TestCase
   end
 
   def post_update
-    patch :update, id: @weight.id, weight: {name: @weight.max, tournament_id: @weight.tournament_id}
+    patch :update, id: @weight.id, weight: {max: @weight.max, tournament_id: @weight.tournament_id}
   end
 
   def destroy

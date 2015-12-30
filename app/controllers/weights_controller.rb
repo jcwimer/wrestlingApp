@@ -24,7 +24,7 @@ class WeightsController < ApplicationController
 
   # GET /weights/1/edit
   def edit
-    @tournament = @weight.tournament
+    @tournament = Tournament.find(@weight.tournament_id)
     @mats = @tournament.mats
   end
 
@@ -33,9 +33,6 @@ class WeightsController < ApplicationController
   def create
     @weight = Weight.new(weight_params)
     @tournament = Tournament.find(weight_params[:tournament_id])
-    if current_user != @tournament.user
-	redirect_to root_path
-    end
       respond_to do |format|
         if @weight.save
           format.html { redirect_to @tournament, notice: 'Weight was successfully created.' }
@@ -50,10 +47,7 @@ class WeightsController < ApplicationController
   # PATCH/PUT /weights/1
   # PATCH/PUT /weights/1.json
   def update
-    @tournament = @weight.tournament
-   if current_user != @tournament.user
-	redirect_to root_path
-    end 
+    @tournament = Tournament.find(@weight.tournament_id)
     respond_to do |format|
       if @weight.update(weight_params)
         format.html { redirect_to @tournament, notice: 'Weight was successfully updated.' }
