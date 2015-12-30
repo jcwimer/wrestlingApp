@@ -18,14 +18,12 @@ class WeightsController < ApplicationController
   def new
     @weight = Weight.new
     if params[:tournament]
-      @tournament_field = params[:tournament]
       @tournament = Tournament.find(params[:tournament])
     end
   end
 
   # GET /weights/1/edit
   def edit
-    @tournament_field = @weight.tournament_id
     @tournament = @weight.tournament
     @mats = @tournament.mats
   end

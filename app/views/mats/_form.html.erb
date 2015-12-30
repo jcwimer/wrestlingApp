@@ -16,8 +16,8 @@
     <%= f.text_field :name %>
   </div>
 
-<% if @tournament_field %>
-      <%= f.hidden_field :tournament_id, :value => @tournament_field %>
+<% if @tournament %>
+      <%= f.hidden_field :tournament_id, :value => @tournament.id %>
 <% end %>
 <br>
   <div class="actions">

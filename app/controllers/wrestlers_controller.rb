@@ -14,7 +14,6 @@ class WrestlersController < ApplicationController
   def new
     @wrestler = Wrestler.new
     if params[:school]
-      @school_field = params[:school]
       @school = School.find(params[:school])
     end
     if @school
@@ -28,7 +27,6 @@ class WrestlersController < ApplicationController
 
   # GET /wrestlers/1/edit
   def edit
-    @school_field = @wrestler.school_id
     @school = @wrestler.school
     @tournament = @wrestler.tournament
     @weight = @wrestler.weight
@@ -40,6 +38,7 @@ class WrestlersController < ApplicationController
   def create
     @wrestler = Wrestler.new(wrestler_params)
     @school = School.find(wrestler_params[:school_id])
+    @weights = @school.tournament.weights
     respond_to do |format|
       if @wrestler.save
         format.html { redirect_to @school, notice: 'Wrestler was successfully created.' }

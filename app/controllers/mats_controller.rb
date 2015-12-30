@@ -18,14 +18,13 @@ class MatsController < ApplicationController
   def new
     @mat = Mat.new
     if params[:tournament]
-      @tournament_field = params[:tournament]
       @tournament = Tournament.find(params[:tournament])
     end
   end
 
   # GET /mats/1/edit
   def edit
-    @tournament_field = @mat.tournament_id
+    @tournament = Tournament.find(@mat.tournament_id)
   end
 
   # POST /mats
@@ -82,17 +81,17 @@ class MatsController < ApplicationController
     end
 
     def check_access
-	if params[:tournament]
-	   @tournament = Tournament.find(params[:tournament])
-	elsif params[:mat]
-	   @mat = Mat.new(mat_params) 
-	   @tournament = Tournament.find(@mat.tournament_id)
-	elsif @mat
-	   @tournament = @mat.tournament
-	end
-	if current_user != @tournament.user
-	  redirect_to '/static_pages/not_allowed'
-	end
+      if params[:tournament]
+    	   @tournament = Tournament.find(params[:tournament])
+    	elsif params[:mat]
+    	   @mat = Mat.new(mat_params)
+    	   @tournament = Tournament.find(@mat.tournament_id)
+    	elsif @mat
+    	   @tournament = @mat.tournament
+    	end
+    	if current_user != @tournament.user
+    	  redirect_to '/static_pages/not_allowed'
+    	end
     end
     
     

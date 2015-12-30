@@ -14,14 +14,12 @@ class SchoolsController < ApplicationController
   def new
     @school = School.new
     if params[:tournament]
-      @tournament_field = params[:tournament]
       @tournament = Tournament.find(params[:tournament])
     end
   end
 
   # GET /schools/1/edit
   def edit
-    @tournament_field = @school.tournament_id
     @tournament = @school.tournament
   end
 
@@ -79,17 +77,17 @@ class SchoolsController < ApplicationController
     end
 
     def check_access
-	if params[:tournament]
-	   @tournament = Tournament.find(params[:tournament])
-	elsif params[:school]
-	   @school = School.new(school_params)
-	   @tournament = Tournament.find(@school.tournament_id)
-	elsif @school
-	   @tournament = @school.tournament
-	end
-	if current_user != @tournament.user
-	  redirect_to '/static_pages/not_allowed'
-	end
+    	if params[:tournament]
+    	   @tournament = Tournament.find(params[:tournament])
+    	elsif params[:school]
+    	   @school = School.new(school_params)
+    	   @tournament = Tournament.find(@school.tournament_id)
+    	elsif @school
+    	   @tournament = @school.tournament
+    	end
+    	if current_user != @tournament.user
+    	  redirect_to '/static_pages/not_allowed'
+    	end
     end
 
 end
