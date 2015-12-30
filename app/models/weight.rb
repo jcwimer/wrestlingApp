@@ -7,7 +7,7 @@ class Weight < ActiveRecord::Base
 	
 	validates :max, presence: true
 
-	HS_WEIGHT_CLASSES = [106,113,120,132,138,145,152,160,170,182,195,220,285]
+	HS_WEIGHT_CLASSES = [106,113,120,126,132,138,145,152,160,170,182,195,220,285]
 
 	before_save do
 		self.tournament.destroyAllMatches
