@@ -4,7 +4,7 @@
   <% if tournament_permissions(@school.tournament)  %>
   | <%= link_to "Edit #{@school.name}", edit_school_path(@school),:class=>"btn btn-primary" %>
   <% end %>
-<% cache ["schools", @school] do %> 
+
   <br>
   <br>
   <p>
@@ -32,7 +32,7 @@
   <% end %>
   <br>
   <br>
-  
+<% cache ["schools", @school] do %>   
   <table class="table table-striped table-bordered">
     <thead>
       <tr>
