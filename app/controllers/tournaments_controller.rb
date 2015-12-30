@@ -144,7 +144,7 @@ class TournamentsController < ApplicationController
 
   def check_for_matches
     if @tournament
-    	if @tournament.matches.empty?
+    	if @tournament.matches.empty? or @tournament.curently_generating_matches == 1
     	  redirect_to "/tournaments/#{@tournament.id}/no_matches"
     	end
     end

@@ -1,9 +1,13 @@
 module GeneratesTournamentMatches
 
   def generateMatchups
+    self.curently_generating_matches = 1
+    self.save
     resetSchoolScores
     setSeedsAndRandomSeedingWrestlersWithoutSeeds
     poolToBracket() if tournament_type == "Pool to bracket"
+    self.curently_generating_matches = nil
+    self.save
     matches
   end
   if Rails.env.production?
