@@ -3,6 +3,7 @@ class School < ActiveRecord::Base
 	has_many :wrestlers, dependent: :destroy
 	has_many :deductedPoints, through: :wrestlers
 	
+	validates :name, presence: true
 
 	#calculate score here
 	def pageScore

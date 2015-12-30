@@ -5,6 +5,8 @@ class Wrestler < ActiveRecord::Base
 	has_many :matches, through: :weight
 	has_many :deductedPoints, class_name: "Teampointadjust"
 	attr_accessor :poolNumber, :poolAdvancePoints
+	
+	validates :name, :weight_id, :school_id, presence: true
 
 	before_create do
 		self.tournament.destroyAllMatches

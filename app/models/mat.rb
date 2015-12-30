@@ -2,6 +2,8 @@ class Mat < ActiveRecord::Base
 	belongs_to :tournament
 	has_many :matches
 	
+	validates :name, presence: true
+	
 	before_destroy do 
 		if tournament.matches.size > 0
 			tournament.resetMats

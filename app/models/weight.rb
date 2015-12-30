@@ -4,6 +4,8 @@ class Weight < ActiveRecord::Base
 	has_many :matches, dependent: :destroy
 
 	attr_accessor :pools
+	
+	validates :max, presence: true
 
 	HS_WEIGHT_CLASSES = [106,113,120,132,138,145,152,160,170,182,195,220,285]
 

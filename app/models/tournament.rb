@@ -9,7 +9,7 @@ class Tournament < ActiveRecord::Base
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
 
-	validates :date, presence: true
+	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
 
 	def daysUntil
 		time = (Date.today - self.date).to_i
