@@ -536,15 +536,12 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert_equal 12, wrestler.placementPoints
   end
   
-  test "advancement points fourPoolsToSemi Semis" do
+  test "advancement points fourPoolsToSemi Semis and Conso Semis" do
     sixteenManToSemi
     wrestler = Wrestler.where("name = ?", "Guy22").first
 
     assert_equal 9, wrestler.placementPoints
-  end
-  
-  test "advancement points fourPoolsToSemi Conso Semis" do
-    sixteenManToSemi
+    
     wrestler = Wrestler.where("name = ?", "Guy29").first
 
     assert_equal 3, wrestler.placementPoints

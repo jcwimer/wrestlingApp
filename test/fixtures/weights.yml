@@ -26,4 +26,7 @@ five:
   tournament_id: 1
   
 
-
+six:
+  id: 6
+  max: 285
+  tournament_id: 1

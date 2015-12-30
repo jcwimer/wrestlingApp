@@ -256,5 +256,12 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
       assert_equal lastRound, m.round
     end
   end
-
+  
+  test "Random seeding works" do
+    weight = Weight.find(6)
+    wrestlersWithoutSeed = weight.wrestlers.select{|w| w.seed == nil }.size
+    
+    assert_equal 0, wrestlersWithoutSeed
+  end
+  
 end

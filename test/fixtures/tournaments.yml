@@ -9,4 +9,13 @@ one:
   tournament_type: Pool to bracket
   user_id: 1
   
+two:
+  id: 2
+  name: Comet Classic 2
+  address: Some Place
+  director: Jacob Cody Wimer
+  director_email: jacob.wimer@gmail.com
+  tournament_type: Pool to bracket
+  user_id: 1
+  
 

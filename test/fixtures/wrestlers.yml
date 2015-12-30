@@ -431,3 +431,57 @@ fourtyeight:
   season_loss: 2
   season_win: 50
   criteria:
+  
+fourtynine:
+  name: Guy38
+  school_id: 1
+  weight_id: 6
+  original_seed: 1
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fourtynine:
+  name: Guy39
+  school_id: 1
+  weight_id: 6
+  original_seed: 2
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fifty:
+  name: Guy40
+  school_id: 1
+  weight_id: 6
+  original_seed: 
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fiftyone:
+  name: Guy41
+  school_id: 1
+  weight_id: 6
+  original_seed: 
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fiftytwo:
+  name: Guy42
+  school_id: 1
+  weight_id: 6
+  original_seed: 
+  season_loss: 2
+  season_win: 50
+  criteria:
+  
+fiftythree:
+  name: Guy43
+  school_id: 1
+  weight_id: 6
+  original_seed: 
+  season_loss: 2
+  season_win: 50
+  criteria:

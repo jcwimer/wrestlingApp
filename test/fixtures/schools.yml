@@ -10,4 +10,8 @@ two:
   name: Grove City
   tournament_id: 1
   
+three:
+  id: 3
+  name: Central Crossing
+  tournament_id: 2
 

@@ -11,3 +11,8 @@
     name: Mat1
     tournament_id: 1
     id: 1
+    
+ two:
+    name: 1
+    tournament_id: 2
+    id: 2

@@ -49,7 +49,7 @@ class Weight < ActiveRecord::Base
 	end
 
 	def onePoolNumbers(wrestlers)
-		wrestlers.sort_by{|x|[x.original_seed]}.each do |w|
+		wrestlers.sort_by{|x|[x.seed]}.each do |w|
 			w.poolNumber = 1
 		end
 		return wrestlers
@@ -58,14 +58,14 @@ class Weight < ActiveRecord::Base
 
 	def twoPoolNumbers(wrestlers)
 		pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
-			if w.original_seed == 1
+		wrestlers.sort_by{|x|[x.seed]}.reverse.each do |w|
+			if w.seed == 1
 				w.poolNumber = 1
-			elsif w.original_seed == 2
+			elsif w.seed == 2
 				w.poolNumber = 2
-			elsif w.original_seed == 3
+			elsif w.seed == 3
 				w.poolNumber = 2
-			elsif w.original_seed == 4
+			elsif w.seed == 4
 				w.poolNumber = 1
 			else
 				w.poolNumber = pool
@@ -81,14 +81,14 @@ class Weight < ActiveRecord::Base
 
 	def fourPoolNumbers(wrestlers)
 		pool = 1
-		wrestlers.sort_by{|x|[x.original_seed]}.reverse.each do |w|
-			if w.original_seed == 1
+		wrestlers.sort_by{|x|[x.seed]}.reverse.each do |w|
+			if w.seed == 1
 				w.poolNumber = 1
-			elsif w.original_seed == 2
+			elsif w.seed == 2
 				w.poolNumber = 2
-			elsif w.original_seed == 3
+			elsif w.seed == 3
 				w.poolNumber = 3
-			elsif w.original_seed == 4
+			elsif w.seed == 4
 				w.poolNumber = 4
 			else
 				w.poolNumber = pool
@@ -141,4 +141,26 @@ class Weight < ActiveRecord::Base
 	def poolOrder(pool)
 		PoolOrder.new(wrestlersForPool(pool)).getPoolOrder
 	end
+	
+	def randomSeeding
+		wrestlerWithSeeds = wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
+		highestSeed = wrestlerWithSeeds.last.original_seed
+		seed = highestSeed
+		wrestlersWithoutSeed = wrestlers.select{|w| w.original_seed == nil }
+		wrestlersWithoutSeed.shuffle.each do |w|
+			w.seed = seed
+			w.save
+			seed += 1
+		end
+	end
+	
+	def setSeeds
+		wrestlerWithSeeds = wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
+		wrestlerWithSeeds.each do |w|
+			w.seed = w.original_seed
+			w.save
+		end
+		randomSeeding
+	end
+			
 end
