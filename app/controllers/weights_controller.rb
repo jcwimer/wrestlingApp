@@ -8,10 +8,10 @@ class WeightsController < ApplicationController
   def show
     if params[:wrestler]
       Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
+      redirect_to @weight.tournament 
     end
     @wrestlers = @weight.wrestlers
     @tournament = @weight.tournament
-
   end
 
   # GET /weights/new
