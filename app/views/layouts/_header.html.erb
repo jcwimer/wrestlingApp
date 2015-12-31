@@ -4,7 +4,7 @@
         <a class="navbar-brand navbar-custom-brand" href="/">WrestlingDev</a>
       </div>
         <ul class="nav navbar-nav navbar-right navbar-custom-link">
-            
+            <li><%= link_to "Browse Tournaments", "/tournaments/" %></li>
             <li><%= link_to "About", "/static_pages/about" %></li>
             <% if user_signed_in? %>
                 <li><%=link_to "Log out", destroy_user_session_url ,:method => 'delete' %></li>
