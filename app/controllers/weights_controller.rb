@@ -63,13 +63,13 @@ class WeightsController < ApplicationController
   # DELETE /weights/1.json
   def destroy
     @tournament = Tournament.find(@weight.tournament_id)
-   if current_user != @tournament.user
-	redirect_to root_path
+    if current_user != @tournament.user
+  	    redirect_to root_path
     end 
     @weight.destroy
     respond_to do |format|
-      format.html { redirect_to @tournament }
-      format.json { head :no_content }
+        format.html { redirect_to @tournament }
+        format.json { head :no_content }
     end
   end
 
@@ -83,18 +83,18 @@ class WeightsController < ApplicationController
     def weight_params
       params.require(:weight).permit(:max, :tournament_id, :mat_id)
     end
-   def check_access
-	if params[:tournament]
-	   @tournament = Tournament.find(params[:tournament])
-	elsif params[:weight]
-	   @tournament = Tournament.find(params[:weight]["tournament_id"])
-	elsif @weight
-	   @tournament = @weight.tournament
-	end
-	if current_user != @tournament.user
-	  redirect_to '/static_pages/not_allowed'
-	end
-    end
+  def check_access
+    	if params[:tournament]
+    	   @tournament = Tournament.find(params[:tournament])
+    	elsif params[:weight]
+    	   @tournament = Tournament.find(params[:weight]["tournament_id"])
+    	elsif @weight
+    	   @tournament = @weight.tournament
+    	end
+    	if current_user != @tournament.user
+    	  redirect_to '/static_pages/not_allowed'
+    	end
+  end
 
 
 end
