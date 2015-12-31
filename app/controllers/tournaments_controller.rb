@@ -1,7 +1,16 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_filter :check_access, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:destroy,:generate_matches]
+  before_action :set_tournament, only: [:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_filter :check_access, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:destroy,:generate_matches,:matches]
   before_filter :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
+ 
+  def matches
+    @matches = @tournament.matches.sort_by{|m| m.bout_number}
+    if @match
+      @w1 = @match.wrestler1
+      @w2 = @match.wrestler2
+      @wrestlers = [@w1,@w2]
+    end
+  end
  
   def weigh_in_weight
     if params[:wrestler]

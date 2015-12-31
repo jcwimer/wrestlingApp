@@ -16,6 +16,8 @@ class MatchesController < ApplicationController
     if @match
       @w1 = @match.wrestler1
       @w2 = @match.wrestler2
+      @wrestlers = [@w1,@w2]
+      @tournament = @match.tournament
     end
   end
 
@@ -43,7 +45,7 @@ class MatchesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def match_params
-      params.require(:match).permit(:w1, :w2, :g_stat, :r_stat, :winner_id, :win_type, :score, :finished)
+      params.require(:match).permit(:w1, :w2, :w1_stat, :w2_stat, :winner_id, :win_type, :score, :finished)
     end
 
     def check_access

@@ -39,6 +39,7 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/team_scores' => 'tournaments#team_scores'
   get 'tournaments/:id/up_matches' => 'tournaments#up_matches'
   get 'tournaments/:id/no_matches' => 'tournaments#no_matches'
+  get 'tournaments/:id/matches' => 'tournaments#matches'
   
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
