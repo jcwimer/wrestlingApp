@@ -18,13 +18,13 @@
                          <h4>Tournament Director Links</h4>
                          
                         <br><strong>Pages</strong><br>
-                        <br><%= link_to "Weigh In Page" , "/tournaments/#{@tournament.id}/weigh_in", class: "btn btn-primary btn-sm" %>
+                        <br><%= link_to "Weigh In Page" , "/tournaments/#{@tournament.id}/weigh_in" %>
 
                         <br><br><strong>Time Savers</strong><br>
-                        <br><%= link_to "Create High School Weights" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=hs",data: { confirm: 'Are you sure? This will delete all current weights.' }, class: "btn btn-success btn-sm" %>
+                        <br><%= link_to "Create High School Weights" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=hs",data: { confirm: 'Are you sure? This will delete all current weights.' } %>
                          
                         <br><br><strong>Tournament Actions</strong><br>
-                        <br><%= link_to "Generate Brackets" , "/tournaments/#{@tournament.id}/generate_matches", data: { confirm: 'Are you sure? This will delete all current matches.' }, class: "btn btn-success btn-sm" %>
+                        <br><%= link_to "Generate Brackets" , "/tournaments/#{@tournament.id}/generate_matches", data: { confirm: 'Are you sure? This will delete all current matches.' } %>
 
                 </div>
             <% end %>
