@@ -53,6 +53,9 @@ class WrestlersController < ApplicationController
   # PATCH/PUT /wrestlers/1
   # PATCH/PUT /wrestlers/1.json
   def update
+    @tournament = @wrestler.tournament
+    @weight = @wrestler.weight
+    @weights = @tournament.weights.sort_by{|w| w.max}
     @school = @wrestler.school
     respond_to do |format|
       if @wrestler.update(wrestler_params)
@@ -79,26 +82,26 @@ class WrestlersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_wrestler
-      @wrestler = Wrestler.where(:id => params[:id]).includes(:tournament,:school,:weight,:matches).first
+      @wrestler = Wrestler.find(params[:id])
     end
-
+    
     # Never trust parameters from the scary internet, only allow the white list through.
     def wrestler_params
       params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win, :season_loss,:criteria,:extra,:offical_weight)
     end
     def check_access
-	if params[:school]
-	   @school = School.find(params[:school])
-	   @tournament = Tournament.find(@school.tournament.id)
-	elsif params[:wrestler]
-	   @wrestler = Wrestler.new(wrestler_params)
-	   @school = School.find(@wrestler.school_id)
-	   @tournament = Tournament.find(@school.tournament.id)
-	elsif @wrestler
-	   @tournament = @wrestler.tournament
-	end
-	if current_user != @tournament.user
-	  redirect_to '/static_pages/not_allowed'
-	end
+    	if params[:school]
+    	   @school = School.find(params[:school])
+    	   @tournament = Tournament.find(@school.tournament.id)
+    	elsif params[:wrestler]
+    	   @wrestler = Wrestler.new(wrestler_params)
+    	   @school = School.find(@wrestler.school_id)
+    	   @tournament = Tournament.find(@school.tournament.id)
+    	elsif @wrestler
+    	   @tournament = @wrestler.tournament
+    	end
+    	if current_user != @tournament.user
+    	  redirect_to '/static_pages/not_allowed'
+    	end
     end
 end
