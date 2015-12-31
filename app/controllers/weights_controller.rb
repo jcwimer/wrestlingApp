@@ -87,8 +87,7 @@ class WeightsController < ApplicationController
 	if params[:tournament]
 	   @tournament = Tournament.find(params[:tournament])
 	elsif params[:weight]
-	   @weight = Weight.new(weight_params)
-	   @tournament = Tournament.find(@weight.tournament_id)
+	   @tournament = Tournament.find(params[:weight]["tournament_id"])
 	elsif @weight
 	   @tournament = @weight.tournament
 	end

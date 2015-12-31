@@ -82,7 +82,7 @@ class WrestlersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_wrestler
-      @wrestler = Wrestler.find(params[:id])
+      @wrestler = Wrestler.where(:id => params[:id]).includes(:school, :weight, :tournament, :matches).first
     end
     
     # Never trust parameters from the scary internet, only allow the white list through.
@@ -94,8 +94,7 @@ class WrestlersController < ApplicationController
     	   @school = School.find(params[:school])
     	   @tournament = Tournament.find(@school.tournament.id)
     	elsif params[:wrestler]
-    	   @wrestler = Wrestler.new(wrestler_params)
-    	   @school = School.find(@wrestler.school_id)
+    	   @school = School.find(params[:wrestler]["school_id"])
     	   @tournament = Tournament.find(@school.tournament.id)
     	elsif @wrestler
     	   @tournament = @wrestler.tournament

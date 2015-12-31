@@ -47,8 +47,8 @@ class MatchesController < ApplicationController
     end
 
     def check_access
-	if current_user != @match.tournament.user
-	  redirect_to '/static_pages/not_allowed'
+      	if current_user != @match.tournament.user
+      	  redirect_to '/static_pages/not_allowed'
         end
     end
 end

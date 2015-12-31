@@ -80,8 +80,7 @@ class SchoolsController < ApplicationController
     	if params[:tournament]
     	   @tournament = Tournament.find(params[:tournament])
     	elsif params[:school]
-    	   @school = School.new(school_params)
-    	   @tournament = Tournament.find(@school.tournament_id)
+    	   @tournament = Tournament.find(params[:school]["tournament_id"])
     	elsif @school
     	   @tournament = @school.tournament
     	end
