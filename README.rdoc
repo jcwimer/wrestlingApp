@@ -18,7 +18,7 @@ MIT License
 
 * Ruby 2.2.0
 
-* Rails 4.2.0
+* Rails 4.2.5
 
 * Install gems without production <tt>bundle install --without production</tt>
 
@@ -62,7 +62,7 @@ MIT License
 
 <tt>WRESTLINGDEV_SECRET_KEY_BASE=secret_key  can be generated with rake secret</tt>
 
-*Optional env's
+* Optional env's
 
 <tt>WRESTLINGDEV_NEW_RELIC_LICENSE_KEY=new_relic_license_key this is only needed to use new relic</tt>
 
