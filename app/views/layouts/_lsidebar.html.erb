@@ -8,7 +8,7 @@
                 <ul class="">
                     <li><%= link_to "Tournament home" , "/tournaments/#{@tournament.id}/" %></li>
                     <li><%= link_to "Brackets" , "/tournaments/#{@tournament.id}/brackets" %></li>
-                    <li><%= link_to "Upcoming Matches" , "/tournaments/#{@tournament.id}/up_matches" %></li>
+                    <li><%= link_to "Bout Board" , "/tournaments/#{@tournament.id}/up_matches" %></li>
                     <li><%= link_to "Team Scores" , "/tournaments/#{@tournament.id}/team_scores" %></li>
                 </ul>
             </div>
@@ -20,6 +20,7 @@
                         <br><strong>Pages</strong><br>
                         <br><%= link_to "Weigh In Page" , "/tournaments/#{@tournament.id}/weigh_in" %>
                         <br><%= link_to "All Matches" , "/tournaments/#{@tournament.id}/matches" %>
+                        <br><%= link_to "Full Screen Bout Board" , "/tournaments/#{@tournament.id}/up_matches?print=true" %>
 
                         <br><br><strong>Time Savers</strong><br>
                         <br><%= link_to "Create High School Weights" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=hs",data: { confirm: 'Are you sure? This will delete all current weights.' } %>
