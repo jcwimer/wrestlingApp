@@ -76,6 +76,10 @@ Wrestling::Application.configure do
   
   #Devise needs origin of email
   config.action_mailer.default_url_options = { :host => 'wrestlingapp.heroku.com' }
+  
+  #Postmark
+  config.action_mailer.delivery_method = :postmark
+  config.action_mailer.postmark_settings = { :api_key => ENV["POSTMARK_API_TOKEN"] }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found).
