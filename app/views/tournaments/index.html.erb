@@ -1,4 +1,8 @@
-<h1>Pick A Tournament</h1>
+<h1>Upcoming Tournaments</h1> <%= form_tag(tournaments_path, :method => "get", id: "search-form") do %>
+                                <%= text_field_tag :search, params[:search], placeholder: "Search Tournaments" %>
+                                <%= submit_tag "Search" %>
+                              <% end %>
+                              <p>Search by name or date YYYY-MM-DD</p>
 <script>
   // $(document).ready(function() {
   //   $('#tournamentList').dataTable();

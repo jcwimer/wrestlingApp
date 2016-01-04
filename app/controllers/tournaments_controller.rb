@@ -80,7 +80,11 @@ class TournamentsController < ApplicationController
   end
 
   def index
-    @tournaments = Tournament.all.sort_by{|t| t.daysUntil}
+    if params[:search]
+      @tournaments = Tournament.search(params[:search]).order("created_at DESC")
+    else
+      @tournaments = Tournament.all.sort_by{|t| t.daysUntil}.first(20)
+    end
   end
 
   def show

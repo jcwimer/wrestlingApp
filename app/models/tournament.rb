@@ -11,6 +11,10 @@ class Tournament < ActiveRecord::Base
 
 	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
 
+	def self.search(search)
+	  where("date LIKE ? or name LIKE ?", "%#{search}%", "%#{search}%")
+	end
+
 	def daysUntil
 		time = (Date.today - self.date).to_i
 		if time < 0
