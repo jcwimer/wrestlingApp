@@ -31,6 +31,8 @@ module Wrestling
     
     config.action_mailer.delivery_method   = :postmark
     config.action_mailer.postmark_settings = { :api_token => ENV['POSTMARK_API_TOKEN'] }
+    #Devise needs origin of email
+    config.action_mailer.default_url_options = { :host => 'wrestlingapp.heroku.com' }
   end
 
   
