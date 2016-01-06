@@ -420,8 +420,8 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     wrestler2 = Wrestler.where("name = ?", "Guy3").first
     #Won four in pool
     assert_equal 20, wrestler1.totalTeamPoints
-    #Won two in pool but was deducted a point
-    assert_equal 15, wrestler2.totalTeamPoints
+    #Won two in pool
+    assert_equal 16, wrestler2.totalTeamPoints
   end
   
   test "advancement points 1/2" do
