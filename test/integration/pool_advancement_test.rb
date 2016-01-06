@@ -96,11 +96,6 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatch(2004,"Guy4",matches)
     endMatch(2005,"Guy9",matches)
     endMatch(3004,"Guy7",matches)
-    #DEDUCTED POINTS SHOULD NOT MATTER FOR HEAD TO HEAD
-    deduct = Teampointadjust.new
-    deduct.wrestler_id = translateNameToId("Guy3")
-    deduct.points = 1
-    deduct.save
     endMatch(3005,"Guy3",matches)
   end
   

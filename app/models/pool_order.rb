@@ -41,10 +41,10 @@ class PoolOrder
 	
 	def breakTie
 		originalTieSize = wrestlersWithSamePoints.size
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
 		if originalTieSize == 2
 	    	ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { headToHead }
 		end
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { teamPoints }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostFalls }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostTechs }
