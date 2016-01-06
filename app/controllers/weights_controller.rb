@@ -63,9 +63,6 @@ class WeightsController < ApplicationController
   # DELETE /weights/1.json
   def destroy
     @tournament = Tournament.find(@weight.tournament_id)
-    if current_user != @tournament.user
-  	    redirect_to root_path
-    end 
     @weight.destroy
     respond_to do |format|
         format.html { redirect_to @tournament }
@@ -91,9 +88,7 @@ class WeightsController < ApplicationController
     	elsif @weight
     	   @tournament = @weight.tournament
     	end
-    	if current_user != @tournament.user
-    	  redirect_to '/static_pages/not_allowed'
-    	end
+    	authorize! :manage, @tournament
   end
 
 

@@ -6,7 +6,7 @@
         <br>
     <% end %>
     <br>
-    <% if tournament_permissions(@tournament) %>
+    <% if can? :manage, @tournament %>
         <%= form_for(@tournament) do |f| %>
             <div class="field">
                 <%= f.label :weigh_in_ref %><br>

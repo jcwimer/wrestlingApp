@@ -37,6 +37,10 @@ class WrestlersControllerTest < ActionController::TestCase
   def sign_in_non_owner
     sign_in users(:two)
   end
+  
+  def sign_in_tournament_delegate
+    sign_in users(:three)
+  end
 
   def success
     assert_response :success
@@ -48,6 +52,12 @@ class WrestlersControllerTest < ActionController::TestCase
 
   test "logged in tournament owner should get edit wrestler page" do
     sign_in_owner
+    get_edit
+    success
+  end
+  
+  test "logged in tournament delegate should get edit wrestler page" do
+    sign_in_tournament_delegate
     get_edit
     success
   end
@@ -79,9 +89,23 @@ class WrestlersControllerTest < ActionController::TestCase
     post_update
     assert_redirected_to school_path(@school.id) 
   end
+  
+  test "logged in tournament delegate should post update wrestler" do
+    sign_in_tournament_delegate
+    post_update
+    assert_redirected_to school_path(@school.id) 
+  end
 
   test "logged in tournament owner can create a new wrestler" do
     sign_in_owner
+    new
+    success 
+    create
+    assert_redirected_to school_path(@school.id) 
+  end
+  
+  test "logged in tournament delegate can create a new wrestler" do
+    sign_in_tournament_delegate
     new
     success 
     create
@@ -98,6 +122,12 @@ class WrestlersControllerTest < ActionController::TestCase
 
   test "logged in tournament owner can destroy a wrestler" do
     sign_in_owner
+    destroy
+    assert_redirected_to school_path(@school.id)
+  end
+  
+  test "logged in tournament delegate can destroy a wrestler" do
+    sign_in_tournament_delegate
     destroy
     assert_redirected_to school_path(@school.id)
   end

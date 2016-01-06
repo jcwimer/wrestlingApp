@@ -3,7 +3,7 @@
 
  
  <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %> 
-<% if tournament_permissions(@tournament)  %>
+<% if can? :manage, @tournament %>
  | <%= link_to "Edit #{@weight.max} Weight Class", edit_weight_path(@weight), :class=>"btn btn-primary" %>
 <% end %>
 
@@ -11,7 +11,7 @@
 <h1>Weight Class:<%= @weight.max %></h1>
 <br>
 <br>
-<table class="table table-striped table-bordered">
+<table class="table table-striped table-bordered table-condensed">
 	<thead>
 		<tr>
 			<th>Name</th>
@@ -20,7 +20,7 @@
 			<th>Record</th>
 			<th>Seed Criteria</th>
 			<th>Extra?</th>
-			<% if tournament_permissions(@tournament)  %><th>Actions for wrestler</th><% end %>
+			<% if can? :manage, @tournament %>  %><th>Actions for wrestler</th><% end %>
 		</tr>
 	</thead>
 	<tbody>
@@ -29,9 +29,9 @@
       		<% if wrestler.weight_id == @weight.id %>
       			<tr>
       				<td><%= wrestler.name %></td>
-      				<td><%= School.find(wrestler.school_id).name %></td>
+      				<td><%= wrestler.school.name %></td>
       				<td>
-                <% if tournament_permissions(@tournament)  %>
+                <% if can? :manage, @tournament %>
                   <%= fields_for "wrestler[]", wrestler do |w| %>
                     <%= w.text_field :original_seed %>
                   <% end %> 
@@ -44,9 +44,9 @@
       				<td><% if wrestler.extra? == true %>
            				 Yes
           			<% end %></td>
-      				<% if tournament_permissions(@tournament)  %> 
-                                        <td><%= link_to 'Show', wrestler , :class=>"btn btn-default" %>
-      					<%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' } , :class=>"btn btn-danger" %></td>
+      				<% if can? :manage, @tournament %> 
+                                        <td><%= link_to 'Show', wrestler , :class=>"btn btn-default btn-sm" %>
+      					<%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' } , :class=>"btn btn-danger btn-sm" %></td>
 	      			<% end %>
       			</tr>
       		<% end %>
@@ -54,7 +54,7 @@
   	</tbody>
 </table>
 <br><p>*All wrestlers without a seed (determined by tournament director) will be assigned a random seed.</p>
-		<% if tournament_permissions(@tournament)  %>
+		<% if can? :manage, @tournament %>
 		<br>
 	      <%= submit_tag "Save", :class=>"btn btn-success"%>
 	    <% end %>

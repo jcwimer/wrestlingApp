@@ -1,6 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_filter :check_access, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:destroy,:generate_matches,:matches]
+  before_filter :check_access_manage, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
+  before_filter :check_access_destroy, only: [:destroy]
+
   before_filter :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
  
   def matches
@@ -149,10 +151,12 @@ class TournamentsController < ApplicationController
     end
   
   #Check for tournament owner
-  def check_access
-    if current_user != @tournament.user
-	redirect_to '/static_pages/not_allowed'
-    end
+  def check_access_destroy
+    authorize! :destroy, @tournament
+  end
+  
+  def check_access_manage
+    authorize! :manage, @tournament
   end
 
   def check_for_matches

@@ -24,6 +24,10 @@ class MatchesControllerTest < ActionController::TestCase
   def sign_in_non_owner
     sign_in users(:two)
   end
+  
+  def sign_in_tournament_delegate
+    sign_in users(:three)
+  end
 
   def success
     assert_response :success
@@ -65,11 +69,16 @@ class MatchesControllerTest < ActionController::TestCase
     assert_redirected_to '/static_pages/not_allowed' 
   end 
 
-  test "logged in tournament owner should post update match" do
-    sign_in_owner
+  test "logged in tournament delegate should get edit match page" do
+    sign_in_tournament_delegate
+    get_edit
+    success
+  end
+  
+  test "logged in tournament delegate should post update match" do
+    sign_in_tournament_delegate
     post_update
     assert_redirected_to mat_path(1) 
   end
-
 
 end

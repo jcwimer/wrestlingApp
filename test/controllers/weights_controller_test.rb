@@ -36,6 +36,10 @@ class WeightsControllerTest < ActionController::TestCase
   def sign_in_non_owner
     sign_in users(:two)
   end
+  
+  def sign_in_tournament_delegate
+    sign_in users(:three)
+  end
 
   def success
     assert_response :success
@@ -47,6 +51,12 @@ class WeightsControllerTest < ActionController::TestCase
 
   test "logged in tournament owner should get edit weight page" do
     sign_in_owner
+    get_edit
+    success
+  end
+  
+  test "logged in tournament delegate should get edit weight page" do
+    sign_in_tournament_delegate
     get_edit
     success
   end
@@ -78,9 +88,23 @@ class WeightsControllerTest < ActionController::TestCase
     post_update
     assert_redirected_to tournament_path(@weight.tournament_id) 
   end
+  
+  test "logged in tournament delegate should post update weight" do
+    sign_in_tournament_delegate
+    post_update
+    assert_redirected_to tournament_path(@weight.tournament_id) 
+  end
 
   test "logged in tournament owner can create a new weight" do
     sign_in_owner
+    new
+    success 
+    create
+    assert_redirected_to tournament_path(@weight.tournament_id) 
+  end
+  
+  test "logged in tournament delegate can create a new weight" do
+    sign_in_tournament_delegate
     new
     success 
     create
@@ -97,6 +121,12 @@ class WeightsControllerTest < ActionController::TestCase
 
   test "logged in tournament owner can destroy a weight" do
     sign_in_owner
+    destroy
+    assert_redirected_to tournament_path(@tournament.id)
+  end
+  
+  test "logged in tournament delegate can destroy a weight" do
+    sign_in_tournament_delegate
     destroy
     assert_redirected_to tournament_path(@tournament.id)
   end

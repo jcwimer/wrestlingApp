@@ -30,7 +30,7 @@ class Mat < ActiveRecord::Base
 	end
 	
 	def unfinishedMatches
-		matches.select{|m| m.finished == nil}.sort_by{|m| m.bout_number}
+		matches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
 	end
 	
 end

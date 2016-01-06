@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151230164000) do
+ActiveRecord::Schema.define(version: 20160106031418) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -64,6 +64,13 @@ ActiveRecord::Schema.define(version: 20151230164000) do
 
   add_index "mats", ["tournament_id"], name: "index_mats_on_tournament_id"
 
+  create_table "school_delegates", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "school_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "schools", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -82,6 +89,13 @@ ActiveRecord::Schema.define(version: 20151230164000) do
   end
 
   add_index "teampointadjusts", ["wrestler_id"], name: "index_teampointadjusts_on_wrestler_id"
+
+  create_table "tournament_delegates", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "tournament_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
 
   create_table "tournaments", force: :cascade do |t|
     t.string   "name"

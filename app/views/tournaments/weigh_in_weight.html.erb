@@ -19,7 +19,7 @@
           		<% if wrestler.weight_id == @weight.id %>
           			<tr>
           				<td><%= wrestler.name %></td>
-          				<td><%= School.find(wrestler.school_id).name %></td>
+          				<td><%= wrestler.school.name %></td>
           				<td><%= wrestler.original_seed %></td>
           				<td><%= wrestler.weight.max %></td>
           				<td>
@@ -37,7 +37,7 @@
       	</tbody>
     </table>
     <%= hidden_field_tag :tournament, @tournament_id %>
-    		<% if tournament_permissions(@tournament)   %>
+    		<% if can? :manage, @tournament %>
     	      <%= submit_tag "Save", :class=>"btn btn-success"%>
     	    <% end %>
         <% end %>

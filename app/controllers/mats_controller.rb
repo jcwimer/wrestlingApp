@@ -89,9 +89,7 @@ class MatsController < ApplicationController
     	elsif @mat
     	   @tournament = @mat.tournament
     	end
-    	if current_user != @tournament.user
-    	  redirect_to '/static_pages/not_allowed'
-    	end
+    	authorize! :manage, @tournament
     end
     
     

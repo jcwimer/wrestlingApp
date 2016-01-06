@@ -12,7 +12,7 @@
                     <li><%= link_to "Team Scores" , "/tournaments/#{@tournament.id}/team_scores" %></li>
                 </ul>
             </div>
-            <% if tournament_permissions(@tournament)  %>
+            <% if can? :manage, @tournament %>
                 <br><br>
                 <div class="" style="padding-right: 1%;">
                          <h4>Tournament Director Links</h4>

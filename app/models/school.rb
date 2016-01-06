@@ -2,6 +2,7 @@ class School < ActiveRecord::Base
 	belongs_to :tournament, touch: true
 	has_many :wrestlers, dependent: :destroy
 	has_many :deductedPoints, through: :wrestlers
+	has_many :delegates, class_name: "SchoolDelegate"
 	
 	validates :name, presence: true
 

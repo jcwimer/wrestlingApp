@@ -8,6 +8,7 @@ class Tournament < ActiveRecord::Base
 	has_many :mats, dependent: :destroy
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
+	has_many :delegates, class_name: "TournamentDelegate"
 
 	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
 

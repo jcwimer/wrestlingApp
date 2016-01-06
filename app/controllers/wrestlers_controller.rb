@@ -99,8 +99,6 @@ class WrestlersController < ApplicationController
     	elsif @wrestler
     	   @tournament = @wrestler.tournament
     	end
-    	if current_user != @tournament.user
-    	  redirect_to '/static_pages/not_allowed'
-    	end
+    	authorize! :manage, @tournament
     end
 end

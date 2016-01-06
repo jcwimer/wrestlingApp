@@ -25,6 +25,10 @@ include Devise::TestHelpers
   def sign_in_non_owner
     sign_in users(:two)
   end
+  
+  def sign_in_delegate
+    sign_in users(:three)
+  end
 
   def success
     assert_response :success
@@ -168,6 +172,54 @@ include Devise::TestHelpers
     wipe
     get :bracket, id: 1, weight: 1
     no_matches
+  end
+  
+  test "logged in tournament delegate can generate matches" do
+    sign_in_delegate
+    get :generate_matches, id: 1
+    success
+  end
+
+  test "logged in tournament delegate can create custom weights" do
+    sign_in_delegate
+    get :create_custom_weights, id: 1, customValue: 'hs' 
+    assert_redirected_to '/tournaments/1'
+  end
+
+  test "logged in tournament delegate can access weigh_ins" do
+    sign_in_delegate
+    get :weigh_in, id: 1
+    success
+  end
+
+  test "logged in tournament delegate can access weigh_in_weight" do
+    sign_in_delegate
+    get :weigh_in, id: 1, weight: 1
+    success
+  end
+  
+  test "logged in tournament delegate should get edit tournament page" do
+    sign_in_delegate
+    get_edit
+    success
+  end
+  
+  test "logged in tournament delegate can access post weigh_in_weight" do
+    sign_in_delegate
+    post :weigh_in, id: 1, weight: 1, wrestler: @wrestlers
+  end
+  
+  test "logged in tournament delegate should post update tournament" do
+    sign_in_delegate
+    post_update
+    assert_redirected_to tournament_path(1) 
+  end
+
+
+  test "logged in tournament delegate cannot destroy a tournament" do
+    sign_in_delegate
+    destroy
+    redirect
   end
 
 end
