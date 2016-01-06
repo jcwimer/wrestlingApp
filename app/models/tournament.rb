@@ -69,7 +69,7 @@ class Tournament < ActiveRecord::Base
 	
 	def assignMats(matsToAssign)
 		if matsToAssign.count > 0
-			until matsToAssign.sort_by{|m| m.id}.last.matches.count == 4
+			until matsToAssign.sort_by{|m| m.id}.last.unfinishedMatches.count == 4
 				matsToAssign.sort_by{|m| m.id}.each do |m|
 					m.assignNextMatch	
 				end
