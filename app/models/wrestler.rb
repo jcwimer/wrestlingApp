@@ -27,7 +27,7 @@ class Wrestler < ActiveRecord::Base
 	
 	def teamPointsEarned
 		points = 0.0
-		points = points + (poolWins.size * 1) + (pinWins.size * 2) + (techWins.size * 1.5)	+ (majorWins.size * 1) + placementPoints
+		points = points + (poolWins.size * 2) + (pinWins.size * 2) + (techWins.size * 1.5)	+ (majorWins.size * 1) + placementPoints
 	end
 	
 	def placementPoints
