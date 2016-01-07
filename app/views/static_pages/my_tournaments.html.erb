@@ -56,8 +56,8 @@
       <% @schools.each do |school| %>
         <tr>
           <td><%= school.name %></td>
-          <td><%= tournament.school.name %></td>
-          <td><%= tournament.school.date %></td>
+          <td><%= school.tournament.name %></td>
+          <td><%= school.tournament.date %></td>
           <td><%= link_to 'Show', school, :class=>"btn btn-default btn-sm" %>
             <% if can? :manage, school %>
               <%= link_to 'Edit', edit_school_path(school), :class=>"btn btn-primary btn-sm" %>
