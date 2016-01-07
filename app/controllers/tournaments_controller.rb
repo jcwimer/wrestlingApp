@@ -1,17 +1,40 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_filter :check_access_manage, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
+  before_action :set_tournament, only: [:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_filter :check_access_manage, only: [:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
   before_filter :check_access_destroy, only: [:destroy,:delegate]
 
   before_filter :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
   
+  def school_delegate
+    if params[:search]
+      @users = User.search(params[:search])
+    elsif params[:school_delegate]
+      @delegate = SchoolDelegate.new
+      @delegate.user_id = params[:school_delegate]["user_id"]
+      @delegate.school_id = params[:school_delegate]["school_id"]
+      respond_to do |format|
+        if @delegate.save
+          format.html { redirect_to "/tournaments/#{@tournament.id}/school_delegate", notice: 'Delegated permissions added successfully' }
+        else
+          format.html { redirect_to "/tournaments/#{@tournament.id}/school_delegate", notice: 'There was an issue delegating permissions please try again' }
+        end
+      end
+    else
+      @users_delegates = []
+      @tournament.schools.each do |s|
+        s.delegates.each do |d|
+          @users_delegates << d
+        end
+      end
+    end
+  end
+  
   def delegate
     if params[:search]
       @users = User.search(params[:search])
-    elsif params[:user]
-      @user = User.find(params[:user]["id"])
+    elsif params[:tournament_delegate]
       @delegate = TournamentDelegate.new
-      @delegate.user_id = @user.id
+      @delegate.user_id = params[:tournament_delegate]["user_id"]
       @delegate.tournament_id = @tournament.id
       respond_to do |format|
         if @delegate.save

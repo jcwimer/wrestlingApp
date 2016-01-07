@@ -41,10 +41,9 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/no_matches' => 'tournaments#no_matches'
   get 'tournaments/:id/matches' => 'tournaments#matches'
   get 'tournaments/:id/delegate' => 'tournaments#delegate', :as => :tournament_delegate
-  patch 'tournaments/:id/delegate' => 'tournaments#delegate', :as => :set_tournament_delegate
-  
-  get 'schools/:id/delegate' => 'schools#delegate'
-  post 'schools/:id/delegate' => 'schools#delegate'
+  post 'tournaments/:id/delegate' => 'tournaments#delegate', :as => :set_tournament_delegate
+  get 'tournaments/:id/school_delegate' => 'tournaments#school_delegate', :as => :school_delegate
+  post 'tournaments/:id/school_delegate' => 'tournaments#school_delegate', :as => :set_school_delegate
   
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

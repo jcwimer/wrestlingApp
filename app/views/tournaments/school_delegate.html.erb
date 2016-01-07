@@ -5,7 +5,7 @@
 
 
 <% if @users %>
-    <h1>Search results</h1> <%= form_tag(tournament_delegate_path, :method => "get", id: "search-form") do %>
+    <h1>Search results</h1> <%= form_tag(school_delegate_path, :method => "get", id: "search-form") do %>
                                     <%= text_field_tag :search, params[:search], placeholder: "Search users" %>
                                     <%= submit_tag "Search" %>
                                   <% end %>
@@ -16,6 +16,7 @@
         	<thead>
         		<tr>
         			<th>User Email</th>
+        			<th>School to delegate</th>
         			<th></th>
         		</tr>
         	</thead>
@@ -23,8 +24,10 @@
         		<% @users.each do |user| %>
               			<tr>
               				<td><%= user.email %></td>
+              			<%= form_for SchoolDelegate.new, :url => url_for(:controller => 'tournaments', :action => 'school_delegate', :method => "post") do |f| %>
+              				<td><%= f.collection_select :school_id, @tournament.schools, :id, :name %></td>
               				<td>
-              			<%= form_for TournamentDelegate.new, :url => url_for(:controller => 'tournaments', :action => 'delegate', :method => "post") do |f| %>
+              			
                   		    <%= f.hidden_field :user_id, :value => user.id %>
                             <% if can? :manage, @tournament %>
                               <%= submit_tag "Give permissions", :class=>"btn btn-success"%>
@@ -39,7 +42,7 @@
 <% end %>
 
 <% if @users_delegates %>
-    <h1>Delegated users</h1> <%= form_tag(tournament_delegate_path, :method => "get", id: "search-form") do %>
+    <h1>Delegated users schools</h1> <%= form_tag(school_delegate_path, :method => "get", id: "search-form") do %>
                                     <%= text_field_tag :search, params[:search], placeholder: "Search users" %>
                                     <%= submit_tag "Search" %>
                                   <% end %>
@@ -50,12 +53,14 @@
         	<thead>
         		<tr>
         			<th>User Email</th>
+        			<th>School</th>
         		</tr>
         	</thead>
         	<tbody>
         		<% @users_delegates.each do |delegate| %>
               			<tr>
               				<td><%= delegate.user.email %></td>
+              				<td><%= delegate.school.name %></td>
               				
               			</tr>
             	
