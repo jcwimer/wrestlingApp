@@ -40,6 +40,10 @@ class WeightsControllerTest < ActionController::TestCase
   def sign_in_tournament_delegate
     sign_in users(:three)
   end
+  
+  def sign_in_school_delegate
+    sign_in users(:four)
+  end
 
   def success
     assert_response :success
@@ -66,6 +70,12 @@ class WeightsControllerTest < ActionController::TestCase
     get_edit
     redirect
   end
+  
+  test "logged school delegate should not get edit weight page if not owner" do
+    sign_in_school_delegate
+    get_edit
+    redirect
+  end
 
   test "non logged in user should not get edit weight page" do
     get_edit
@@ -79,6 +89,12 @@ class WeightsControllerTest < ActionController::TestCase
 
   test "logged in user should not post update weight if not owner" do
     sign_in_non_owner
+    post_update
+    redirect
+  end 
+  
+  test "logged school delegate should not post update weight if not owner" do
+    sign_in_school_delegate
     post_update
     redirect
   end 
@@ -118,6 +134,14 @@ class WeightsControllerTest < ActionController::TestCase
     create
     redirect
   end
+  
+  test "logged school delegate not tournament owner cannot create a weight" do
+    sign_in_school_delegate
+    new
+    redirect
+    create
+    redirect
+  end
 
   test "logged in tournament owner can destroy a weight" do
     sign_in_owner
@@ -133,6 +157,12 @@ class WeightsControllerTest < ActionController::TestCase
 
   test "logged in user not tournament owner cannot destroy weight" do
     sign_in_non_owner
+    destroy
+    redirect
+  end
+  
+  test "logged school delegate not tournament owner cannot destroy weight" do
+    sign_in_school_delegate
     destroy
     redirect
   end

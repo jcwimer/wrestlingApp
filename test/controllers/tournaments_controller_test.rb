@@ -29,6 +29,10 @@ include Devise::TestHelpers
   def sign_in_delegate
     sign_in users(:three)
   end
+  
+  def sign_in_school_delegate
+    sign_in users(:four)
+  end
 
   def success
     assert_response :success
@@ -61,6 +65,12 @@ include Devise::TestHelpers
     get :generate_matches, id: 1
     redirect
   end
+  
+  test "logged in school delegate cannot generate matches" do
+    sign_in_school_delegate
+    get :generate_matches, id: 1
+    redirect
+  end
 
   test "logged in tournament owner can create custom weights" do
     sign_in_owner
@@ -70,6 +80,12 @@ include Devise::TestHelpers
 
   test "logged in non tournament owner cannot create custom weights" do
     sign_in_non_owner
+    get :create_custom_weights, id: 1, customValue: 'hs' 
+    redirect
+  end
+  
+  test "logged in school delegate cannot create custom weights" do
+    sign_in_school_delegate
     get :create_custom_weights, id: 1, customValue: 'hs' 
     redirect
   end
@@ -86,6 +102,12 @@ include Devise::TestHelpers
     get :weigh_in, id: 1
     redirect    
   end
+  
+  test "logged in school delegate cannot access weigh_ins" do
+    sign_in_school_delegate
+    get :weigh_in, id: 1
+    redirect    
+  end
 
   test "logged in tournament owner can access weigh_in_weight" do
     sign_in_owner
@@ -95,6 +117,12 @@ include Devise::TestHelpers
 
   test "logged in non tournament owner cannot access weigh_in_weight" do
     sign_in_non_owner
+    get :weigh_in_weight, id: 1, weight: 1
+    redirect    
+  end
+  
+  test "logged in school delegate cannot access weigh_in_weight" do
+    sign_in_school_delegate
     get :weigh_in_weight, id: 1, weight: 1
     redirect    
   end
@@ -109,6 +137,12 @@ include Devise::TestHelpers
     post :weigh_in_weight, id: 1, weight: 1, wrestler: @wrestlers
     redirect    
   end
+  
+  test "logged in school delegate cannot access post weigh_in_weight" do
+    sign_in_school_delegate
+    post :weigh_in_weight, id: 1, weight: 1, wrestler: @wrestlers
+    redirect    
+  end
 
 
   test "logged in tournament owner should get edit tournament page" do
@@ -119,6 +153,12 @@ include Devise::TestHelpers
 
   test "logged in user should not get edit tournament page if not owner" do
     sign_in_non_owner
+    get_edit
+    redirect
+  end
+  
+  test "logged in school delegate should not get edit tournament page if not owner" do
+    sign_in_school_delegate
     get_edit
     redirect
   end
@@ -138,6 +178,12 @@ include Devise::TestHelpers
     post_update
     assert_redirected_to '/static_pages/not_allowed' 
   end 
+  
+  test "logged in school delegate should not post update tournament if not owner" do
+    sign_in_school_delegate
+    post_update
+    assert_redirected_to '/static_pages/not_allowed' 
+  end
 
   test "logged in tournament owner should post update tournament" do
     sign_in_owner
@@ -154,6 +200,12 @@ include Devise::TestHelpers
 
   test "logged in user not tournament owner cannot destroy tournament" do
     sign_in_non_owner
+    destroy
+    redirect
+  end
+  
+  test "logged in school delegate not tournament owner cannot destroy tournament" do
+    sign_in_school_delegate
     destroy
     redirect
   end
