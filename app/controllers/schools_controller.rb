@@ -1,6 +1,7 @@
 class SchoolsController < ApplicationController
   before_action :set_school, only: [:show, :edit, :update, :destroy]
-  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
+  before_filter :check_access_director, only: [:new,:create,:destroy]
+  before_filter :check_access_delegate, only: [:update,:edit]
 
 
   # GET /schools/1
@@ -76,15 +77,21 @@ class SchoolsController < ApplicationController
       params.require(:school).permit(:name, :score, :tournament_id)
     end
 
-    def check_access
+    def check_access_director
     	if params[:tournament]
     	   @tournament = Tournament.find(params[:tournament])
     	elsif params[:school]
     	   @tournament = Tournament.find(params[:school]["tournament_id"])
     	elsif @school
     	   @tournament = @school.tournament
+    	elsif school_params
+    	   @tournament = Tournament.find(school_params[:tournament_id])
     	end
     	authorize! :manage, @tournament
+    end
+    
+    def check_access_delegate
+    	authorize! :manage, @school
     end
 
 end

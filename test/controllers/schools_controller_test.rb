@@ -40,6 +40,10 @@ class SchoolsControllerTest < ActionController::TestCase
   def sign_in_tournament_delegate
     sign_in users(:three)
   end
+  
+  def sign_in_school_delegate
+    sign_in users(:four)
+  end
 
   def success
     assert_response :success
@@ -57,6 +61,12 @@ class SchoolsControllerTest < ActionController::TestCase
   
   test "logged in tournament delegate should get edit school page" do
     sign_in_tournament_delegate
+    get_edit
+    success
+  end
+  
+  test "logged in school delegate should get edit school page" do
+    sign_in_school_delegate
     get_edit
     success
   end
@@ -94,6 +104,12 @@ class SchoolsControllerTest < ActionController::TestCase
     post_update
     assert_redirected_to tournament_path(@school.tournament_id) 
   end
+  
+  test "logged in school delegate should post update school" do
+    sign_in_school_delegate
+    post_update
+    assert_redirected_to tournament_path(@school.tournament_id) 
+  end
 
   test "logged in tournament owner can create a new school" do
     sign_in_owner
@@ -109,6 +125,14 @@ class SchoolsControllerTest < ActionController::TestCase
     success 
     create
     assert_redirected_to tournament_path(@school.tournament_id) 
+  end
+  
+  test "logged in school delegate cannot create a new school" do
+    sign_in_school_delegate
+    new
+    redirect 
+    create
+    redirect
   end
 
   test "logged in user not tournament owner cannot create a school" do
@@ -129,6 +153,12 @@ class SchoolsControllerTest < ActionController::TestCase
     sign_in_tournament_delegate
     destroy
     assert_redirected_to tournament_path(@tournament.id)
+  end
+  
+  test "logged in school delegate can destroy a school" do
+    sign_in_school_delegate
+    destroy
+    redirect
   end
 
   test "logged in user not tournament owner cannot destroy school" do

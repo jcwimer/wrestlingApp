@@ -7,3 +7,7 @@
 # two:
 #   user_id: 1
 #   school_id: 1
+
+one:
+  user_id: 4
+  school_id: 1

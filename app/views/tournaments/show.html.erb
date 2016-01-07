@@ -53,8 +53,10 @@
       <tr>
         <td><%= school.name %></td>
         <td><%= link_to 'Show', school, :class=>"btn btn-default btn-sm" %>
-          <% if can? :manage, @tournament %>
+          <% if can? :manage, school %>
             <%= link_to 'Edit', edit_school_path(school), :class=>"btn btn-primary btn-sm" %>
+          <% end %>
+          <% if can? :manage, @tournament %>
             <%= link_to 'Destroy', school, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger btn-sm" %>
           <% end %>
         </td>

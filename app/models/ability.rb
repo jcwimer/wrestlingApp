@@ -40,7 +40,7 @@ class Ability
       end
       #Can manage school if tournament owner
       can :manage, School do |school|
-        school.tournament.map(&:user_id).include? user.id
+        school.tournament.user.id == user.id
       end
       #Can manage school if tournament delegate
       can :manage, School do |school|
