@@ -1,10 +1,30 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_action :set_tournament, only: [:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
   before_filter :check_access_manage, only: [:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
-  before_filter :check_access_destroy, only: [:destroy]
+  before_filter :check_access_destroy, only: [:destroy,:delegate]
 
   before_filter :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
- 
+  
+  def delegate
+    if params[:search]
+      @users = User.search(params[:search])
+    elsif params[:user]
+      @user = User.find(params[:user]["id"])
+      @delegate = TournamentDelegate.new
+      @delegate.user_id = @user.id
+      @delegate.tournament_id = @tournament.id
+      respond_to do |format|
+        if @delegate.save
+          format.html { redirect_to "/tournaments/#{@tournament.id}/delegate", notice: 'Delegated permissions added successfully' }
+        else
+          format.html { redirect_to "/tournaments/#{@tournament.id}/delegate", notice: 'There was an issue delegating permissions please try again' }
+        end
+      end
+    else
+      @users_delegates = @tournament.delegates
+    end
+  end
+  
   def matches
     @matches = @tournament.matches.sort_by{|m| m.bout_number}
     if @match

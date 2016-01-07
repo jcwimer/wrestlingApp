@@ -31,6 +31,8 @@
         <td><%= link_to 'Show', tournament, :class=>"btn btn-default btn-sm" %>
           <% if can? :manage, tournament %>
             <%= link_to 'Edit', edit_tournament_path(tournament), :class=>"btn btn-primary btn-sm" %>
+          <% end %>  
+          <% if can? :destroy, tournament %>
             <%= link_to 'Destroy', tournament, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger btn-sm" %>
           <% end %>
         </td>

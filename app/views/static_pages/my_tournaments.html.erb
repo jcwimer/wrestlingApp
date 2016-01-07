@@ -27,6 +27,8 @@
         <td><%= link_to 'Show', tournament, :class=>"btn btn-default btn-sm" %>
           <% if can? :manage, tournament %>
             <%= link_to 'Edit', edit_tournament_path(tournament), :class=>"btn btn-primary btn-sm" %>
+          <% end %>  
+          <% if can? :destroy, tournament %>
             <%= link_to 'Destroy', tournament, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger btn-sm" %>
           <% end %>
         </td>
@@ -34,7 +36,38 @@
     <% end %>
   </tbody>
 </table>
-
+<br>
+<br>
+<% if @schools.size > 0 %>
+  <h1>My Schools</h1>
+  <br>
+  <br>
+  <table class="table table-striped table-bordered table-condensed" id="tournamentList">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Tournament Name</th>
+        <th>Tournament Date</th>
+        <th></th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <% @schools.each do |school| %>
+        <tr>
+          <td><%= school.name %></td>
+          <td><%= tournament.school.name %></td>
+          <td><%= tournament.school.date %></td>
+          <td><%= link_to 'Show', school, :class=>"btn btn-default btn-sm" %>
+            <% if can? :manage, school %>
+              <%= link_to 'Edit', edit_school_path(school), :class=>"btn btn-primary btn-sm" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 <br>
 
 
