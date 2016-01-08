@@ -21,7 +21,9 @@
                         <br><%= link_to "Weigh In Page" , "/tournaments/#{@tournament.id}/weigh_in" %>
                         <br><%= link_to "All Matches" , "/tournaments/#{@tournament.id}/matches" %>
                         <br><%= link_to "Full Screen Bout Board" , "/tournaments/#{@tournament.id}/up_matches?print=true" %>
-                        <br><%= link_to "Tournament Delegation" , "/tournaments/#{@tournament.id}/delegate" %>
+                        <% if can? :destroy, @tournament %>
+                            <br><%= link_to "Tournament Delegation" , "/tournaments/#{@tournament.id}/delegate" %>
+                        <% end %>
                         <br><%= link_to "School Delegation" , "/tournaments/#{@tournament.id}/school_delegate"%>
 
                         <br><br><strong>Time Savers</strong><br>
