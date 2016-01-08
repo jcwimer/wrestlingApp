@@ -1,6 +1,10 @@
 <% if Rails.env.production? %>
     <div class="ad">
-        
+        <% if !user_signed_in? %>
+            <% if !current_page?(root_url) and !current_page?(new_user_session_url) and !params[:print] %>
+                <script type='text/javascript' src='//eclkmpbn.com/adServe/banners?tid=85597_138467_6&size=158x21'></script>
+            <% end %>
+        <% end %>
     </div>
 <% end %>
     <div class="afs_ads">&nbsp;</div>
