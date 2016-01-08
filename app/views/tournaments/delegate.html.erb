@@ -50,13 +50,14 @@
         	<thead>
         		<tr>
         			<th>User Email</th>
+        			<th></th>
         		</tr>
         	</thead>
         	<tbody>
         		<% @users_delegates.each do |delegate| %>
               			<tr>
               				<td><%= delegate.user.email %></td>
-              				
+              				<td><%= link_to 'Remove permissions', "/tournaments/#{@tournament.id}/#{delegate.id}/remove_delegate", method: :delete, confirm: 'Are you sure?', :class=>"btn btn-danger btn-sm" %></td>
               			</tr>
             	
             <% end %>

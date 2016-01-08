@@ -54,6 +54,7 @@
         		<tr>
         			<th>User Email</th>
         			<th>School</th>
+        			<th></th>
         		</tr>
         	</thead>
         	<tbody>
@@ -61,7 +62,7 @@
               			<tr>
               				<td><%= delegate.user.email %></td>
               				<td><%= delegate.school.name %></td>
-              				
+              				<td><%= link_to 'Remove permissions', "/tournaments/#{@tournament.id}/#{delegate.id}/remove_school_delegate", method: :delete, confirm: 'Are you sure?', :class=>"btn btn-danger btn-sm" %></td>
               			</tr>
             	
             <% end %>
