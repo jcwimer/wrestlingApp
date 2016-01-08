@@ -3,12 +3,12 @@
         <script type="text/javascript">
         if(WURFL.is_mobile){
             //Mobile and tablet ad
-            (function(){
-                CHITIKA = window.CHITIKA ? window.CHITIKA : {'units' : []};
-                CHITIKA.publisher = 'cwimer';
-                var s = document.createElement('script');
-                s.src = '//cdn.chitika.net/getads.js';
-                try { document.getElementsByTagName('head')[0].appendChild(s); } catch(e) { document.write(s.outerHTML);}
+            (function (){
+                if(window.CHITIKA===undefined) {window.CHITIKA = {'units' :[]};};
+                var unit = {"calltype":"async[2]","publisher":"cwimer","width":468,"height":60,"sid":"Chitika Default"};
+                var placement_id = window.CHITIKA.units.length;
+                window.CHITIKA.units.push(unit);
+                document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
             }());
         } else {
             //Desktop ad
