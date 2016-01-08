@@ -39,8 +39,6 @@
         <th>Name</th>
         <th>Weight</th>
         <th>Seed</th>
-        <th>Record</th>
-        <th>Seed Criteria</th>
         <th>Team Points Scored</th>
         <th>Extra?</th>
         <th>Next Bout/Mat</th>
@@ -57,8 +55,6 @@
             <td>
                 <%= wrestler.original_seed %>
             </td>
-            <td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
-            <td><%= wrestler.criteria %> Win <%= wrestler.seasonWinPercentage %>%</td>
             <td><%= wrestler.totalTeamPoints - wrestler.totalDeductedPoints %></td>
             <td><% if wrestler.extra? == true %>
               Yes
