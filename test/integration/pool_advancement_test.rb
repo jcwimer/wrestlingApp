@@ -222,9 +222,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.winner_id = translateNameToId(winner)
      match.win_type = "Decision"
      match.score = 1-0
-     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
-     mat = @tournament.mats.first
-     match.mat_id = mat.id
+     
      match.save
   end
   
@@ -234,9 +232,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.winner_id = translateNameToId(winner)
      match.win_type = "Decision"
      match.score = 0-2
-     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
-     mat = @tournament.mats.first
-     match.mat_id = mat.id
+     
      match.save
   end
   
@@ -246,9 +242,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.winner_id = translateNameToId(winner)
      match.win_type = "Major"
      match.score = 8-0
-     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
-     mat = @tournament.mats.first
-     match.mat_id = mat.id
+     
      match.save
   end
   
@@ -257,9 +251,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.finished = 1
      match.winner_id = translateNameToId(winner)
      match.win_type = "Tech Fall"
-     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
-     mat = @tournament.mats.first
-     match.mat_id = mat.id
+     
      match.save
   end
   
@@ -269,9 +261,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.winner_id = translateNameToId(winner)
      match.win_type = "Pin"
      match.score = "5:00"
-     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
-     mat = @tournament.mats.first
-     match.mat_id = mat.id
+    
      match.save
   end
   
@@ -281,9 +271,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.winner_id = translateNameToId(winner)
      match.win_type = "Pin"
      match.score = "0:20"
-     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
-     mat = @tournament.mats.first
-     match.mat_id = mat.id
+     
      match.save
   end
   
@@ -293,9 +281,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
      match.winner_id = translateNameToId(winner)
      match.win_type = "Pin"
      match.score = "1:20"
-     #Need to manually assign mat_id because thise weight class is not currently assigned a mat
-     mat = @tournament.mats.first
-     match.mat_id = mat.id
+
      match.save
   end
   
@@ -550,6 +536,16 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert_equal 2, wrestler.teamPointsEarned
   end
     
-  
+  test "Test mat assignment when adding a mat and when destroying a mat" do
+    @mat2 = Mat.new
+    @mat2.name = "2"
+    @mat2.tournament_id = 1
+    @mat2.save
+    assert_equal 4, @mat2.matches.size
+    elevenManBracketFinished
+    @mat2.destroy
+    @mat1 = Mat.find(1)
+    assert_equal 4, @mat1.matches.size
+  end
   
 end
