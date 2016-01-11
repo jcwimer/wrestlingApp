@@ -1,7 +1,8 @@
 class PoolAdvance
 
- def initialize(wrestler)
+ def initialize(wrestler,previousMatch)
 		@wrestler = wrestler
+		@previousMatch = previousMatch
  end
 
  def advanceWrestler
@@ -29,10 +30,10 @@ class PoolAdvance
  end
 
  def bracketAdvancment
-   if @wrestler.winnerOfLastMatch?
+   if @previousMatch.winner_id == @wrestler.id
 	    winnerAdvance
    end
-   if !@wrestler.winnerOfLastMatch?
+   if @previousMatch.winner_id != @wrestler.id
 	    loserAdvance
    end
  end

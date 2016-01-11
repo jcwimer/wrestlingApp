@@ -52,8 +52,8 @@ class Match < ActiveRecord::Base
 	   if self.w1 && self.w2	
 		@w1 = wrestler1
 		@w2 = wrestler2
-		@w1.advanceInBracket
-		@w2.advanceInBracket
+		@w1.advanceInBracket(self)
+		@w2.advanceInBracket(self)
 		if self.mat
 			self.mat.assignNextMatch
 		end
