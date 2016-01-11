@@ -273,5 +273,55 @@ include Devise::TestHelpers
     destroy
     redirect
   end
+  
+  test 'logged in tournament owner can delegate a user' do
+    sign_in_owner
+    get :delegate, id: 1
+    success
+  end
+  
+  test 'logged in tournament delegate cannot delegate a user' do
+    sign_in_delegate
+    get :delegate, id: 1
+    redirect
+  end
+  
+  test 'logged in tournament owner can delegate a school user' do
+    sign_in_owner
+    get :school_delegate, id: 1
+    success
+  end
+  
+  test 'logged in tournament delegate can delegate a school user' do
+    sign_in_delegate
+    get :school_delegate, id: 1
+    success
+  end
+  
+  test 'logged in tournament owner can delete a school delegate' do
+    sign_in_owner
+    patch :remove_school_delegate, id: 1, delegate: SchoolDelegate.find(1)
+    assert_redirected_to "/tournaments/#{@tournament.id}/school_delegate"
+  end
+  
+  test 'logged in tournament delegate can delete a school delegate' do
+    sign_in_delegate
+    patch :remove_school_delegate, id: 1, delegate: SchoolDelegate.find(1)
+    assert_redirected_to "/tournaments/#{@tournament.id}/school_delegate"
+  end
+  
+  test 'logged in tournament owner can delete a delegate' do
+    sign_in_owner
+    patch :remove_delegate, id: 1, delegate: TournamentDelegate.find(1)
+    assert_redirected_to "/tournaments/#{@tournament.id}/delegate"
+  end
+  
+  test 'logged in tournament delegate cannot delete a delegate' do
+    sign_in_delegate
+    patch :remove_delegate, id: 1, delegate: TournamentDelegate.find(1)
+    redirect
+  end
+  
+  
 
 end
