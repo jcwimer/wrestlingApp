@@ -54,7 +54,9 @@ class Match < ActiveRecord::Base
 		@w2 = wrestler2
 		@w1.advanceInBracket
 		@w2.advanceInBracket
-		self.mat.assignNextMatch
+		if self.mat
+			self.mat.assignNextMatch
+		end
 	   end
 	end
 	if Rails.env.production?

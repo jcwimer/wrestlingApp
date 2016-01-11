@@ -79,7 +79,7 @@ class Tournament < ActiveRecord::Base
 	end
 	
 	def resetMats
-		matchesToReset = matches.select{|m| m.finished != 1 && m.mat_id != nil}
+		matchesToReset = matches.select{|m| m.mat_id != nil}
 		# matchesToReset.update_all( {:mat_id => nil } )
 		matchesToReset.each do |m|
 			m.mat_id = nil
