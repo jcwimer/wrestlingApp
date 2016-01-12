@@ -548,4 +548,23 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert_equal 4, @mat1.matches.size
   end
   
+  test "Championship bracket wins are 2pts" do
+    elevenManBracketToQuarter
+    assert_equal 7, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
+    matches = @matches
+    endMatch(4006,"Guy11",matches)
+    assert_equal 15, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
+    endMatch(4007,"Guy14",matches)
+    endMatch(5004,"Guy11",matches)
+    assert_equal 20, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
+  end
+  
+  test "Conso bracket wins are 1pt" do
+    elevenManBracketToSemis
+    assert_equal 7, Wrestler.where("name = ?", "Guy16").first.teamPointsEarned
+    matches = @matches
+    endMatch(5006,"Guy16",matches)
+    assert_equal 11, Wrestler.where("name = ?", "Guy16").first.teamPointsEarned
+  end
+  
 end

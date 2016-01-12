@@ -27,7 +27,7 @@ class Wrestler < ActiveRecord::Base
 	
 	def teamPointsEarned
 		points = 0.0
-		points = points + (poolWins.size * 2) + (pinWins.size * 2) + (techWins.size * 1.5)	+ (majorWins.size * 1) + placementPoints
+		points = points + (poolWins.size * 2) + (championshipAdvancementWins.size * 2) + (consoAdvancementWins.size * 1) + (pinWins.size * 2) + (techWins.size * 1.5)	+ (majorWins.size * 1) + placementPoints
 	end
 	
 	def placementPoints
@@ -129,6 +129,14 @@ class Wrestler < ActiveRecord::Base
 	def poolMatches
 		@poolMatches = allMatches.select{|m| m.bracket_position == "Pool"}
 		@poolMatches.select{|m| m.poolNumber == self.generatePoolNumber}
+	end
+	
+	def championshipAdvancementWins
+		finishedBracketMatches.select{|m| m.bracket_position == "Quarter" or m.bracket_position == "Semis"}
+	end
+	
+	def consoAdvancementWins
+		finishedBracketMatches.select{|m| m.bracket_position == "Conso Semis"}
 	end
 	
 	def finishedMatches
