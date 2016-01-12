@@ -201,7 +201,7 @@ class Wrestler < ActiveRecord::Base
 		end
 	end
 
-	def advanceInBracket
-		PoolAdvance.new(self).advanceWrestler
+	def advanceInBracket(match)
+		PoolAdvance.new(self,match).advanceWrestler
 	end
 end

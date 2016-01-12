@@ -1,6 +1,27 @@
 <% if Rails.env.production? %>
-    <div class="ad">
-        <script type='text/javascript' src='//eclkmpbn.com/adServe/banners?tid=85597_138467_6&size=158x21'></script>
+    <div class="adRnav">
+        <script type="text/javascript">
+        if(WURFL.is_mobile){
+            //Mobile and tablet ad
+            (function (){
+                if(window.CHITIKA===undefined) {window.CHITIKA = {'units' :[]};};
+                var unit = {"calltype":"async[2]","publisher":"cwimer","width":468,"height":60,"sid":"Chitika Default"};
+                var placement_id = window.CHITIKA.units.length;
+                window.CHITIKA.units.push(unit);
+                document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
+            }());
+        } else {
+            //Desktop ad
+            (function (){
+                if(window.CHITIKA===undefined) {window.CHITIKA = {'units' :[]};};
+                var unit = {"calltype":"async[2]","publisher":"cwimer","width":120,"height":600,"sid":"Chitika Default"};
+                var placement_id = window.CHITIKA.units.length;
+                window.CHITIKA.units.push(unit);
+                document.write('<div id="chitikaAdBlock-' + placement_id + '"></div>');
+            }());
+        }
+        </script>
+        <script type="text/javascript" src="//cdn.chitika.net/getads.js" async></script>
     </div>
 <% end %>
     <div class="afs_ads">&nbsp;</div>

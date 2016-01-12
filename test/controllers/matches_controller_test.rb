@@ -28,6 +28,10 @@ class MatchesControllerTest < ActionController::TestCase
   def sign_in_tournament_delegate
     sign_in users(:three)
   end
+  
+  def sign_in_school_delegate
+    sign_in users(:four)
+  end
 
   def success
     assert_response :success
@@ -52,6 +56,12 @@ class MatchesControllerTest < ActionController::TestCase
     get_edit
     redirect
   end
+  
+  test "logged school delegate should not get edit match page if not owner" do
+    sign_in_school_delegate
+    get_edit
+    redirect
+  end
 
   test "non logged in user should not get edit match page" do
     get_edit
@@ -68,6 +78,12 @@ class MatchesControllerTest < ActionController::TestCase
     post_update
     assert_redirected_to '/static_pages/not_allowed' 
   end 
+  
+  test "logged school delegate should not post update match if not owner" do
+    sign_in_school_delegate
+    post_update
+    assert_redirected_to '/static_pages/not_allowed' 
+  end
 
   test "logged in tournament delegate should get edit match page" do
     sign_in_tournament_delegate

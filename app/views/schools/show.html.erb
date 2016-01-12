@@ -1,7 +1,7 @@
  
   <p id="notice"><%= notice %></p>
   <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}",:class=>"btn btn-default" %> 
-  <% if can? :manage, @tournament %>
+  <% if can? :manage, @school %>
   | <%= link_to "Edit #{@school.name}", edit_school_path(@school),:class=>"btn btn-primary" %>
   <% end %>
 
@@ -27,7 +27,7 @@
   
   
   <br>
-  <% if can? :manage, @tournament %>
+  <% if can? :manage, @school %>
     <%= link_to "New #{@school.name} Wrestler" , "/wrestlers/new?school=#{@school.id}", :class=>"btn btn-success"%>
   <% end %>
   <br>
@@ -39,8 +39,6 @@
         <th>Name</th>
         <th>Weight</th>
         <th>Seed</th>
-        <th>Record</th>
-        <th>Seed Criteria</th>
         <th>Team Points Scored</th>
         <th>Extra?</th>
         <th>Next Bout/Mat</th>
@@ -57,8 +55,6 @@
             <td>
                 <%= wrestler.original_seed %>
             </td>
-            <td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
-            <td><%= wrestler.criteria %> Win <%= wrestler.seasonWinPercentage %>%</td>
             <td><%= wrestler.totalTeamPoints - wrestler.totalDeductedPoints %></td>
             <td><% if wrestler.extra? == true %>
               Yes
@@ -66,7 +62,7 @@
              <td><%= wrestler.nextMatchBoutNumber %> <%= wrestler.nextMatchMatName %></td>
              <td>
               <%= link_to 'Show', wrestler , :class=>"btn btn-default btn-sm" %>
-              <% if can? :manage, @tournament %>
+              <% if can? :manage, wrestler.school %>
                 <%= link_to 'Edit', edit_wrestler_path(wrestler),:class=>"btn btn-primary btn-sm" %>
                 <%= link_to 'Destroy', wrestler, method: :delete, data: { confirm: 'Are you sure?' }, :class=>"btn btn-danger btn-sm"  %>
               <% end %>   

@@ -44,7 +44,11 @@ class MatsControllerTest < ActionController::TestCase
   def sign_in_tournament_delegate
     sign_in users(:three)
   end
-
+  
+  def sign_in_school_delegate
+    sign_in users(:four)
+  end
+  
   def success
     assert_response :success
   end
@@ -78,6 +82,12 @@ class MatsControllerTest < ActionController::TestCase
     get_edit
     redirect
   end
+  
+  test "logged school delegate should not get edit mat page if not owner" do
+    sign_in_school_delegate
+    get_edit
+    redirect
+  end
 
   test "non logged in user should not get edit mat page" do
     get_edit
@@ -94,6 +104,12 @@ class MatsControllerTest < ActionController::TestCase
     post_update
     redirect
   end 
+  
+  test "logged school delegate should not post update mat if not owner" do
+    sign_in_school_delegate
+    post_update
+    redirect
+  end
 
   test "logged in tournament owner should post update mat" do
     sign_in_owner
@@ -130,6 +146,14 @@ class MatsControllerTest < ActionController::TestCase
     create
     redirect
   end
+  
+  test "logged school delegate not tournament owner cannot create a mat" do
+    sign_in_school_delegate
+    new
+    redirect
+    create
+    redirect
+  end
 
   test "logged in tournament owner can destroy a mat" do
     sign_in_owner
@@ -149,11 +173,23 @@ class MatsControllerTest < ActionController::TestCase
     redirect
   end
   
+  test "logged school delegate not tournament owner cannot destroy mat" do
+    sign_in_school_delegate
+    destroy
+    redirect
+  end
+  
   test "logged in user should not get show mat" do
     sign_in_non_owner
     show
     redirect 
   end 
+  
+  test "logged school delegate should not get show mat" do
+    sign_in_school_delegate
+    show
+    redirect 
+  end
 
   test "logged in tournament owner should get show mat" do
     sign_in_owner

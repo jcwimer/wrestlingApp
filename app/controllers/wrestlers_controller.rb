@@ -92,13 +92,16 @@ class WrestlersController < ApplicationController
     def check_access
     	if params[:school]
     	   @school = School.find(params[:school])
-    	   @tournament = Tournament.find(@school.tournament.id)
+    	   #@tournament = Tournament.find(@school.tournament.id)
     	elsif params[:wrestler]
     	   @school = School.find(params[:wrestler]["school_id"])
-    	   @tournament = Tournament.find(@school.tournament.id)
+    	   #@tournament = Tournament.find(@school.tournament.id)
     	elsif @wrestler
-    	   @tournament = @wrestler.tournament
+    	   @school = @wrestler.school
+    	   #@tournament = @wrestler.tournament
+    	elsif wrestler_params
+    	   @school = School.find(wrestler_params[:school_id])
     	end
-    	authorize! :manage, @tournament
+    	authorize! :manage, @school
     end
 end
