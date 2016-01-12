@@ -86,4 +86,19 @@ class Tournament < ActiveRecord::Base
 			m.save
 		end
 	end
+	
+	def pointAdjustments
+	  point_adjustments = []
+      self.schools.each do |s|
+        s.deductedPoints.each do |d|
+          point_adjustments << d
+        end
+      end
+      self.wrestlers.each do |w|
+        w.deductedPoints.each do |d|
+          point_adjustments << d
+        end
+      end
+      point_adjustments
+    end
 end

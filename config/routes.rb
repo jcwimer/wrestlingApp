@@ -45,6 +45,9 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/school_delegate' => 'tournaments#school_delegate', :as => :school_delegate
   post 'tournaments/:id/school_delegate' => 'tournaments#school_delegate', :as => :set_school_delegate
   delete 'tournaments/:id/:delegate/remove_school_delegate' => 'tournaments#remove_school_delegate', :as => :delete_school_delegate_path
+  get 'tournaments/:id/teampointadjust' => 'tournaments#teampointadjust'
+  post 'tournaments/:id/teampointadjust' => 'tournaments#teampointadjust'
+  delete 'tournaments/:id/:teampointadjust/remove_teampointadjust' => 'tournaments#remove_teampointadjust'
   
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

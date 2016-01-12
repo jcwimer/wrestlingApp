@@ -1,7 +1,7 @@
 class School < ActiveRecord::Base
 	belongs_to :tournament, touch: true
 	has_many :wrestlers, dependent: :destroy
-	has_many :deductedPoints, through: :wrestlers
+	has_many :deductedPoints, class_name: "Teampointadjust"
 	has_many :delegates, class_name: "SchoolDelegate"
 	
 	validates :name, presence: true
@@ -33,8 +33,13 @@ class School < ActiveRecord::Base
 	
 	def totalDeductedPoints
 		points = 0
-		self.deductedPoints.each do |d|
+		deductedPoints.each do |d|
 			points = points + d.points
+		end
+		self.wrestlers.each do |w|
+			w.deductedPoints.each do |d|
+				points = points + d.points
+			end
 		end
 		points
 	end

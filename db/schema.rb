@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160106031418) do
+ActiveRecord::Schema.define(version: 20160112152946) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0, null: false
@@ -86,6 +86,7 @@ ActiveRecord::Schema.define(version: 20160106031418) do
     t.integer  "wrestler_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "school_id"
   end
 
   add_index "teampointadjusts", ["wrestler_id"], name: "index_teampointadjusts_on_wrestler_id"

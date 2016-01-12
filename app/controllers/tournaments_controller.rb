@@ -1,9 +1,37 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_filter :check_access_manage, only: [:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
+  before_action :set_tournament, only: [:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_filter :check_access_manage, only: [:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
   before_filter :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
 
   before_filter :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
+  
+  def remove_teampointadjust
+    if params[:teampointadjust]
+      @points = Teampointadjust.find(params[:teampointadjust])
+      @points.destroy
+      respond_to do |format|
+        format.html { redirect_to "/tournaments/#{@tournament.id}/teampointadjust", notice: 'Point adjustment removed successfully' }
+      end
+    end
+  end
+  
+  def teampointadjust
+    if params[:teampointadjust]
+      @points = Teampointadjust.new
+      @points.wrestler_id = params[:teampointadjust]["wrestler_id"]
+      @points.school_id = params[:teampointadjust]["school_id"]
+      @points.points = params[:teampointadjust]["points"]
+      respond_to do |format|
+        if @points.save
+          format.html { redirect_to "/tournaments/#{@tournament.id}/teampointadjust", notice: 'Point adjustment added successfully' }
+        else
+          format.html { redirect_to "/tournaments/#{@tournament.id}/teampointadjust", notice: 'There was an issue saving point adjustment please try again' }
+        end
+      end
+    else
+      @point_adjustments = @tournament.pointAdjustments
+    end
+  end
   
   def remove_delegate
     if params[:delegate]
