@@ -22,9 +22,16 @@
     <strong>Weight:</strong>
     <%= @wrestler.weight.max %>
   </p>
-  
   <p>
-    <strong>Team Points Scored:</strong>
+    <strong>Team Points Earned:</strong>
+    <%= @wrestler.teamPointsEarned %>
+  </p>
+  <p>
+    <strong>Team Points Deducted:</strong>
+    <%= @wrestler.totalDeductedPoints %>
+  </p>
+  <p>
+    <strong>Total Team Points Scored:</strong>
     <%= @wrestler.totalTeamPoints %>
   </p>
   
