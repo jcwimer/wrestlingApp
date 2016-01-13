@@ -8,6 +8,7 @@ include Devise::TestHelpers
      @tournament.generateMatchups
      @school = @tournament.schools.first
      @wrestlers = @tournament.weights.first.wrestlers
+     @adjust = Teampointadjust.find(1)
   end
 
   def post_update
@@ -323,5 +324,43 @@ include Devise::TestHelpers
   end
   
   
+  
+  
+   test 'logged in tournament delegate can adjust team points' do
+    sign_in_delegate
+    get :teampointadjust, id: 1
+    success
+  end
+  
+  test 'logged in tournament owner can adjust team points' do
+    sign_in_owner
+    get :teampointadjust, id: 1
+    success
+  end
+  
+  test 'logged in tournament delegate cannot adjust team points' do
+    sign_in_school_delegate
+    get :teampointadjust, id: 1
+    redirect
+  end
+  
+  test 'logged in tournament owner can delete team point adjust' do
+    sign_in_owner
+    post :remove_teampointadjust, id: 1, teampointadjust: Teampointadjust.find(1)
+    assert_redirected_to "/tournaments/#{@tournament.id}/teampointadjust"
+  end
+  
+  test 'logged in tournament delegate can team point adjust' do
+    sign_in_delegate
+    post :remove_teampointadjust, id: 1, teampointadjust: Teampointadjust.find(1)
+    assert_redirected_to "/tournaments/#{@tournament.id}/teampointadjust"
+  end
+  
+  test 'logged in school delegate cannot delete team point adjust' do
+    sign_in_school_delegate
+    post :remove_teampointadjust, id: 1, teampointadjust: Teampointadjust.find(1)
+    redirect
+  end
+
 
 end
