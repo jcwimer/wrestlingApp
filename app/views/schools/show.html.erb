@@ -64,6 +64,7 @@
               Yes
              <% end %></td>
              <td><%= wrestler.nextMatchBoutNumber %> <%= wrestler.nextMatchMatName %></td>
+<% end %>
              <td>
               <%= link_to 'Show', wrestler , :class=>"btn btn-default btn-sm" %>
               <% if can? :manage, wrestler.school %>
@@ -76,4 +77,4 @@
       <% end %>
     </tbody>
   </table>
-<% end %>
+
