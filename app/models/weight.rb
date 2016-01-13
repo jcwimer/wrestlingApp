@@ -147,7 +147,7 @@ class Weight < ActiveRecord::Base
 	def randomSeeding
 		wrestlerWithSeeds = wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
 		highestSeed = wrestlerWithSeeds.last.original_seed
-		seed = highestSeed
+		seed = highestSeed + 1
 		wrestlersWithoutSeed = wrestlers.select{|w| w.original_seed == nil }
 		wrestlersWithoutSeed.shuffle.each do |w|
 			w.seed = seed
