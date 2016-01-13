@@ -101,4 +101,12 @@ class Tournament < ActiveRecord::Base
       end
       point_adjustments
     end
+    
+    def removeSchoolDelegations
+	    self.schools.each do |s|
+	      s.delegates.each do |d|
+	        d.destroy
+	      end
+	    end
+  	end
 end
