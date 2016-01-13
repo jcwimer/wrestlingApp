@@ -36,7 +36,6 @@
   <% end %>
   <br>
   <br>
-<% cache ["schools", @school] do %>   
   <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
@@ -64,7 +63,6 @@
               Yes
              <% end %></td>
              <td><%= wrestler.nextMatchBoutNumber %> <%= wrestler.nextMatchMatName %></td>
-<% end %>
              <td>
               <%= link_to 'Show', wrestler , :class=>"btn btn-default btn-sm" %>
               <% if can? :manage, wrestler.school %>
