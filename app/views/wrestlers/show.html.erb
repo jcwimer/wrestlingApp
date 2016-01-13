@@ -5,6 +5,7 @@
   <% if can? :manage, @school %>
     | <%= link_to "Edit #{@wrestler.name}", edit_wrestler_path(@wrestler), :class=>"btn btn-primary" %>
   <% end %>
+<% cache ["wrestlers", @wrestler] do %> 
   <br>
   <br>
   <p>
@@ -44,3 +45,4 @@
   <% @wrestler.deductedPoints.each do |w| %>
   <div> Deducted points: <%= w.points %></div>
   <% end %>
+<% end %>
