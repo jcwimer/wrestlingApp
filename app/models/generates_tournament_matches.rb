@@ -3,6 +3,7 @@ module GeneratesTournamentMatches
   def generateMatchups
     self.curently_generating_matches = 1
     self.save
+    removeSchoolDelegations
     resetSchoolScores
     setSeedsAndRandomSeedingWrestlersWithoutSeeds
     poolToBracket() if tournament_type == "Pool to bracket"
@@ -48,6 +49,14 @@ module GeneratesTournamentMatches
   def setSeedsAndRandomSeedingWrestlersWithoutSeeds
     weights.each do |w|
       w.setSeeds
+    end
+  end
+  
+  def removeSchoolDelegations
+    self.schools.each do |s|
+      s.delegates.each do |d|
+        d.destroy
+      end
     end
   end
 
