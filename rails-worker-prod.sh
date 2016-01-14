@@ -6,4 +6,4 @@ if [ $# != 1 ]; then
 fi
 
 docker build -t $1 -f rails-prod-Dockerfile .
-docker run -d --restart=always --env-file $WRESTLINGDEV_ENV_FILE $1 rake db:work
+docker run -d --restart=always --env-file $WRESTLINGDEV_ENV_FILE $1 rake jobs:work
