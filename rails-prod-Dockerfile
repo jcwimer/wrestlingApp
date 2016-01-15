@@ -70,9 +70,9 @@ ADD ./rails-apache-config.conf /etc/apache2/sites-enabled/000-default.conf
 RUN a2ensite default-ssl.conf
 
 # Add apache tuning stuff
-RUN echo PassengerMaxPoolSize 3 >> /etc/apache2/apache2.conf
-RUN echo PassengerPoolIdleTime 120 >> /etc/apache2/apache2.conf
-RUN echo RailsAutoDetect off >> /etc/apache2/apache2.conf
+#RUN echo PassengerMaxPoolSize 3 >> /etc/apache2/apache2.conf
+#RUN echo PassengerPoolIdleTime 120 >> /etc/apache2/apache2.conf
+#RUN echo RailsAutoDetect off >> /etc/apache2/apache2.conf
 
 # By default, simply start apache.
 CMD /usr/sbin/apache2ctl -D FOREGROUND
