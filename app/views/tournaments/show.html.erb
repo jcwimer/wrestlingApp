@@ -1,4 +1,3 @@
-<p id="notice"><%= notice %></p>
 <%= link_to 'Back to browse tournaments', '/tournaments', :class=>"btn btn-default" %>
 <% if can? :manage, @tournament %>
   | <%= link_to "Edit #{@tournament.name}", edit_tournament_path(@tournament), :class=>"btn btn-primary" %>

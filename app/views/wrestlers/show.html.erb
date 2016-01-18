@@ -1,6 +1,5 @@
  
-  <p id="notice"><%= notice %></p>
-  
+
   <%= link_to "Back to #{@school.name}", "/schools/#{@school.id}", :class=>"btn btn-default" %>
   <% if can? :manage, @school %>
     | <%= link_to "Edit #{@wrestler.name}", edit_wrestler_path(@wrestler), :class=>"btn btn-primary" %>
