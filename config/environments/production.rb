@@ -96,4 +96,14 @@ Wrestling::Application.configure do
 
   #Added by me to force SSL in production
   config.force_ssl = true
+  
+  #Mail
+  config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      :address => "localhost",
+      :port => 25,
+      :domain => "wrestlingdev.com",
+    }
+    #Devise needs origin of email
+    config.action_mailer.default_url_options = { :host => 'wrestlingdev.com' }
 end

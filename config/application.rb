@@ -29,14 +29,7 @@ module Wrestling
     
     config.active_job.queue_adapter = :delayed_job
     
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = {
-      :address => "localhost",
-      :port => 25,
-      :domain => "wrestlingdev.com",
-    }
-    #Devise needs origin of email
-    config.action_mailer.default_url_options = { :host => 'wrestlingdev.com' }
+    
   end
 
   
