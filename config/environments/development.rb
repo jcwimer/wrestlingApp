@@ -32,5 +32,9 @@ Wrestling::Application.configure do
 	#Bullet.alert = true
 	#Bullet.console = true
 	#Bullet.bullet_logger = true
+	
+	
+
+
   end
 end
