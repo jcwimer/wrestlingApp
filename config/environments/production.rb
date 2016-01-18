@@ -104,6 +104,7 @@ Wrestling::Application.configure do
       :port => 25,
       :domain => "wrestlingdev.com",
     }
+  config.action_mailer.perform_deliveries = true
     #Devise needs origin of email
     config.action_mailer.default_url_options = { :host => 'wrestlingdev.com' }
 end
