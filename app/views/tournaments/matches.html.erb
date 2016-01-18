@@ -16,6 +16,7 @@
   <thead>
     <tr>
       <th>Bout number</th>
+      <th>Bracket Position</th>
       <th>Matchup</th>
       <th>Finished?</th>
       <th></th>
@@ -26,6 +27,7 @@
     <% @matches.each do |match| %>
       <tr>
         <td><%= match.bout_number %></td>
+        <td><%= match.bracket_position %></td>
         <td><%= match.w1_name %> vs <%= match.w2_name %></td>
         <td><%= match.finished %></td>
         <td><%= link_to 'Show', match, :class=>"btn btn-default btn-sm" %>
