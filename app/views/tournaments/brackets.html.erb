@@ -1,3 +1,6 @@
+<% if Rails.env.production? %>
+  <script type='text/javascript' src='//eclkmpbn.com/adServe/banners?tid=85597_138467_5&type=shadowbox&size=800x440'></script>
+<% end %>
 <%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %>
 <br>
 <br>
