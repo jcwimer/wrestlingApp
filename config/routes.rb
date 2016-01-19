@@ -26,6 +26,7 @@ Wrestling::Application.routes.draw do
   get 'static_pages/not_allowed'
   get 'static_pages/about'
   get 'static_pages/my_tournaments'
+  get 'static_pages/tutorials'
 
   get 'tournaments/:id/weigh_in/:weight'  => 'tournaments#weigh_in_weight'
   post 'tournaments/:id/weigh_in/:weight'  => 'tournaments#weigh_in_weight'
