@@ -157,6 +157,7 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def setSeeds
+		wrestlers.update_all({seed: nil})
 		wrestlerWithSeeds = wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
 		wrestlerWithSeeds.each do |w|
 			w.seed = w.original_seed
