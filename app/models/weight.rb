@@ -8,6 +8,10 @@ class Weight < ActiveRecord::Base
 	validates :max, presence: true
 
 	HS_WEIGHT_CLASSES = [106,113,120,126,132,138,145,152,160,170,182,195,220,285]
+	
+	before_destroy do 
+		self.tournament.destroyAllMatches
+	end
 
 	before_save do
 		self.tournament.destroyAllMatches
@@ -50,17 +54,17 @@ class Weight < ActiveRecord::Base
 		return @wrestler.poolNumber
 	end
 
-	def onePoolNumbers(wrestlers)
-		wrestlers.sort_by{|x|[x.seed]}.each do |w|
+	def onePoolNumbers(poolWrestlers)
+		poolWrestlers.sort_by{|x| x.seed }.each do |w|
 			w.poolNumber = 1
 		end
-		return wrestlers
+		return poolWrestlers
 	end
 
 
-	def twoPoolNumbers(wrestlers)
+	def twoPoolNumbers(poolWrestlers)
 		pool = 1
-		wrestlers.sort_by{|x|[x.seed]}.reverse.each do |w|
+		poolWrestlers.sort_by{|x| x.seed }.reverse.each do |w|
 			if w.seed == 1
 				w.poolNumber = 1
 			elsif w.seed == 2
@@ -75,15 +79,15 @@ class Weight < ActiveRecord::Base
 			if pool < 2
 				pool = pool + 1
 			else
-				pool =1
+				pool = 1
 			end
 		end
-		return wrestlers
+		return poolWrestlers
 	end
 
-	def fourPoolNumbers(wrestlers)
+	def fourPoolNumbers(poolWrestlers)
 		pool = 1
-		wrestlers.sort_by{|x|[x.seed]}.reverse.each do |w|
+		poolWrestlers.sort_by{|x| x.seed }.reverse.each do |w|
 			if w.seed == 1
 				w.poolNumber = 1
 			elsif w.seed == 2
@@ -92,16 +96,24 @@ class Weight < ActiveRecord::Base
 				w.poolNumber = 3
 			elsif w.seed == 4
 				w.poolNumber = 4
+			elsif w.seed == 8
+				w.poolNumber = 1
+			elsif w.seed == 7
+				w.poolNumber = 2
+			elsif w.seed == 6
+				w.poolNumber = 3
+			elsif w.seed == 5
+				w.poolNumber = 4
 			else
 				w.poolNumber = pool
 			end
 			if pool < 4
 				pool = pool + 1
 			else
-				pool =1
+				pool = 1
 			end
 		end
-		return wrestlers
+		return poolWrestlers
 	end
 
 	def bracket_size
@@ -145,10 +157,10 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def randomSeeding
-		wrestlerWithSeeds = wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
+		wrestlerWithSeeds = self.wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
 		highestSeed = wrestlerWithSeeds.last.original_seed
 		seed = highestSeed + 1
-		wrestlersWithoutSeed = wrestlers.select{|w| w.original_seed == nil }
+		wrestlersWithoutSeed = self.wrestlers.select{|w| w.original_seed == nil }
 		wrestlersWithoutSeed.shuffle.each do |w|
 			w.seed = seed
 			w.save
@@ -157,13 +169,20 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def setSeeds
-		wrestlers.update_all({seed: nil})
-		wrestlerWithSeeds = wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
+		resetAllSeeds
+		wrestlerWithSeeds = self.wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
 		wrestlerWithSeeds.each do |w|
 			w.seed = w.original_seed
 			w.save
 		end
 		randomSeeding
+	end
+	
+	def resetAllSeeds
+		self.wrestlers.each do |w|
+			w.seed = nil
+			w.save
+		end
 	end
 			
 end
