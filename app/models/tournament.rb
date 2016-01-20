@@ -109,4 +109,26 @@ class Tournament < ActiveRecord::Base
 	      end
 	    end
   	end
+  	
+  	def poolToBracketWeightsWithTooManyWrestlers
+  		if self.tournament_type == "Pool to bracket"
+  			weights.select{|w| w.wrestlers.size > 16}
+  		else
+  			nil
+  		end
+  	end
+  	
+  	def tournamentMatchGenerationError
+  		errorString = "There is a tournament error."
+  		if poolToBracketWeightsWithTooManyWrestlers != nil
+  			errorString = errorString + " The following weights have too many wrestlers "
+  			poolToBracketWeightsWithTooManyWrestlers.each do |w|
+  				errorString = errorString + "#{w.max} "
+  			end
+  			return errorString
+  		else
+  			nil
+  		end
+  	end
+  	
 end

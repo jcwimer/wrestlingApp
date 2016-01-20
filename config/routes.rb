@@ -49,6 +49,7 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/teampointadjust' => 'tournaments#teampointadjust'
   post 'tournaments/:id/teampointadjust' => 'tournaments#teampointadjust'
   delete 'tournaments/:id/:teampointadjust/remove_teampointadjust' => 'tournaments#remove_teampointadjust'
+  get 'tournaments/:id/error' => 'tournaments#error'
   
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
