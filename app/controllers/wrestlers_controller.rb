@@ -91,16 +91,16 @@ class WrestlersController < ApplicationController
     end
     def check_access
     	if params[:school]
-    	   @school = School.find(params[:school])
+    	   @school = School.where(:id => params[:school]).includes(:delegates,:tournament).first
     	   #@tournament = Tournament.find(@school.tournament.id)
     	elsif params[:wrestler]
-    	   @school = School.find(params[:wrestler]["school_id"])
+    	   @school = School.where(:id => params[:wrestler]["school_id"]).includes(:delegates,:tournament).first
     	   #@tournament = Tournament.find(@school.tournament.id)
     	elsif @wrestler
-    	   @school = @wrestler.school
+    	   @school = School.where(:id => @wrestler.school.tournament.id).includes(:delegates,:tournament).first
     	   #@tournament = @wrestler.tournament
     	elsif wrestler_params
-    	   @school = School.find(wrestler_params[:school_id])
+    	   @school = School.where(:id => wrestler_params[:school_id]).includes(:delegates,:tournament).first
     	end
     	authorize! :manage, @school
     end

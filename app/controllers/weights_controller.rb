@@ -82,11 +82,11 @@ class WeightsController < ApplicationController
     end
   def check_access
     	if params[:tournament]
-    	   @tournament = Tournament.find(params[:tournament])
+    	   @tournament = Tournament.where(:id => params[:tournament]).includes(:delegates,:user).first
     	elsif params[:weight]
-    	   @tournament = Tournament.find(params[:weight]["tournament_id"])
+    	   @tournament = Tournament.where(:id => params[:weight]["tournament_id"]).includes(:delegates,:user).first
     	elsif @weight
-    	   @tournament = @weight.tournament
+    	   @tournament = Tournament.where(:id => @weight.tournament.id).includes(:delegates,:user).first
     	end
     	authorize! :manage, @tournament
   end

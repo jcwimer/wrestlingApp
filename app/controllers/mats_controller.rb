@@ -82,12 +82,12 @@ class MatsController < ApplicationController
 
     def check_access
       if params[:tournament]
-    	   @tournament = Tournament.find(params[:tournament])
+    	   @tournament = Tournament.where(:id => params[:tournament]).includes(:delegates,:user).first
     	elsif params[:mat]
     	   @mat = Mat.new(mat_params)
-    	   @tournament = Tournament.find(@mat.tournament_id)
+    	   @tournament = Tournament.where(:id => @mat.tournament_id).includes(:delegates,:user).first
     	elsif @mat
-    	   @tournament = @mat.tournament
+    	   @tournament = Tournament.where(:id => @mat.tournament.id).includes(:delegates,:user).first
     	end
     	authorize! :manage, @tournament
     end
