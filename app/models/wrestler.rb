@@ -10,7 +10,6 @@ class Wrestler < ActiveRecord::Base
 
 	before_destroy do 
 		self.tournament.destroyAllMatches
-		self.weight.resetAllSeeds
 	end
 
 	before_create do
