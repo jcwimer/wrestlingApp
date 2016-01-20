@@ -171,12 +171,12 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     matches = @matches
     endMatch(1009,"Guy11",matches)
     endMatch(2009,"Guy11",matches)
-    endMatch(3009,"Guy17",matches)
+    endMatch(3009,"Guy18",matches)
     endMatch(1010,"Guy12",matches)
     endMatch(2010,"Guy12",matches)
-    endMatch(3010,"Guy16",matches)
-    endMatch(1011,"Guy15",matches)
-    endMatch(2011,"Guy15",matches)
+    endMatch(3010,"Guy17",matches)
+    endMatch(1011,"Guy13",matches)
+    endMatch(2011,"Guy13",matches)
     endMatch(3011,"Guy19",matches)
     endMatch(1012,"Guy14",matches)
   end
@@ -186,7 +186,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatch(4006,"Guy11",matches)
     endMatch(4007,"Guy14",matches)
     endMatch(4008,"Guy12",matches)
-    endMatch(4009,"Guy15",matches)
+    endMatch(4009,"Guy13",matches)
   end
   
   def elevenManBracketToFinals
@@ -194,8 +194,8 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     matches = @matches
     endMatch(5004,"Guy11",matches)
     endMatch(5005,"Guy12",matches)
-    endMatch(5006,"Guy16",matches)
-    endMatch(5007,"Guy17",matches)
+    endMatch(5006,"Guy17",matches)
+    endMatch(5007,"Guy18",matches)
   end
   
   def elevenManBracketFinished
@@ -203,7 +203,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     matches = @matches
     endMatch(6004,"Guy11",matches)
     endMatch(6005,"Guy14",matches)
-    endMatch(6006,"Guy16",matches)
+    endMatch(6006,"Guy17",matches)
     endMatch(6007,"Guy19",matches)
   end
   
@@ -424,7 +424,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   
   test "advancement points 5/6" do
     elevenManBracketToFinals
-    wrestler = Wrestler.where("name = ?", "Guy16").first
+    wrestler = Wrestler.where("name = ?", "Guy17").first
 
     assert_equal 6, wrestler.placementPoints
   end
@@ -454,7 +454,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   
   test "advancement points winner 5/6" do
     elevenManBracketFinished
-    wrestler = Wrestler.where("name = ?", "Guy16").first
+    wrestler = Wrestler.where("name = ?", "Guy17").first
 
     assert_equal 7, wrestler.placementPoints
   end
@@ -561,10 +561,10 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   
   test "Conso bracket wins are 1pt" do
     elevenManBracketToSemis
-    assert_equal 7, Wrestler.where("name = ?", "Guy16").first.teamPointsEarned
+    assert_equal 7, Wrestler.where("name = ?", "Guy17").first.teamPointsEarned
     matches = @matches
-    endMatch(5006,"Guy16",matches)
-    assert_equal 11, Wrestler.where("name = ?", "Guy16").first.teamPointsEarned
+    endMatch(5006,"Guy17",matches)
+    assert_equal 11, Wrestler.where("name = ?", "Guy17").first.teamPointsEarned
   end
   
 end
