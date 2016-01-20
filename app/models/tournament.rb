@@ -112,7 +112,12 @@ class Tournament < ActiveRecord::Base
   	
   	def poolToBracketWeightsWithTooManyWrestlers
   		if self.tournament_type == "Pool to bracket"
-  			weights.select{|w| w.wrestlers.size > 16}
+  			weightsWithTooManyWrestlers = weights.select{|w| w.wrestlers.size > 16}
+  			if weightsWithTooManyWrestlers.size < 1
+  				return nil
+  			else
+  				return weightsWithTooManyWrestlers
+  			end
   		else
   			nil
   		end

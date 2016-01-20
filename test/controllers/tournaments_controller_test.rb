@@ -56,21 +56,18 @@ include Devise::TestHelpers
   end
 
   test "logged in tournament owner can generate matches" do
-    wipe
     sign_in_owner
     get :generate_matches, id: 1
     success
   end
 
   test "logged in non tournament owner cannot generate matches" do
-    wipe
     sign_in_non_owner
     get :generate_matches, id: 1
     redirect
   end
   
   test "logged in school delegate cannot generate matches" do
-    wipe
     sign_in_school_delegate
     get :generate_matches, id: 1
     redirect
@@ -231,7 +228,6 @@ include Devise::TestHelpers
   end
   
   test "logged in tournament delegate can generate matches" do
-    wipe
     sign_in_delegate
     get :generate_matches, id: 1
     success
