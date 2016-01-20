@@ -46,6 +46,9 @@ class Tournament < ActiveRecord::Base
 	def destroyAllMatches
 		matches.destroy_all
 	end
+	if Rails.env.production?
+		handle_asynchronously :destroyAllMatches
+  	end
 
 	def matchesByRound(round)
 		matches.joins(:weight).where(round: round).order("weights.max")

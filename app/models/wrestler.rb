@@ -8,6 +8,11 @@ class Wrestler < ActiveRecord::Base
 	
 	validates :name, :weight_id, :school_id, presence: true
 
+	before_destroy do 
+		self.tournament.destroyAllMatches
+		self.weight.resetAllSeeds
+	end
+
 	before_create do
 		self.tournament.destroyAllMatches
 	end

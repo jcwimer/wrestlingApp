@@ -6,6 +6,10 @@ class School < ActiveRecord::Base
 	
 	validates :name, presence: true
 
+	before_destroy do 
+		self.tournament.destroyAllMatches
+	end
+	
 	#calculate score here
 	def pageScore
 		if self.score == nil
