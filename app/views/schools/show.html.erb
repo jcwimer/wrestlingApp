@@ -51,7 +51,6 @@
   
     <tbody>
       <% @wrestlers.sort_by{|w| w.weight.max}.each do |wrestler| %>
-        <% cache ["schools_view_wrestler", wrestler] do %>
           <tr>
             <td><%= wrestler.name %></td>
             <td><%= wrestler.weight.max %></td>
@@ -63,7 +62,6 @@
               Yes
              <% end %></td>
              <td><%= wrestler.nextMatchBoutNumber %> <%= wrestler.nextMatchMatName %></td>
-        <% end %>
              <td>
               <%= link_to 'Show', wrestler , :class=>"btn btn-default btn-sm" %>
               <% if can? :manage, wrestler.school %>

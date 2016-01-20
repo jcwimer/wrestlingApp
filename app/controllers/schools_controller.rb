@@ -69,7 +69,7 @@ class SchoolsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_school
-      @school = School.where(:id => params[:id]).includes(:tournament,:wrestlers,:deductedPoints).first
+      @school = School.where(:id => params[:id]).includes(:tournament,:wrestlers,:deductedPoints,:delegates).first
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
