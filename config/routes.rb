@@ -28,6 +28,7 @@ Wrestling::Application.routes.draw do
   get 'static_pages/my_tournaments'
   get 'static_pages/tutorials'
 
+  get 'tournaments/:id/weigh_in_sheet' => 'tournaments#weigh_in_sheet'
   get 'tournaments/:id/weigh_in/:weight'  => 'tournaments#weigh_in_weight'
   post 'tournaments/:id/weigh_in/:weight'  => 'tournaments#weigh_in_weight'
   get 'tournaments/:id/weigh_in'  => 'tournaments#weigh_in'

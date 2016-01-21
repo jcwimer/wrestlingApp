@@ -16,5 +16,8 @@
               <%= f.submit 'Submit', :class=>"btn btn-success" %>
         <% end %>
     <% end %>
+    <br>
+    <br>
+    <%= link_to "Printable Weigh In Sheet" , "/tournaments/#{@tournament.id}/weigh_in_sheet?print=true" %>
 
 

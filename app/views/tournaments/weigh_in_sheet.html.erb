@@ -1,0 +1,35 @@
+<style>
+    .pagebreak { 
+      page-break-after: always;
+      border: none;
+        margin: 0px;
+        padding: 0px;
+        width: 7in; /* width: 7in; */
+        height: 9.5in; /* or height: 9.5in; */
+        font-size: 10px;
+        position: relative;
+        left: 1in;
+        height: 1in;
+    }
+</style>
+<% @tournament.schools.each do |school| %>
+    <table class="table table-striped table-bordered table-condensed pagebreak">
+    <h5><%= school.name %></h4>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Weight Class</th>
+        <th>Actual Weight</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% school.wrestlers.sort_by{|w| w.weight.max}.each do |wrestler| %>
+          <tr>
+            <td><%= wrestler.name %></td>
+            <td><%= wrestler.weight.max %></td>
+            <td></td>
+          </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
