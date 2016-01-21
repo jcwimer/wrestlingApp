@@ -74,5 +74,8 @@ RUN echo PassengerMaxPoolSize 3 >> /etc/apache2/apache2.conf
 RUN echo PassengerMinInstances  3 >> /etc/apache2/apache2.conf
 RUN echo PassengerPreStart *:443 >> /etc/apache2/apache2.conf
 
+# Set timezone to new york
+RUN timedatectl set-timezone America/New_York
+
 # By default, simply start apache.
 CMD /usr/sbin/apache2ctl -D FOREGROUND
