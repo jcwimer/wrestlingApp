@@ -27,10 +27,8 @@ class WrestlersController < ApplicationController
 
   # GET /wrestlers/1/edit
   def edit
-    @school = @wrestler.school
-    @tournament = @wrestler.tournament
     @weight = @wrestler.weight
-    @weights = @tournament.weights.sort_by{|w| w.max}
+    @weights = @school.tournament.weights.sort_by{|w| w.max}
   end
 
   # POST /wrestlers
