@@ -79,13 +79,13 @@ class SchoolsController < ApplicationController
 
     def check_access_director
     	if params[:tournament]
-    	   @tournament = Tournament.where(:id => params[:tournament]).includes(:delegates,:user).first
+    	   @tournament = Tournament.find(params[:tournament])
     	elsif params[:school]
-    	   @tournament = Tournament.where(:id => params[:school]["tournament_id"]).includes(:delegates,:user).first
+    	   @tournament = Tournament.find(params[:school]["tournament_id"])
     	elsif @school
-    	   @tournament = Tournament.where(:id => @school.tournament.id).includes(:delegates,:user).first
+    	   @tournament = @school.tournament
     	elsif school_params
-    	   @tournament = Tournament.where(:id => school_params[:tournament_id]).includes(:delegates,:user).first
+    	   @tournament = Tournament.find(school_params[:tournament_id])
     	end
     	authorize! :manage, @tournament
     end

@@ -49,6 +49,6 @@ class MatchesController < ApplicationController
     end
 
     def check_access
-      authorize! :manage, Tournament.where(:id => @match.tournament.id).includes(:delegates,:user).first
+      authorize! :manage, @match.tournament
     end
 end
