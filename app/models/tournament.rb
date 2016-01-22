@@ -136,4 +136,42 @@ class Tournament < ActiveRecord::Base
   		end
   	end
   	
+  	def swapWrestlers(wrestler1_id,wrestler2_id)
+	    w1 = Wrestler.find(wrestler1_id)
+	    w2 = Wrestler.find(wrestler2_id)
+	    
+	    #placeholder guy
+	    w3 = Wrestler.new
+	    w3.name = w1.name
+	    w3.school_id = w1.school_id
+	    w3.weight_id = w1.weight_id
+	    w3.season_win = w1.season_win
+	    w3.season_loss = w1.season_loss
+	    w3.criteria = w1.criteria
+	    w3.original_seed = w1.original_seed
+	    w3.seed = w1.seed
+	    
+	    #Swap wrestler 1 and wrestler 2
+	    w1.name = w2.name
+	    w1.school_id = w2.school_id
+	    w1.weight_id = w2.weight_id
+	    w1.season_win = w2.season_win
+	    w1.season_loss = w2.season_loss
+	    w1.criteria = w2.criteria
+	    w1.original_seed = w2.original_seed
+	    w1.seed = w2.seed
+	    
+	    w2.name = w3.name
+	    w2.school_id = w3.school_id
+	    w2.weight_id = w3.weight_id
+	    w2.season_win = w3.season_win
+	    w2.season_loss = w3.season_loss
+	    w2.criteria = w3.criteria
+	    w2.original_seed = w3.original_seed
+	    w2.seed = w3.seed
+	    
+	    w1.save
+	    w2.save
+	end
+  	
 end

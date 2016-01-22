@@ -41,6 +41,31 @@ class Weight < ActiveRecord::Base
 			self.pools = 4
 		end
 	end
+	
+	def poolSeedOrder(pool)
+		wrestlersForPool(pool).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]}	
+	end
+	
+	def setOriginalSeedsToWrestleLastPoolRound
+		pool = 1
+		until pool > self.pools
+			wrestler1 = poolSeedOrder(pool).first
+			wrestler2 = poolSeedOrder(pool).second
+			match = wrestler1.poolMatches.sort_by{|m| m.round}.last
+			if match.w1 != wrestler2.id or match.w2 != wrestler2.id
+				if match.w1 == wrestler1.id
+					swapWrestlers(match.w2,wrestler2.id)
+				elsif match.w2 == wrestler1.id
+					swapWrestlers(match.w1,wrestler2.id)
+				end
+			end
+		    pool += 1
+		end
+	end
+	
+	def swapWrestlers(wrestler1_id,wrestler2_id)
+		self.tournament.swapWrestlers(wrestler1_id,wrestler2_id)	
+	end
 
 	def returnPoolNumber(wrestler)
 		if self.pools == 4

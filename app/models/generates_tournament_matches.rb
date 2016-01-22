@@ -18,6 +18,7 @@ module GeneratesTournamentMatches
     destroyAllMatches
     buildTournamentWeights
     generateMatches
+    movePoolSeedsToFinalPoolRound
   end
 
   def buildTournamentWeights
@@ -51,6 +52,10 @@ module GeneratesTournamentMatches
     end
   end
   
-  
+  def movePoolSeedsToFinalPoolRound
+    self.weights.each do |w|
+      w.setOriginalSeedsToWrestleLastPoolRound
+    end
+  end
 
 end
