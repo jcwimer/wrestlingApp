@@ -10,7 +10,9 @@ module GeneratesTournamentMatches
     self.save
     matches
   end
-  
+  if Rails.env.production?
+		handle_asynchronously :generateMatchups
+  end
 
   def poolToBracket
     destroyAllMatches
