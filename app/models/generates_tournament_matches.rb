@@ -18,7 +18,8 @@ module GeneratesTournamentMatches
     destroyAllMatches
     buildTournamentWeights
     generateMatches
-    movePoolSeedsToFinalPoolRound
+    # This is not working for pool order and I cannot get tests working
+    # movePoolSeedsToFinalPoolRound
   end
 
   def buildTournamentWeights
