@@ -150,30 +150,25 @@ class Tournament < ActiveRecord::Base
  	    w3.criteria = w1.criteria
  	    w3.original_seed = w1.original_seed
  	    w3.seed = w1.seed
- 
+ 		swapWrestlerMatches(w1.allMatches,w1.id,w3.id)
   	    
  	    #Swap wrestler 1 and wrestler 2
- 	    w1.name = w2.name
- 	    w1.school_id = w2.school_id
- 	    w1.weight_id = w2.weight_id
- 	    w1.season_win = w2.season_win
- 	    w1.season_loss = w2.season_loss
- 	    w1.criteria = w2.criteria
- 	    w1.original_seed = w2.original_seed
+ 	    swapWrestlerMatches(w2.allMatches,w2.id,w1.id)
  	    w1.seed = w2.seed
 
   	    
- 	    w2.name = w3.name
- 	    w2.school_id = w3.school_id
- 	    w2.weight_id = w3.weight_id
- 	    w2.season_win = w3.season_win
- 	    w2.season_loss = w3.season_loss
- 	    w2.criteria = w3.criteria
- 	    w2.original_seed = w3.original_seed
+ 	    swapWrestlerMatches(w3.allMatches,w3.id,w2.id)
  	    w2.seed = w3.seed
 
   	    
   	    w1.save
   	    w2.save
 	end
+	
+	def swapWrestlerMatches(matchesToSwap,w1_id,w2_id)
+		matchesToSwap.each do |m|
+	    	m.swapWrestlers(w1_id,w2_id)
+	    end
+	end
+  	
 end

@@ -137,11 +137,11 @@ class Match < ActiveRecord::Base
 	end
 	
 	def swapWrestlers(wrestler1_id,wrestler2_id)
-		if self.m1 == wrestler1_id
-			self.m1 = wrestler2_id
+		if self.w1 == wrestler1_id
+			self.w1 = wrestler2_id
 			self.save
-		elsif self.m2 == wrestler1_id
-			self.m2 = wrestler2_id
+		elsif self.w2 == wrestler1_id
+			self.w2 = wrestler2_id
 			self.save
 		end
 		
