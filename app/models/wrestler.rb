@@ -136,11 +136,11 @@ class Wrestler < ActiveRecord::Base
 	end
 	
 	def championshipAdvancementWins
-		finishedBracketMatches.select{|m| m.bracket_position == "Quarter" or m.bracket_position == "Semis"}
+		matchesWon.select{|m| m.bracket_position == "Quarter" or m.bracket_position == "Semis"}
 	end
 	
 	def consoAdvancementWins
-		finishedBracketMatches.select{|m| m.bracket_position == "Conso Semis"}
+		matchesWon.select{|m| m.bracket_position == "Conso Semis"}
 	end
 	
 	def finishedMatches
