@@ -53,4 +53,19 @@
   </div>
 <% end %>
 
+<% if can? :manage, @wrestler.tournament %> 
+<br><br>
+<h3>Swap Bracket Position</h3>
+  <%= form_for @wrestler, :url => url_for(:controller => 'wrestlers', :action => 'swap', :method => "post") do |f| %>
+    
+      <div class="field">
+        <%= f.label 'Swap With' %><br>
+        <%= f.collection_select :swapId, @wrestler.weight.wrestlers, :id, :name %>
+      </div>
+      <br>
+      <%= submit_tag "Swap", :class=>"btn btn-success"%>
+  <% end %>  
+<% end %>
+
+
 

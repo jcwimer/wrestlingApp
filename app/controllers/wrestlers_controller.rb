@@ -1,7 +1,16 @@
 class WrestlersController < ApplicationController
-  before_action :set_wrestler, only: [:show, :edit, :update, :destroy]
+  before_action :set_wrestler, only: [:show, :edit, :update, :destroy, :swap]
   before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
 
+
+  def swap
+    respond_to do |format|
+      if @wrestler.tournament.swapWrestlers(@wrestler.id, params[:wrestler][:swapId])
+        format.html { redirect_to @wrestler, notice: 'Wrestler was successfully swaped.' }
+        format.json { render action: 'show', status: :created, location: @wrestler }
+      end
+    end
+  end
 
   # GET /wrestlers/1
   # GET /wrestlers/1.json
