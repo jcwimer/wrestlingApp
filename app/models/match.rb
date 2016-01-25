@@ -135,4 +135,15 @@ class Match < ActiveRecord::Base
 			wrestler1.generatePoolNumber
 		end
 	end
+	
+	def swapWrestlers(wrestler1_id,wrestler2_id)
+		if self.m1 == wrestler1_id
+			self.m1 = wrestler2_id
+			self.save
+		elsif self.m2 == wrestler1_id
+			self.m2 = wrestler2_id
+			self.save
+		end
+		
+	end
 end
