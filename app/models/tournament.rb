@@ -176,11 +176,4 @@ class Tournament < ActiveRecord::Base
   	    w1.save
   	    w2.save
 	end
-	
-	def swapWrestlerMatches(matchesToSwap,w1_id,w2_id)
-		matchesToSwap.each do |m|
-	    	m.swapWrestlers(w1_id,w2_id)
-	    end
-	end
-  	
 end
