@@ -142,22 +142,17 @@ class Tournament < ActiveRecord::Base
 	    
 	    #placeholder guy
  	    w3 = Wrestler.new
- 	    w3.name = w1.name
- 	    w3.school_id = w1.school_id
  	    w3.weight_id = w1.weight_id
- 	    w3.season_win = w1.season_win
- 	    w3.season_loss = w1.season_loss
- 	    w3.criteria = w1.criteria
  	    w3.original_seed = w1.original_seed
  	    w3.seed = w1.seed
- 		swapWrestlerMatches(w1.allMatches,w1.id,w3.id)
+ 		swapWrestlerMatches(w1.allMatches,wrestler1_id,w3.id)
   	    
  	    #Swap wrestler 1 and wrestler 2
- 	    swapWrestlerMatches(w2.allMatches,w2.id,w1.id)
+ 	    swapWrestlerMatches(w2.allMatches,wrestler2_id,wrestler1_id)
  	    w1.seed = w2.seed
 
   	    
- 	    swapWrestlerMatches(w3.allMatches,w3.id,w2.id)
+ 	    swapWrestlerMatches(w3.allMatches,w3.id,wrestler2_id)
  	    w2.seed = w3.seed
 
   	    
@@ -167,7 +162,9 @@ class Tournament < ActiveRecord::Base
 	
 	def swapWrestlerMatches(matchesToSwap,w1_id,w2_id)
 		matchesToSwap.each do |m|
-	    	m.swapWrestlers(w1_id,w2_id)
+			if m.bracket_position == "Pool"
+	    		m.swapWrestlers(w1_id,w2_id)
+	    	end
 	    end
 	end
   	
