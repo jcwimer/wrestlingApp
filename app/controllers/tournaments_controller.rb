@@ -1,6 +1,6 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_filter :check_access_manage, only: [:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
+  before_action :set_tournament, only: [:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_filter :check_access_manage, only: [:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
   before_filter :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_filter :check_tournament_errors, only: [:generate_matches]
   before_filter :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
@@ -9,6 +9,15 @@ class TournamentsController < ApplicationController
     
   end
   
+  def swap
+    @wrestler = Wrestler.find(params[:wrestler][:originalId])
+    respond_to do |format|
+      if SwapWrestlers.new.swapWrestlers(params[:wrestler][:originalId], params[:wrestler][:swapId])
+        format.html { redirect_to @wrestler, notice: 'Wrestler was successfully swaped.' }
+        format.json { render action: 'show', status: :created, location: @wrestler }
+      end
+    end
+  end
   
   def remove_teampointadjust
     if params[:teampointadjust]
@@ -246,7 +255,7 @@ class TournamentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def tournament_params
-      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id, :date)
+      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id, :date, :originalId, :swapId)
     end
   
   #Check for tournament owner

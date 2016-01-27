@@ -64,7 +64,7 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def swapWrestlers(wrestler1_id,wrestler2_id)
-		self.tournament.swapWrestlers(wrestler1_id,wrestler2_id)	
+		SwapWrestlers.new.swapWrestlers(wrestler1_id,wrestler2_id)
 	end
 
 	def returnPoolNumber(wrestler)

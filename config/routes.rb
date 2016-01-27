@@ -15,7 +15,7 @@ Wrestling::Application.routes.draw do
 
   post "/weights/:id" => "weights#show"
 
-  patch "/wrestlers/:id/swap" => "wrestlers#swap"
+  
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -51,6 +51,7 @@ Wrestling::Application.routes.draw do
   post 'tournaments/:id/teampointadjust' => 'tournaments#teampointadjust'
   delete 'tournaments/:id/:teampointadjust/remove_teampointadjust' => 'tournaments#remove_teampointadjust'
   get 'tournaments/:id/error' => 'tournaments#error'
+  post "/tournaments/:id/swap" => "tournaments#swap", :as => :swap_wrestlers
   
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

@@ -7,14 +7,14 @@ class Match < ActiveRecord::Base
 	
 
 	after_update do 
-	   if self.finished == 1 && self.winner_id != nil
-	   	if self.w1 && self.w2
+	  if self.finished == 1 && self.winner_id != nil
+	  	if self.w1 && self.w2
 		   	wrestler1.touch
 		   	wrestler2.touch
 		end
 		advance_wrestlers
 		calcSchoolPoints
-	   end
+	  end
 	end
 
 	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ"]
@@ -136,14 +136,5 @@ class Match < ActiveRecord::Base
 		end
 	end
 	
-	def swapWrestlers(wrestler1_id,wrestler2_id)
-		if self.w1 == wrestler1_id
-			self.w1 = wrestler2_id
-			self.save
-		elsif self.w2 == wrestler1_id
-			self.w2 = wrestler2_id
-			self.save
-		end
-		
-	end
+
 end

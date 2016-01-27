@@ -16,14 +16,15 @@
     <%= f.label :name %><br>
     <%= f.text_field :name %>
   </div>
-
-  <% if @tournament %>
-      <%= f.hidden_field :school_id, :value => @school.id %>
-  <% else %>
-      <div class="field">
-        <%= f.label 'School' %><br>
-        <%= f.collection_select :school_id, @school.tournament.schools, :id, :name %>
-      </div>
+  <% if can? :manage, @wrestler.tournament %> 
+    <% if @tournament %>
+        <%= f.hidden_field :school_id, :value => @school.id %>
+    <% else %>
+        <div class="field">
+          <%= f.label 'School' %><br>
+          <%= f.collection_select :school_id, @school.tournament.schools, :id, :name %>
+        </div>
+    <% end %>
   <% end %>
   <div class="field">
     <%= f.label 'Weight Class' %><br>
@@ -56,8 +57,8 @@
 <% if can? :manage, @wrestler.tournament %> 
 <br><br>
 <h3>Swap Bracket Position</h3>
-  <%= form_for @wrestler, :url => url_for(:controller => 'wrestlers', :action => 'swap', :method => "post") do |f| %>
-    
+  <%= form_for(Wrestler.new, url: swap_wrestlers_path(@wrestler.tournament)) do |f| %>
+      <%= f.hidden_field :originalId, :value => @wrestler.id %>
       <div class="field">
         <%= f.label 'Swap With' %><br>
         <%= f.collection_select :swapId, @wrestler.weight.wrestlers, :id, :name %>
