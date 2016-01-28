@@ -16,6 +16,9 @@ class PoolBracketPlacementPoints
         if @bracket == "fourPoolsToSemi"
            whilePointsAreZero { @points = fourPoolsToSemi }
         end
+        if wrestler.weight.size <= 6 && wrestler.weight.allPoolMatchesFinished(1)
+            whilePointsAreZero { @points = onePool }
+        end
         return @points
     end
     
@@ -61,6 +64,19 @@ class PoolBracketPlacementPoints
             return eighthPlace
         end
         return 0
+    end
+    
+    def onePool
+       poolOrder = wrestler.weight.poolOrder(1)
+       if wrestler == poolOrder.first
+           firstPlace
+       elsif wrestler == poolOrder.second 
+            secondPlace
+       elsif wrestler == poolOrder.third 
+            thirdPlace
+       elsif wrestler == poolOrder.fourth 
+            fourthPlace
+       end
     end
     
     def finalMatchPoints
