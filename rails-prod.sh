@@ -1,4 +1,5 @@
 #!/bin/bash -e
+docker pull ruby:2.2.3
 
 if [ $# != 1 ]; then
   echo "Please enter docker image name for the rails development environment"
