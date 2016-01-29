@@ -16,6 +16,25 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     end
   end
   
+  def singlePoolNotFinished
+    matches = @matches
+    endMatch(1000,"Jackson Lakso",matches)
+    endMatch(1001,"Jaden Mattox",matches)
+    endMatch(2000,"James Wimer",matches)
+    endMatch(2001,"Jaden Mattox",matches)
+    endMatch(3000,"Jaden Mattox",matches)
+    endMatch(3001,"James Wimer",matches)
+    endMatch(4000,"JD Woods",matches)
+    endMatch(4001,"James Wimer",matches)
+    endMatch(5000,"James Wimer",matches)
+  end
+  
+  def singlePoolFinished
+    singlePoolNotFinished
+    matches = @matches
+    endMatch(5001,"Jackson Lakso",matches)
+  end
+  
   def sixteenManToSemi
     matches = @matches
     endMatch(1013,"Guy22",matches)
@@ -566,5 +585,25 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     endMatch(5006,"Guy17",matches)
     assert_equal 9, Wrestler.where("name = ?", "Guy17").first.teamPointsEarned
   end
+  
+  test "One pool placement points" do
+    singlePoolFinished
+    wrestler1 = Wrestler.where("name = ?", "James Wimer").first
+    wrestler2 = Wrestler.where("name = ?", "Jaden Mattox").first
+    wrestler3 = Wrestler.where("name = ?", "Jackson Lakso").first
+    wrestler4 = Wrestler.where("name = ?", "JD Woods").first
+    assert_equal 16, wrestler1.placementPoints
+    assert_equal 12, wrestler2.placementPoints
+    assert_equal 10, wrestler3.placementPoints
+    assert_equal 9, wrestler4.placementPoints
+  end
+  
+  test "One pool placement points zero if pool not finished" do
+    singlePoolNotFinished
+    wrestler1 = Wrestler.where("name = ?", "James Wimer").first
+    assert_equal 0, wrestler1.placementPoints
+  end
+  
+  
   
 end
