@@ -24,7 +24,7 @@
 		<%= render 'fourPoolSemiBracket' %>
 	<% end %>
 	<br><br>
-	<% if @weight.size <= 6 && @weight.allPoolMatchesFinished(1) %>
+	<% if @weight.wrestlers.size <= 6 && @weight.allPoolMatchesFinished(1) %>
 		<%= render 'onePoolResults' %>
 	<% end %>
 <% end %>
