@@ -9,8 +9,10 @@ fi
 docker build -t $1 -f rails-prod-Dockerfile .
 
 #Kill and remove containers gracefully without error if none are running
-docker ps -a | grep "Exit" | awk '{print $1}' | while read -r id ; do
+docker ps | grep "Exit" | awk '{print $1}' | while read -r id ; do
   docker kill $id
+done
+docker ps -a | grep "Exit" | awk '{print $1}' | while read -r id ; do
   docker rm $id
 done
 
