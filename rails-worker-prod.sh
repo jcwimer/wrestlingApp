@@ -8,6 +8,10 @@ fi
 
 docker build -t $1 -f rails-prod-Dockerfile .
 
-docker kill $(docker ps -q)
+#Kill and remove containers gracefully without error if none are running
+docker ps -a | grep "Exit" | awk '{print $1}' | while read -r id ; do
+  docker kill $id
+  docker rm $id
+done
 
 docker run -h $HOSTNAME --name $1 -d --restart=always --env-file $WRESTLINGDEV_ENV_FILE -v /etc/localtime:/etc/localtime $1 bundle exec rake jobs:work RAILS_ENV=production
