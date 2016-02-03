@@ -12,8 +12,5 @@ docker build -t $1 -f rails-prod-Dockerfile .
 docker ps | grep "Exit" | awk '{print $1}' | while read -r id ; do
   docker kill $id
 done
-docker ps -a | grep "Exit" | awk '{print $1}' | while read -r id ; do
-  docker rm $id
-done
 
-docker run -h $HOSTNAME --name $1 -d --restart=always --env-file $WRESTLINGDEV_ENV_FILE -v /etc/localtime:/etc/localtime $1 bundle exec rake jobs:work RAILS_ENV=production
+docker run -h $HOSTNAME -d --restart=always --env-file $WRESTLINGDEV_ENV_FILE -v /etc/localtime:/etc/localtime $1 bundle exec rake jobs:work RAILS_ENV=production
