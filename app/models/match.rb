@@ -12,6 +12,9 @@ class Match < ActiveRecord::Base
 		   	wrestler1.touch
 		   	wrestler2.touch
 		end
+		if self.mat
+			self.mat.assignNextMatch
+		end
 		advance_wrestlers
 		calcSchoolPoints
 	  end
@@ -54,9 +57,6 @@ class Match < ActiveRecord::Base
 		@w2 = wrestler2
 		@w1.advanceInBracket(self)
 		@w2.advanceInBracket(self)
-		if self.mat
-			self.mat.assignNextMatch
-		end
 	   end
 	end
 	if Rails.env.production?
