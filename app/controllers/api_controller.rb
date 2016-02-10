@@ -1,4 +1,9 @@
 class ApiController < ApplicationController
+    protect_from_forgery with: :null_session
+    
+    def index
+        
+    end
     
     def tournaments
        @tournaments = Tournament.all 
