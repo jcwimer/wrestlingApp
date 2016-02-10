@@ -19,3 +19,7 @@ email:
 memcached:
   image: memcached
   mem_limit: 64000000
+  
+worker:
+  image: wrestlingdev
+  command: /bin/bash -c "cd /var/www && bundle exec rake jobs:work RAILS_ENV=production"

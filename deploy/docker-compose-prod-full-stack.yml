@@ -14,3 +14,12 @@ db:
   restart: always
   env_file: 
     - ./prod.env
+worker:
+  extends:
+    file: docker-compose-common.yml
+    service: worker
+  links:
+    - db
+  restart: always
+  env_file: 
+    - ./prod.env

@@ -13,4 +13,4 @@ docker ps | grep "Exit" | awk '{print $1}' | while read -r id ; do
   docker kill $id
 done
 
-docker run -h $HOSTNAME -d --restart=always --env-file $WRESTLINGDEV_ENV_FILE -v /srv/docker/apache2/logs:/var/log/apache2  -v /etc/localtime:/etc/localtime -p 80:80 -p 443:443 $1
+docker run -h $HOSTNAME -d --restart=always --env-file $WRESTLINGDEV_ENV_FILE -v /var/log/apache2:/var/log/apache2  -v /etc/localtime:/etc/localtime -p 80:80 -p 443:443 $1
