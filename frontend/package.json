@@ -5,8 +5,7 @@
   "private": true,
   "author": "John Doe",
   "devDependencies": {
-    "lineman": "~0.36.6",
-    "lineman-rails": "^0.1.0"
+    "lineman": "~0.36.6"
   },
   "scripts": {
     "start": "lineman run",
