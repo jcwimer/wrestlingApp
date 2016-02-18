@@ -1,9 +1,9 @@
 {
   "name": "frontend",
-  "description": "An HTML/JS/CSS app",
+  "description": "Frontend for wrestlingdev",
   "version": "0.0.1",
   "private": true,
-  "author": "John Doe",
+  "author": "Jacob Cody Wimer",
   "devDependencies": {
     "lineman": "~0.36.6"
   },
