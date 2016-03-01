@@ -29,7 +29,7 @@ module Wrestling
     
     config.active_job.queue_adapter = :delayed_job
     
-    
+    config.rails_lineman.lineman_project_location = "frontend"
   end
 
   

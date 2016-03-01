@@ -56,6 +56,7 @@ gem 'spring', :group => :development
 		gem 'delayed_job_active_record'
 		gem 'puma'
 		gem 'brakeman'
+		gem 'rails-lineman'
 	group :development do
       
 	#gem 'bullet'
