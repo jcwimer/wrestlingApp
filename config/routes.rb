@@ -56,6 +56,7 @@ Wrestling::Application.routes.draw do
   get "/api/tournaments" => "api#tournaments"
   get "/api/tournaments/:tournament" => "api#tournament"
   get "/api/index" => "api#index"
+  post "/api/tournaments/new" => "newTournament"
   
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
