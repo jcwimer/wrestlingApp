@@ -6,7 +6,11 @@ class ApiController < ApplicationController
     end
     
     def tournaments
-       @tournaments = Tournament.all 
+        if params[:search]
+          @tournaments = Tournament.search(params[:search]).order("created_at DESC")
+        else
+          @tournaments = Tournament.all.sort_by{|t| t.daysUntil}.first(20)
+        end 
     end
     
     def tournament
