@@ -50,6 +50,10 @@ COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
 RUN bundle install --without test
 
+#Cache node_modules
+WORKDIR /tmp
+COPY frontend/package.json package.json
+RUN npm install
 
 # Copy site into place.
 RUN rm -rf /var/www
@@ -74,7 +78,8 @@ RUN echo PassengerMaxPoolSize 3 >> /etc/apache2/apache2.conf
 RUN echo PassengerMinInstances  3 >> /etc/apache2/apache2.conf
 RUN echo PassengerPreStart *:443 >> /etc/apache2/apache2.conf
 
-
+#Copy node_modules to /var/www
+RUN cp -a /tmp/node_modules /var/www/frontend/node_modules 
 
 # By default, simply start apache.
 CMD /usr/sbin/apache2ctl -D FOREGROUND

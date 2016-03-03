@@ -13,8 +13,13 @@ ADD Gemfile* /tmp/
 WORKDIR /tmp
 RUN bundle install --without production
 
+RUN npm install -g lineman
+ADD frontend/package.json /tmp/
+RUN npm install
+
 RUN mkdir /rails
 WORKDIR /rails
+RUN cp -a /tmp/node_modules /rails/frontend/node_modules
 VOLUME ["/rails"]
 
 EXPOSE 3000
