@@ -1,18 +1,17 @@
-FROM phusion/baseimage
-ENV RUBYVERSION 2.3.0
+FROM ruby:2.3.0
+
 
 RUN apt-get update
 RUN apt-get -y upgrade
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential libssl-dev libyaml-dev libreadline-dev openssl curl git-core zlib1g-dev bison libxml2-dev libxslt1-dev libcurl4-openssl-dev libsqlite3-dev sqlite3 wget apache2 apt-transport-https nodejs mysql-client postfix
 
-#Install ruby
-RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-RUN \curl -sSL https://get.rvm.io | bash -s stable
-RUN source /usr/local/rvm/scripts/rvm
-RUN rvm install $RUBYVERSION
-RUN rvm rvm --default use $RUBYVERSION
-ENV PATH /usr/local/rvm/bin:$PATH
+#New Relic
+#RUN echo deb http://apt.newrelic.com/debian/ newrelic non-free >> /etc/apt/sources.list.d/newrelic.list
+#RUN wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add -
+#RUN apt-get update
+#RUN apt-get install newrelic-sysmond -y
+#RUN nrsysmond-config --set license_key=$NEW_RELIC_LICENSE_KEY
 
 #Passenger
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
