@@ -4,7 +4,7 @@ FROM ruby:2.3.0
 RUN apt-get update
 RUN apt-get -y upgrade
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential libssl-dev libyaml-dev libreadline-dev openssl curl git-core zlib1g-dev bison libxml2-dev libxslt1-dev libcurl4-openssl-dev libsqlite3-dev sqlite3 wget apache2 apt-transport-https nodejs mysql-client postfix
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential libssl-dev libyaml-dev libreadline-dev openssl curl git-core zlib1g-dev bison libxml2-dev libxslt1-dev libcurl4-openssl-dev libsqlite3-dev sqlite3 wget apache2 apt-transport-https nodejs nodejs-legacy npm mysql-client postfix
 
 #New Relic
 #RUN echo deb http://apt.newrelic.com/debian/ newrelic non-free >> /etc/apt/sources.list.d/newrelic.list
@@ -54,6 +54,7 @@ RUN bundle install --without test
 WORKDIR /tmp
 COPY frontend/package.json package.json
 RUN npm install
+RUN npm install -g lineman
 
 # Copy site into place.
 RUN rm -rf /var/www
@@ -79,7 +80,7 @@ RUN echo PassengerMinInstances  3 >> /etc/apache2/apache2.conf
 RUN echo PassengerPreStart *:443 >> /etc/apache2/apache2.conf
 
 #Copy node_modules to /var/www
-RUN cp -a /tmp/node_modules /var/www/frontend/node_modules 
+RUN mv /tmp/node_modules /var/www/frontend/node_modules 
 
 # By default, simply start apache.
 CMD /usr/sbin/apache2ctl -D FOREGROUND
