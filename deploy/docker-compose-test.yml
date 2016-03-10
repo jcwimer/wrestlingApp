@@ -45,6 +45,7 @@ worker:
     - db
     - memcached
   restart: always
+  command: bundle exec rake jobs:work RAILS_ENV=production
 
 memcached:
   extends:

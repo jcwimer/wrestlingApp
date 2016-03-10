@@ -24,3 +24,9 @@ worker:
   env_file: 
     - ./prod.env
   command: bundle exec rake jobs:work RAILS_ENV=production
+  
+memcached:
+  extends:
+    file: docker-compose-common.yml
+    service: memcached
+  restart: always
