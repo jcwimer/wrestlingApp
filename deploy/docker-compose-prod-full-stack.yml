@@ -23,3 +23,4 @@ worker:
   restart: always
   env_file: 
     - ./prod.env
+  command: bundle exec rake jobs:work RAILS_ENV=production
