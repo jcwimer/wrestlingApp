@@ -1,0 +1,29 @@
+<div class="col-md-8" style="padding-left: 2%;">
+                            <div class="container" ui-view="main" ng-controller="tournamentsController">
+                              <h2>Upcoming Tournaments</h2>
+                              <br>
+                              <form ng-submit="searchTournaments()">
+                                <div class="input-group">
+                                  <input type="text" class="form-control" placeholder="Search by name or date YYYY-MM-DD" ng-model="searchTerms">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" id="submit">Search</button>
+                                  </span>
+                                </div>
+                              </form>
+                              <br>
+                              <table class="table">
+                                <thead class="font-spot-color">
+                                  <tr>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr ng-repeat="tournament in allTournaments">
+                                      <td>{{ tournament.name }}</td>
+                                      <td>{{ tournament.date }}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                        </div>

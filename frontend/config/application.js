@@ -26,7 +26,8 @@ module.exports = function(lineman) {
       apiProxy: {
         enabled: true,
         host: 'localhost',
-        port: 8080
+        port: 8080,
+        prefix: 'api'
       },
       web: {
         port: 8081
