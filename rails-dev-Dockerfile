@@ -15,10 +15,11 @@ RUN bundle install --without production
 
 RUN npm install -g lineman
 
-ADD . /rails
-
 RUN mkdir /rails
 WORKDIR /rails
+
+ADD . /rails
+
 VOLUME ["/rails"]
 
 EXPOSE 3000
