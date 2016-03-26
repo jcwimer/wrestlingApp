@@ -61,3 +61,4 @@ gem 'spring', :group => :development
       
 	#gem 'bullet'
     end
+    

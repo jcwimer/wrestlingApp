@@ -5,12 +5,12 @@ class MatchesControllerTest < ActionController::TestCase
 
   setup do
      @tournament = Tournament.find(1)
-     @tournament.generateMatchups
-     @match = @tournament.matches.first
+    # @tournament.generateMatchups
+     @match = Match.where("tournament_id = ? and mat_id = ?",1,1).first
   end
  
   def post_update
-    patch :update, id: @match.id, match: {w1: @match.w1, w2: @match.w2}
+    patch :update, id: @match.id, match: {tournament_id: 1, mat_id: 1}
   end
  
   def get_edit

@@ -5,7 +5,7 @@ class WrestlersControllerTest < ActionController::TestCase
 
   setup do
      @tournament = Tournament.find(1)
-     @tournament.generateMatchups
+    # @tournament.generateMatchups
      @school = @tournament.schools.first
      @wrestler = @school.wrestlers.first
   end
