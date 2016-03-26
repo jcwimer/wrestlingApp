@@ -8,7 +8,6 @@ module GeneratesTournamentMatches
     poolToBracket() if tournament_type == "Pool to bracket"
     self.curently_generating_matches = nil
     self.save
-    matches
   end
   if Rails.env.production?
 		handle_asynchronously :generateMatchups
@@ -16,13 +15,11 @@ module GeneratesTournamentMatches
 
   def poolToBracket
     destroyAllMatches
-    buildTournamentWeights
-    generateMatches
-    # This is not working for pool order and I cannot get tests working
-    movePoolSeedsToFinalPoolRound
+    generatePoolToBracketMatches
+    poolToBracketPostMatchCreation
   end
 
-  def buildTournamentWeights
+  def generatePoolToBracketMatches
     weights.order(:max).each do |weight|
       Pool.new(weight).generatePools()
       last_match = matches.where(weight: weight).order(round: :desc).limit(1).first
@@ -31,11 +28,12 @@ module GeneratesTournamentMatches
     end
   end
 
-  def generateMatches
+  def poolToBracketPostMatchCreation
     moveFinalsMatchesToLastRound
     assignBouts
     assignLoserNames
     assignFirstMatchesToMats
+    movePoolSeedsToFinalPoolRound
   end
   
   def moveFinalsMatchesToLastRound

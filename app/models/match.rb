@@ -7,6 +7,10 @@ class Match < ActiveRecord::Base
 	
 
 	after_update do 
+	  after_update_actions
+	end
+	
+	def after_update_actions
 	  if self.finished == 1 && self.winner_id != nil
 	  	if self.w1 && self.w2
 		   	wrestler1.touch

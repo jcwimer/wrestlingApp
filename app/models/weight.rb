@@ -14,7 +14,7 @@ class Weight < ActiveRecord::Base
 	end
 
 	before_save do
-		self.tournament.destroyAllMatches
+		# self.tournament.destroyAllMatches
 	end
 
 	def wrestlersForPool(pool)

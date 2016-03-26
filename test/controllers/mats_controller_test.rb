@@ -5,7 +5,7 @@ class MatsControllerTest < ActionController::TestCase
 
   setup do
      @tournament = Tournament.find(1)
-     @tournament.generateMatchups
+    # @tournament.generateMatchups
      @mat = mats(:one)
   end
  
