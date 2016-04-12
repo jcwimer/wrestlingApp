@@ -4,15 +4,11 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
 
   def setup
     tournament = Tournament.find(1)
+    
+    # WHY DOES THIS NOT WORK WITHOUT GENERATING MATCHUPS BEFORE EVERY TEST?
+    # FIXTURES FOR MATCHES ARE FILLED OUT AND WORK FOR OTHER TESTS
     tournament.generateMatchups
   end
-
-  # def showMatches
-  #   matches = Weight.where("id = ?", 4).first.matches
-  #   matches.each do |m|
-  #     puts "Bout: #{m.bout_number} #{m.w1_name} vs #{m.w2_name} #{m.bracket_position} #{m.poolNumber}"
-  #   end
-  # end
   
   def singlePoolNotFinished
     
@@ -234,8 +230,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
   
   def endMatch(bout,winner)
-    match = Match.where(bout_number: bout).first
-    # match = @matches.select{|m| m.bout_number == bout}.first
+     match = Match.where(bout_number: bout).first
      match.win_type = "Decision"
      match.score = 1-0
      saveMatch(match,winner)
@@ -286,7 +281,9 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   def saveMatch(match,winner)
     match.finished = 1
     match.winner_id = translateNameToId(winner)
-    match.save
+    
+    match.save!
+    # match.after_update_actions
   end
   
   def translateNameToId(wrestler)
@@ -541,15 +538,15 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   end
     
   test "Test mat assignment when adding a mat and when destroying a mat" do
-    @mat2 = Mat.new
-    @mat2.name = "2"
-    @mat2.tournament_id = 1
-    @mat2.save
-    assert_equal 4, @mat2.matches.size
+    mat2 = Mat.new
+    mat2.name = "2"
+    mat2.tournament_id = 1
+    mat2.save
+    assert_equal 4, mat2.matches.size
     elevenManBracketFinished
-    @mat2.destroy
-    @mat1 = Mat.find(1)
-    assert_equal 4, @mat1.matches.size
+    mat2.destroy
+    mat1 = Mat.find(1)
+    assert_equal 4, mat1.matches.size
   end
   
   test "Championship bracket wins are 2pts" do

@@ -4,13 +4,10 @@ class SingleTestTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
     # @tournament.generateMatchups
-    # @matches = @tournament.matches
   end
   
   #rake test test/integration/single_test_test.rb > matches.txt
-  # Loser names need to be in quotes in yml file
   def showMatches
-    # matches = Weight.where("id = ?", 4).first.matches
     count = 1
     
     # Yml for matches
