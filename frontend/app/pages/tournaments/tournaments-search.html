@@ -1,5 +1,3 @@
-<div class="col-md-8" style="padding-left: 2%;">
-                            <div class="container" ui-view="main" ng-controller="tournamentsController">
                               <h2>Upcoming Tournaments</h2>
                               <br>
                               <form ng-submit="searchTournaments()">
@@ -20,10 +18,8 @@
                                 </thead>
                                 <tbody>
                                   <tr ng-repeat="tournament in allTournaments">
-                                      <td>{{ tournament.name }}</td>
+                                      <td><a ng-href="/tournaments/{{tournament.id}}">{{ tournament.name }}</a></td>
                                       <td>{{ tournament.date }}</td>
                                   </tr>
                                 </tbody>
                               </table>
-                            </div>
-                        </div>

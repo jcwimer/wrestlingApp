@@ -18,6 +18,9 @@ module.exports = function(lineman) {
     //     "vendor/js/**/*.js"
     //   ]
     // }
+    
+    //Override file patterns here
+  
 
   };
 };

@@ -8,3 +8,4 @@ var app =  angular.module("wrestlingdev", ["ngRoute"]).run(function($rootScope) 
     alert(thing);
   };
 });
+

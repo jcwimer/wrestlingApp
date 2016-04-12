@@ -13,18 +13,32 @@
 
 
 
-app.config(['$routeProvider',
-  function($routeProvider) {
-    $routeProvider.
-      when('/tournaments', {
-        templateUrl: 'tournaments.html',
-        controller: 'tournamentsController'
-      }).
-    //   when('/phones/:phoneId', {
-    //     templateUrl: 'partials/phone-detail.html',
-    //     controller: 'PhoneDetailCtrl'
-    //   }).
-      otherwise({
-        redirectTo: '/tournaments'
-      });
-  }]);
+app.config(['$routeProvider', '$locationProvider', function($routeProvider,$locationProvider) {
+  
+  $routeProvider.when('/', {
+    templateUrl: 'home.html',
+  });   
+
+  $routeProvider.when('/tournaments', {
+    templateUrl: 'tournaments-search.html',
+    controller: 'tournamentsController'
+  });
+  
+  $routeProvider.when('/tournaments/:id', {
+    templateUrl: 'tournaments-show.html',
+    controller: 'tournamentController'
+  });
+  
+  $routeProvider.when('/about', {
+    templateUrl: 'about.html',
+  });
+  
+  $routeProvider.when('/tutorials', {
+    templateUrl: 'tutorials.html',
+  });
+  
+  $routeProvider.otherwise({redirectTo: '/'});
+  
+  //this give me normal routes instead of /#/
+  $locationProvider.html5Mode(true);
+}]);
