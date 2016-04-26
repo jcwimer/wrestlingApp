@@ -13,6 +13,7 @@ json.cache! ["api_tournament", @tournament] do
       json.max weight.max
       json.bracket_size weight.bracket_size
       json.wrestlers weight.wrestlers do |wrestler|
+        json.id wrestler.id
         json.name wrestler.name
         json.school wrestler.school.name
         json.original_seed wrestler.original_seed
@@ -27,6 +28,8 @@ json.cache! ["api_tournament", @tournament] do
     json.mats @tournament.mats do |mat|
       json.name mat.name
       json.unfinishedMatches mat.unfinishedMatches do |match|
+        json.w1 = match.w1
+        json.w2 = match.w2
         json.bout_number match.bout_number
         json.w1_name match.w1_name
         json.w2_name match.w2_name
@@ -39,5 +42,17 @@ json.cache! ["api_tournament", @tournament] do
         json.w2_name match.w2_name
         json.weightClass match.weight.max
         json.round match.round
+        json.w1 = match.w1
+        json.w2 = match.w2
+    end
+    
+    json.matches @tournament.matches do |match|
+        json.bout_number match.bout_number
+        json.w1_name match.w1_name
+        json.w2_name match.w2_name
+        json.weightClass match.weight.max
+        json.round match.round
+        json.w1 = match.w1
+        json.w2 = match.w2
     end
 end

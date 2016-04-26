@@ -1,7 +1,9 @@
+       
         <a href="/tournaments" class="btn btn-default">Back to browse tournaments</a>                  
         <h1>
           {{ tournament.name }}
         </h1>
+        <h1>{{ wrestler.matches(tournament.matches,tournament.weights[0].wrestlers[0]) }}</h1>
         <p>
           <strong>Address:</strong>
           {{ tournament.address }}
@@ -162,7 +164,6 @@
           </div>
         </div>      
     </div>
-
 
 
 

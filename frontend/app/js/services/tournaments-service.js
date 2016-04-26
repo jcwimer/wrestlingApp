@@ -31,8 +31,8 @@ function tournamentsService($http){
     };
 
     function successResponse(response){
-        console.log("success log below");
-        console.log(response);
+        // console.log("success log below");
+        // console.log(response);
         return response.data;
     }
 

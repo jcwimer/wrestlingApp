@@ -1,5 +1,5 @@
 'use strict';
-app.controller("tournamentController", function($scope, tournamentsService, $routeParams) {
+app.controller("tournamentController", function($scope, tournamentsService, $routeParams, Wrestler) {
     $scope.message = "Test message in scope.";
     
     // $scope.tournamentData = "test";
@@ -9,4 +9,7 @@ app.controller("tournamentController", function($scope, tournamentsService, $rou
       $scope.tournament = data;
     });
     
+    $scope.wrestler = Wrestler;
+    
+
 });
