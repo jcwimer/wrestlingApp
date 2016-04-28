@@ -1,0 +1,17 @@
+                              <h2>My Tournaments</h2>
+                              <br>
+                              
+                              <table class="table">
+                                <thead class="font-spot-color">
+                                  <tr>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr ng-repeat="tournament in allTournaments">
+                                      <td><a ng-href="/#/tournaments/{{tournament.id}}">{{ tournament.name }}</a></td>
+                                      <td>{{ tournament.date }}</td>
+                                  </tr>
+                                </tbody>
+                              </table>

@@ -4,7 +4,12 @@ app.factory('tournamentsService', tournamentsService);
 function tournamentsService($http){
     var service = {};
     
-
+    service.getMyTournaments = function(user){
+        return $http({
+            url: '/api/tournaments/user/',
+            method: "GET"
+        }).then(successResponse, errorCallback);
+    };
 
     service.getAllTournaments = function(){
         return $http({

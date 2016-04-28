@@ -24,6 +24,11 @@ app.config(['$routeProvider', '$locationProvider', function($routeProvider,$loca
     controller: 'tournamentsController'
   });
   
+  $routeProvider.when('/tournaments/user', {
+    templateUrl: 'my-tournaments.html',
+    controller: 'myTournamentsController'
+  });
+  
   $routeProvider.when('/tournaments/:id', {
     templateUrl: 'tournaments-show.html',
     controller: 'tournamentController'

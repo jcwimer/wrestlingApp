@@ -21,4 +21,8 @@ class ApiController < ApplicationController
         @tournament = Tournament.new(JSON.parse(params[:tournament]))
         @tournament.save
     end
+    
+    def currentUserTournaments
+       @tournaments = current_user.tournaments
+    end
 end

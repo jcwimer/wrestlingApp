@@ -28,22 +28,23 @@
                           <li><a  href="/#/tournaments">Browse Tournaments</a></li>
                           <li><a  href="/#/about">About</a></li>
                           <li><a  href="/#/tutorials">Tutorials</a></li>
-                          <li class="dropdown" id="menuLogin" ng-controller="loginController">
-                            <a ng-if="user == null" class="dropdown-toggle" data-toggle="dropdown" id="navLogin">Login</a>
+                          <li class="dropdown" ng-controller="loginController">
+                            <a ng-if="user == null" class="dropdown-toggle" data-toggle="dropdown">Login<span class="caret"></a>
                             <div ng-if="user == null" class="dropdown-menu" style="padding:17px;">
                               <form class="form" id="formLogin"> 
-                                <input name="username" id="username" type="text" placeholder="Email" ng-model="credentials.email"> 
-                                <input name="password" id="password" type="password" placeholder="Password" ng-model="credentials.password"><br>
-                                <button type="button" id="btnLogin" class="btn" ng-click="login()">Login</button>
+                                <div class="form-group">
+                                  <input name="username" class="form-control" id="username" type="text" placeholder="Email" ng-model="credentials.email"> 
+                                  <input name="password" class="form-control" id="password" type="password" placeholder="Password" ng-model="credentials.password"><br>
+                                  <button type="button" id="btnLogin" class="btn btn-primary" ng-click="login()">Login</button>
+                                </div>
                               </form>
                             </div>
                             
-                            <a ng-if="user != null" class="dropdown-toggle" data-toggle="dropdown" id="navLogout">{{user.email}}</a>
-                            <div ng-if="user != null" class="dropdown-menu" style="padding:17px;">
-                              <ul style="list-style-type: none;">
-                                <li ng-click="logout()">Logout</li>
-                              </ul>
-                            </div>
+                            <a ng-if="user != null" class="dropdown-toggle" data-toggle="dropdown">{{user.email}}<span class="caret"></a>
+                              <ul ng-if="user != null" class="dropdown-menu" style="list-style-type: none;">
+                                <li><a href="/#/tournaments/user">My Tournaments and schools</a></li>
+                                <li><a ng-click="logout()">Logout</a></li>
+                              </ul> 
                           </li>
                       </ul>
                     </div><!--/.nav-collapse -->
