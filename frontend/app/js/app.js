@@ -1,4 +1,4 @@
-var app =  angular.module("wrestlingdev", ["ngRoute"]).run(function($rootScope) {
+var app =  angular.module("wrestlingdev", ["ngRoute","Devise"]).run(function($rootScope) {
   // adds some basic utilities to the $rootScope for debugging purposes
   $rootScope.log = function(thing) {
     console.log(thing);

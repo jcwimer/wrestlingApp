@@ -1,9 +1,8 @@
        
-        <a href="/tournaments" class="btn btn-default">Back to browse tournaments</a>                  
+        <a href="/#/tournaments" class="btn btn-default">Back to browse tournaments</a>                  
         <h1>
           {{ tournament.name }}
         </h1>
-        <h1>{{ wrestler.matches(tournament.matches,tournament.weights[0].wrestlers[0]) }}</h1>
         <p>
           <strong>Address:</strong>
           {{ tournament.address }}
@@ -22,16 +21,19 @@
         </p>
         <br>
         <div class="panel panel-default">
-              <a class="panel-heading" data-toggle="collapse" href="#Schools" aria-expanded="false" style="display: block;">
-                <h3 class="panel-title">School Lineups and Team Scores<span class="pull-left clickable"><i class="glyphicon glyphicon-chevron-down"></i></span></h3>
+              <a class="panel-heading" ng-click="toggleSchools()" style="display: block;">
+                <h3 class="panel-title">School Lineups and Team Scores<span class="pull-left clickable"><i ng-if="showSchools == false" class="glyphicon glyphicon-chevron-down"></i>
+                <i ng-if="showSchools == true" class="glyphicon glyphicon-chevron-up"></i></span></h3>
               </a>
-              <div id="Schools" class="panel-collapse collapse">
+              <div id="Schools" ng-if="showSchools == true">
                   <div class="panel-body">
+                    <button ng-if="isTournamentOwner(user.id,tournament.user_id)" class="btn btn-success btn-sm">Create New School</button>
                     <table class="table">
                       <thead>
                         <tr>
                           <th>Name</th>
                           <th>Score</th>
+                          <th ng-if="isTournamentOwner(user.id,tournament.user_id)">Actions</th>
                         </tr>
                       </thead>
                     
@@ -40,6 +42,7 @@
                           <tr ng-repeat="school in tournament.schools | orderBy : 'score'">
                             <td>{{ school.name }}</td>
                             <td>{{ school.score }}</td>
+                            <td ng-if="isTournamentOwner(user.id,tournament.user_id)"><button class="btn btn-sm">Edit</button><button class="btn btn-danger btn-sm">Destroy</button></td>
                           </tr>
                        </tbody>
                       </table>
@@ -48,10 +51,11 @@
         </div>
 
         <div class="panel panel-default">
-              <a class="panel-heading" data-toggle="collapse" href="#Weights" aria-expanded="false" style="display: block;">
-                <h3 class="panel-title">Weights and Seeds<span class="pull-left clickable"><i class="glyphicon glyphicon-chevron-down"></i></span></h3>
+              <a class="panel-heading" ng-click="toggleWeightSeeds()" style="display: block;">
+                <h3 class="panel-title">Weights and Seeds<span class="pull-left clickable"><i ng-if="showWeightSeeds == false" class="glyphicon glyphicon-chevron-down"></i>
+                <i ng-if="showWeightSeeds == true" class="glyphicon glyphicon-chevron-up"></i></span></h3>
               </a>
-              <div id="Weights" class="panel-collapse collapse">
+              <div id="Weights" ng-if="showWeightSeeds == true">
                   <div class="panel-body">
                     <p>Click weight class for seeds</p>
                     <br>
@@ -75,10 +79,11 @@
         </div>
         
           <div class="panel panel-default">
-              <a class="panel-heading" data-toggle="collapse" href="#Mats" aria-expanded="false" style="display: block;" >
-                <h3 class="panel-title">Mats and Bout Board<span class="pull-left clickable"><i class="glyphicon glyphicon-chevron-down"></i></span></h3>
+              <a class="panel-heading" ng-click="toggleBoutBoard()" style="display: block;" >
+                <h3 class="panel-title">Mats and Bout Board<span class="pull-left clickable"><i ng-if="showBoutBoard == false" class="glyphicon glyphicon-chevron-down"></i>
+                <i ng-if="showBoutBoard == true" class="glyphicon glyphicon-chevron-up"></i></span></h3>
               </a>
-              <div id="Mats" class="panel-collapse collapse">
+              <div id="Mats" ng-if="showBoutBoard == true">
                   <div class="panel-body">
                       <table class="table">
                         <thead>

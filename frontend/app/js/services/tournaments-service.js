@@ -37,8 +37,8 @@ function tournamentsService($http){
     }
 
     function errorCallback(err){
-        console.log("error log below");
-        console.log(err);
+        // console.log("error log below");
+        // console.log(err);
         return err;
     }
 

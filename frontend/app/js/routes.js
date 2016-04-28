@@ -40,5 +40,5 @@ app.config(['$routeProvider', '$locationProvider', function($routeProvider,$loca
   $routeProvider.otherwise({redirectTo: '/'});
   
   //this give me normal routes instead of /#/
-  $locationProvider.html5Mode(true);
+  // $locationProvider.html5Mode(true);
 }]);

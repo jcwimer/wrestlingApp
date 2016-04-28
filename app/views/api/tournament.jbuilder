@@ -1,7 +1,7 @@
 
 json.cache! ["api_tournament", @tournament] do 
     json.content(@tournament)
-    json.(@tournament, :id, :name, :address, :director, :director_email, :tournament_type, :created_at, :updated_at)
+    json.(@tournament, :id, :name, :address, :director, :director_email, :tournament_type, :created_at, :updated_at, :user_id)
     
     json.schools @tournament.schools do |school|
       json.name school.name
@@ -28,8 +28,6 @@ json.cache! ["api_tournament", @tournament] do
     json.mats @tournament.mats do |mat|
       json.name mat.name
       json.unfinishedMatches mat.unfinishedMatches do |match|
-        json.w1 = match.w1
-        json.w2 = match.w2
         json.bout_number match.bout_number
         json.w1_name match.w1_name
         json.w2_name match.w2_name
@@ -42,8 +40,6 @@ json.cache! ["api_tournament", @tournament] do
         json.w2_name match.w2_name
         json.weightClass match.weight.max
         json.round match.round
-        json.w1 = match.w1
-        json.w2 = match.w2
     end
     
     json.matches @tournament.matches do |match|
@@ -52,7 +48,7 @@ json.cache! ["api_tournament", @tournament] do
         json.w2_name match.w2_name
         json.weightClass match.weight.max
         json.round match.round
-        json.w1 = match.w1
-        json.w2 = match.w2
+        json.w1 match.w1
+        json.w2 match.w2
     end
 end

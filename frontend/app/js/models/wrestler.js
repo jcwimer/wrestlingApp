@@ -4,16 +4,15 @@ app.factory('Wrestler', function Wrestler(){
     var vm = this;
     
     
-    vm.matches = function(matches,wrestler){
-        var givenWrestler = wrestler;
+    vm.matches = function(wrestler,matches){
 
-        console.log(givenWrestler.id);
+        console.log(matches);
         return _.filter(matches, function(match){
-            return match.w1 == givenWrestler.id || match.w2 == givenWrestler.id;
+            return match.w1 == wrestler.id || match.w2 == wrestler.id;
         });
         
         
-    }
+    };
     
     return vm;
 });
