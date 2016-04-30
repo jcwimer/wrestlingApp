@@ -10,6 +10,14 @@ app.controller("tournamentController", function($scope, tournamentsService, $rou
       $scope.tournament = data;
     });
     
+    $scope.refreshTournamentData = function(){
+      tournamentsService.tournamentDetails($routeParams.id).then(function(data) {
+        //this will execute when the 
+        //AJAX call completes.
+        $scope.tournament = data;
+      });
+    };
+    
     // refresh tournament data every 10 seconds
     // setInterval(function(){ 
     //   tournamentsService.tournamentDetails($routeParams.id).then(function(data) {
@@ -33,6 +41,7 @@ app.controller("tournamentController", function($scope, tournamentsService, $rou
       $scope.showWeightSeeds = !$scope.showWeightSeeds;
     };
     
+    
     $scope.showBoutBoard = false;
     
     $scope.toggleBoutBoard = function(){
@@ -46,6 +55,31 @@ app.controller("tournamentController", function($scope, tournamentsService, $rou
       } else {
         return false;
       }
+    };
+    
+    
+    $scope.newSchool = null;
+    
+    $scope.saveNewSchool = function(){
+      $scope.newSchool.tournament_id = $scope.tournament.id;
+      tournamentsService.saveNewSchool($scope.newSchool).then(function(data) {
+        $scope.tournament.schools.push(data);
+      });
+      $scope.newSchool = null;
+      $('#NewSchool').modal('hide');
+    };
+    
+    $scope.deleteSchool = function(school){
+      if (confirm('Are you sure you want to delete ' + school.name + '?')) {
+        tournamentsService.deleteSchool(school).then(function(data) {
+          $scope.tournament.schools.splice( $scope.tournament.schools.indexOf(school), 1 );
+        });
+      }
+    };
+    
+    $scope.updateSchool = function(school){
+      tournamentsService.updateSchool(school);
+      $('#EditSchool' + school.id).modal('hide');
     };
     
   

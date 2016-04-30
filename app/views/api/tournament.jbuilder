@@ -4,6 +4,7 @@ json.cache! ["api_tournament", @tournament] do
     json.(@tournament, :id, :name, :address, :director, :director_email, :tournament_type, :created_at, :updated_at, :user_id)
     
     json.schools @tournament.schools do |school|
+      json.id school.id
       json.name school.name
       json.score school.score
     end

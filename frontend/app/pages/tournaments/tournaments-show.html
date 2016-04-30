@@ -27,7 +27,7 @@
               </a>
               <div id="Schools" ng-if="showSchools == true">
                   <div class="panel-body">
-                    <button ng-if="isTournamentOwner(user.id,tournament.user_id)" class="btn btn-success btn-sm">Create New School</button>
+                    <button ng-if="isTournamentOwner(user.id,tournament.user_id)" class="btn btn-success btn-sm" data-toggle="modal" data-target="#NewSchool">Create New School</button>
                     <table class="table">
                       <thead>
                         <tr>
@@ -42,7 +42,10 @@
                           <tr ng-repeat="school in tournament.schools | orderBy : 'score'">
                             <td>{{ school.name }}</td>
                             <td>{{ school.score }}</td>
-                            <td ng-if="isTournamentOwner(user.id,tournament.user_id)"><button class="btn btn-sm">Edit</button><button class="btn btn-danger btn-sm">Destroy</button></td>
+                            <td ng-if="isTournamentOwner(user.id,tournament.user_id)">
+                              <button class="btn btn-sm" data-toggle="modal" data-target="#EditSchool{{school.id}}">Edit</button>
+                              <button ng-click="deleteSchool(school)"class="btn btn-danger btn-sm">Destroy</button>
+                            </td>
                           </tr>
                        </tbody>
                       </table>
@@ -85,7 +88,8 @@
               </a>
               <div id="Mats" ng-if="showBoutBoard == true">
                   <div class="panel-body">
-                      <table class="table">
+                      <p ng-if="tournament.matches.length == 0">Matches have not been generated</p> 
+                      <table ng-if="tournament.matches.length > 0"  class="table">
                         <thead>
                           <tr>
                             <th>Name</th>
@@ -107,9 +111,9 @@
                         </tbody>
                       </table>
                       <br>
-                      <h3>Matches not assigned</h3>
+                      <h3 ng-if="tournament.matches.length > 0" >Matches not assigned</h3>
                       <br>
-                      <table class="table">
+                      <table ng-if="tournament.matches.length > 0"  class="table">
                         <thead>
                           <tr>
                             <th>Round</th>
@@ -132,7 +136,7 @@
             </div>
         </div>
         
-    <!--Hidden modals-->
+    <!--Hidden modals for weight seeds-->
     <div ng-repeat="weight in tournament.weights">
       <div class="modal fade bs-example-modal-lg" id="Weight{{weight.id}}" tabindex="-1" role="dialog" aria-labelledby="Weight{{weight.id}}">
           <div class="modal-dialog modal-lg">
@@ -169,6 +173,49 @@
           </div>
         </div>      
     </div>
+    
+    <!--Hidden model for new school-->
+    <div class="modal fade bs-example-modal-lg" id="NewSchool" tabindex="-1" role="dialog" aria-labelledby="NewSchool">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 class="modal-title" id="gridSystemModalLabel">New School for {{tournament.name}}</h3>
+                </div>
+                <div class="modal-body">
+                     <form class="form" id="formNewSchool" name="form" ng-submit="saveNewSchool()"> 
+                                <div class="form-group">
+                                  <input name="school[name]" class="form-control" id="name" type="text" placeholder="School Name" ng-model="newSchool.name"><br>
+                                  <input type="submit" id="btnSaveNewSchool" class="btn btn-success" value="Save School">
+                                </div>
+                      </form> 
+                </div>
+            </div>
+          </div>
+        </div> 
+        
+        <!--Hidden modals for school edit forms-->
+    <div ng-repeat="school in tournament.schools">
+      <div class="modal fade bs-example-modal-lg" id="EditSchool{{school.id}}" tabindex="-1" role="dialog" aria-labelledby="EditSchool{{school.id}}">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 class="modal-title" id="gridSystemModalLabel">Edit {{school.name}}</h3>
+                </div>
+                <div class="modal-body">
+                     <form class="form" id="formEditSchool{{school.id}}" name="form" ng-submit="updateSchool(school)"> 
+                                <div class="form-group">
+                                  <input name="school[name]" class="form-control" id="name" type="text" placeholder="School Name" ng-model="school.name"><br>
+                                  <input type="submit" id="btnSaveNewSchool" class="btn btn-success" value="Save School">
+                                </div>
+                      </form> 
+                </div>
+            </div>
+          </div>
+        </div>      
+    </div>
+    
 
 
 
