@@ -36,7 +36,8 @@ class SingleTestTest < ActionDispatch::IntegrationTest
     
     # Yml for wrestlers
     # @tournament.wrestlers.each do |w|
-    #   puts "tournament_1_#{w.name}:"
+    #   puts "tournament_1_wrestler_#{count}:"
+    #   puts "   id: #{count}"
     #   puts "   name: #{w.name}"
     #   puts "   school_id: #{w.school_id}"
     #   puts "   weight_id: #{w.weight_id}"
@@ -45,6 +46,7 @@ class SingleTestTest < ActionDispatch::IntegrationTest
     #   puts "   season_loss: #{w.season_loss}"
     #   puts "   season_win: #{w.season_win}"
     #   puts "   criteria: #{w.criteria}"
+    #   puts "   extra: #{w.extra}"
     #   puts ""
     #   count += 1
     # end

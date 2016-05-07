@@ -7,7 +7,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     
     # WHY DOES THIS NOT WORK WITHOUT GENERATING MATCHUPS BEFORE EVERY TEST?
     # FIXTURES FOR MATCHES ARE FILLED OUT AND WORK FOR OTHER TESTS
-    tournament.generateMatchups
+    # tournament.generateMatchups
   end
   
   def singlePoolNotFinished
