@@ -1,4 +1,4 @@
-class PoolBracket
+class PoolBracketGeneration
 
   def initialize(weight, highest_round)
     @weight = weight
