@@ -34,6 +34,10 @@ module Wrestling
     config.to_prepare do
       DeviseController.respond_to :html, :json
     end
+    
+    config.autoload_paths += %W(#{config.root}/app/services/tournament_services)
+    config.autoload_paths += %W(#{config.root}/app/services/wrestler_services)
+    config.autoload_paths += %W(#{config.root}/app/services/bracket_advancement)
   end
 
   

@@ -46,22 +46,6 @@ class Weight < ActiveRecord::Base
 		wrestlersForPool(pool).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]}	
 	end
 	
-	def setOriginalSeedsToWrestleLastPoolRound
-		pool = 1
-		until pool > self.pools
-			wrestler1 = poolSeedOrder(pool).first
-			wrestler2 = poolSeedOrder(pool).second
-			match = wrestler1.poolMatches.sort_by{|m| m.round}.last
-			if match.w1 != wrestler2.id or match.w2 != wrestler2.id
-				if match.w1 == wrestler1.id
-					swapWrestlers(match.w2,wrestler2.id)
-				elsif match.w2 == wrestler1.id
-					swapWrestlers(match.w1,wrestler2.id)
-				end
-			end
-		    pool += 1
-		end
-	end
 	
 	def swapWrestlers(wrestler1_id,wrestler2_id)
 		SwapWrestlers.new.swapWrestlers(wrestler1_id,wrestler2_id)
@@ -179,39 +163,6 @@ class Weight < ActiveRecord::Base
 	
 	def poolOrder(pool)
 		PoolOrder.new(wrestlersForPool(pool)).getPoolOrder
-	end
-	
-	def randomSeeding
-		wrestlerWithSeeds = self.wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
-		if wrestlerWithSeeds.size > 0
-			highestSeed = wrestlerWithSeeds.last.seed
-			seed = highestSeed + 1
-		else
-			seed = 1
-		end
-		wrestlersWithoutSeed = self.wrestlers.select{|w| w.original_seed == nil }
-		wrestlersWithoutSeed.shuffle.each do |w|
-			w.seed = seed
-			w.save
-			seed += 1
-		end
-	end
-	
-	def setSeeds
-		resetAllSeeds
-		wrestlerWithSeeds = self.wrestlers.select{|w| w.original_seed != nil }
-		wrestlerWithSeeds.each do |w|
-			w.seed = w.original_seed
-			w.save
-		end
-		randomSeeding
-	end
-	
-	def resetAllSeeds
-		self.wrestlers.each do |w|
-			w.seed = nil
-			w.save
-		end
 	end
 			
 end

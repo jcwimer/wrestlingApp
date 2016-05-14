@@ -1,115 +1,9 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-# http://chriskottom.com/blog/2014/11/fixing-fixtures/
-    # t.integer  "w1"
-    # t.integer  "w2"
-    # t.text     "w1_stat"
-    # t.text     "w2_stat"
-    # t.integer  "winner_id"
-    # t.string   "win_type"
-    # t.string   "score"
-    # t.datetime "created_at"
-    # t.datetime "updated_at"
-    # t.integer  "tournament_id"
-    # t.integer  "round"
-    # t.integer  "finished"
-    # t.integer  "bout_number"
-    # t.integer  "weight_id"
-    # t.string   "bracket_position"
-    # t.integer  "bracket_position_number"
-    # t.string   "loser1_name"
-    # t.string   "loser2_name"
-    # t.integer  "mat_id"
-
-
-# default: &default
-#   tournament_id: 1
-
-
-# one:
-#   <<: *defaults
-
-tournament_1_bout_3007:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 3007
-   w1: 10
-   w2: 7
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6000:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 6000
-   w1: 
-   w2: 
-   bracket_position: 1/2
-   bracket_position_number: 1
-   loser1_name: Winner Pool 1
-   loser2_name: Winner Pool 2
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3013:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 3013
-   w1: 39
-   w2: 35
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4001:
+tournament_1_bout_1000:
    tournament_id: 1
    weight_id: 1
-   bout_number: 4001
-   w1: 1
-   w2: 5
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1002:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 1002
-   w1: 18
-   w2: 19
+   bout_number: 1000
+   w1: 2
+   w2: 1
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
@@ -123,18 +17,18 @@ tournament_1_bout_1002:
    winner_id: 
    win_type: 
 
-tournament_1_bout_3002:
+tournament_1_bout_1001:
    tournament_id: 1
-   weight_id: 3
-   bout_number: 3002
-   w1: 19
-   w2: 21
+   weight_id: 1
+   bout_number: 1001
+   w1: 3
+   w2: 4
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
-   round: 3
-   mat_id: 
+   round: 1
+   mat_id: 1
    finished: 
    w1_stat: 
    w2_stat: 
@@ -142,188 +36,17 @@ tournament_1_bout_3002:
    winner_id: 
    win_type: 
 
-tournament_1_bout_2021:
+tournament_1_bout_2000:
    tournament_id: 1
-   weight_id: 6
-   bout_number: 2021
-   w1: 50
-   w2: 51
+   weight_id: 1
+   bout_number: 2000
+   w1: 5
+   w2: 4
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
    round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1007:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 1007
-   w1: 11
-   w2: 10
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2004:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 2004
-   w1: 16
-   w2: 14
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1011:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 1011
-   w1: 25
-   w2: 32
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4004:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 4004
-   w1: 
-   w2: 
-   bracket_position: Semis
-   bracket_position_number: 1
-   loser1_name: Winner Pool 1
-   loser2_name: Runner Up Pool 2
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4014:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 4014
-   w1: 49
-   w2: 50
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6002:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 6002
-   w1: 
-   w2: 
-   bracket_position: 1/2
-   bracket_position_number: 1
-   loser1_name: 
-   loser2_name: 
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4007:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 4007
-   w1: 
-   w2: 
-   bracket_position: Quarter
-   bracket_position_number: 2
-   loser1_name: Winner Pool 4
-   loser2_name: Runner Up Pool 3
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4013:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 4013
-   w1: 
-   w2: 
-   bracket_position: Conso Semis
-   bracket_position_number: 2
-   loser1_name: Runner Up Pool 2
-   loser2_name: Runner Up Pool 3
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1019:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 1019
-   w1: 38
-   w2: 48
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
    mat_id: 
    finished: 
    w1_stat: 
@@ -351,848 +74,12 @@ tournament_1_bout_2001:
    winner_id: 
    win_type: 
 
-tournament_1_bout_1017:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 1017
-   w1: 34
-   w2: 47
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1014:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 1014
-   w1: 45
-   w2: 39
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6011:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 6011
-   w1: 
-   w2: 
-   bracket_position: 7/8
-   bracket_position_number: 1
-   loser1_name: Loser of 4012
-   loser2_name: Loser of 4013
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3018:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 3018
-   w1: 40
-   w2: 48
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2014:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 2014
-   w1: 37
-   w2: 33
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6005:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 6005
-   w1: 
-   w2: 
-   bracket_position: 3/4
-   bracket_position_number: 1
-   loser1_name: Loser of 5004
-   loser2_name: Loser of 5005
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_5002:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 5002
-   w1: 21
-   w2: 13
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 5
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3009:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 3009
-   w1: 27
-   w2: 30
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_5005:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 5005
-   w1: 
-   w2: 
-   bracket_position: Semis
-   bracket_position_number: 2
-   loser1_name: 
-   loser2_name: 
-   round: 5
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3021:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 3021
-   w1: 52
-   w2: 50
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2009:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 2009
-   w1: 30
-   w2: 28
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3011:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 3011
-   w1: 32
-   w2: 24
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6001:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 6001
-   w1: 
-   w2: 
-   bracket_position: 3/4
-   bracket_position_number: 1
-   loser1_name: Runner Up Pool 1
-   loser2_name: Runner Up Pool 2
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6008:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 6008
-   w1: 
-   w2: 
-   bracket_position: 1/2
-   bracket_position_number: 1
-   loser1_name: 
-   loser2_name: 
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3017:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 3017
-   w1: 41
-   w2: 34
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4000:
+tournament_1_bout_3000:
    tournament_id: 1
    weight_id: 1
-   bout_number: 4000
-   w1: 4
-   w2: 2
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3015:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 3015
-   w1: 37
-   w2: 44
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2012:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 2012
-   w1: 39
-   w2: 46
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2000:
-   tournament_id: 1
-   weight_id: 1
-   bout_number: 2000
-   w1: 5
-   w2: 4
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1021:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 1021
-   w1: 50
-   w2: 53
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2019:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 2019
-   w1: 38
-   w2: 40
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1016:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 1016
-   w1: 36
-   w2: 37
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6006:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 6006
-   w1: 
-   w2: 
-   bracket_position: 5/6
-   bracket_position_number: 1
-   loser1_name: 
-   loser2_name: 
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_5009:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 5009
-   w1: 49
-   w2: 53
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 5
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3010:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 3010
-   w1: 22
-   w2: 31
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4008:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 4008
-   w1: 
-   w2: 
-   bracket_position: Quarter
-   bracket_position_number: 3
-   loser1_name: Winner Pool 2
-   loser2_name: Runner Up Pool 1
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3008:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 3008
-   w1: 6
-   w2: 9
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2005:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 2005
-   w1: 17
-   w2: 15
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1003:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 1003
-   w1: 21
-   w2: 20
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 1
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2017:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 2017
-   w1: 34
-   w2: 43
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4011:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 4011
-   w1: 
-   w2: 
-   bracket_position: Semis
-   bracket_position_number: 2
-   loser1_name: Winner Pool 2
-   loser2_name: Winner Pool 3
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3003:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 3003
-   w1: 13
-   w2: 18
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_5006:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 5006
-   w1: 
-   w2: 
-   bracket_position: Conso Semis
-   bracket_position_number: 1
-   loser1_name: Loser of 4006
-   loser2_name: Loser of 4007
-   round: 5
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3006:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 3006
-   w1: 11
-   w2: 12
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_5003:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 5003
-   w1: 20
-   w2: 19
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 5
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_5008:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 5008
-   w1: 51
-   w2: 52
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 5
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2010:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 2010
-   w1: 31
-   w2: 23
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4009:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 4009
-   w1: 
-   w2: 
-   bracket_position: Quarter
-   bracket_position_number: 4
-   loser1_name: Winner Pool 3
-   loser2_name: Runner Up Pool 4
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1001:
-   tournament_id: 1
-   weight_id: 1
-   bout_number: 1001
-   w1: 3
-   w2: 4
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 1
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1022:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 1022
-   w1: 51
-   w2: 49
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2018:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 2018
-   w1: 42
-   w2: 48
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1015:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 1015
-   w1: 44
-   w2: 33
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6007:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 6007
-   w1: 
-   w2: 
-   bracket_position: 7/8
-   bracket_position_number: 1
-   loser1_name: Loser of 5006
-   loser2_name: Loser of 5007
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6009:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 6009
-   w1: 
-   w2: 
-   bracket_position: 3/4
-   bracket_position_number: 1
-   loser1_name: Loser of 4010
-   loser2_name: Loser of 4011
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3016:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 3016
-   w1: 43
-   w2: 47
+   bout_number: 3000
+   w1: 1
+   w2: 3
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
@@ -1225,17 +112,17 @@ tournament_1_bout_3001:
    winner_id: 
    win_type: 
 
-tournament_1_bout_3014:
+tournament_1_bout_4000:
    tournament_id: 1
-   weight_id: 5
-   bout_number: 3014
-   w1: 36
-   w2: 33
+   weight_id: 1
+   bout_number: 4000
+   w1: 4
+   w2: 2
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
-   round: 3
+   round: 4
    mat_id: 
    finished: 
    w1_stat: 
@@ -1244,17 +131,17 @@ tournament_1_bout_3014:
    winner_id: 
    win_type: 
 
-tournament_1_bout_2013:
+tournament_1_bout_4001:
    tournament_id: 1
-   weight_id: 5
-   bout_number: 2013
-   w1: 35
-   w2: 45
+   weight_id: 1
+   bout_number: 4001
+   w1: 1
+   w2: 5
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
-   round: 2
+   round: 4
    mat_id: 
    finished: 
    w1_stat: 
@@ -1263,130 +150,16 @@ tournament_1_bout_2013:
    winner_id: 
    win_type: 
 
-tournament_1_bout_1006:
+tournament_1_bout_5000:
    tournament_id: 1
-   weight_id: 2
-   bout_number: 1006
-   w1: 7
-   w2: 12
+   weight_id: 1
+   bout_number: 5000
+   w1: 3
+   w2: 5
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3020:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 3020
-   w1: 53
-   w2: 51
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1009:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 1009
-   w1: 28
-   w2: 27
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1012:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 1012
-   w1: 26
-   w2: 29
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2007:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 2007
-   w1: 7
-   w2: 11
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1004:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 1004
-   w1: 17
-   w2: 14
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_5007:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 5007
-   w1: 
-   w2: 
-   bracket_position: Conso Semis
-   bracket_position_number: 2
-   loser1_name: Loser of 4008
-   loser2_name: Loser of 4009
    round: 5
    mat_id: 
    finished: 
@@ -1396,18 +169,37 @@ tournament_1_bout_5007:
    winner_id: 
    win_type: 
 
-tournament_1_bout_4002:
+tournament_1_bout_5001:
+   tournament_id: 1
+   weight_id: 1
+   bout_number: 5001
+   w1: 4
+   w2: 1
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 5
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1002:
    tournament_id: 1
    weight_id: 3
-   bout_number: 4002
-   w1: 20
-   w2: 18
+   bout_number: 1002
+   w1: 18
+   w2: 19
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
-   round: 4
-   mat_id: 
+   round: 1
+   mat_id: 1
    finished: 
    w1_stat: 
    w2_stat: 
@@ -1415,37 +207,18 @@ tournament_1_bout_4002:
    winner_id: 
    win_type: 
 
-tournament_1_bout_4010:
+tournament_1_bout_1003:
    tournament_id: 1
-   weight_id: 5
-   bout_number: 4010
-   w1: 
-   w2: 
-   bracket_position: Semis
-   bracket_position_number: 1
-   loser1_name: Winner Pool 1
-   loser2_name: Winner Pool 4
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2016:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 2016
-   w1: 41
-   w2: 47
+   weight_id: 3
+   bout_number: 1003
+   w1: 21
+   w2: 20
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
-   round: 2
-   mat_id: 
+   round: 1
+   mat_id: 1
    finished: 
    w1_stat: 
    w2_stat: 
@@ -1459,120 +232,6 @@ tournament_1_bout_2002:
    bout_number: 2002
    w1: 13
    w2: 20
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2008:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 2008
-   w1: 9
-   w2: 8
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3004:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 3004
-   w1: 15
-   w2: 14
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2011:
-   tournament_id: 1
-   weight_id: 4
-   bout_number: 2011
-   w1: 24
-   w2: 25
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2006:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 2006
-   w1: 10
-   w2: 12
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 2
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1005:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 1005
-   w1: 15
-   w2: 16
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2020:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 2020
-   w1: 52
-   w2: 49
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
@@ -1605,31 +264,12 @@ tournament_1_bout_2003:
    winner_id: 
    win_type: 
 
-tournament_1_bout_5001:
+tournament_1_bout_3002:
    tournament_id: 1
-   weight_id: 1
-   bout_number: 5001
-   w1: 4
-   w2: 1
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 5
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3012:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 3012
-   w1: 45
-   w2: 46
+   weight_id: 3
+   bout_number: 3002
+   w1: 19
+   w2: 21
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
@@ -1643,17 +283,359 @@ tournament_1_bout_3012:
    winner_id: 
    win_type: 
 
-tournament_1_bout_5000:
+tournament_1_bout_3003:
    tournament_id: 1
-   weight_id: 1
-   bout_number: 5000
-   w1: 3
-   w2: 5
+   weight_id: 3
+   bout_number: 3003
+   w1: 13
+   w2: 18
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4002:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 4002
+   w1: 20
+   w2: 18
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4003:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 4003
+   w1: 19
+   w2: 13
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_5002:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 5002
+   w1: 21
+   w2: 13
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
    round: 5
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_5003:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 5003
+   w1: 20
+   w2: 19
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 5
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1004:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 1004
+   w1: 17
+   w2: 14
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1005:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 1005
+   w1: 15
+   w2: 16
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2004:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 2004
+   w1: 16
+   w2: 14
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2005:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 2005
+   w1: 17
+   w2: 15
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3004:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 3004
+   w1: 15
+   w2: 14
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3005:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 3005
+   w1: 16
+   w2: 17
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6000:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 6000
+   w1: 
+   w2: 
+   bracket_position: 1/2
+   bracket_position_number: 1
+   loser1_name: Winner Pool 1
+   loser2_name: Winner Pool 2
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6001:
+   tournament_id: 1
+   weight_id: 3
+   bout_number: 6001
+   w1: 
+   w2: 
+   bracket_position: 3/4
+   bracket_position_number: 1
+   loser1_name: Runner Up Pool 1
+   loser2_name: Runner Up Pool 2
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1006:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 1006
+   w1: 7
+   w2: 12
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1007:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 1007
+   w1: 11
+   w2: 10
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2006:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 2006
+   w1: 10
+   w2: 12
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2007:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 2007
+   w1: 7
+   w2: 11
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3006:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 3006
+   w1: 11
+   w2: 12
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3007:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 3007
+   w1: 10
+   w2: 7
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
    mat_id: 
    finished: 
    w1_stat: 
@@ -1681,12 +663,164 @@ tournament_1_bout_1008:
    winner_id: 
    win_type: 
 
-tournament_1_bout_3005:
+tournament_1_bout_2008:
    tournament_id: 1
-   weight_id: 3
-   bout_number: 3005
-   w1: 16
-   w2: 17
+   weight_id: 2
+   bout_number: 2008
+   w1: 9
+   w2: 8
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3008:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 3008
+   w1: 6
+   w2: 9
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4004:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 4004
+   w1: 
+   w2: 
+   bracket_position: Semis
+   bracket_position_number: 1
+   loser1_name: Winner Pool 1
+   loser2_name: Runner Up Pool 2
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4005:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 4005
+   w1: 
+   w2: 
+   bracket_position: Semis
+   bracket_position_number: 2
+   loser1_name: Winner Pool 2
+   loser2_name: Runner Up Pool 1
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6002:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 6002
+   w1: 
+   w2: 
+   bracket_position: 1/2
+   bracket_position_number: 1
+   loser1_name: 
+   loser2_name: 
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6003:
+   tournament_id: 1
+   weight_id: 2
+   bout_number: 6003
+   w1: 
+   w2: 
+   bracket_position: 3/4
+   bracket_position_number: 1
+   loser1_name: Loser of 4004
+   loser2_name: Loser of 4005
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1009:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 1009
+   w1: 28
+   w2: 27
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2009:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 2009
+   w1: 30
+   w2: 28
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3009:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 3009
+   w1: 27
+   w2: 30
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
@@ -1719,107 +853,12 @@ tournament_1_bout_1010:
    winner_id: 
    win_type: 
 
-tournament_1_bout_5004:
+tournament_1_bout_2010:
    tournament_id: 1
    weight_id: 4
-   bout_number: 5004
-   w1: 
-   w2: 
-   bracket_position: Semis
-   bracket_position_number: 1
-   loser1_name: 
-   loser2_name: 
-   round: 5
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4003:
-   tournament_id: 1
-   weight_id: 3
-   bout_number: 4003
-   w1: 19
-   w2: 13
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1000:
-   tournament_id: 1
-   weight_id: 1
-   bout_number: 1000
-   w1: 2
-   w2: 1
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 1
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6010:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 6010
-   w1: 
-   w2: 
-   bracket_position: 5/6
-   bracket_position_number: 1
-   loser1_name: 
-   loser2_name: 
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3019:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 3019
-   w1: 42
-   w2: 38
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 3
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_2015:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 2015
-   w1: 44
-   w2: 36
+   bout_number: 2010
+   w1: 31
+   w2: 23
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
@@ -1833,69 +872,12 @@ tournament_1_bout_2015:
    winner_id: 
    win_type: 
 
-tournament_1_bout_6004:
+tournament_1_bout_3010:
    tournament_id: 1
    weight_id: 4
-   bout_number: 6004
-   w1: 
-   w2: 
-   bracket_position: 1/2
-   bracket_position_number: 1
-   loser1_name: 
-   loser2_name: 
-   round: 6
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4012:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 4012
-   w1: 
-   w2: 
-   bracket_position: Conso Semis
-   bracket_position_number: 1
-   loser1_name: Runner Up Pool 1
-   loser2_name: Runner Up Pool 4
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_1020:
-   tournament_id: 1
-   weight_id: 5
-   bout_number: 1020
-   w1: 40
-   w2: 42
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_3000:
-   tournament_id: 1
-   weight_id: 1
-   bout_number: 3000
-   w1: 1
-   w2: 3
+   bout_number: 3010
+   w1: 22
+   w2: 31
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
@@ -1909,12 +891,12 @@ tournament_1_bout_3000:
    winner_id: 
    win_type: 
 
-tournament_1_bout_1018:
+tournament_1_bout_1011:
    tournament_id: 1
-   weight_id: 5
-   bout_number: 1018
-   w1: 43
-   w2: 41
+   weight_id: 4
+   bout_number: 1011
+   w1: 25
+   w2: 32
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
@@ -1928,55 +910,55 @@ tournament_1_bout_1018:
    winner_id: 
    win_type: 
 
-tournament_1_bout_1013:
+tournament_1_bout_2011:
    tournament_id: 1
-   weight_id: 5
-   bout_number: 1013
-   w1: 35
-   w2: 46
+   weight_id: 4
+   bout_number: 2011
+   w1: 24
+   w2: 25
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3011:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 3011
+   w1: 32
+   w2: 24
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1012:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 1012
+   w1: 26
+   w2: 29
    bracket_position: Pool
    bracket_position_number: 
    loser1_name: 
    loser2_name: 
    round: 1
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_4015:
-   tournament_id: 1
-   weight_id: 6
-   bout_number: 4015
-   w1: 53
-   w2: 52
-   bracket_position: Pool
-   bracket_position_number: 
-   loser1_name: 
-   loser2_name: 
-   round: 4
-   mat_id: 
-   finished: 
-   w1_stat: 
-   w2_stat: 
-   score: 
-   winner_id: 
-   win_type: 
-
-tournament_1_bout_6003:
-   tournament_id: 1
-   weight_id: 2
-   bout_number: 6003
-   w1: 
-   w2: 
-   bracket_position: 3/4
-   bracket_position_number: 1
-   loser1_name: Loser of 4004
-   loser2_name: Loser of 4005
-   round: 6
    mat_id: 
    finished: 
    w1_stat: 
@@ -2004,17 +986,1005 @@ tournament_1_bout_4006:
    winner_id: 
    win_type: 
 
-tournament_1_bout_4005:
+tournament_1_bout_4007:
    tournament_id: 1
-   weight_id: 2
-   bout_number: 4005
+   weight_id: 4
+   bout_number: 4007
+   w1: 
+   w2: 
+   bracket_position: Quarter
+   bracket_position_number: 2
+   loser1_name: Winner Pool 4
+   loser2_name: Runner Up Pool 3
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4008:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 4008
+   w1: 
+   w2: 
+   bracket_position: Quarter
+   bracket_position_number: 3
+   loser1_name: Winner Pool 2
+   loser2_name: Runner Up Pool 1
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4009:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 4009
+   w1: 
+   w2: 
+   bracket_position: Quarter
+   bracket_position_number: 4
+   loser1_name: Winner Pool 3
+   loser2_name: Runner Up Pool 4
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_5004:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 5004
+   w1: 
+   w2: 
+   bracket_position: Semis
+   bracket_position_number: 1
+   loser1_name: 
+   loser2_name: 
+   round: 5
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_5005:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 5005
+   w1: 
+   w2: 
+   bracket_position: Semis
+   bracket_position_number: 2
+   loser1_name: 
+   loser2_name: 
+   round: 5
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_5006:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 5006
+   w1: 
+   w2: 
+   bracket_position: Conso Semis
+   bracket_position_number: 1
+   loser1_name: Loser of 4006
+   loser2_name: Loser of 4007
+   round: 5
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_5007:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 5007
+   w1: 
+   w2: 
+   bracket_position: Conso Semis
+   bracket_position_number: 2
+   loser1_name: Loser of 4008
+   loser2_name: Loser of 4009
+   round: 5
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6004:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 6004
+   w1: 
+   w2: 
+   bracket_position: 1/2
+   bracket_position_number: 1
+   loser1_name: 
+   loser2_name: 
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6005:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 6005
+   w1: 
+   w2: 
+   bracket_position: 3/4
+   bracket_position_number: 1
+   loser1_name: Loser of 5004
+   loser2_name: Loser of 5005
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6006:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 6006
+   w1: 
+   w2: 
+   bracket_position: 5/6
+   bracket_position_number: 1
+   loser1_name: 
+   loser2_name: 
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6007:
+   tournament_id: 1
+   weight_id: 4
+   bout_number: 6007
+   w1: 
+   w2: 
+   bracket_position: 7/8
+   bracket_position_number: 1
+   loser1_name: Loser of 5006
+   loser2_name: Loser of 5007
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1013:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 1013
+   w1: 35
+   w2: 46
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1014:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 1014
+   w1: 45
+   w2: 39
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2012:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 2012
+   w1: 39
+   w2: 46
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2013:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 2013
+   w1: 35
+   w2: 45
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3012:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 3012
+   w1: 45
+   w2: 46
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3013:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 3013
+   w1: 39
+   w2: 35
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1015:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 1015
+   w1: 44
+   w2: 33
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1016:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 1016
+   w1: 36
+   w2: 37
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2014:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 2014
+   w1: 37
+   w2: 33
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2015:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 2015
+   w1: 44
+   w2: 36
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3014:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 3014
+   w1: 36
+   w2: 33
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3015:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 3015
+   w1: 37
+   w2: 44
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1017:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 1017
+   w1: 34
+   w2: 47
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1018:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 1018
+   w1: 43
+   w2: 41
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2016:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 2016
+   w1: 41
+   w2: 47
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2017:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 2017
+   w1: 34
+   w2: 43
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3016:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 3016
+   w1: 43
+   w2: 47
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3017:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 3017
+   w1: 41
+   w2: 34
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1019:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 1019
+   w1: 38
+   w2: 48
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1020:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 1020
+   w1: 40
+   w2: 42
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2018:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 2018
+   w1: 42
+   w2: 48
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2019:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 2019
+   w1: 38
+   w2: 40
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3018:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 3018
+   w1: 40
+   w2: 48
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3019:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 3019
+   w1: 42
+   w2: 38
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4010:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 4010
+   w1: 
+   w2: 
+   bracket_position: Semis
+   bracket_position_number: 1
+   loser1_name: Winner Pool 1
+   loser2_name: Winner Pool 4
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4011:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 4011
    w1: 
    w2: 
    bracket_position: Semis
    bracket_position_number: 2
    loser1_name: Winner Pool 2
-   loser2_name: Runner Up Pool 1
+   loser2_name: Winner Pool 3
    round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4012:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 4012
+   w1: 
+   w2: 
+   bracket_position: Conso Semis
+   bracket_position_number: 1
+   loser1_name: Runner Up Pool 1
+   loser2_name: Runner Up Pool 4
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4013:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 4013
+   w1: 
+   w2: 
+   bracket_position: Conso Semis
+   bracket_position_number: 2
+   loser1_name: Runner Up Pool 2
+   loser2_name: Runner Up Pool 3
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6008:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 6008
+   w1: 
+   w2: 
+   bracket_position: 1/2
+   bracket_position_number: 1
+   loser1_name: 
+   loser2_name: 
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6009:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 6009
+   w1: 
+   w2: 
+   bracket_position: 3/4
+   bracket_position_number: 1
+   loser1_name: Loser of 4010
+   loser2_name: Loser of 4011
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6010:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 6010
+   w1: 
+   w2: 
+   bracket_position: 5/6
+   bracket_position_number: 1
+   loser1_name: 
+   loser2_name: 
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_6011:
+   tournament_id: 1
+   weight_id: 5
+   bout_number: 6011
+   w1: 
+   w2: 
+   bracket_position: 7/8
+   bracket_position_number: 1
+   loser1_name: Loser of 4012
+   loser2_name: Loser of 4013
+   round: 6
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1021:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 1021
+   w1: 50
+   w2: 53
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_1022:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 1022
+   w1: 51
+   w2: 49
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 1
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2020:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 2020
+   w1: 52
+   w2: 49
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_2021:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 2021
+   w1: 50
+   w2: 51
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 2
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3020:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 3020
+   w1: 53
+   w2: 51
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_3021:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 3021
+   w1: 52
+   w2: 50
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 3
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4014:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 4014
+   w1: 49
+   w2: 50
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_4015:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 4015
+   w1: 53
+   w2: 52
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 4
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_5008:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 5008
+   w1: 51
+   w2: 52
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 5
+   mat_id: 
+   finished: 
+   w1_stat: 
+   w2_stat: 
+   score: 
+   winner_id: 
+   win_type: 
+
+tournament_1_bout_5009:
+   tournament_id: 1
+   weight_id: 6
+   bout_number: 5009
+   w1: 49
+   w2: 53
+   bracket_position: Pool
+   bracket_position_number: 
+   loser1_name: 
+   loser2_name: 
+   round: 5
    mat_id: 
    finished: 
    w1_stat: 

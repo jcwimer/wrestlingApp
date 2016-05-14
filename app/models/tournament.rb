@@ -1,7 +1,5 @@
 class Tournament < ActiveRecord::Base
 
-  include GeneratesLoserNames
-  include GeneratesTournamentMatches
 	belongs_to :user
 	has_many :schools, dependent: :destroy
 	has_many :weights, dependent: :destroy
@@ -22,10 +20,6 @@ class Tournament < ActiveRecord::Base
 			time = time * -1
 		end
 		time
-	end
-
-	def resetSchoolScores
-		schools.update_all("score = 0.0")
 	end
 
 	def tournament_types
@@ -49,19 +43,6 @@ class Tournament < ActiveRecord::Base
 
 	def matchesByRound(round)
 		matches.joins(:weight).where(round: round).order("weights.max")
-	end
-
-	def assignBouts
-		bout_counts = Hash.new(0)
-		matches.each do |m|
-			m.bout_number = m.round * 1000 + bout_counts[m.round]
-			bout_counts[m.round] += 1
-			m.save!
-		end
-	end
-	
-	def assignFirstMatchesToMats
-		assignMats(mats)
 	end
 	
 	def totalRounds

@@ -1,4 +1,4 @@
-class Pool
+class PoolGeneration
 	def initialize(weight)
 		@weight = weight
 		@tournament = @weight.tournament

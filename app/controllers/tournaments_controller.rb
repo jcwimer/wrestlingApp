@@ -163,7 +163,7 @@ class TournamentsController < ApplicationController
   end
 
   def generate_matches
-    @tournament.generateMatchups
+    GenerateTournamentMatches.new(@tournament).generate
   end
 
   def brackets
