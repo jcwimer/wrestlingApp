@@ -33,6 +33,10 @@ module.exports = function(lineman) {
       }
     },
 
+    removeTasks: {
+        common: ["jshint"]
+    },
+
     // Sass
     //
     // Lineman supports Sass via grunt-contrib-sass, which requires you first

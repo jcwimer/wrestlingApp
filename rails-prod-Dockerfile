@@ -54,6 +54,7 @@ RUN bundle install --without test
 WORKDIR /tmp
 COPY frontend/package.json package.json
 RUN npm install
+RUN npm install lineman
 RUN npm install -g lineman
 
 # Copy site into place.
@@ -64,9 +65,13 @@ ENV WRESTLINGDEV_SECRET_KEY_BASE 077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e446
 ENV WRESTLINGDEV_DEVISE_SECRET_KEY 2f29d49db6704377ba263f7cb9db085b386bcb301c0cd501126a674686ab1a109754071165b08cd72af03cec4642a4dd04361c994462254dd5d85e9594e8b9aa
 WORKDIR /var/www/
 ADD . /var/www/
+
+#Copy node_modules to /var/www
+RUN mv /tmp/node_modules /var/www/frontend/node_modules
+
 #RUN RAILS_ENV=production bundle exec rake db:migrate
 RUN RAILS_ENV=production bundle exec rake assets:precompile
-
+#RUN cp /var/www/frontend/dist/*.html /var/www/public/
 
 # Update the default apache site with the config we created.
 RUN rm /etc/apache2/sites-enabled/000-default.conf
@@ -78,9 +83,7 @@ RUN a2ensite default-ssl.conf
 RUN echo PassengerMaxPoolSize 3 >> /etc/apache2/apache2.conf
 RUN echo PassengerMinInstances  3 >> /etc/apache2/apache2.conf
 RUN echo PassengerPreStart *:443 >> /etc/apache2/apache2.conf
-
-#Copy node_modules to /var/www
-RUN mv /tmp/node_modules /var/www/frontend/node_modules 
+ 
 
 # By default, simply start apache.
 CMD /usr/sbin/apache2ctl -D FOREGROUND
