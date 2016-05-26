@@ -14,15 +14,11 @@ class Teampointadjust < ActiveRecord::Base
 	    #Team score needs calculated
         if self.wrestler_id != nil
             #In case this affects pool order
-            if self.wrestler.lastFinishedMatch
-	            self.wrestler.lastFinishedMatch.advance_wrestlers
-	        end
+            AdvanceWrestler.new(self.wrestler).advance
 	        self.wrestler.school.calcScore
 	    elsif self.school_id != nil
 	        self.school.calcScore
 	    end
 	end
-	if Rails.env.production?
-		handle_asynchronously :advance_wrestlers_and_calc_team_score
-	end
+
 end

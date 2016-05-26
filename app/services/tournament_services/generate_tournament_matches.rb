@@ -9,6 +9,9 @@ class GenerateTournamentMatches
         postMatchCreationActions
         PoolToBracketMatchGeneration.new(@tournament).assignLoserNames if @tournament.tournament_type == "Pool to bracket"
     end
+    if Rails.env.production?
+		handle_asynchronously :generate
+	end
     
     def standardStartingActions
         @tournament.curently_generating_matches = 1
