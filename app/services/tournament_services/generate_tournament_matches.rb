@@ -2,6 +2,19 @@ class GenerateTournamentMatches
     def initialize( tournament )
       @tournament = tournament
     end
+    
+    def generateWeight(weight)
+        WipeTournamentMatches.new(@tournament).wipeWeightMatches(weight)
+        @tournament.curently_generating_matches = 1
+        @tournament.save
+        unAssignBouts
+        PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatchesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
+        postMatchCreationActions
+        PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNamesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
+    end
+    if Rails.env.production?
+		handle_asynchronously :generateWeight
+	end
 
     def generate
         standardStartingActions
@@ -57,7 +70,13 @@ class GenerateTournamentMatches
 		end
 	end
     
-    
+    def unAssignBouts
+		bout_counts = Hash.new(0)
+		@tournament.matches.each do |m|
+			m.bout_number = nil
+			m.save!
+		end
+	end
     
     
 

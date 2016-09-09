@@ -3,6 +3,18 @@ class PoolToBracketGenerateLoserNames
       @tournament = tournament
     end
     
+  def assignLoserNamesWeight(weight)
+      matches_by_weight = @tournament.matches.where(weight_id: weight.id)
+      if weight.pool_bracket_type == "twoPoolsToSemi"
+        twoPoolsToSemiLoser(matches_by_weight)
+      elsif weight.pool_bracket_type == "fourPoolsToQuarter"
+        fourPoolsToQuarterLoser(matches_by_weight)
+      elsif weight.pool_bracket_type == "fourPoolsToSemi"
+        fourPoolsToSemiLoser(matches_by_weight)
+      end
+      saveMatches(matches_by_weight)
+  end
+
    def assignLoserNames
     matches_by_weight = nil
     @tournament.weights.each do |w|

@@ -51,6 +51,7 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/error' => 'tournaments#error'
   post "/tournaments/:id/swap" => "tournaments#swap", :as => :swap_wrestlers
   
+  post 'weights/:id/re_gen' => 'weights#re_gen', :as => :regen_weight
   
   #API
   get "/api/tournaments" => "api#tournaments"

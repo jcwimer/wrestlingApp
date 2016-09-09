@@ -1,6 +1,6 @@
 class WeightsController < ApplicationController
-  before_action :set_weight, only: [:show, :edit, :update, :destroy]
-  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
+  before_action :set_weight, only: [:show, :edit, :update, :destroy,:re_gen]
+  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit, :re_gen]
 
 
   # GET /weights/1
@@ -68,6 +68,11 @@ class WeightsController < ApplicationController
         format.html { redirect_to @tournament }
         format.json { head :no_content }
     end
+  end
+  
+  def re_gen
+    @tournament = @weight.tournament
+    GenerateTournamentMatches.new(@tournament).generateWeight(@weight)
   end
 
   private

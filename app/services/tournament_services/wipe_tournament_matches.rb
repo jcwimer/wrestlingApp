@@ -9,6 +9,10 @@ class WipeTournamentMatches
         resetSchoolScores
     end
     
+    def wipeWeightMatches(weight)
+       weight.matches.destroy_all 
+    end
+    
     def wipeMatches
        @tournament.matches.destroy_all
     end
