@@ -124,6 +124,14 @@ class Wrestler < ActiveRecord::Base
 		pool_matches = allMatches.select{|m| m.bracket_position == "Pool"}
 		pool_matches.select{|m| m.poolNumber == self.generatePoolNumber}
 	end
+
+	def hasAPoolBye
+		if weight.poolRounds(allMatches) > poolMatches.size
+			return true
+		else
+			return false
+		end
+	end
 	
 	def championshipAdvancementWins
 		matchesWon.select{|m| m.bracket_position == "Quarter" or m.bracket_position == "Semis"}

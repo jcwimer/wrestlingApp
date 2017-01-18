@@ -402,7 +402,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
     wrestler2 = Wrestler.where("name = ?", "Guy3").first
     #Won four in pool
-    assert_equal 20, wrestler1.totalTeamPoints
+    assert_equal 22, wrestler1.totalTeamPoints
     #Won two in pool
     assert_equal 16, wrestler2.totalTeamPoints
   end
@@ -466,25 +466,25 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   test "bonus points major" do
     endMatchWithMajor(2002,"Guy2")
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
-    assert_equal 3, wrestler1.teamPointsEarned
+    assert_equal 5, wrestler1.teamPointsEarned
   end
   
   test "bonus points pin" do
     endMatchWithPin(2002,"Guy2")
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
-    assert_equal 4, wrestler1.teamPointsEarned
+    assert_equal 6, wrestler1.teamPointsEarned
   end
   
   test "bonus points tech fall" do
     endMatchWithTech(2002,"Guy2")
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
-    assert_equal 3.5, wrestler1.teamPointsEarned
+    assert_equal 5.5, wrestler1.teamPointsEarned
   end
   
   test "pool team points win" do
     endMatch(2002,"Guy2")
     wrestler1 = Wrestler.where("name = ?", "Guy2").first
-    assert_equal 2, wrestler1.teamPointsEarned
+    assert_equal 4, wrestler1.teamPointsEarned
   end
   
   test "advancement points fourPoolsToQuarter Quarter" do
@@ -558,10 +558,10 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   
   test "Conso bracket wins are 1pt" do
     elevenManBracketToSemis
-    assert_equal 5, Wrestler.where("name = ?", "Guy17").first.teamPointsEarned
+    assert_equal 7, Wrestler.where("name = ?", "Guy17").first.teamPointsEarned
     
     endMatch(5006,"Guy17")
-    assert_equal 9, Wrestler.where("name = ?", "Guy17").first.teamPointsEarned
+    assert_equal 11, Wrestler.where("name = ?", "Guy17").first.teamPointsEarned
   end
   
   test "One pool placement points" do

@@ -34,7 +34,11 @@ class CalculateWrestlerTeamScore
     
     def poolPoints
         if @tournament.tournament_type == "Pool to bracket"
-            (@wrestler.poolWins.size * 2)
+            if @wrestler.poolWins.size >= 1 and @wrestler.hasAPoolBye == true
+                ((@wrestler.poolWins.size * 2) + 2)
+            else
+                (@wrestler.poolWins.size * 2)
+            end
         else
             0
         end
