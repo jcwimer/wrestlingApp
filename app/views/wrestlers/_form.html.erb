@@ -17,14 +17,12 @@
     <%= f.text_field :name %>
   </div>
   <% if can? :manage, @wrestler.tournament %> 
-    <% if @tournament %>
-        <%= f.hidden_field :school_id, :value => @school.id %>
-    <% else %>
         <div class="field">
           <%= f.label 'School' %><br>
           <%= f.collection_select :school_id, @school.tournament.schools, :id, :name %>
         </div>
-    <% end %>
+  <% else %>
+    <%= f.hidden_field :school_id, :value => @school.id %>
   <% end %>
   <div class="field">
     <%= f.label 'Weight Class' %><br>
