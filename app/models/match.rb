@@ -7,6 +7,10 @@ class Match < ActiveRecord::Base
 	
 
 	after_update do 
+	  after_update_actions
+	end
+	
+	def after_update_actions
 	  if self.finished == 1 && self.winner_id != nil
 	  	if self.w1 && self.w2
 		   	wrestler1.touch
@@ -28,9 +32,7 @@ class Match < ActiveRecord::Base
 			wrestler2.school.calcScore
 	   	end	
 	end
-	if Rails.env.production?
-		handle_asynchronously :calcSchoolPoints
-	end
+	
 
 	def mat_assigned
 		if self.mat
@@ -53,15 +55,11 @@ class Match < ActiveRecord::Base
 
 	def advance_wrestlers
 	   if self.w1 && self.w2	
-		@w1 = wrestler1
-		@w2 = wrestler2
-		@w1.advanceInBracket(self)
-		@w2.advanceInBracket(self)
+		AdvanceWrestler.new(wrestler1).advance
+		AdvanceWrestler.new(wrestler2).advance
 	   end
 	end
-	if Rails.env.production?
-		handle_asynchronously :advance_wrestlers
-	end
+
 
 	def bracketScore
 		if self.finished != 1

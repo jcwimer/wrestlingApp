@@ -1,0 +1,222 @@
+       
+        <a href="/#/tournaments" class="btn btn-default">Back to browse tournaments</a>                  
+        <h1>
+          {{ tournament.name }}
+        </h1>
+        <p>
+          <strong>Address:</strong>
+          {{ tournament.address }}
+        </p>
+        <p>
+          <strong>Director:</strong>
+          {{ tournament.director }}
+        </p>
+        <p>
+          <strong>Director email:</strong>
+          {{ tournament.director_email }}
+        </p>
+        <p>
+          <strong>Tournament Type:</strong>
+          {{ tournament.tournament_type }}
+        </p>
+        <br>
+        <div class="panel panel-default">
+              <a class="panel-heading" ng-click="toggleSchools()" style="display: block;">
+                <h3 class="panel-title">School Lineups and Team Scores<span class="pull-left clickable"><i ng-if="showSchools == false" class="glyphicon glyphicon-chevron-down"></i>
+                <i ng-if="showSchools == true" class="glyphicon glyphicon-chevron-up"></i></span></h3>
+              </a>
+              <div id="Schools" ng-if="showSchools == true">
+                  <div class="panel-body">
+                    <button ng-if="isTournamentOwner(user.id,tournament.user_id)" class="btn btn-success btn-sm" data-toggle="modal" data-target="#NewSchool">Create New School</button>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Score</th>
+                          <th ng-if="isTournamentOwner(user.id,tournament.user_id)">Actions</th>
+                        </tr>
+                      </thead>
+                    
+                    
+                      <tbody>
+                          <tr ng-repeat="school in tournament.schools | orderBy : 'score'">
+                            <td>{{ school.name }}</td>
+                            <td>{{ school.score }}</td>
+                            <td ng-if="isTournamentOwner(user.id,tournament.user_id)">
+                              <button class="btn btn-sm" data-toggle="modal" data-target="#EditSchool{{school.id}}">Edit</button>
+                              <button ng-click="deleteSchool(school)"class="btn btn-danger btn-sm">Destroy</button>
+                            </td>
+                          </tr>
+                       </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+              <a class="panel-heading" ng-click="toggleWeightSeeds()" style="display: block;">
+                <h3 class="panel-title">Weights and Seeds<span class="pull-left clickable"><i ng-if="showWeightSeeds == false" class="glyphicon glyphicon-chevron-down"></i>
+                <i ng-if="showWeightSeeds == true" class="glyphicon glyphicon-chevron-up"></i></span></h3>
+              </a>
+              <div id="Weights" ng-if="showWeightSeeds == true">
+                  <div class="panel-body">
+                    <p>Click weight class for seeds</p>
+                    <br>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Weight Class</th>
+                          <th>Bracket Size</th>
+                        </tr>
+                      </thead>
+                    
+                      <tbody>
+                          <tr ng-repeat="weight in tournament.weights | orderBy : 'max' : reverse">
+                            <td><a data-toggle="modal" data-target="#Weight{{weight.id}}">{{ weight.max }}</a></td>
+                            <td>{{ weight.bracket_size }}</td>
+                          </tr>
+                      </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+          <div class="panel panel-default">
+              <a class="panel-heading" ng-click="toggleBoutBoard()" style="display: block;" >
+                <h3 class="panel-title">Mats and Bout Board<span class="pull-left clickable"><i ng-if="showBoutBoard == false" class="glyphicon glyphicon-chevron-down"></i>
+                <i ng-if="showBoutBoard == true" class="glyphicon glyphicon-chevron-up"></i></span></h3>
+              </a>
+              <div id="Mats" ng-if="showBoutBoard == true">
+                  <div class="panel-body">
+                      <p ng-if="tournament.matches.length == 0">Matches have not been generated</p> 
+                      <table ng-if="tournament.matches.length > 0"  class="table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>On Mat</th>
+                            <th>On Deck</th>
+                            <th>In The Hole</th>
+                            <th>Warm Up</th>
+                          </tr>
+                        </thead>
+                      
+                        <tbody>
+                            <tr ng-repeat="mat in tournament.mats">
+                              <td>{{ mat.name }}</td>
+                              <td>{{ mat.unfinishedMatches[0].bout_number }} {{ mat.unfinishedMatches[0].w1_name }} vs. {{ mat.unfinishedMatches[0].w2_name }}</td>
+                              <td>{{ mat.unfinishedMatches[1].bout_number }} {{ mat.unfinishedMatches[0].w1_name }} vs. {{ mat.unfinishedMatches[0].w2_name }}</td>
+                              <td>{{ mat.unfinishedMatches[2].bout_number }} {{ mat.unfinishedMatches[0].w1_name }} vs. {{ mat.unfinishedMatches[0].w2_name }}</td>
+                              <td>{{ mat.unfinishedMatches[3].bout_number }} {{ mat.unfinishedMatches[0].w1_name }} vs. {{ mat.unfinishedMatches[0].w2_name }}</td>
+                            </tr>
+                        </tbody>
+                      </table>
+                      <br>
+                      <h3 ng-if="tournament.matches.length > 0" >Matches not assigned</h3>
+                      <br>
+                      <table ng-if="tournament.matches.length > 0"  class="table">
+                        <thead>
+                          <tr>
+                            <th>Round</th>
+                            <th>Bout Number</th>
+                            <th>Weight Class</th>
+                            <th>Matchup</th>
+                          </tr>
+                        </thead>
+                      
+                        <tbody>
+                            <tr ng-repeat="match in tournament.unassignedMatches">
+                              <td>Round {{ match.round }}</td>
+                              <td>{{ match.bout_number }}</td>
+                              <td>{{ match.weightClass }}</td>
+                              <td>{{ match.w1_name }} vs. {{ match.w2_name }}</td>
+                            </tr>
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+        
+    <!--Hidden modals for weight seeds-->
+    <div ng-repeat="weight in tournament.weights">
+      <div class="modal fade bs-example-modal-lg" id="Weight{{weight.id}}" tabindex="-1" role="dialog" aria-labelledby="Weight{{weight.id}}">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 class="modal-title" id="gridSystemModalLabel">{{weight.max}}</h3>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>School</th>
+                              <th>Seed</th>
+                              <th>Record</th>
+                              <th>Criteria</th>
+                              <th>Extra?</th>  
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="wrestler in weight.wrestlers | orderBy : 'original_seed' : reverse">
+                               <td>{{wrestler.name}}</td> 
+                               <td>{{wrestler.school}}</td>
+                               <td>{{wrestler.original_seed}}</td>
+                               <td>{{wrestler.season_win}}-{{wrestler.season_loss}}</td>
+                               <td>{{wrestler.criteria}} Win %{{wrestler.seasonWinPercentage}}</td>
+                               <td>{{wrestler.extra}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+          </div>
+        </div>      
+    </div>
+    
+    <!--Hidden model for new school-->
+    <div class="modal fade bs-example-modal-lg" id="NewSchool" tabindex="-1" role="dialog" aria-labelledby="NewSchool">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 class="modal-title" id="gridSystemModalLabel">New School for {{tournament.name}}</h3>
+                </div>
+                <div class="modal-body">
+                     <form class="form" id="formNewSchool" name="form" ng-submit="saveNewSchool()"> 
+                                <div class="form-group">
+                                  <input name="school[name]" class="form-control" id="name" type="text" placeholder="School Name" ng-model="newSchool.name"><br>
+                                  <input type="submit" id="btnSaveNewSchool" class="btn btn-success" value="Save School">
+                                </div>
+                      </form> 
+                </div>
+            </div>
+          </div>
+        </div> 
+        
+        <!--Hidden modals for school edit forms-->
+    <div ng-repeat="school in tournament.schools">
+      <div class="modal fade bs-example-modal-lg" id="EditSchool{{school.id}}" tabindex="-1" role="dialog" aria-labelledby="EditSchool{{school.id}}">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 class="modal-title" id="gridSystemModalLabel">Edit {{school.name}}</h3>
+                </div>
+                <div class="modal-body">
+                     <form class="form" id="formEditSchool{{school.id}}" name="form" ng-submit="updateSchool(school)"> 
+                                <div class="form-group">
+                                  <input name="school[name]" class="form-control" id="name" type="text" placeholder="School Name" ng-model="school.name"><br>
+                                  <input type="submit" id="btnSaveNewSchool" class="btn btn-success" value="Save School">
+                                </div>
+                      </form> 
+                </div>
+            </div>
+          </div>
+        </div>      
+    </div>
+    
+
+
+
+

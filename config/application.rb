@@ -29,7 +29,15 @@ module Wrestling
     
     config.active_job.queue_adapter = :delayed_job
     
+    config.rails_lineman.lineman_project_location = "frontend"
     
+    config.to_prepare do
+      DeviseController.respond_to :html, :json
+    end
+    
+    config.autoload_paths += %W(#{config.root}/app/services/tournament_services)
+    config.autoload_paths += %W(#{config.root}/app/services/wrestler_services)
+    config.autoload_paths += %W(#{config.root}/app/services/bracket_advancement)
   end
 
   

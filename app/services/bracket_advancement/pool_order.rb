@@ -109,21 +109,26 @@ class PoolOrder
 	end
 	
 	def fastestPin
-		timeArray = []
-		wrestlersWithSamePoints.each do |w|
-			timeArray << w.fastestPin
+		wrestlersWithSamePointsWithPins = []
+		wrestlersWithSamePoints.each do |wr|
+			if wr.pinWins.size > 0
+				wrestlersWithSamePointsWithPins << wr	
+			end
 		end
-		fastest = timeArray.max
-		wrestlersWithFastestPin = wrestlersWithSamePoints.select{|w| w.fastestPin == fastest}
-		addPointsToWrestlersAhead(wrestlersWithFastestPin.first)
-		wrestlersWithFastestPin.each do |wr|
-			addPoints(wr)
-		end
-		secondFastest = timeArray.sort[-2]
-		wrestlersWithSecondFastestPin = wrestlersWithSamePoints.select{|w| w.fastestPin == secondFastest}
-		addPointsToWrestlersAhead(wrestlersWithSecondFastestPin.first)
-		wrestlersWithSecondFastestPin.each do |wr|
-			addPoints(wr)
+		if wrestlersWithSamePointsWithPins.size > 0
+			fastest = wrestlersWithSamePointsWithPins.sort_by{|w| w.fastestPin.pinTime}.first.fastestPin
+			secondFastest = wrestlersWithSamePointsWithPins.sort_by{|w| w.fastestPin.pinTime}.second.fastestPin
+			wrestlersWithFastestPin = wrestlersWithSamePointsWithPins.select{|w| w.fastestPin.pinTime == fastest.pinTime}
+			addPointsToWrestlersAhead(wrestlersWithFastestPin.first)
+			wrestlersWithFastestPin.each do |wr|
+				addPoints(wr)
+			end
+			
+			wrestlersWithSecondFastestPin = wrestlersWithSamePointsWithPins.select{|w| w.fastestPin.pinTime == secondFastest.pinTime}
+			addPointsToWrestlersAhead(wrestlersWithSecondFastestPin.first)
+			wrestlersWithSecondFastestPin.each do |wr|
+				addPoints(wr)
+			end
 		end
 	end
 	

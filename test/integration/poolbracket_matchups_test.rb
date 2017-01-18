@@ -3,7 +3,7 @@ require 'test_helper'
 class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
-    @tournament.generateMatchups
+    GenerateTournamentMatches.new(@tournament).generate
   end
 
   def createTournament(numberOfWrestlers)
@@ -69,7 +69,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   end
 
   def checkForByeInPool(tournament)
-    tournament.generateMatchups
+    GenerateTournamentMatches.new(tournament).generate
     matchups = tournament.matches
     tournament.weights.each do |w|
       w.wrestlers.each do |wr|

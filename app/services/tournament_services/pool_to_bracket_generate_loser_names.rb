@@ -1,8 +1,24 @@
-module GeneratesLoserNames
-  def assignLoserNames
+class PoolToBracketGenerateLoserNames
+    def initialize( tournament )
+      @tournament = tournament
+    end
+    
+  def assignLoserNamesWeight(weight)
+      matches_by_weight = @tournament.matches.where(weight_id: weight.id)
+      if weight.pool_bracket_type == "twoPoolsToSemi"
+        twoPoolsToSemiLoser(matches_by_weight)
+      elsif weight.pool_bracket_type == "fourPoolsToQuarter"
+        fourPoolsToQuarterLoser(matches_by_weight)
+      elsif weight.pool_bracket_type == "fourPoolsToSemi"
+        fourPoolsToSemiLoser(matches_by_weight)
+      end
+      saveMatches(matches_by_weight)
+  end
+
+   def assignLoserNames
     matches_by_weight = nil
-    weights.each do |w|
-      matches_by_weight = matches.where(weight_id: w.id)
+    @tournament.weights.each do |w|
+      matches_by_weight = @tournament.matches.where(weight_id: w.id)
       if w.pool_bracket_type == "twoPoolsToSemi"
         twoPoolsToSemiLoser(matches_by_weight)
       elsif w.pool_bracket_type == "fourPoolsToQuarter"
@@ -12,7 +28,7 @@ module GeneratesLoserNames
       end
       saveMatches(matches_by_weight)
     end
-  end
+   end
 
   def twoPoolsToSemiLoser(matches_by_weight)
     match1 = matches_by_weight.select{|m| m.loser1_name == "Winner Pool 1"}.first
@@ -59,5 +75,6 @@ module GeneratesLoserNames
       matches.each do |m|
         m.save!
       end
-  end
+  end 
+    
 end

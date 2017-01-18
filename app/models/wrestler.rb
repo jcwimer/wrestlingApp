@@ -22,28 +22,19 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def totalTeamPoints
-		if self.extra
-			return 0
-		else
-			teamPointsEarned - totalDeductedPoints
-		end
+		CalculateWrestlerTeamScore.new(self).totalScore
 	end
 	
 	def teamPointsEarned
-		points = 0.0
-		points = points + (poolWins.size * 2) + (championshipAdvancementWins.size * 2) + (consoAdvancementWins.size * 1) + (pinWins.size * 2) + (techWins.size * 1.5)	+ (majorWins.size * 1) + placementPoints
+		CalculateWrestlerTeamScore.new(self).earnedPoints
 	end
 	
 	def placementPoints
-		PoolBracketPlacementPoints.new(self).calcPoints
+		CalculateWrestlerTeamScore.new(self).placementPoints	
 	end
 
 	def totalDeductedPoints
-		points = 0
-		self.deductedPoints.each do |d|
-			points = points + d.points
-		end
-		points
+		CalculateWrestlerTeamScore.new(self).deductedPoints
 	end
 	
 	def nextMatch
@@ -88,15 +79,15 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def resultByBout(bout)
-	   @match = allMatches.select{|m| m.bout_number == bout and m.finished == 1}
-	   if @match.size == 0
+	   bout_match = allMatches.select{|m| m.bout_number == bout and m.finished == 1}
+	   if bout_match.size == 0
  		return ""
 	   end
-	   if @match.first.winner_id == self.id
-		return "W #{@match.first.bracketScore}"
+	   if bout_match.first.winner_id == self.id
+		return "W #{bout_match.first.bracketScore}"
 	   end
-	   if @match.first.winner_id != self.id
-		return "L #{@match.first.bracketScore}"
+	   if bout_match.first.winner_id != self.id
+		return "L #{bout_match.first.bracketScore}"
 	   end
 	end
 
@@ -113,26 +104,25 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def generatePoolNumber
-		@pool = self.weight.returnPoolNumber(self)
+		self.weight.returnPoolNumber(self)
 	end
 
 	def boutByRound(round)
-		@match = allMatches.select{|m| m.round == round}.first
-		if @match.blank?
+		round_match = allMatches.select{|m| m.round == round}.first
+		if round_match.blank?
 			return "BYE"
 		else
-			return @match.bout_number
+			return round_match.bout_number
 		end
 	end
 
 	def allMatches
-		@matches = matches.select{|m| m.w1 == self.id or m.w2 == self.id}
-		return @matches
+		return matches.select{|m| m.w1 == self.id or m.w2 == self.id}
 	end
        
 	def poolMatches
-		@poolMatches = allMatches.select{|m| m.bracket_position == "Pool"}
-		@poolMatches.select{|m| m.poolNumber == self.generatePoolNumber}
+		pool_matches = allMatches.select{|m| m.bracket_position == "Pool"}
+		pool_matches.select{|m| m.poolNumber == self.generatePoolNumber}
 	end
 	
 	def championshipAdvancementWins
@@ -213,7 +203,4 @@ class Wrestler < ActiveRecord::Base
 		end
 	end
 
-	def advanceInBracket(match)
-		PoolAdvance.new(self,match).advanceWrestler
-	end
 end

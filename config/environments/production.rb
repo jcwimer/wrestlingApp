@@ -110,4 +110,7 @@ Wrestling::Application.configure do
     config.action_mailer.perform_deliveries = true
     #Devise needs origin of email
     Rails.application.routes.default_url_options[:host] = 'https://wrestlingdev.com'
+
+    #For lineman creating assets
+    config.serve_static_files = true
 end

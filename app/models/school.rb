@@ -24,6 +24,9 @@ class School < ActiveRecord::Base
     	self.score = newScore
     	self.save
    	end
+   	if Rails.env.production?
+		handle_asynchronously :calcScore
+	end
 	
 	def totalWrestlerPoints
 		points = 0

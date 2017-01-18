@@ -51,6 +51,15 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/error' => 'tournaments#error'
   post "/tournaments/:id/swap" => "tournaments#swap", :as => :swap_wrestlers
   
+  post 'weights/:id/re_gen' => 'weights#re_gen', :as => :regen_weight
+  
+  #API
+  get "/api/tournaments" => "api#tournaments"
+  get "/api/tournaments/user" => "api#currentUserTournaments"
+  get "/api/tournaments/:tournament" => "api#tournament"
+  get "/api/index" => "api#index"
+  post "/api/tournaments/new" => "newTournament"
+  
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

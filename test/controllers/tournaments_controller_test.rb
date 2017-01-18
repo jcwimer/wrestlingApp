@@ -5,7 +5,7 @@ include Devise::TestHelpers
 
   setup do
      @tournament = Tournament.find(1)
-     @tournament.generateMatchups
+    # @tournament.generateMatchups
      @school = @tournament.schools.first
      @wrestlers = @tournament.weights.first.wrestlers
      @adjust = Teampointadjust.find(1)
