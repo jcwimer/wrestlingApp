@@ -404,7 +404,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     #Won four in pool
     assert_equal 22, wrestler1.totalTeamPoints
     #Won two in pool
-    assert_equal 16, wrestler2.totalTeamPoints
+    assert_equal 18, wrestler2.totalTeamPoints
   end
   
   test "advancement points 1/2" do
@@ -547,13 +547,13 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
   
   test "Championship bracket wins are 2pts" do
     elevenManBracketToQuarter
-    assert_equal 7, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
+    assert_equal 9, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
     
     endMatch(4006,"Guy11")
-    assert_equal 15, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
+    assert_equal 17, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
     endMatch(4007,"Guy14")
     endMatch(5004,"Guy11")
-    assert_equal 20, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
+    assert_equal 22, Wrestler.where("name = ?", "Guy11").first.teamPointsEarned
   end
   
   test "Conso bracket wins are 1pt" do

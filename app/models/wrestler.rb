@@ -126,7 +126,7 @@ class Wrestler < ActiveRecord::Base
 	end
 
 	def hasAPoolBye
-		if weight.poolRounds(allMatches) > poolMatches.size
+		if weight.poolRounds(matches) > poolMatches.size
 			return true
 		else
 			return false
