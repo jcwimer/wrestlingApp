@@ -67,17 +67,17 @@ class PoolBracketPlacementPoints
     end
     
     def onePool
-       poolOrder = @wrestler.weight.poolOrder(1)
-       if @wrestler == poolOrder.first
-           return firstPlace
-       elsif @wrestler == poolOrder.second 
-            return secondPlace
-       elsif @wrestler == poolOrder.third 
-            return thirdPlace
-       elsif @wrestler == poolOrder.fourth 
-            return fourthPlace
-       end
-       return 0
+           poolOrder = @wrestler.weight.poolOrder(1)
+           if @wrestler == poolOrder.first
+               return firstPlace
+           elsif @wrestler == poolOrder.second 
+                return secondPlace
+           elsif @wrestler == poolOrder.third 
+                return thirdPlace
+           elsif @wrestler == poolOrder.fourth 
+                return fourthPlace
+           end
+            return 0
     end
     
     def finalMatchPoints

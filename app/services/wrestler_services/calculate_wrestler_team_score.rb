@@ -5,9 +5,9 @@ class CalculateWrestlerTeamScore
     end
     
     def totalScore
-        if @wrestler.extra
-			return 0
-		else
+        if @wrestler.extra or @wrestler.matches.count == 0
+			return 0            
+        else
             earnedPoints - deductedPoints
         end
     end
