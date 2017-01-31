@@ -52,19 +52,7 @@
   </div>
 <% end %>
 
-<% if can? :manage, @wrestler.tournament %> 
-<br><br>
-<h3>Swap Bracket Position</h3>
-  <%= form_for(Wrestler.new, url: swap_wrestlers_path(@wrestler.tournament)) do |f| %>
-      <%= f.hidden_field :originalId, :value => @wrestler.id %>
-      <div class="field">
-        <%= f.label 'Swap With' %><br>
-        <%= f.collection_select :swapId, @wrestler.weight.wrestlers, :id, :name %>
-      </div>
-      <br>
-      <%= submit_tag "Swap", :class=>"btn btn-success"%>
-  <% end %>  
-<% end %>
+
 
 
 

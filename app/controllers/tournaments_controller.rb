@@ -13,7 +13,7 @@ class TournamentsController < ApplicationController
     @wrestler = Wrestler.find(params[:wrestler][:originalId])
     respond_to do |format|
       if SwapWrestlers.new.swapWrestlers(params[:wrestler][:originalId], params[:wrestler][:swapId])
-        format.html { redirect_to @wrestler, notice: 'Wrestler was successfully swaped.' }
+        format.html { redirect_to "/tournaments/#{@wrestler.tournament.id}/brackets/#{@wrestler.weight.id}", notice: 'Wrestler was successfully swaped.' }
         format.json { render action: 'show', status: :created, location: @wrestler }
       end
     end
