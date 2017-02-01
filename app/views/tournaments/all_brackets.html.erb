@@ -1,6 +1,6 @@
 <% cache ["#{@tournament.id}_all_brackets", @tournament] do %>
 
-    <style>
+<style>
     .pagebreak { 
       page-break-after: always;
       border: none;
@@ -13,10 +13,57 @@
         left: 1in;
         height: 1in;
     }
-    
-    
-    
-    </style>
+/*
+ *  Bracket Layout Specifics
+*/
+main, ul {
+  display:flex;
+}
+
+ul {
+  flex-direction:column;
+  width: 100px;
+  list-style:none;
+  padding:0;
+}
+
+.game + li {
+  flex-grow:1;
+}
+
+li:first-child,li:last-child {
+  flex-grow:.5;
+}
+
+.game {
+  padding-left:5px;
+}
+
+.winner {
+  font-weight:bold;
+}
+
+.game span {
+  float:right;
+  margin-right:5px;
+}
+
+.game-top {
+  border-bottom:1px solid #aaa;
+}
+
+.game-top + li {
+  border-right:1px solid #aaa; min-height:30px;
+}
+
+.bracket-winner {
+  border-bottom:1px solid #aaa;
+}
+
+.game-bottom {
+  border-top:1px solid #aaa;
+}
+</style>
     
     <div id="exportable">
     <% @tournament.weights.sort_by{|w| w.max}.each do |w| %>
