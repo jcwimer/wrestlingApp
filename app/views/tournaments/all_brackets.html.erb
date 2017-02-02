@@ -1,6 +1,6 @@
-<% cache ["all_brackets", @tournament] do %>
+<% cache ["#{@tournament.id}_all_brackets", @tournament] do %>
 
-    <style>
+<style>
     .pagebreak { 
       page-break-after: always;
       border: none;
@@ -13,39 +13,87 @@
         left: 1in;
         height: 1in;
     }
-    
-    
-    
-    </style>
+/*
+ *  Bracket Layout Specifics
+*/
+main, ul {
+  display:flex;
+}
+
+ul {
+  flex-direction:column;
+  width: 100px;
+  list-style:none;
+  padding:0;
+}
+
+.game + li {
+  flex-grow:1;
+}
+
+li:first-child,li:last-child {
+  flex-grow:.5;
+}
+
+.game {
+  padding-left:5px;
+}
+
+.winner {
+  font-weight:bold;
+}
+
+.game span {
+  float:right;
+  margin-right:5px;
+}
+
+.game-top {
+  border-bottom:1px solid #aaa;
+}
+
+.game-top + li {
+  border-right:1px solid #aaa; min-height:30px;
+}
+
+.bracket-winner {
+  border-bottom:1px solid #aaa;
+}
+
+.game-bottom {
+  border-top:1px solid #aaa;
+}
+</style>
     
     <div id="exportable">
     <% @tournament.weights.sort_by{|w| w.max}.each do |w| %>
         <table class='pagebreak'>
-        <td>
-            <% @weight = w %>
-            <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
-            <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
-           <% @pools = w.poolRounds(@matches) %>
-            <h5><%= @weight.max %> lbs Bracket</h5>
-    
-            <%= render 'pool' %>
-        </td>
-        </table>
-        <table class='pagebreak'>
-        <td>
-            <% if w.pool_bracket_type == "twoPoolsToFinal" %>
-            	<%= render 'twoPoolFinalBracket' %>
-            <% end %>
-            <% if w.pool_bracket_type == "twoPoolsToSemi" %>
-            	<%= render 'twoPoolSemiBracket' %>
-            <% end %>
-            <% if w.pool_bracket_type == "fourPoolsToQuarter" %>
-            	<%= render 'fourPoolQuarterBracket' %>
-            <% end %>
-            <% if w.pool_bracket_type == "fourPoolsToSemi" %>
-            	<%= render 'fourPoolSemiBracket' %>
-            <% end %>
-        </td>
+        <h5><strong><%= @tournament.name %> - <%= w.max %> lbs Bracket</strong></h5>
+        <tr>
+            <td valign="top" style="padding: 10px;">
+                <% @weight = w %>
+                <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
+                <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
+                <% @pools = w.poolRounds(@matches) %>
+                <%= render 'pool' %>
+            </td>
+            
+            
+            <td valign="top" style="padding: 10px;">
+                <% if w.pool_bracket_type == "twoPoolsToFinal" %>
+                	<%= render 'twoPoolFinalBracket' %>
+                <% end %>
+                <% if w.pool_bracket_type == "twoPoolsToSemi" %>
+                	<%= render 'twoPoolSemiBracket' %>
+                <% end %>
+                <% if w.pool_bracket_type == "fourPoolsToQuarter" %>
+                	<%= render 'fourPoolQuarterBracket' %>
+                <% end %>
+                <% if w.pool_bracket_type == "fourPoolsToSemi" %>
+                	<%= render 'fourPoolSemiBracket' %>
+                <% end %>
+            </td>
+        </tr>
         </table>
     <% end %>
     </div>

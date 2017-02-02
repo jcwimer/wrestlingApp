@@ -4,7 +4,7 @@
   <% if can? :manage, @school %>
     | <%= link_to "Edit #{@wrestler.name}", edit_wrestler_path(@wrestler), :class=>"btn btn-primary" %>
   <% end %>
-<% cache ["wrestlers", @wrestler] do %> 
+<% cache ["#{@wrestler.id}", @wrestler] do %> 
   <br>
   <br>
   <p>

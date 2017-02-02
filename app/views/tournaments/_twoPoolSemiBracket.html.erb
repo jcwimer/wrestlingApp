@@ -1,122 +1,59 @@
-<style>
-/*
- *  Flex Layout Specifics
-*/
-main{
-  display:flex;
-  flex-direction:row;
-}
-.round{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  width:200px;
-  list-style:none;
-  padding:0;
-}
-  .round .spacer{ flex-grow:1; }
-  .round .spacer:first-child,
-  .round .spacer:last-child{ flex-grow:.5; }
-
-  .round .game-spacer{
-    flex-grow:1;
-  }
-
-/*
- *  General Styles
-*/
-body{
-  font-family:sans-serif;
-  font-size:small;
-  padding:10px;
-  line-height:1.4em;
-}
-
-li.game{
-  padding-left:20px;
-}
-
-  li.game.winner{
-    font-weight:bold;
-  }
-  li.game span{
-    float:right;
-    margin-right:5px;
-  }
-
-  li.game-top{ border-bottom:1px solid #aaa; }
-
-  li.game-spacer{ 
-    border-right:1px solid #aaa;
-    min-height:40px;
-  }
-
-  li.game-bottom{ 
-    border-top:1px solid #aaa;
-  }
-
-
-</style>
-
-</br>
-<h5>Championship Bracket After Pool</h5>
+<h5>Bracket After Pool</h5>
 <main id="bracket">
 	<ul class="round round-1">
 		<% @matches.select{|m|m.bracket_position == "Semis"}.sort_by{|m| m.bracket_position_number}.each do |match| %>
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
 		<li class="game game-top "><%= match.w1_name %> <span></span></li>
-		<li class="game game-spacer"><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
+		<li><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
 		<li class="game game-bottom "><%= match.w2_name %><span></span></li>
 
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
 		<% end %>
 	</ul>
 	<ul class="round round-2">
 		<% @matches.select{|m|m.bracket_position == "1/2"}.each do |match| %>
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
 		<li class="game game-top "><%= match.w1_name %> <span></span></li>
-		<li class="game game-spacer"><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
+		<li><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
 		<li class="game game-bottom "><%= match.w2_name %><span></span></li>
 
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
 	</ul>
 	<ul class="round round-3">
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
-		<li class="game game-top "> <%= match.winnerName %><span></span></li>
+		<li class="bracket-winner"><%= match.winnerName %><span></span></li>
 		1st
 
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
 	</ul>	
 		<% end %>
 </main>
-</br>
 
-<h5>3rd/4th</h5>
 <main id="bracket">
 	<ul class="round round-1">
 		<% @matches.select{|m|m.bracket_position == "3/4"}.each do |match| %>
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
 		<li class="game game-top "><%= match.w1_name %> <span></span></li>
-		<li class="game game-spacer"><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
+		<li><%= match.bout_number %> <%= match.bracketScore %>&nbsp;</li>
 		<li class="game game-bottom "><%= match.w2_name %><span></span></li>
 
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
 	</ul>
 	<ul class="round round-2">
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
-		<li class="game game-top "> <%= match.winnerName %><span></span></li>
+		<li class="bracket-winner"><%= match.winnerName %><span></span></li>
 		3rd
 
-		<li class="spacer">&nbsp;</li>
+		<li>&nbsp;</li>
 		
 	</ul>	
 		<% end %>

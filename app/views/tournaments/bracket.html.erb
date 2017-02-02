@@ -1,5 +1,57 @@
+<style>
+/*
+ *  Bracket Layout Specifics
+*/
+main {
+  display:flex;
+}
 
-<% cache ["brackets", @weight] do %>
+.round {
+  display:flex;
+  flex-direction:column;
+  width: 100px;
+  list-style:none;
+  padding:0;
+}
+
+.game + li {
+  flex-grow:1;
+}
+
+li:first-child,li:last-child {
+  flex-grow:.5;
+}
+
+.game {
+  padding-left:5px;
+}
+
+.winner {
+  font-weight:bold;
+}
+
+.game span {
+  float:right;
+  margin-right:5px;
+}
+
+.game-top {
+  border-bottom:1px solid #aaa;
+}
+
+.game-top + li {
+  border-right:1px solid #aaa; min-height:30px;
+}
+
+.bracket-winner {
+  border-bottom:1px solid #aaa;
+}
+
+.game-bottom {
+  border-top:1px solid #aaa;
+}
+</style>
+<% cache ["#{@weight.id}_bracket", @weight] do %>
 	</br>
 	</br>
 	</br>
@@ -7,24 +59,48 @@
 	<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %>
 	<br>
 	<br>
-	<h1><%= @weight.max %> lbs Bracket</h1>
-	
-	<%= render 'pool' %>
-	
-	<% if @bracketType == "twoPoolsToFinal" %>
-		<%= render 'twoPoolFinalBracket' %>
-	<% end %>
-	<% if @bracketType == "twoPoolsToSemi" %>
-		<%= render 'twoPoolSemiBracket' %>
-	<% end %>
-	<% if @bracketType == "fourPoolsToQuarter" %>
-		<%= render 'fourPoolQuarterBracket' %>
-	<% end %>
-	<% if @bracketType == "fourPoolsToSemi" %>
-		<%= render 'fourPoolSemiBracket' %>
-	<% end %>
+	<table class='pagebreak'>
+        <h5><strong><%= @tournament.name %> - <%= @weight.max %> lbs Bracket</strong></h5>
+        <tr>
+            <td valign="top" style="padding: 10px;">
+                <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
+                <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
+                <% @pools = @weight.poolRounds(@matches) %>
+                <%= render 'pool' %>
+            </td>
+            
+            
+            <td valign="top" style="padding: 10px;">
+                <% if @weight.pool_bracket_type == "twoPoolsToFinal" %>
+                	<%= render 'twoPoolFinalBracket' %>
+                <% end %>
+                <% if @weight.pool_bracket_type == "twoPoolsToSemi" %>
+                	<%= render 'twoPoolSemiBracket' %>
+                <% end %>
+                <% if @weight.pool_bracket_type == "fourPoolsToQuarter" %>
+                	<%= render 'fourPoolQuarterBracket' %>
+                <% end %>
+                <% if @weight.pool_bracket_type == "fourPoolsToSemi" %>
+                	<%= render 'fourPoolSemiBracket' %>
+                <% end %>
+            </td>
+        </tr>
+        </table>
+<% end %>
+
+<% if can? :manage, @tournament %> 
 	<br><br>
-	<% if @weight.wrestlers.size <= 6 && @weight.allPoolMatchesFinished(1) %>
-		<%= render 'onePoolResults' %>
-	<% end %>
+	<h3>Swap Bracket Position</h3>
+	  <%= form_for(Wrestler.new, url: swap_wrestlers_path(@tournament)) do |f| %>
+	      <div class="field">
+	        <%= f.label 'Wrestler 1' %><br>
+	        <%= f.collection_select :originalId, @weight.wrestlers, :id, :name %>
+	      </div>
+	      <div class="field">
+	        <%= f.label 'Wrestler 2' %><br>
+	        <%= f.collection_select :swapId, @weight.wrestlers, :id, :name %>
+	      </div>
+	      <br>
+	      <%= submit_tag "Swap", :class=>"btn btn-success"%>
+	  <% end %>  
 <% end %>
