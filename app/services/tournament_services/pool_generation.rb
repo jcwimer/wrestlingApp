@@ -6,12 +6,13 @@ class PoolGeneration
 	end
 
 	def generatePools
+		GeneratePoolNumbers.new(@weight).savePoolNumbers
 		pools = @weight.pools
 		while @pool <= pools
 			roundRobin
 			@pool += 1
 		end
-	end
+	end		
 
 	def roundRobin
 		wrestlers = @weight.wrestlersForPool(@pool)

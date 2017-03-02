@@ -6,7 +6,7 @@ class PoolAdvance
  end
 
  def advanceWrestler
-   if @wrestler.weight.allPoolMatchesFinished(@wrestler.generatePoolNumber) && @wrestler.finishedBracketMatches.size == 0
+   if @wrestler.weight.allPoolMatchesFinished(@wrestler.pool) && @wrestler.finishedBracketMatches.size == 0
      poolToBracketAdvancment
    end
    if @wrestler.finishedBracketMatches.size > 0
@@ -15,7 +15,7 @@ class PoolAdvance
  end
 
  def poolToBracketAdvancment
-   pool = @wrestler.generatePoolNumber
+   pool = @wrestler.pool
    if @wrestler.weight.wrestlers.size > 6
      poolOrder = @wrestler.weight.poolOrder(pool)
      #Take pool order and move winner and runner up to correct match based on w1_name and w2_name

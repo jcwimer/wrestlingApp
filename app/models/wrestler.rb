@@ -4,7 +4,7 @@ class Wrestler < ActiveRecord::Base
 	has_one :tournament, through: :weight
 	has_many :matches, through: :weight
 	has_many :deductedPoints, class_name: "Teampointadjust"
-	attr_accessor :poolNumber, :poolAdvancePoints, :originalId, :swapId
+	attr_accessor :poolAdvancePoints, :originalId, :swapId
 	
 	validates :name, :weight_id, :school_id, presence: true
 
@@ -103,10 +103,6 @@ class Wrestler < ActiveRecord::Base
 		end
 	end
 
-	def generatePoolNumber
-		self.weight.returnPoolNumber(self)
-	end
-
 	def boutByRound(round)
 		round_match = allMatches.select{|m| m.round == round}.first
 		if round_match.blank?
@@ -122,7 +118,7 @@ class Wrestler < ActiveRecord::Base
        
 	def poolMatches
 		pool_matches = allMatches.select{|m| m.bracket_position == "Pool"}
-		pool_matches.select{|m| m.poolNumber == self.generatePoolNumber}
+		pool_matches.select{|m| m.poolNumber == self.pool}
 	end
 
 	def hasAPoolBye

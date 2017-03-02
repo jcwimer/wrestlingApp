@@ -3,7 +3,7 @@ require 'test_helper'
 class SingleTestTest < ActionDispatch::IntegrationTest
   def setup
     @tournament = Tournament.find(1)
-    # @tournament.generateMatchups
+    # GenerateTournamentMatches.new(@tournament).generate
   end
   
   #rake test test/integration/single_test_test.rb > matches.txt
@@ -47,6 +47,7 @@ class SingleTestTest < ActionDispatch::IntegrationTest
     #   puts "   season_win: #{w.season_win}"
     #   puts "   criteria: #{w.criteria}"
     #   puts "   extra: #{w.extra}"
+    #   puts "   pool: #{w.pool}"
     #   puts ""
     #   count += 1
     # end

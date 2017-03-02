@@ -130,7 +130,7 @@ class Match < ActiveRecord::Base
 	end
 	def poolNumber
 		if self.w1?
-			wrestler1.generatePoolNumber
+			wrestler1.pool
 		end
 	end
 	
