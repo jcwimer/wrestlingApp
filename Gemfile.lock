@@ -97,9 +97,6 @@ GEM
     parallel (1.11.2)
     parser (2.4.0.0)
       ast (~> 2.2)
-    passenger (5.1.4)
-      rack
-      rake (>= 0.8.1)
     powerpack (0.1.1)
     puma (3.8.2)
     rack (1.6.8)
@@ -124,8 +121,6 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.3)
       loofah (~> 2.0)
-    rails-lineman (0.3.0)
-      rake
     rails_12factor (0.0.3)
       rails_serve_static_assets
       rails_stdout_logging
@@ -199,10 +194,8 @@ DEPENDENCIES
   jquery-rails
   mysql2
   newrelic_rpm
-  passenger
   puma
   rails (= 4.2.5)
-  rails-lineman
   rails_12factor
   rb-readline
   round_robin_tournament
@@ -218,4 +211,4 @@ RUBY VERSION
    ruby 2.3.0p0
 
 BUNDLED WITH
-   1.14.6
+   1.15.0
