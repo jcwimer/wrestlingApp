@@ -29,8 +29,6 @@ module Wrestling
     
     config.active_job.queue_adapter = :delayed_job
     
-    config.rails_lineman.lineman_project_location = "frontend"
-    
     config.to_prepare do
       DeviseController.respond_to :html, :json
     end

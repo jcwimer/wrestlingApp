@@ -39,26 +39,24 @@ gem 'spring', :group => :development
 
 
 #Installed by me
-	#For Heroku
-		group :production do
-		  gem 'rails_12factor'
-		  gem 'mysql2'
-      	  gem 'passenger'
-      	  gem 'therubyracer'
-	  	  gem 'newrelic_rpm'
-	  	  gem 'dalli'
-		end
-	#Other
-		gem 'devise'
-		gem 'cancancan'
-		gem 'round_robin_tournament'
-		gem 'rb-readline'
-		gem 'delayed_job_active_record'
-		gem 'puma'
-		gem 'brakeman'
-		gem 'rails-lineman'
-	group :development do
-      
-	#gem 'bullet'
-    end
+group :production do
+  gem 'rails_12factor'
+  gem 'mysql2'
+  gem 'therubyracer'
+  gem 'newrelic_rpm'
+  gem 'dalli'
+end
+
+gem 'devise'
+gem 'cancancan'
+gem 'round_robin_tournament'
+gem 'rb-readline'
+gem 'delayed_job_active_record'
+gem 'puma'
+
+group :development do
+ gem 'rubocop'     
+ gem 'bullet'
+ gem 'brakeman'
+end
     
