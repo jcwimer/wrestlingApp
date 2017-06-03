@@ -1,6 +1,7 @@
 FROM ruby:2.3.0
 
-RUN apt-get clean && apt-get update
+RUN apt-get clean
+RUN apt-get update
 RUN apt-get -y upgrade
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential libssl-dev libyaml-dev libreadline-dev openssl curl git-core zlib1g-dev bison libxml2-dev libxslt1-dev libcurl4-openssl-dev libsqlite3-dev sqlite3 wget apt-transport-https mysql-client postfix nodejs
