@@ -1,4 +1,4 @@
-class CreateTeampointadjusts < ActiveRecord::Migration
+class CreateTeampointadjusts < ActiveRecord::Migration[4.2]
   def change
     create_table :teampointadjusts do |t|
       t.integer :points

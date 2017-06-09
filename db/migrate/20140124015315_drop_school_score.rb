@@ -1,4 +1,4 @@
-class DropSchoolScore < ActiveRecord::Migration
+class DropSchoolScore < ActiveRecord::Migration[4.2]
   def change
   	remove_column :schools, :score
   end

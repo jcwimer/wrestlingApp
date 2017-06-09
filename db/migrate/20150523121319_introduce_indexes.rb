@@ -1,4 +1,4 @@
-class IntroduceIndexes < ActiveRecord::Migration
+class IntroduceIndexes < ActiveRecord::Migration[4.2]
   def change
     add_index :weights, :tournament_id
     add_index :schools, :tournament_id

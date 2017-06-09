@@ -1,4 +1,4 @@
-class MatchupToMatch < ActiveRecord::Migration
+class MatchupToMatch < ActiveRecord::Migration[4.2]
   def change
     add_column :matches, :weight_id, :integer
     add_column :matches, :bracket_position, :string
