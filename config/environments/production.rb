@@ -90,7 +90,7 @@ Wrestling::Application.configure do
 
   #THESE ADDED BY ME TO GET RAILS 4 WORKING IN HEROKU
   config.cache_classes = true
-  config.serve_static_files = true
+  config.public_file_server.enabled = true
   config.assets.compile = true
   config.assets.digest = true
 
@@ -111,6 +111,4 @@ Wrestling::Application.configure do
     #Devise needs origin of email
     Rails.application.routes.default_url_options[:host] = 'https://wrestlingdev.com'
 
-    #For lineman creating assets
-    config.serve_static_files = true
 end

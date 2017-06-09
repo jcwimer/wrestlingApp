@@ -1,6 +1,6 @@
 class WeightsController < ApplicationController
   before_action :set_weight, only: [:show, :edit, :update, :destroy,:re_gen]
-  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit, :re_gen]
+  before_action :check_access, only: [:new,:create,:update,:destroy,:edit, :re_gen]
 
 
   # GET /weights/1

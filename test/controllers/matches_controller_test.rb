@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class MatchesControllerTest < ActionController::TestCase
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   setup do
      @tournament = Tournament.find(1)
@@ -10,11 +10,11 @@ class MatchesControllerTest < ActionController::TestCase
   end
  
   def post_update
-    patch :update, id: @match.id, match: {tournament_id: 1, mat_id: 1}
+    patch :update, params: { id: @match.id, match: {tournament_id: 1, mat_id: 1} }
   end
  
   def get_edit
-    get :edit, id: @match.id
+    get :edit, params: { id: @match.id }
   end
   
   def sign_in_owner

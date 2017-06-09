@@ -1,6 +1,6 @@
 class WrestlersController < ApplicationController
   before_action :set_wrestler, only: [:show, :edit, :update, :destroy]
-  before_filter :check_access, only: [:new,:create,:update,:destroy,:edit]
+  before_action :check_access, only: [:new,:create,:update,:destroy,:edit]
 
 
   

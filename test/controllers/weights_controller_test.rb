@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class WeightsControllerTest < ActionController::TestCase
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   setup do
      @tournament = Tournament.find(1)
@@ -10,23 +10,23 @@ class WeightsControllerTest < ActionController::TestCase
   end
  
   def create
-    post :create, weight: {max: 60000, tournament_id: 1}
+    post :create, params: { weight: {max: 60000, tournament_id: 1} }
   end
 
   def new
-    get :new, tournament: @tournament.id
+    get :new, params: { tournament: @tournament.id }
   end
 
   def post_update
-    patch :update, id: @weight.id, weight: {max: @weight.max, tournament_id: @weight.tournament_id}
+    patch :update, params: { id: @weight.id, weight: {max: @weight.max, tournament_id: @weight.tournament_id} }
   end
 
   def destroy
-    delete :destroy, id: @weight.id
+    delete :destroy, params: { id: @weight.id }
   end
 
   def get_edit
-    get :edit, id: @weight.id
+    get :edit, params: { id: @weight.id }
   end
   
   def sign_in_owner
@@ -168,7 +168,7 @@ class WeightsControllerTest < ActionController::TestCase
   end
 
   test "view wegiht" do
-    get :show, id: 1
+    get :show, params: { id: 1 }
     success
   end
 
