@@ -195,7 +195,7 @@ class TournamentsController < ApplicationController
   end
 
   def show
-    @schools = @tournament.schools(:delegates)
+    @schools = @tournament.schools.includes(:delegates)
     @weights = @tournament.weights.sort_by{|x|[x.max]}
     @mats = @tournament.mats
   end
