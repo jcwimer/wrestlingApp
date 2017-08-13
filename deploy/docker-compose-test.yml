@@ -1,4 +1,5 @@
 app:
+  image: registry:5000/wrestlingdev:dev
   extends:
     file: docker-compose-common.yml
     service: app
@@ -27,6 +28,7 @@ db:
   restart: always
 
 worker:
+  image: registry:5000/wrestlingdev:dev
   extends:
     file: docker-compose-common.yml
     service: worker
