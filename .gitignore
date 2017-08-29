@@ -17,3 +17,4 @@
 .rvmrc
 /deploy/prod.env
 frontend/node_modules
+Gemfile.lock
