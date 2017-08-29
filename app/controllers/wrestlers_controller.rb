@@ -1,6 +1,6 @@
 class WrestlersController < ApplicationController
-  before_action :set_wrestler, only: [:show, :edit, :update, :destroy]
-  before_action :check_access, only: [:new,:create,:update,:destroy,:edit]
+  before_action :set_wrestler, only: [:show, :edit, :update, :destroy, :update_pool]
+  before_action :check_access, only: [:new,:create,:update,:destroy,:edit,:update_pool]
 
 
   
@@ -69,6 +69,25 @@ class WrestlersController < ApplicationController
     end
   end
 
+  def update_pool
+    @tournament = @wrestler.tournament
+    @weight = @wrestler.weight
+    @weights = @tournament.weights.sort_by{|w| w.max}
+    @school = @wrestler.school
+    if params[:wrestler]['pool']
+      @wrestler.pool = params[:wrestler]['pool']
+      respond_to do |format|
+        if @wrestler.update(wrestler_params)
+          format.html { redirect_to "/weights/#{@wrestler.weight.id}/", notice: 'Wrestler was successfully updated. Please re-generate this weight classes matches.' }
+          format.json { head :no_content }
+        else
+          format.html { render action: 'edit' }
+          format.json { render json: @wrestler.errors, status: :unprocessable_entity }
+        end
+      end
+    end
+  end
+
   # DELETE /wrestlers/1
   # DELETE /wrestlers/1.json
   def destroy
@@ -88,14 +107,19 @@ class WrestlersController < ApplicationController
     
     # Never trust parameters from the scary internet, only allow the white list through.
     def wrestler_params
-      params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win, :season_loss,:criteria,:extra,:offical_weight)
+      params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win, :season_loss,:criteria,:extra,:offical_weight,:pool)
     end
     def check_access
     	if params[:school]
     	   @school = School.find(params[:school])
     	   #@tournament = Tournament.find(@school.tournament.id)
     	elsif params[:wrestler]
-    	   @school = School.find(params[:wrestler]["school_id"])
+        if params[:wrestler]["school_id"]
+             @school = School.find(params[:wrestler]["school_id"])
+        else
+            @wrestler = Wrestler.find(params[:wrestler]["id"])
+            @school = @wrestler.school
+        end
     	   #@tournament = Tournament.find(@school.tournament.id)
     	elsif @wrestler
     	   @school = @wrestler.school

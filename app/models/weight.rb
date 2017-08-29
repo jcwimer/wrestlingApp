@@ -17,6 +17,18 @@ class Weight < ActiveRecord::Base
 		# self.tournament.destroyAllMatches
 	end
 
+	def pools_with_bye
+		pool = 1
+		pools_with_a_bye = []
+		until pool > self.pools do
+			if wrestlersForPool(pool).first.hasAPoolBye
+              pools_with_a_bye << pool
+            end
+            pool = pool + 1
+		end
+		pools_with_a_bye
+	end
+
 	def wrestlersForPool(poolNumber)
 		#For some reason this does not work
 		# wrestlers.select{|w| w.pool == poolNumber}
@@ -96,6 +108,10 @@ class Weight < ActiveRecord::Base
 	
 	def poolOrder(pool)
 		PoolOrder.new(wrestlersForPool(pool)).getPoolOrder
+	end
+
+	def wrestlersWithoutPool
+		wrestlers.select{|w| w.pool == nil}
 	end
 			
 end
