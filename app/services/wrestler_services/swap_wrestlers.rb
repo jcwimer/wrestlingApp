@@ -11,15 +11,18 @@ class SwapWrestlers
  	    w3.weight_id = w1.weight_id
  	    w3.original_seed = w1.original_seed
  	    w3.seed = w1.seed
+ 	    w3.pool = w1.pool
  		swapWrestlerMatches(w1.allMatches,w1.id,w3.id)
   	    
  	    #Swap wrestler 1 and wrestler 2
  	    swapWrestlerMatches(w2.allMatches,w2.id,w1.id)
  	    w1.seed = w2.seed
+ 	    w1.pool = w2.pool
 
   	    
  	    swapWrestlerMatches(w3.allMatches,w3.id,w2.id)
  	    w2.seed = w3.seed
+ 	    w2.pool = w3.pool
 
   	    
   	    w1.save
