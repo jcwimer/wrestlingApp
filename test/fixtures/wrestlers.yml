@@ -689,5 +689,89 @@ tournament_1_wrestler_53:
    extra: 
    pool: 1
 
+swap_wrestlers_wrestler_1:
+   id: 54
+   name: Guy1
+   school_id: 4
+   weight_id: 7
+   original_seed: 1
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_2:
+   id: 55
+   name: Guy2
+   school_id: 4
+   weight_id: 7
+   original_seed: 2
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_3:
+   name: Guy3
+   school_id: 4
+   weight_id: 7
+   original_seed: 3
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_4:
+   name: Guy4
+   school_id: 4
+   weight_id: 7
+   original_seed: 4
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_5:
+   name: Guy5
+   school_id: 4
+   weight_id: 7
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_6:
+   name: Guy6
+   school_id: 4
+   weight_id: 7
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_7:
+   name: Guy7
+   school_id: 4
+   weight_id: 7
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_8:
+   name: Guy8
+   school_id: 4
+   weight_id: 7
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+
+
 
 

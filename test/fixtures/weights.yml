@@ -30,3 +30,8 @@ six:
   id: 6
   max: 285
   tournament_id: 1
+
+swap_wrestlers:
+  id: 7
+  max: 138
+  tournament_id: 3
