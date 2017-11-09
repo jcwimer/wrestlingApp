@@ -67,7 +67,7 @@ class PoolAdvance
 
  def loserAdvance
     bout = @wrestler.lastMatch.bout_number
-    next_match = Match.where("loser1_name = ? OR loser2_name = ? AND weight_id = ?","Loser of #{bout}","Loser of #{bout}",@wrestler.weight_id)
+    next_match = Match.where("(loser1_name = ? OR loser2_name = ?) AND weight_id = ?","Loser of #{bout}","Loser of #{bout}",@wrestler.weight_id)
     if next_match.size > 0
      	next_match.first.replaceLoserNameWithWrestler(@wrestler,"Loser of #{bout}")
     end
