@@ -10,15 +10,15 @@
       </ul>
     </div>
   <% end %>
-  <h4>Bout <%= @match.bout_number %></h4>
+  <h4>Bout: <%= @match.bout_number %> </h4><h4>Round: <%= @match.round %></h4><h4>Weight: <%= @match.weight_max %> lbs</h4>
 <table class="table">
   <thead>
       <tr>
-        <th><%= @w1.name %> <select id="w1-color" onchange="changeW1Color(this)">
+        <th><%= @w1.name %> - <%= @w1.school.name %> <select id="w1-color" onchange="changeW1Color(this)">
             <option value="green">Green</option>
             <option value="red">Red</option>
         </select><br>Last Match: <%= if @w1.lastMatch != nil then time_ago_in_words(@w1.lastMatch.updated_at) end%></th>
-        <th><%= @w2.name %> <select id="w2-color" onchange="changeW2Color(this)">
+        <th><%= @w2.name %> - <%= @w2.school.name %> <select id="w2-color" onchange="changeW2Color(this)">
             <option value="red">Red</option>
             <option value="green">Green</option>
         </select><br>Last Match: <%= if @w2.lastMatch != nil then time_ago_in_words(@w2.lastMatch.updated_at) end%></th>
@@ -94,7 +94,7 @@
 
   <div class="actions">
     <%= f.submit onclick: "return confirm('Is the name of the winner ' + document.getElementById('match_winner_id').options[document.getElementById('match_winner_id').selectedIndex].text + '?')", :class=>"btn btn-success" %>
-     
+
   </div>
 <% end %>
 
@@ -116,17 +116,17 @@
   	w1.stats=document.getElementById("match_w1_stat").value;
   	w2.stats=document.getElementById("match_w2_stat").value;
   }
-  
+
   function takedown(wrestler){
   	updateStats(wrestler,"T2")
   }
-  
+
   function updateStats(wrestler,text){
     updatejsvalues();
   	wrestler.stats = wrestler.stats + text + " ";
   	updatehtmlvalues();
   }
-  
+
   //For Changing button colors
   function changeW1Color(color){
     if (color.value == "red") {
@@ -140,7 +140,7 @@
         document.getElementById("w2-color").value = "red";
     }
   }
-  
+
   function changeW2Color(color){
     if (color.value == "red") {
         w2Red();
@@ -153,15 +153,15 @@
         document.getElementById("w1-color").value = "red";
     }
   }
-  
+
   function redColor(id){
     document.getElementById(id).className = "btn btn-danger btn-sm";
   }
-  
+
   function greenColor(id){
     document.getElementById(id).className = "btn btn-success btn-sm";
   }
-  
+
   function w1Red(){
     redColor("w1-takedown");
     redColor("w1-escape");
@@ -177,7 +177,7 @@
     redColor("w1-stalling");
     redColor("w1-caution");
   }
-  
+
   function w1Green(){
     greenColor("w1-takedown");
     greenColor("w1-escape");
@@ -193,7 +193,7 @@
     greenColor("w1-stalling");
     greenColor("w1-caution");
   }
-  
+
   function w2Red(){
     redColor("w2-takedown");
     redColor("w2-escape");
@@ -209,7 +209,7 @@
     redColor("w2-stalling");
     redColor("w2-caution");
   }
-  
+
   function w2Green(){
     greenColor("w2-takedown");
     greenColor("w2-escape");
