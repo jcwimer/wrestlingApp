@@ -15,3 +15,8 @@ three:
   name: Central Crossing
   tournament_id: 2
 
+swap_wrestlers:
+  id: 4
+  name: Central Crossing
+  tournament_id: 3
+

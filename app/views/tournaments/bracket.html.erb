@@ -104,3 +104,19 @@ li:first-child,li:last-child {
 	      <%= submit_tag "Swap", :class=>"btn btn-success"%>
 	  <% end %>  
 <% end %>
+<% if can? :manage, @tournament %> 
+  <br><br>
+  <h3>Move wrestler to pool with a bye</h3>
+    <%= form_tag '/wrestlers/update_pool' do %>
+        <div class="field">
+          <%= label_tag 'Wrestler to move' %><br>
+          <%= collection_select(:wrestler, :id, @weight.wrestlers, :id, :name) %>
+        </div>
+        <div class="field">
+          <%= label_tag 'Pool to move to' %><br>
+          <%= select :wrestler, :pool, @weight.pools_with_bye %>
+        </div>
+        <br>
+        <%= submit_tag "Move", :class=>"btn btn-success"%>
+    <% end %>  
+<% end %>

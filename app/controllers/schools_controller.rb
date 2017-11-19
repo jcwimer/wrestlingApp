@@ -1,7 +1,7 @@
 class SchoolsController < ApplicationController
   before_action :set_school, only: [:show, :edit, :update, :destroy]
-  before_filter :check_access_director, only: [:new,:create,:destroy]
-  before_filter :check_access_delegate, only: [:update,:edit]
+  before_action :check_access_director, only: [:new,:create,:destroy]
+  before_action :check_access_delegate, only: [:update,:edit]
 
 
   # GET /schools/1

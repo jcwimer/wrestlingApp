@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class MatsControllerTest < ActionController::TestCase
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   setup do
      @tournament = Tournament.find(1)
@@ -10,27 +10,27 @@ class MatsControllerTest < ActionController::TestCase
   end
  
   def create
-    post :create, mat: {name: 'Mat100', tournament_id: 1}
+    post :create, params: { mat: {name: 'Mat100', tournament_id: 1} }
   end
 
   def new
-    get :new, tournament: @tournament.id
+    get :new, params: { tournament: @tournament.id }
   end
   
   def show
-    get :show, id: 1
+    get :show,  params: { id: 1 }
   end
 
   def post_update
-    patch :update, id: @mat.id, mat: {name: @mat.name, tournament_id: @mat.tournament_id}
+    patch :update, params: { id: @mat.id, mat: {name: @mat.name, tournament_id: @mat.tournament_id} }
   end
 
   def destroy
-    delete :destroy, id: @mat.id
+    delete :destroy, params: { id: @mat.id }
   end
 
   def get_edit
-    get :edit, id: @mat.id
+    get :edit, params: { id: @mat.id }
   end
   
   def sign_in_owner

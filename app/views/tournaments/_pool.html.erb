@@ -1,6 +1,6 @@
 <% @round = 1 %>
 <% @pool = 1 %>
-<% until @wrestlers.select{|w| w.generatePoolNumber == @pool}.blank? %>
+<% until @wrestlers.select{|w| w.pool == @pool}.blank? %>
     <h5>Pool <%= @pool %></h5>
     <table class="table table-striped table-bordered table-condensed">
     	<thead>
@@ -15,7 +15,7 @@
     		</tr>
     	</thead>
     	<tbody>
-    		<% @wrestlers.select{|w| w.generatePoolNumber == @pool}.sort_by{|w| w.seed}.each do |w| %>
+    		<% @wrestlers.select{|w| w.pool == @pool}.sort_by{|w| w.seed}.each do |w| %>
     		<tr>
     			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
     			<% @round = 1 %>

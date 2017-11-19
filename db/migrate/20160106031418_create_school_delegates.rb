@@ -1,4 +1,4 @@
-class CreateSchoolDelegates < ActiveRecord::Migration
+class CreateSchoolDelegates < ActiveRecord::Migration[4.2]
   def change
     create_table :school_delegates do |t|
       t.integer :user_id

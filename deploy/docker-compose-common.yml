@@ -22,4 +22,4 @@ memcached:
   
 worker:
   image: wrestlingdev
-  command: /bin/bash -c "cd /var/www && bundle exec rake jobs:work RAILS_ENV=production"
+  command: /bin/bash -c "cd /rails && bundle exec rake jobs:work RAILS_ENV=production"

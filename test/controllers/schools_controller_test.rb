@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class SchoolsControllerTest < ActionController::TestCase
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   setup do
      @tournament = Tournament.find(1)
@@ -10,23 +10,23 @@ class SchoolsControllerTest < ActionController::TestCase
   end
  
   def create
-    post :create, school: {name: 'Testaasdf', tournament_id: 1}
+    post :create, params: { school: {name: 'Testaasdf', tournament_id: 1} }
   end
 
   def new
-    get :new, tournament: @tournament.id
+    get :new, params: { tournament: @tournament.id }
   end
 
   def post_update
-    patch :update, id: @school.id, school: {name: @school.name, tournament_id: @school.tournament_id}
+    patch :update, params: { id: @school.id, school: {name: @school.name, tournament_id: @school.tournament_id} }
   end
 
   def destroy
-    delete :destroy, id: @school.id
+    delete :destroy, params: { id: @school.id }
   end
 
   def get_edit
-    get :edit, id: @school.id
+    get :edit, params: { id: @school.id }
   end
   
   def sign_in_owner
@@ -168,7 +168,7 @@ class SchoolsControllerTest < ActionController::TestCase
   end
   
   test "view school" do
-    get :show, id: 1
+    get :show, params: { id: 1 }
     success
   end
 

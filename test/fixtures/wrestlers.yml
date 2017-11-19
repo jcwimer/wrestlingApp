@@ -1,4 +1,4 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
 
 tournament_1_wrestler_1:
    id: 1
@@ -11,6 +11,7 @@ tournament_1_wrestler_1:
    season_win: 30
    criteria: SQ
    extra: 
+   pool: 1
 
 tournament_1_wrestler_2:
    id: 2
@@ -23,6 +24,7 @@ tournament_1_wrestler_2:
    season_win: 30
    criteria: DP 6th
    extra: 
+   pool: 1
 
 tournament_1_wrestler_3:
    id: 3
@@ -35,6 +37,7 @@ tournament_1_wrestler_3:
    season_win: 49
    criteria: SP 2nd
    extra: 
+   pool: 1
 
 tournament_1_wrestler_4:
    id: 4
@@ -47,6 +50,7 @@ tournament_1_wrestler_4:
    season_win: 30
    criteria: DP 5th
    extra: 
+   pool: 1
 
 tournament_1_wrestler_5:
    id: 5
@@ -59,6 +63,7 @@ tournament_1_wrestler_5:
    season_win: 49
    criteria: SP 5th
    extra: 
+   pool: 1
 
 tournament_1_wrestler_6:
    id: 6
@@ -71,6 +76,7 @@ tournament_1_wrestler_6:
    season_win: 16
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_7:
    id: 7
@@ -83,6 +89,7 @@ tournament_1_wrestler_7:
    season_win: 16
    criteria: DQ
    extra: 
+   pool: 1
 
 tournament_1_wrestler_8:
    id: 8
@@ -95,6 +102,7 @@ tournament_1_wrestler_8:
    season_win: 50
    criteria: SQ
    extra: 
+   pool: 2
 
 tournament_1_wrestler_9:
    id: 9
@@ -107,6 +115,7 @@ tournament_1_wrestler_9:
    season_win: 40
    criteria: SQ
    extra: 
+   pool: 2
 
 tournament_1_wrestler_10:
    id: 10
@@ -119,6 +128,7 @@ tournament_1_wrestler_10:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_11:
    id: 11
@@ -131,6 +141,7 @@ tournament_1_wrestler_11:
    season_win: 20
    criteria: DP 6th
    extra: 
+   pool: 1
 
 tournament_1_wrestler_12:
    id: 12
@@ -143,6 +154,7 @@ tournament_1_wrestler_12:
    season_win: 30
    criteria: SP 7th
    extra: 
+   pool: 1
 
 tournament_1_wrestler_13:
    id: 13
@@ -155,6 +167,7 @@ tournament_1_wrestler_13:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_14:
    id: 14
@@ -167,6 +180,7 @@ tournament_1_wrestler_14:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_15:
    id: 15
@@ -179,6 +193,7 @@ tournament_1_wrestler_15:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_16:
    id: 16
@@ -191,6 +206,7 @@ tournament_1_wrestler_16:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_17:
    id: 17
@@ -203,6 +219,7 @@ tournament_1_wrestler_17:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_18:
    id: 18
@@ -215,6 +232,7 @@ tournament_1_wrestler_18:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_19:
    id: 19
@@ -227,6 +245,7 @@ tournament_1_wrestler_19:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_20:
    id: 20
@@ -239,6 +258,7 @@ tournament_1_wrestler_20:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_21:
    id: 21
@@ -251,6 +271,7 @@ tournament_1_wrestler_21:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_22:
    id: 22
@@ -263,6 +284,7 @@ tournament_1_wrestler_22:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_23:
    id: 23
@@ -275,6 +297,7 @@ tournament_1_wrestler_23:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_24:
    id: 24
@@ -287,6 +310,7 @@ tournament_1_wrestler_24:
    season_win: 50
    criteria: 
    extra: 
+   pool: 3
 
 tournament_1_wrestler_25:
    id: 25
@@ -299,6 +323,7 @@ tournament_1_wrestler_25:
    season_win: 50
    criteria: 
    extra: 
+   pool: 3
 
 tournament_1_wrestler_26:
    id: 26
@@ -311,6 +336,7 @@ tournament_1_wrestler_26:
    season_win: 50
    criteria: 
    extra: 
+   pool: 4
 
 tournament_1_wrestler_27:
    id: 27
@@ -323,6 +349,7 @@ tournament_1_wrestler_27:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_28:
    id: 28
@@ -335,6 +362,7 @@ tournament_1_wrestler_28:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_29:
    id: 29
@@ -347,6 +375,7 @@ tournament_1_wrestler_29:
    season_win: 50
    criteria: 
    extra: 
+   pool: 4
 
 tournament_1_wrestler_30:
    id: 30
@@ -359,6 +388,7 @@ tournament_1_wrestler_30:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_31:
    id: 31
@@ -371,6 +401,7 @@ tournament_1_wrestler_31:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_32:
    id: 32
@@ -383,6 +414,7 @@ tournament_1_wrestler_32:
    season_win: 50
    criteria: 
    extra: 
+   pool: 3
 
 tournament_1_wrestler_33:
    id: 33
@@ -395,6 +427,7 @@ tournament_1_wrestler_33:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_34:
    id: 34
@@ -407,6 +440,7 @@ tournament_1_wrestler_34:
    season_win: 50
    criteria: 
    extra: 
+   pool: 3
 
 tournament_1_wrestler_35:
    id: 35
@@ -419,6 +453,7 @@ tournament_1_wrestler_35:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_36:
    id: 36
@@ -431,6 +466,7 @@ tournament_1_wrestler_36:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_37:
    id: 37
@@ -443,6 +479,7 @@ tournament_1_wrestler_37:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_38:
    id: 38
@@ -455,6 +492,7 @@ tournament_1_wrestler_38:
    season_win: 50
    criteria: 
    extra: 
+   pool: 4
 
 tournament_1_wrestler_39:
    id: 39
@@ -467,6 +505,7 @@ tournament_1_wrestler_39:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_40:
    id: 40
@@ -479,6 +518,7 @@ tournament_1_wrestler_40:
    season_win: 50
    criteria: 
    extra: 
+   pool: 4
 
 tournament_1_wrestler_41:
    id: 41
@@ -491,6 +531,7 @@ tournament_1_wrestler_41:
    season_win: 50
    criteria: 
    extra: 
+   pool: 3
 
 tournament_1_wrestler_42:
    id: 42
@@ -503,6 +544,7 @@ tournament_1_wrestler_42:
    season_win: 50
    criteria: 
    extra: 
+   pool: 4
 
 tournament_1_wrestler_43:
    id: 43
@@ -515,6 +557,7 @@ tournament_1_wrestler_43:
    season_win: 50
    criteria: 
    extra: 
+   pool: 3
 
 tournament_1_wrestler_44:
    id: 44
@@ -527,6 +570,7 @@ tournament_1_wrestler_44:
    season_win: 50
    criteria: 
    extra: 
+   pool: 2
 
 tournament_1_wrestler_45:
    id: 45
@@ -539,6 +583,7 @@ tournament_1_wrestler_45:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_46:
    id: 46
@@ -551,6 +596,7 @@ tournament_1_wrestler_46:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_47:
    id: 47
@@ -563,6 +609,7 @@ tournament_1_wrestler_47:
    season_win: 50
    criteria: 
    extra: 
+   pool: 3
 
 tournament_1_wrestler_48:
    id: 48
@@ -575,6 +622,7 @@ tournament_1_wrestler_48:
    season_win: 50
    criteria: 
    extra: 
+   pool: 4
 
 tournament_1_wrestler_49:
    id: 49
@@ -582,11 +630,12 @@ tournament_1_wrestler_49:
    school_id: 1
    weight_id: 6
    original_seed: 
-   seed: 4
+   seed: 6
    season_loss: 2
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_50:
    id: 50
@@ -599,22 +648,11 @@ tournament_1_wrestler_50:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
 
 tournament_1_wrestler_51:
    id: 51
    name: Guy41
-   school_id: 1
-   weight_id: 6
-   original_seed: 
-   seed: 3
-   season_loss: 2
-   season_win: 50
-   criteria: 
-   extra: 
-
-tournament_1_wrestler_52:
-   id: 52
-   name: Guy43
    school_id: 1
    weight_id: 6
    original_seed: 
@@ -623,6 +661,20 @@ tournament_1_wrestler_52:
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
+
+tournament_1_wrestler_52:
+   id: 52
+   name: Guy43
+   school_id: 1
+   weight_id: 6
+   original_seed: 
+   seed: 3
+   season_loss: 2
+   season_win: 50
+   criteria: 
+   extra: 
+   pool: 1
 
 tournament_1_wrestler_53:
    id: 53
@@ -630,8 +682,96 @@ tournament_1_wrestler_53:
    school_id: 1
    weight_id: 6
    original_seed: 
-   seed: 6
+   seed: 4
    season_loss: 2
    season_win: 50
    criteria: 
    extra: 
+   pool: 1
+
+swap_wrestlers_wrestler_1:
+   id: 54
+   name: Guy1
+   school_id: 4
+   weight_id: 7
+   original_seed: 1
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_2:
+   id: 55
+   name: Guy2
+   school_id: 4
+   weight_id: 7
+   original_seed: 2
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_3:
+   name: Guy3
+   school_id: 4
+   weight_id: 7
+   original_seed: 3
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_4:
+   name: Guy4
+   school_id: 4
+   weight_id: 7
+   original_seed: 4
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_5:
+   name: Guy5
+   school_id: 4
+   weight_id: 7
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_6:
+   name: Guy6
+   school_id: 4
+   weight_id: 7
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_7:
+   name: Guy7
+   school_id: 4
+   weight_id: 7
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+swap_wrestlers_wrestler_8:
+   name: Guy8
+   school_id: 4
+   weight_id: 7
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+
+
+
+
+

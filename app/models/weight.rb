@@ -17,8 +17,25 @@ class Weight < ActiveRecord::Base
 		# self.tournament.destroyAllMatches
 	end
 
-	def wrestlersForPool(pool)
-		self.wrestlers.select{|w| w.generatePoolNumber == pool}
+	def pools_with_bye
+		pool = 1
+		pools_with_a_bye = []
+		until pool > self.pools do
+			if wrestlersForPool(pool).first.hasAPoolBye
+              pools_with_a_bye << pool
+            end
+            pool = pool + 1
+		end
+		pools_with_a_bye
+	end
+
+	def wrestlersForPool(poolNumber)
+		#For some reason this does not work
+		# wrestlers.select{|w| w.pool == poolNumber}
+
+		#This does...
+		weightWrestlers = Wrestler.where(:weight_id => self.id)
+		weightWrestlers.select{|w| w.pool == poolNumber}
 	end
 	
 	def allPoolMatchesFinished(pool)
@@ -43,7 +60,8 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def poolSeedOrder(pool)
-		wrestlersForPool(pool).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]}	
+		# wrestlersForPool(pool).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]}	
+		return wrestlersForPool(pool).sort_by{|w|w.seed}
 	end
 	
 	
@@ -51,79 +69,6 @@ class Weight < ActiveRecord::Base
 		SwapWrestlers.new.swapWrestlers(wrestler1_id,wrestler2_id)
 	end
 
-	def returnPoolNumber(wrestler)
-		if self.pools == 4
-			@wrestlers = fourPoolNumbers(self.wrestlers)
-		elsif self.pools == 2
-			@wrestlers = twoPoolNumbers(self.wrestlers)
-		elsif self.pools == 1
-			@wrestlers = onePoolNumbers(self.wrestlers)
-		end
-		@wrestler = @wrestlers.select{|w| w.id == wrestler.id}.first
-		return @wrestler.poolNumber
-	end
-
-	def onePoolNumbers(poolWrestlers)
-		poolWrestlers.sort_by{|x| x.seed }.each do |w|
-			w.poolNumber = 1
-		end
-		return poolWrestlers
-	end
-
-
-	def twoPoolNumbers(poolWrestlers)
-		pool = 1
-		poolWrestlers.sort_by{|x| x.seed }.reverse.each do |w|
-			if w.seed == 1
-				w.poolNumber = 1
-			elsif w.seed == 2
-				w.poolNumber = 2
-			elsif w.seed == 3
-				w.poolNumber = 2
-			elsif w.seed == 4
-				w.poolNumber = 1
-			else
-				w.poolNumber = pool
-			end
-			if pool < 2
-				pool = pool + 1
-			else
-				pool = 1
-			end
-		end
-		return poolWrestlers
-	end
-
-	def fourPoolNumbers(poolWrestlers)
-		pool = 1
-		poolWrestlers.sort_by{|x| x.seed }.reverse.each do |w|
-			if w.seed == 1
-				w.poolNumber = 1
-			elsif w.seed == 2
-				w.poolNumber = 2
-			elsif w.seed == 3
-				w.poolNumber = 3
-			elsif w.seed == 4
-				w.poolNumber = 4
-			elsif w.seed == 8
-				w.poolNumber = 1
-			elsif w.seed == 7
-				w.poolNumber = 2
-			elsif w.seed == 6
-				w.poolNumber = 3
-			elsif w.seed == 5
-				w.poolNumber = 4
-			else
-				w.poolNumber = pool
-			end
-			if pool < 4
-				pool = pool + 1
-			else
-				pool = 1
-			end
-		end
-		return poolWrestlers
-	end
 
 	def bracket_size
 		wrestlers.size
@@ -163,6 +108,10 @@ class Weight < ActiveRecord::Base
 	
 	def poolOrder(pool)
 		PoolOrder.new(wrestlersForPool(pool)).getPoolOrder
+	end
+
+	def wrestlersWithoutPool
+		wrestlers.select{|w| w.pool == nil}
 	end
 			
 end

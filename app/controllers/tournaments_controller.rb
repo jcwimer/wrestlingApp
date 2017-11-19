@@ -1,9 +1,9 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament, only: [:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_filter :check_access_manage, only: [:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
-  before_filter :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
-  before_filter :check_tournament_errors, only: [:generate_matches]
-  before_filter :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
+  before_action :check_access_manage, only: [:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
+  before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
+  before_action :check_tournament_errors, only: [:generate_matches]
+  before_action :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
   
   def weigh_in_sheet
     
@@ -195,7 +195,7 @@ class TournamentsController < ApplicationController
   end
 
   def show
-    @schools = @tournament.schools(:delegates)
+    @schools = @tournament.schools.includes(:delegates)
     @weights = @tournament.weights.sort_by{|x|[x.max]}
     @mats = @tournament.mats
   end

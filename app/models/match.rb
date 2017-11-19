@@ -4,12 +4,12 @@ class Match < ActiveRecord::Base
 	belongs_to :mat, touch: true
 	has_many :wrestlers, :through => :weight
 
-	
 
-	after_update do 
+
+	after_update do
 	  after_update_actions
 	end
-	
+
 	def after_update_actions
 	  if self.finished == 1 && self.winner_id != nil
 	  	if self.w1 && self.w2
@@ -30,9 +30,9 @@ class Match < ActiveRecord::Base
 		if self.w1 && self.w2
 			wrestler1.school.calcScore
 			wrestler2.school.calcScore
-	   	end	
+	   	end
 	end
-	
+
 
 	def mat_assigned
 		if self.mat
@@ -41,7 +41,7 @@ class Match < ActiveRecord::Base
 			""
 		end
 	end
-	
+
 	def pinTime
 		if self.win_type == "Pin"
 			time = self.score.delete("")
@@ -54,7 +54,7 @@ class Match < ActiveRecord::Base
 	end
 
 	def advance_wrestlers
-	   if self.w1 && self.w2	
+	   if self.w1 && self.w2
 		AdvanceWrestler.new(wrestler1).advance
 		AdvanceWrestler.new(wrestler2).advance
 	   end
@@ -117,7 +117,7 @@ class Match < ActiveRecord::Base
 	def weight_max
 		self.weight.max
 	end
-	
+
 	def replaceLoserNameWithWrestler(w,loserName)
 		if self.loser1_name == loserName
 			self.w1 = w.id
@@ -130,9 +130,15 @@ class Match < ActiveRecord::Base
 	end
 	def poolNumber
 		if self.w1?
-			wrestler1.generatePoolNumber
+			wrestler1.pool
 		end
 	end
-	
 
+        def list_w2_stats
+          "#{w2_name}: #{w2_stat}"
+        end
+
+        def list_w1_stats
+          "#{w1_name}: #{w1_stat}"
+        end
 end
