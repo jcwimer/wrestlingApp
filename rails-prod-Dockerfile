@@ -1,25 +1,53 @@
 FROM ruby:2.4.0
 
-RUN apt-get clean
-RUN apt-get update
-RUN apt-get -y upgrade
+RUN apt-get -qq update \
+  && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y \
+    build-essential \
+    libssl-dev \
+    libyaml-dev \
+    libreadline-dev \
+    openssl \
+    curl \
+    git-core \
+    zlib1g-dev \
+    bison \
+    libxml2-dev \
+    libxslt1-dev \
+    libcurl4-openssl-dev \
+    libsqlite3-dev \
+    sqlite3 \
+    wget \
+    apt-transport-https \
+    mysql-client \
+    postfix \
+    nodejs \
+  && apt-get -qq clean \
+  && rm -rf \
+    /var/lib/apt/lists/* \
+    /tmp/* \
+    /var/tmp/*
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential libssl-dev libyaml-dev libreadline-dev openssl curl git-core zlib1g-dev bison libxml2-dev libxslt1-dev libcurl4-openssl-dev libsqlite3-dev sqlite3 wget apt-transport-https mysql-client postfix nodejs
+# Set timezone inside the container
+RUN echo "America/New_York" > /etc/timezone \
+ && rm /etc/localtime \
+ && ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 
 #New Relic
-#RUN echo deb http://apt.newrelic.com/debian/ newrelic non-free >> /etc/apt/sources.list.d/newrelic.list
-#RUN wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add -
-#RUN apt-get update
-#RUN apt-get install newrelic-sysmond -y
-#RUN nrsysmond-config --set license_key=$NEW_RELIC_LICENSE_KEY
+#RUN echo deb http://apt.newrelic.com/debian/ newrelic non-free >> /etc/apt/sources.list.d/newrelic.list \
+# && wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - \
+# && apt-get update \
+# && apt-get install newrelic-sysmond -y \
+# && nrsysmond-config --set license_key=$NEW_RELIC_LICENSE_KEY
 
 #SSL
-RUN mkdir /ssl
-RUN openssl req -sha256 -subj '/CN=home/O=home LTD./C=US' -x509 -nodes -days 365 -newkey rsa:2048 -keyout /ssl/server.key -out /ssl/server.crt
+RUN mkdir /ssl \
+  && openssl req -sha256 -subj '/CN=home/O=home LTD./C=US' \
+    -x509 -nodes -days 365 -newkey rsa:4096 -keyout /ssl/server.key -out /ssl/server.crt
 
 EXPOSE 80
 EXPOSE 443
 
+RUN gem install --no-rdoc --no-ri bundler
 #Cache gems so they don't install on every code change
 WORKDIR /tmp
 COPY Gemfile Gemfile
@@ -28,13 +56,14 @@ RUN bundle install --without test
 
 # Copy site into place.
 RUN mkdir /rails
-ENV WRESTLINGDEV_SECRET_KEY_BASE 077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e4463d851c444c10a5611829a2290b253da78339427f131571fac9a42c83d960b2d25ecc10a4a0a7ce1a2
-ENV WRESTLINGDEV_DEVISE_SECRET_KEY 2f29d49db6704377ba263f7cb9db085b386bcb301c0cd501126a674686ab1a109754071165b08cd72af03cec4642a4dd04361c994462254dd5d85e9594e8b9aa
 WORKDIR /rails
 ADD . /rails
 
+#Need temp secret keys to precompile assets
+ENV WRESTLINGDEV_SECRET_KEY_BASE 077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e4463d851c444c10a5611829a2290b253da78339427f131571fac9a42c83d960b2d25ecc10a4a0a7ce1a2
+ENV WRESTLINGDEV_DEVISE_SECRET_KEY 2f29d49db6704377ba263f7cb9db085b386bcb301c0cd501126a674686ab1a109754071165b08cd72af03cec4642a4dd04361c994462254dd5d85e9594e8b9aa
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
 # By default, simply start puma.
 WORKDIR /rails
-CMD bundle exec puma -t 5:5 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt'  -e production 
+CMD bundle exec puma -t 5:5 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt'  -e production
