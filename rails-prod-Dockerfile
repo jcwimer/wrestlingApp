@@ -1,4 +1,4 @@
-FROM ruby:2.4.0
+FROM ruby:2.4.2
 
 RUN apt-get -qq update \
   && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y \

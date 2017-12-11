@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-ruby '2.4.0'
+ruby '2.4.2'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '5.1.1'
+gem 'rails', '5.1.4'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3', :group => :development
 
@@ -55,8 +55,8 @@ gem 'delayed_job_active_record'
 gem 'puma'
 
 group :development do
- gem 'rubocop'     
+ gem 'rubocop'
  gem 'bullet'
  gem 'brakeman'
 end
-    
+
