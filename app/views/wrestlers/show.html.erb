@@ -33,6 +33,14 @@
     <strong>Total Team Points Scored:</strong>
     <%= @wrestler.totalTeamPoints %>
   </p>
+  <p>
+    <strong>Points Breakdown:</strong></br>
+    Pool Win Points (including BYE points): <%= @wrestler_points_calc.poolPoints %></br>
+    Bracket Win Points: <%= @wrestler_points_calc.bracketPoints %></br>
+    Bonus Points: <%= @wrestler_points_calc.bonusWinPoints %></br>
+    Placement Points:<%= @wrestler_points_calc.placementPoints %></br>
+  </p>
+
 
   <br>
   <br>
