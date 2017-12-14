@@ -22,37 +22,78 @@
     <%= @wrestler.weight.max %>
   </p>
   <p>
-    <strong>Team Points Earned:</strong>
-    <%= @wrestler.teamPointsEarned %>
+    <strong>Extra?:</strong>
+    <%= @wrestler.extra %>
   </p>
-  <p>
-    <strong>Team Points Deducted:</strong>
-    <%= @wrestler.totalDeductedPoints %>
-  </p>
-  <p>
-    <strong>Total Team Points Scored:</strong>
-    <%= @wrestler.totalTeamPoints %>
-  </p>
-  <p>
-    <strong>Points Breakdown:</strong></br>
-    Pool Win Points (including BYE points): <%= @wrestler_points_calc.poolPoints %></br>
-    Bracket Win Points: <%= @wrestler_points_calc.bracketPoints %></br>
-    Bonus Points: <%= @wrestler_points_calc.bonusWinPoints %></br>
-    Placement Points:<%= @wrestler_points_calc.placementPoints %></br>
-  </p>
-
+  <br>
+  <br>
+  <h4>Point Breakdown</h4>
+  <br>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Point Modifier</th>
+        <th>Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Pool Win Points</td>
+        <td>+<%= @wrestler_points_calc.poolPoints %></td>
+      </tr>
+      <tr>
+        <td>BYE Points</td>
+        <td>+<%= @wrestler_points_calc.byePoints %></td>
+      </tr>
+      <tr>
+        <td>Bracket Win Points</td>
+        <td>+<%= @wrestler_points_calc.bracketPoints %></td>
+      </tr>
+      <tr>
+        <td>Bonus Points (pins,major,tech,etc)</td>
+        <td>+<%= @wrestler_points_calc.bonusWinPoints %></td>
+      </tr>
+      <tr>
+        <td>Placement Points</td>
+        <td>+<%= @wrestler_points_calc.placementPoints %></td>
+      </tr>
+      <tr>
+        <td>Deducted Points</td>
+        <td>-<%= @wrestler_points_calc.deductedPoints %></td>
+      </tr>
+      <tr>
+        <td>Total Points Earned</td>
+        <td><%= @wrestler_points_calc.earnedPoints %></td>
+      </tr>
+      <tr>
+        <td><strong>Total Points Toward Team Score (0 if entered as extra)</strong></td>
+        <td><strong><%= @wrestler_points_calc.totalScore %></strong></td>
+      </tr>
+    </tbody>
+  </table>
 
   <br>
   <br>
   <h4>Matches</h4>
   <br>
-  <% @wrestler.allMatches.each do |m| %>
-    <div> Bout: <%= m.bout_number %> <%= m.bracket_position %> <%= m.wrestler1.name %> vs. <%= m.wrestler2.name %> <%= @wrestler.resultByBout(m.bout_number) %></div>
-    <% if m.w1_stat || m.w2_stat %>
-      <div>Stats:</div>
-      <div><%= m.list_w1_stats %></div>
-      <div><%= m.list_w2_stats %></div>
-      </br>
-    <% end %>
-  <% end %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Bout</th>
+        <th>Match Bracket Position</th>
+        <th>Stats</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @wrestler.allMatches.each do |m| %>
+        <tr>
+          <td><%= m.bout_number %></td>
+          <td><%= m.bracket_position %></td>
+          <td><%= m.list_w1_stats %><br><%= m.list_w2_stats %></td>
+          <td><%= @wrestler.resultByBout(m.bout_number) %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 <% end %>
