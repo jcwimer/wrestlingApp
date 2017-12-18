@@ -1,8 +1,12 @@
 class SchoolsController < ApplicationController
-  before_action :set_school, only: [:show, :edit, :update, :destroy]
+  before_action :set_school, only: [:show, :edit, :update, :destroy, :stats]
   before_action :check_access_director, only: [:new,:create,:destroy]
   before_action :check_access_delegate, only: [:update,:edit]
 
+
+  def stats
+    @tournament = @school.tournament
+  end
 
   # GET /schools/1
   # GET /schools/1.json
@@ -89,7 +93,7 @@ class SchoolsController < ApplicationController
     	end
     	authorize! :manage, @tournament
     end
-    
+
     def check_access_delegate
     	authorize! :manage, @school
     end

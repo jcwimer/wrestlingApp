@@ -1,0 +1,34 @@
+<%= link_to "Back to #{@school.name}", "/schools/#{@school.id}", :class=>"btn btn-default" %>
+<% cache ["#{@school.id}_Stats", @school] do %>
+  <br>
+  <br>
+  <h2><%= @school.name %> Stats Summary</h2>
+  <br>
+  <h4>Matches</h4>
+  <br>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Wrester</th>
+        <th>Bout</th>
+        <th>Match Bracket Position</th>
+        <th>Stats</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @school.wrestlers.each do |wrestler| %>
+        <% wrestler.allMatches.each do |m| %>
+          <tr>
+            <td> <%= wrestler.name %>
+            <td><%= m.bout_number %></td>
+            <td><%= m.bracket_position %></td>
+            <td><%= m.list_w1_stats %><br><%= m.list_w2_stats %></td>
+            <td><%= wrestler.resultByBout(m.bout_number) %>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+

@@ -4,7 +4,7 @@ Wrestling::Application.routes.draw do
   resources :matches
 
   devise_for :users
-  
+
   resources :tournaments
 
   resources :schools
@@ -50,17 +50,18 @@ Wrestling::Application.routes.draw do
   delete 'tournaments/:id/:teampointadjust/remove_teampointadjust' => 'tournaments#remove_teampointadjust'
   get 'tournaments/:id/error' => 'tournaments#error'
   post "/tournaments/:id/swap" => "tournaments#swap", :as => :swap_wrestlers
-  
+
   post 'weights/:id/re_gen' => 'weights#re_gen', :as => :regen_weight
   post "/wrestlers/update_pool" => "wrestlers#update_pool"
-  
+
+  get "schools/:id/stats" => "schools#stats"
   #API
   get "/api/tournaments" => "api#tournaments"
   get "/api/tournaments/user" => "api#currentUserTournaments"
   get "/api/tournaments/:tournament" => "api#tournament"
   get "/api/index" => "api#index"
   post "/api/tournaments/new" => "newTournament"
-  
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
