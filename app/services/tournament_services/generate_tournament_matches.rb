@@ -43,6 +43,7 @@ class GenerateTournamentMatches
 
     def assignBouts
       bout_counts = Hash.new(0)
+      @tournament.matches.reload
       @tournament.matches.sort_by{|m| [m.round, m.weight_max]}.each do |m|
         m.bout_number = m.round * 1000 + bout_counts[m.round]
         bout_counts[m.round] += 1
