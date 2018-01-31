@@ -8,6 +8,7 @@ class GenerateTournamentMatches
         @tournament.curently_generating_matches = 1
         @tournament.save
         unAssignBouts
+        unAssignMats
         PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatchesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
         postMatchCreationActions
         PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNamesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
@@ -68,6 +69,13 @@ class GenerateTournamentMatches
             m.assignNextMatch
           end
         end
+      end
+    end
+
+    def unAssignMats
+      matches = @tournament.matches.reload
+      matches.each do |m|
+        m.mat_id = nil
       end
     end
 
