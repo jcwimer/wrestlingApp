@@ -21,7 +21,7 @@ class Mat < ActiveRecord::Base
 	end
 
 	def assignNextMatch
-		t_matches = tournament.matches.select{|m| m.mat_id == nil && m.finished != 1 && bout_number != nil}
+		t_matches = tournament.matches.select{|m| m.mat_id == nil && m.finished != 1 && m.bout_number != nil}
 		if t_matches.size > 0
 			match = t_matches.sort_by{|m| m.bout_number}.first
 			match.mat_id = self.id
