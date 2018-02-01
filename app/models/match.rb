@@ -3,14 +3,10 @@ class Match < ActiveRecord::Base
 	belongs_to :weight, touch: true
 	belongs_to :mat, touch: true
 	has_many :wrestlers, :through => :weight
+        after_update :after_finished_actions, :if => :finished_changed?
+        after_update :after_finished_actions, :if => :winner_id_changed?
 
-
-
-	after_update do
-	  after_update_actions
-	end
-
-	def after_update_actions
+	def after_finished_actions
 	  if self.finished == 1 && self.winner_id != nil
 	  	if self.w1 && self.w2
 		   	wrestler1.touch
