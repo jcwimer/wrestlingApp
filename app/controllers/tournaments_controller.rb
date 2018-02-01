@@ -4,11 +4,11 @@ class TournamentsController < ApplicationController
   before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
   before_action :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
-  
+
   def weigh_in_sheet
-    
+
   end
-  
+
   def swap
     @wrestler = Wrestler.find(params[:wrestler][:originalId])
     respond_to do |format|
@@ -18,7 +18,7 @@ class TournamentsController < ApplicationController
       end
     end
   end
-  
+
   def remove_teampointadjust
     if params[:teampointadjust]
       @points = Teampointadjust.find(params[:teampointadjust])
@@ -28,7 +28,7 @@ class TournamentsController < ApplicationController
       end
     end
   end
-  
+
   def teampointadjust
     if params[:teampointadjust]
       @points = Teampointadjust.new
@@ -46,7 +46,7 @@ class TournamentsController < ApplicationController
       @point_adjustments = @tournament.pointAdjustments
     end
   end
-  
+
   def remove_delegate
     if params[:delegate]
       @delegate = TournamentDelegate.find(params[:delegate])
@@ -56,7 +56,7 @@ class TournamentsController < ApplicationController
       end
     end
   end
-  
+
   def remove_school_delegate
     if params[:delegate]
       @delegate = SchoolDelegate.find(params[:delegate])
@@ -66,7 +66,7 @@ class TournamentsController < ApplicationController
       end
     end
   end
-  
+
   def school_delegate
     if params[:search]
       @users = User.search(params[:search])
@@ -90,7 +90,7 @@ class TournamentsController < ApplicationController
       end
     end
   end
-  
+
   def delegate
     if params[:search]
       @users = User.search(params[:search])
@@ -109,7 +109,7 @@ class TournamentsController < ApplicationController
       @users_delegates = @tournament.delegates
     end
   end
-  
+
   def matches
     @matches = @tournament.matches.sort_by{|m| m.bout_number}
     if @match
@@ -118,7 +118,7 @@ class TournamentsController < ApplicationController
       @wrestlers = [@w1,@w2]
     end
   end
- 
+
   def weigh_in_weight
     if params[:wrestler]
       Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
@@ -130,7 +130,7 @@ class TournamentsController < ApplicationController
         @weights = @tournament.weights
     end
     if @weight
-      @wrestlers = @weight.wrestlers 
+      @wrestlers = @weight.wrestlers
     end
   end
 
@@ -149,7 +149,7 @@ class TournamentsController < ApplicationController
 
 
   def all_brackets
-    
+
   end
 
   def bracket
@@ -180,9 +180,9 @@ class TournamentsController < ApplicationController
 
   end
 
- 
+
   def up_matches
-    @matches = @tournament.matches.where(mat_id: nil).order('bout_number ASC').limit(10).includes(:wrestlers)
+    @matches = @tournament.matches.where("mat_id is NULL and (finished <> ? or finished is NULL)",1).order('bout_number ASC').limit(10).includes(:wrestlers)
     @mats = @tournament.mats.includes(:matches)
   end
 
@@ -243,7 +243,7 @@ class TournamentsController < ApplicationController
       format.json { head :no_content }
     end
   end
-  
+
   def error
   end
 
@@ -257,12 +257,12 @@ class TournamentsController < ApplicationController
     def tournament_params
       params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id, :date, :originalId, :swapId)
     end
-  
+
   #Check for tournament owner
   def check_access_destroy
     authorize! :destroy, @tournament
   end
-  
+
   def check_access_manage
     authorize! :manage, @tournament
   end
@@ -274,7 +274,7 @@ class TournamentsController < ApplicationController
     	end
     end
   end
-  
+
   def check_tournament_errors
     if @tournament.tournamentMatchGenerationError != nil
       respond_to do |format|
@@ -282,5 +282,5 @@ class TournamentsController < ApplicationController
       end
     end
   end
-  
+
 end
