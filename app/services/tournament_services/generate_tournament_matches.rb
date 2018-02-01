@@ -12,8 +12,6 @@ class GenerateTournamentMatches
         PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatchesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
         postMatchCreationActions
         PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNamesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
-        @tournament.curently_generating_matches = nil
-        @tournament.save!
     end
     if Rails.env.production?
       handle_asynchronously :generateWeight
@@ -78,6 +76,7 @@ class GenerateTournamentMatches
       matches = @tournament.matches.reload
       matches.each do |m|
         m.mat_id = nil
+        m.save!
       end
     end
 
@@ -88,7 +87,4 @@ class GenerateTournamentMatches
         m.save!
       end
     end
-
-
-
 end
