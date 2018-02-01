@@ -39,7 +39,7 @@ class GenerateTournamentMatches
         assignBouts
         assignFirstMatchesToMats
         @tournament.curently_generating_matches = nil
-        @tournament.save
+        @tournament.save!
     end
 
     def assignBouts
