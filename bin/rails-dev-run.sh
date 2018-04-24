@@ -1,5 +1,5 @@
 #!/bin/bash -e
-project_dir="$(dirname $( dirname $(readlink -f ${BASH_SOURCE[0]})))"
+project_dir="$(git rev-parse --show-toplevel)"
 
 if [ $# != 1 ]; then
   echo "Please enter docker image name for the rails development environment"
