@@ -1,4 +1,4 @@
-FROM ruby:2.4.2
+FROM ruby:2.5.1
 
 RUN apt-get -qq update \
   && DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade -y \
@@ -53,7 +53,8 @@ RUN gem install --no-rdoc --no-ri bundler
 WORKDIR /tmp
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
-RUN bundle install --without test
+#RUN bundle install --without test
+RUN bundle install
 
 # Copy site into place.
 RUN mkdir /rails
