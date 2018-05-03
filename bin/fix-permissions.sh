@@ -1,5 +1,5 @@
 #!/bin/bash
-project_dir="$(git rev-parse --show-toplevel)"
+project_dir="$(dirname $( dirname $(readlink -f ${BASH_SOURCE[0]})))"
 
 USERNAME=$USER
 sudo chown -R ${USERNAME}:${USERNAME} ${project_dir}/.
