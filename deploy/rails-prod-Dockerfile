@@ -1,6 +1,6 @@
 FROM ruby:2.5.1
 
-HEALTHCHECK --start-period=30s curl --insecure https://127.0.0.1/
+HEALTHCHECK --start-period=30s CMD curl --insecure https://127.0.0.1/
 
 RUN apt-get -qq update \
   && DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade -y \
