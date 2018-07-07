@@ -25,6 +25,8 @@ worker:
   restart: always
   env_file:
     - ./prod.env
+  healthcheck:
+      test: ps -ef | grep rake | grep ruby
   command: bundle exec rake jobs:work RAILS_ENV=production
 
 memcached:
