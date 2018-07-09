@@ -46,8 +46,8 @@ GEM
     arel (9.0.0)
     ast (2.4.0)
     backports (3.11.3)
-    bcrypt (3.1.11)
-    brakeman (4.2.1)
+    bcrypt (3.1.12)
+    brakeman (4.3.1)
     builder (3.2.3)
     bullet (5.7.5)
       activesupport (>= 3.0.0)
@@ -60,6 +60,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
+    commander (4.4.5)
+      highline (~> 1.7.2)
     concurrent-ruby (1.0.5)
     crass (1.0.4)
     dalli (2.7.8)
@@ -74,6 +76,8 @@ GEM
       railties (>= 4.1.0, < 6.0)
       responders
       warden (~> 1.2.3)
+    domain_name (0.5.20180417)
+      unf (>= 0.0.5, < 1.0.0)
     erubi (1.7.1)
     ethon (0.11.0)
       ffi (>= 1.3.0)
@@ -92,9 +96,21 @@ GEM
       net-http-pipeline
     globalid (0.4.1)
       activesupport (>= 4.2.0)
+    hakiri (0.7.2)
+      activesupport
+      bundler
+      commander
+      i18n
+      json
+      rake
+      rest-client
+      terminal-table
     highline (1.7.10)
+    http-cookie (1.0.3)
+      domain_name (~> 0.5)
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
+    jaro_winkler (1.5.1)
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
@@ -114,24 +130,28 @@ GEM
     marcel (0.3.2)
       mimemagic (~> 0.3.2)
     method_source (0.9.0)
+    mime-types (3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2016.0521)
     mimemagic (0.3.2)
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
     multi_json (1.13.1)
     multipart-post (2.0.0)
-    mysql2 (0.5.1)
+    mysql2 (0.5.2)
     net-http-persistent (2.9.4)
     net-http-pipeline (1.0.1)
-    newrelic_rpm (5.1.0.344)
+    netrc (0.11.0)
+    newrelic_rpm (5.2.0.345)
     nio4r (2.3.1)
-    nokogiri (1.8.2)
+    nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
     parallel (1.12.1)
     parser (2.5.1.0)
       ast (~> 2.4.0)
-    powerpack (0.1.1)
+    powerpack (0.1.2)
     puma (3.11.4)
     pusher-client (0.6.2)
       json
@@ -171,13 +191,18 @@ GEM
     rainbow (3.0.0)
     rake (12.3.1)
     rb-readline (0.5.5)
-    rdoc (6.0.3)
+    rdoc (6.0.4)
     ref (2.0.0)
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
+    rest-client (2.0.2)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     round_robin_tournament (0.0.1)
-    rubocop (0.55.0)
+    rubocop (0.58.0)
+      jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.5)
       powerpack (~> 0.1)
@@ -189,7 +214,7 @@ GEM
       rdoc (>= 5.0)
     spring (2.0.2)
       activesupport (>= 4.2)
-    sprockets (3.7.1)
+    sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
     sprockets-rails (3.2.1)
@@ -197,6 +222,8 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.3.13)
+    terminal-table (1.8.0)
+      unicode-display_width (~> 1.1, >= 1.1.1)
     therubyracer (0.12.3)
       libv8 (~> 3.16.14.15)
       ref
@@ -218,9 +245,12 @@ GEM
       ethon (>= 0.8.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    uglifier (4.1.10)
+    uglifier (4.1.14)
       execjs (>= 0.3.0, < 3)
-    unicode-display_width (1.3.2)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.5)
+    unicode-display_width (1.4.0)
     uniform_notifier (1.11.0)
     warden (1.2.7)
       rack (>= 1.0)
@@ -240,6 +270,7 @@ DEPENDENCIES
   dalli
   delayed_job_active_record
   devise
+  hakiri
   jbuilder
   jquery-rails
   mysql2
