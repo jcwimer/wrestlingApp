@@ -59,5 +59,6 @@ group :development do
  gem 'rubocop'
  gem 'bullet'
  gem 'brakeman'
+ gem 'hakiri'
 end
 
