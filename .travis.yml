@@ -1,21 +1,19 @@
 sudo: required
 language: ruby
 services:
-  - docker
+- docker
 rvm:
 - 2.5.1
 env:
 - DB=sqlite
 script:
-#- RAILS_ENV=test bundle exec rake db:migrate --trace
-#- bundle exec rake test
 - bash bin/run-tests-with-docker.sh
 deploy:
   provider: heroku
   api_key:
-    secure: jK845+Ck8sr7EQwYhRAb1L1pL6reS5Rx/kzQ7qR/6XJRrUvCXIhM/p2Z561VifTmg/6NuUtxzINk97f+LrDNhFFErwitn3dVNuldXbFTdMHJtUj5quypm9Q8i+v+tvlgEf7Lm/sOgZCYYrW9Cgb3NLqTJXj2j2DXQTJcIsLKWqlkspcaSul8BKFbKpNOzhL7L0lr/+vGRVVD2Mh0eJPctx4GQOS9SePmFAQRJfU5egIL7l7SSONwXzPFyCQF7BH43r7URboc03IFlwQHOx3q6JLzZRtqnsbbv8Zwdq65ic49kN+UwEE6Ji/lEyZxuh3KyEezBuYFdc3PXOUyJ0FroFEQjehNeVhbcG6BSswmSU2H7Dbo7kxBCW4tkRDVIuiPZrOhzrDprdsjE0n8z+J/ZwHeCLodiFueuF4MU1w/oeyDCRBfnuZhpXX9/wGLbEIZSX0aZQM0dk/r69XL8mDxIT437+VxBVTolPExFtxksKaqCpqlUHZ9vPPqW8YUtnGrcYBwgoKfqa1KKXmp6eJCQ2FYywZe5xnVyZSm2JDzo0aZFlAuZDvbYQ4aFu1uDwzk7VXDAzXIvfDKr39Q2KgcZuY3FWZcB6ujvaDZZHn2XQv396etkNVD9U45OaJjTQ2xgmIyW8xe8uDrZhTC0zG6ZTF12SpbNycLym2GoRRDLw4=
+    secure: qGhRB1ESkHeTTLTtejb84k84nKudeIWWdg2LkTnQ21yP/2SVkEPcWXSXYSaMs5lYkmedhzzdZU9e/Lbe8mOpy0Eqv0I0QItkDpCdDVeEFWsUPFXvd2B8IuO4tOIbUNjhvLAvW4JbIEpnMvQQUFTXW7yUd3SZqPjZHtSA6pNqDvZzDOKjrYfzEUxlF6FycG+XlOaoon1pvqc+p8JK/J5H8P7Nj4og0ynJwLYUIuMjt1empTOLESGVSZ5uM44le2Cq76Bar28xiCBso9LJ7SnsvZRZjNJ2zy4YhM6iYI4w/L2h7RO9WX1qBOODseXc1gzfD3jGoeCPmy41f7Gpay8N4F2y821XI0Ai03qiR3MvjfP8Gkq7irgNZnrCfsae6+yANjno9e7fv5+KbH9XrCqQETREears4zDPfRihwJC+No2iKIXn54BJpCR5pUHVDyRGv+M3QETjmPzwtU62BK1uYlhUOmQHnHTomLLOE9cJto4B26oeG1IaKdyhhvZwOTxAPvyAwlXbsF/NsSZ6RhLMUuMM9PThN28c/7htwgD+SpsaklvDxv8rt6uAQ8KI8kzFNGrxMZnxdFc9zPVyp1B18YbgbGstQRO3HTkMkg9inQBR511MCTp7EE2DJr3sA7jAiwR/Y3s7AzfJixAowHKoOiYv+4H6YgHv11ti7aK/7KM=
   app: wrestlingapp
   on:
     repo: jcwimer/wrestlingApp
     branch: master
-  run: "rake db:migrate RAILS_ENV=production"
+  run: rake db:migrate RAILS_ENV=production

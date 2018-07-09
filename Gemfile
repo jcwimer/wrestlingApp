@@ -53,6 +53,7 @@ gem 'round_robin_tournament'
 gem 'rb-readline'
 gem 'delayed_job_active_record'
 gem 'puma'
+gem 'travis'
 
 group :development do
  gem 'rubocop'
