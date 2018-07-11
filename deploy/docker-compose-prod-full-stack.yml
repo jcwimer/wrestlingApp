@@ -1,36 +1,54 @@
-app:
-  extends:
-    file: docker-compose-common.yml
-    service: app
-  image: wrestlingdev-prod
-  links:
-    - db
-  restart: always
-  env_file:
-    - ./prod.env
-db:
-  extends:
-    file: docker-compose-common.yml
-    service: db
-  restart: always
-  env_file:
-    - ./prod.env
-worker:
-  extends:
-    file: docker-compose-common.yml
-    service: worker
-  image: wrestlingdev-prod
-  links:
-    - db
-  restart: always
-  env_file:
-    - ./prod.env
-  healthcheck:
-      test: ps -ef | grep rake | grep ruby
-  command: bundle exec rake jobs:work RAILS_ENV=production
+version: "3.3"
+networks:
+  database:
+  caching:
 
-memcached:
-  extends:
-    file: docker-compose-common.yml
-    service: memcached
-  restart: always
+volumes:
+  mysql:
+
+services:
+  app:
+    image: wrestlingdev-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      database:
+      caching:
+    restart: always
+    env_file:
+      - ./prod.env
+    healthcheck: 
+      test: curl --insecure https://127.0.0.1/
+
+  db:
+    image: mysql:5.5
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+    restart: always
+    env_file:
+      - ./prod.env
+    networks:
+      database:
+
+  worker:
+    image: wrestlingdev-prod
+    networks:
+      database:
+      caching:
+    restart: always
+    env_file:
+      - ./prod.env
+    healthcheck:
+        test: ps -ef | grep rake | grep ruby
+    command: bundle exec rake jobs:work RAILS_ENV=production
+
+
+  memcached:
+    image: memcached
+    mem_limit: 64000000
+    restart: always
+    networks:
+      caching:
