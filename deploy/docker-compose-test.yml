@@ -9,6 +9,9 @@ volumes:
 services:
   app:
     image: wrestlingdev:dev
+    build:
+      context: ../
+      dockerfile: rails-prod-Dockerfile
     environment:
       - WRESTLINGDEV_DB_NAME=wrestlingtourney
       - WRESTLINGDEV_DB_USR=root
@@ -60,6 +63,9 @@ services:
 
   worker:
     image: wrestlingdev:dev
+    build:
+      context: ../
+      dockerfile: rails-prod-Dockerfile
     environment:
       - WRESTLINGDEV_DB_NAME=wrestlingtourney
       - WRESTLINGDEV_DB_USR=root
