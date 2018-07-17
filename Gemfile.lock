@@ -151,8 +151,10 @@ GEM
     parallel (1.12.1)
     parser (2.5.1.0)
       ast (~> 2.4.0)
+    passenger (5.3.3)
+      rack
+      rake (>= 0.8.1)
     powerpack (0.1.2)
-    puma (3.11.4)
     pusher-client (0.6.2)
       json
       websocket (~> 1.0)
@@ -275,7 +277,7 @@ DEPENDENCIES
   jquery-rails
   mysql2
   newrelic_rpm
-  puma
+  passenger
   rails (= 5.2.0)
   rails_12factor
   rb-readline
