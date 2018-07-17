@@ -52,7 +52,8 @@ gem 'cancancan'
 gem 'round_robin_tournament'
 gem 'rb-readline'
 gem 'delayed_job_active_record'
-gem 'puma'
+#gem 'puma'
+gem 'passenger'
 gem 'travis'
 
 group :development do
