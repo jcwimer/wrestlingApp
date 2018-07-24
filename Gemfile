@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.5.1'
+ruby '2.4.4'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '5.2.0'
 # Use sqlite3 as the database for Active Record
@@ -52,7 +52,7 @@ gem 'cancancan'
 gem 'round_robin_tournament'
 gem 'rb-readline'
 gem 'delayed_job_active_record'
-#gem 'puma'
+gem 'puma'
 gem 'passenger'
 gem 'travis'
 
