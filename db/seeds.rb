@@ -5,7 +5,7 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
-if Rails.env.development?
+#if Rails.env.development?
 	User.create(id: 1, email: 'test@test.com', password: 'password', password_confirmation: 'password')
 	Tournament.create(id: 200, name: 'test', address: 'some place', director: 'some guy', director_email: 'hismail@email.com', tournament_type: 'Pool to bracket', user_id: 1, date: Date.today)
 	School.create(id: 200, name: 'Central Crossing', tournament_id: 200)
@@ -75,7 +75,7 @@ if Rails.env.development?
 	Wrestler.create(name: 'Guy 50', school_id: 204, weight_id: 204, original_seed: nil, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 51', school_id: 204, weight_id: 204, original_seed: nil, season_win: 0, season_loss: 0, criteria: 'N/A')
 	Wrestler.create(name: 'Guy 52', school_id: 204, weight_id: 204, original_seed: nil, season_win: 0, season_loss: 0, criteria: 'N/A')
-end
+#end
 
 
 
