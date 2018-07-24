@@ -1,4 +1,4 @@
-FROM ruby:2.5.1
+FROM ruby:2.4.4
 
 HEALTHCHECK --start-period=30s CMD curl --insecure https://127.0.0.1/
 
@@ -70,5 +70,5 @@ RUN RAILS_ENV=production bundle exec rake assets:precompile
 
 # By default, simply start puma.
 WORKDIR /rails
-#CMD bundle exec puma -t 3:3 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt'  -e production
-CMD bundle exec passenger start -p 443 --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key
+CMD bundle exec puma -t 3:3 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt'  -e production
+#CMD bundle exec passenger start -p 443 --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key

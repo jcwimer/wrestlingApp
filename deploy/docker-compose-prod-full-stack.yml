@@ -22,7 +22,7 @@ services:
       test: curl --insecure https://127.0.0.1/
 
   db:
-    image: mysql:5.5
+    image: mysql:5.7
     ports:
       - "3306:3306"
     volumes:
@@ -42,12 +42,12 @@ services:
     env_file:
       - ./prod.env
     healthcheck:
-        test: ps -ef | grep rake | grep ruby
+        test: kill -0 1
     command: bundle exec rake jobs:work RAILS_ENV=production
 
 
   memcached:
-    image: memcached
+    image: memcached:1.5
     mem_limit: 64000000
     restart: always
     networks:

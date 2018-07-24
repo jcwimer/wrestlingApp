@@ -149,17 +149,18 @@ GEM
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
     parallel (1.12.1)
-    parser (2.5.1.0)
+    parser (2.5.1.2)
       ast (~> 2.4.0)
     passenger (5.3.3)
       rack
       rake (>= 0.8.1)
     powerpack (0.1.2)
+    puma (3.12.0)
     pusher-client (0.6.2)
       json
       websocket (~> 1.0)
     rack (2.0.5)
-    rack-test (1.0.0)
+    rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (5.2.0)
       actioncable (= 5.2.0)
@@ -203,10 +204,10 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     round_robin_tournament (0.0.1)
-    rubocop (0.58.0)
+    rubocop (0.58.1)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
-      parser (>= 2.5)
+      parser (>= 2.5, != 2.5.1.1)
       powerpack (~> 0.1)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
@@ -247,7 +248,7 @@ GEM
       ethon (>= 0.8.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    uglifier (4.1.14)
+    uglifier (4.1.15)
       execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
@@ -278,6 +279,7 @@ DEPENDENCIES
   mysql2
   newrelic_rpm
   passenger
+  puma
   rails (= 5.2.0)
   rails_12factor
   rb-readline
@@ -292,7 +294,7 @@ DEPENDENCIES
   uglifier
 
 RUBY VERSION
-   ruby 2.5.1p57
+   ruby 2.4.4p296
 
 BUNDLED WITH
-   1.16.1
+   1.16.2
