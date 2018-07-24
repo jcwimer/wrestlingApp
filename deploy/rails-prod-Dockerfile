@@ -2,6 +2,10 @@ FROM ruby:2.4.4
 
 HEALTHCHECK --start-period=30s CMD curl --insecure https://127.0.0.1/
 
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+
 RUN apt-get -qq update \
   && DEBIAN_FRONTEND=noninteractive apt-get -qq upgrade -y \
   && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y \
@@ -68,7 +72,10 @@ ENV WRESTLINGDEV_SECRET_KEY_BASE 077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e446
 ENV WRESTLINGDEV_DEVISE_SECRET_KEY 2f29d49db6704377ba263f7cb9db085b386bcb301c0cd501126a674686ab1a109754071165b08cd72af03cec4642a4dd04361c994462254dd5d85e9594e8b9aa
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
+# Tini solves the zombie PID problem
+ENTRYPOINT ["/tini", "--"]
+
 # By default, simply start puma.
 WORKDIR /rails
-CMD bundle exec puma -t 3:3 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt'  -e production
-#CMD bundle exec passenger start -p 443 --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key
+#CMD bundle exec puma -t 3:3 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt'  -e production
+CMD bundle exec passenger start -p 443 --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key

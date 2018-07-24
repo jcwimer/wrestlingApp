@@ -82,7 +82,7 @@ services:
       caching:
     restart: always
     healthcheck:
-        test: kill -0 1
+        test: ps -ef | grep rake | grep ruby
     command: bundle exec rake jobs:work RAILS_ENV=production
     deploy:
       resources:
