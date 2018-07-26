@@ -204,7 +204,7 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     round_robin_tournament (0.0.1)
-    rubocop (0.58.1)
+    rubocop (0.58.2)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.5, != 2.5.1.1)
@@ -248,7 +248,9 @@ GEM
       ethon (>= 0.8.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    uglifier (4.1.15)
+    tzinfo-data (1.2018.5)
+      tzinfo (>= 1.0.0)
+    uglifier (4.1.16)
       execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
@@ -291,6 +293,7 @@ DEPENDENCIES
   therubyracer
   travis
   turbolinks
+  tzinfo-data
   uglifier
 
 RUBY VERSION

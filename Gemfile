@@ -54,12 +54,13 @@ gem 'rb-readline'
 gem 'delayed_job_active_record'
 gem 'puma'
 gem 'passenger'
-gem 'travis'
+gem 'tzinfo-data'
 
 group :development do
  gem 'rubocop'
  gem 'bullet'
  gem 'brakeman'
  gem 'hakiri'
+ gem 'travis'
 end
 

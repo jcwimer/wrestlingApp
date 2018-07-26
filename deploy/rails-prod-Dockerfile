@@ -1,6 +1,9 @@
-FROM ruby:2.4.4
+FROM ubuntu:xenial
 
 HEALTHCHECK --start-period=30s CMD curl --insecure https://127.0.0.1/
+
+ENV RUBY_VERSION=2.4.4
+ENV RUBY_MAJOR_VERSION=2.4
 
 ENV TINI_VERSION v0.18.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
@@ -25,10 +28,28 @@ RUN apt-get -qq update \
     sqlite3 \
     wget \
     apt-transport-https \
+    ca-certificates \
     mysql-client \
+    libmysqlclient-dev \
     postfix \
     nodejs \
+    nginx \
+    lsb-release \
+    dirmngr \
+    gnupg \
+  && wget http://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR_VERSION}/ruby-${RUBY_VERSION}.tar.gz \
+  && tar -xzf ruby-${RUBY_VERSION}.tar.gz \
+  && cd ruby-${RUBY_VERSION} \
+  && ./configure \
+  && make && make install \
+  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7 \
+  && sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger $(lsb_release -c --short) main > /etc/apt/sources.list.d/passenger.list' \
+  && apt-get -qq update \
+  && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y \
+    passenger \
+    nginx-extras \
   && apt-get -qq clean \
+  && apt-get autoremove -y \
   && rm -rf \
     /var/lib/apt/lists/* \
     /tmp/* \
@@ -59,13 +80,18 @@ RUN gem install --no-rdoc --no-ri bundler
 WORKDIR /tmp
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
-#RUN bundle install --without test
 RUN bundle install
 
 # Copy site into place.
-RUN mkdir /rails
-WORKDIR /rails
-ADD . /rails
+RUN rm -rf /rails && mkdir /rails
+WORKDIR /rails/
+ADD . /rails/
+
+# Nginx configurations (nginx does not pass envs which is why you need nginx-env.conf)
+COPY ./deploy/nginx-wrestlingdev.conf /etc/nginx/sites-available/default
+COPY ./deploy/nginx-env.conf /etc/nginx/main.d/nginx-env.conf
+COPY ./deploy/nginx.conf /etc/nginx/nginx.conf
+RUN echo "passenger_default_user root;" >> /etc/nginx/passenger.conf
 
 #Need temp secret keys to precompile assets
 ENV WRESTLINGDEV_SECRET_KEY_BASE 077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e4463d851c444c10a5611829a2290b253da78339427f131571fac9a42c83d960b2d25ecc10a4a0a7ce1a2
@@ -75,7 +101,7 @@ RUN RAILS_ENV=production bundle exec rake assets:precompile
 # Tini solves the zombie PID problem
 ENTRYPOINT ["/tini", "--"]
 
-# By default, simply start puma.
 WORKDIR /rails
 #CMD bundle exec puma -t 3:3 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt'  -e production
-CMD bundle exec passenger start -p 443 --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key
+#CMD bundle exec passenger start --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key
+CMD ["nginx"]
