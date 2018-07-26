@@ -63,9 +63,6 @@ services:
 
   worker:
     image: wrestlingdev
-    build:
-      context: ../
-      dockerfile: ./deploy/rails-prod-Dockerfile
     environment:
       - WRESTLINGDEV_DB_NAME=wrestlingtourney
       - WRESTLINGDEV_DB_USR=root
