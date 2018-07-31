@@ -13,6 +13,7 @@ services:
       context: ../
       dockerfile: ./deploy/rails-prod-Dockerfile
     environment:
+      - RAILS_ENV=production
       - WRESTLINGDEV_DB_NAME=wrestlingtourney
       - WRESTLINGDEV_DB_USR=root
       - WRESTLINGDEV_DB_PWD=password
@@ -64,6 +65,7 @@ services:
   worker:
     image: wrestlingdev
     environment:
+      - RAILS_ENV=production
       - WRESTLINGDEV_DB_NAME=wrestlingtourney
       - WRESTLINGDEV_DB_USR=root
       - WRESTLINGDEV_DB_PWD=password
@@ -80,7 +82,7 @@ services:
     restart: always
     healthcheck:
         test: kill -0 1
-    command: bundle exec rake jobs:work RAILS_ENV=production
+    command: bundle exec bin/delayed_job -n 1 run
     deploy:
       resources:
         limits:
