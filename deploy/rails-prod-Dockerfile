@@ -90,5 +90,5 @@ RUN RAILS_ENV=production bundle exec rake assets:precompile
 ENTRYPOINT ["/tini", "--"]
 
 WORKDIR /rails
-CMD bundle exec puma -t 5:5 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt'  -e production
+CMD bundle exec puma -w 3 -t 5:5 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt' -e production
 #CMD bundle exec passenger start --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key
