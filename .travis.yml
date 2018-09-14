@@ -1,13 +1,21 @@
 sudo: required
-language: ruby
+
+language: minimal
+
 services:
-- docker
-rvm:
-- 2.4.4
+  - docker
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
 env:
-- DB=sqlite
+  - DOCKER_COMPOSE_VERSION=1.22.0
+
 script:
-- bash bin/run-tests-with-docker.sh
+  - bash bin/run-tests-with-docker.sh
+
 deploy:
   provider: heroku
   api_key:

@@ -1,4 +1,4 @@
-version: "3.3"
+version: "2.2"
 networks:
   database:
   caching:
@@ -31,14 +31,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
     healthcheck: 
       test: curl --insecure https://127.0.0.1/
 
@@ -53,14 +45,6 @@ services:
     restart: always
     networks:
       database:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
 
   worker:
     image: wrestlingdev
@@ -83,25 +67,10 @@ services:
     healthcheck:
         test: kill -0 1
     command: bundle exec bin/delayed_job -n 1 run
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
 
   memcached:
     image: memcached:1.5
-    deploy:
-      resources:
-        limits:
-          cpus: '0.10'
-          memory: 64M
-        reservations:
-          cpus: '0.10'
-          memory: 64M
+    mem_limit: 64000000
     restart: always
     networks:
       caching:
