@@ -14,7 +14,7 @@ class GeneratePoolNumbers
 	end
 
     def saveOnePoolNumbers(poolWrestlers)
-		poolWrestlers.sort_by{|x| x.seed }.each do |w|
+		poolWrestlers.sort_by{|x| x.bracket_line }.each do |w|
 			w.pool = 1
 			w.save
 		end
@@ -23,14 +23,14 @@ class GeneratePoolNumbers
 
 	def saveTwoPoolNumbers(poolWrestlers)
 		pool = 1
-		poolWrestlers.sort_by{|x| x.seed }.reverse.each do |w|
-			if w.seed == 1
+		poolWrestlers.sort_by{|x| x.bracket_line }.reverse.each do |w|
+			if w.bracket_line == 1
 				w.pool = 1
-			elsif w.seed == 2
+			elsif w.bracket_line == 2
 				w.pool = 2
-			elsif w.seed == 3
+			elsif w.bracket_line == 3
 				w.pool = 2
-			elsif w.seed == 4
+			elsif w.bracket_line == 4
 				w.pool = 1
 			else
 				w.pool = pool
@@ -46,22 +46,22 @@ class GeneratePoolNumbers
 
 	def saveFourPoolNumbers(poolWrestlers)
 		pool = 1
-		poolWrestlers.sort_by{|x| x.seed }.reverse.each do |w|
-			if w.seed == 1
+		poolWrestlers.sort_by{|x| x.bracket_line }.reverse.each do |w|
+			if w.bracket_line == 1
 				w.pool = 1
-			elsif w.seed == 2
+			elsif w.bracket_line == 2
 				w.pool = 2
-			elsif w.seed == 3
+			elsif w.bracket_line == 3
 				w.pool = 3
-			elsif w.seed == 4
+			elsif w.bracket_line == 4
 				w.pool = 4
-			elsif w.seed == 8
+			elsif w.bracket_line == 8
 				w.pool = 1
-			elsif w.seed == 7
+			elsif w.bracket_line == 7
 				w.pool = 2
-			elsif w.seed == 6
+			elsif w.bracket_line == 6
 				w.pool = 3
-			elsif w.seed == 5
+			elsif w.bracket_line == 5
 				w.pool = 4
 			else
 				w.pool = pool

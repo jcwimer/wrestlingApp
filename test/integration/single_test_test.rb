@@ -42,7 +42,7 @@ class SingleTestTest < ActionDispatch::IntegrationTest
     #   puts "   school_id: #{w.school_id}"
     #   puts "   weight_id: #{w.weight_id}"
     #   puts "   original_seed: #{w.original_seed}"
-    #   puts "   seed: #{w.seed}"
+    #   puts "   bracket_line: #{w.bracket_line}"
     #   puts "   season_loss: #{w.season_loss}"
     #   puts "   season_win: #{w.season_win}"
     #   puts "   criteria: #{w.criteria}"

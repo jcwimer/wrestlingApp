@@ -14,14 +14,14 @@ class TournamentSeeding
     def randomSeeding(weight)
 		wrestlerWithSeeds = weight.wrestlers.select{|w| w.original_seed != nil }.sort_by{|w| w.original_seed}
 		if wrestlerWithSeeds.size > 0
-			highestSeed = wrestlerWithSeeds.last.seed
+			highestSeed = wrestlerWithSeeds.last.bracket_line
 			seed = highestSeed + 1
 		else
 			seed = 1
 		end
 		wrestlersWithoutSeed = weight.wrestlers.select{|w| w.original_seed == nil }
 		wrestlersWithoutSeed.shuffle.each do |w|
-			w.seed = seed
+			w.bracket_line = seed
 			w.save
 			seed += 1
 		end
@@ -30,14 +30,14 @@ class TournamentSeeding
 	def setOriginalSeeds(weight)
 		wrestlerWithSeeds = weight.wrestlers.select{|w| w.original_seed != nil }
 		wrestlerWithSeeds.each do |w|
-			w.seed = w.original_seed
+			w.bracket_line = w.original_seed
 			w.save
 		end
 	end
 	
 	def resetAllSeeds(weight)
 		weight.wrestlers.each do |w|
-			w.seed = nil
+			w.bracket_line = nil
 			w.save
 		end
 	end

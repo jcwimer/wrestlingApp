@@ -61,7 +61,7 @@ class Weight < ActiveRecord::Base
 	
 	def poolSeedOrder(pool)
 		# wrestlersForPool(pool).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]}	
-		return wrestlersForPool(pool).sort_by{|w|w.seed}
+		return wrestlersForPool(pool).sort_by{|w|w.bracket_line}
 	end
 	
 	

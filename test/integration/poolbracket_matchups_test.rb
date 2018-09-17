@@ -260,7 +260,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   
   test "Random seeding works" do
     weight = Weight.find(6)
-    wrestlersWithoutSeed = weight.wrestlers.select{|w| w.seed == nil }.size
+    wrestlersWithoutSeed = weight.wrestlers.select{|w| w.bracket_line == nil }.size
     
     assert_equal 0, wrestlersWithoutSeed
   end

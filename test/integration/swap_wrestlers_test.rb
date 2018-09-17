@@ -19,10 +19,10 @@ class SwapWrestlersTest < ActionDispatch::IntegrationTest
     
     assert_not_empty wrestler1.matchAgainst(wrestler3)
     assert_equal 2, wrestler1.pool
-    assert_equal 2, wrestler1.seed
+    assert_equal 2, wrestler1.bracket_line
 
     assert_not_empty wrestler2.matchAgainst(wrestler4)
     assert_equal 1, wrestler2.pool
-    assert_equal 1, wrestler2.seed
+    assert_equal 1, wrestler2.bracket_line
   end
 end
