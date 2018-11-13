@@ -12,7 +12,7 @@ class TournamentsController < ApplicationController
   def swap
     @wrestler = Wrestler.find(params[:wrestler][:originalId])
     respond_to do |format|
-      if SwapWrestlers.new.swapWrestlers(params[:wrestler][:originalId], params[:wrestler][:swapId])
+      if SwapWrestlers.new.swap_wrestlers_bracket_lines(params[:wrestler][:originalId], params[:wrestler][:swapId])
         format.html { redirect_to "/tournaments/#{@wrestler.tournament.id}/brackets/#{@wrestler.weight.id}", notice: 'Wrestler was successfully swaped.' }
         format.json { render action: 'show', status: :created, location: @wrestler }
       end
@@ -143,7 +143,7 @@ class TournamentsController < ApplicationController
 
   def create_custom_weights
     @custom = params[:customValue].to_s
-    @tournament.createCustomWeights(@custom)
+    @tournament.create_pre_defined_weights(@custom)
     redirect_to "/tournaments/#{@tournament.id}"
   end
 
@@ -157,7 +157,7 @@ class TournamentsController < ApplicationController
         @weight = Weight.where(:id => params[:weight]).includes(:matches,:wrestlers).first
         @matches = @weight.matches
         @wrestlers = @weight.wrestlers.includes(:school)
-        @pools = @weight.poolRounds(@matches)
+        @pools = @weight.pool_rounds(@matches)
         @bracketType = @weight.pool_bracket_type
       end
   end
@@ -172,7 +172,7 @@ class TournamentsController < ApplicationController
 
   def team_scores
     @schools = @tournament.schools
-    @schools = @schools.sort_by{|s| s.pageScore}.reverse!
+    @schools = @schools.sort_by{|s| s.page_score_string}.reverse!
   end
 
 
@@ -190,7 +190,7 @@ class TournamentsController < ApplicationController
     if params[:search]
       @tournaments = Tournament.search(params[:search]).order("created_at DESC")
     else
-      @tournaments = Tournament.all.sort_by{|t| t.daysUntil}.first(20)
+      @tournaments = Tournament.all.sort_by{|t| t.days_until_start}.first(20)
     end
   end
 
@@ -276,7 +276,7 @@ class TournamentsController < ApplicationController
   end
 
   def check_tournament_errors
-    if @tournament.tournamentMatchGenerationError != nil
+    if @tournament.match_generation_error != nil
       respond_to do |format|
         format.html { redirect_to "/tournaments/#{@tournament.id}/error" }
       end

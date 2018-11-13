@@ -5,11 +5,11 @@ class GeneratePoolNumbers
 
     def savePoolNumbers
 		if @weight.pools == 4
-			saveFourPoolNumbers(@weight.wrestlersWithoutPool)
+			saveFourPoolNumbers(@weight.wrestlers_without_pool_assignment)
 		elsif @weight.pools == 2
-			saveTwoPoolNumbers(@weight.wrestlersWithoutPool)
+			saveTwoPoolNumbers(@weight.wrestlers_without_pool_assignment)
 		elsif @weight.pools == 1
-			saveOnePoolNumbers(@weight.wrestlersWithoutPool)
+			saveOnePoolNumbers(@weight.wrestlers_without_pool_assignment)
 		end
 	end
 

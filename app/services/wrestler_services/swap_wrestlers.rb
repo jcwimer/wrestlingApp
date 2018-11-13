@@ -2,7 +2,7 @@ class SwapWrestlers
     attr_accessor :wrestler1_id, :wrestler2_id
 
     
-    def swapWrestlers(wrestler1_id,wrestler2_id)
+    def swap_wrestlers_bracket_lines(wrestler1_id,wrestler2_id)
 	    w1 = Wrestler.find(wrestler1_id)
 	    w2 = Wrestler.find(wrestler2_id)
 	    
@@ -12,15 +12,15 @@ class SwapWrestlers
  	    w3.original_seed = w1.original_seed
  	    w3.bracket_line = w1.bracket_line
  	    w3.pool = w1.pool
- 		swapWrestlerMatches(w1.allMatches,w1.id,w3.id)
+ 		swapWrestlerMatches(w1.all_matches,w1.id,w3.id)
   	    
  	    #Swap wrestler 1 and wrestler 2
- 	    swapWrestlerMatches(w2.allMatches,w2.id,w1.id)
+ 	    swapWrestlerMatches(w2.all_matches,w2.id,w1.id)
  	    w1.bracket_line = w2.bracket_line
  	    w1.pool = w2.pool
 
   	    
- 	    swapWrestlerMatches(w3.allMatches,w3.id,w2.id)
+ 	    swapWrestlerMatches(w3.all_matches,w3.id,w2.id)
  	    w2.bracket_line = w3.bracket_line
  	    w2.pool = w3.pool
 

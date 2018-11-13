@@ -6,7 +6,7 @@ class MatsController < ApplicationController
   # GET /mats/1
   # GET /mats/1.json
   def show
-    @match = @mat.unfinishedMatches.first
+    @match = @mat.unfinished_matches.first
     if @match
       @w1 = @match.wrestler1
       @w2 = @match.wrestler2

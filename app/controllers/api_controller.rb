@@ -9,7 +9,7 @@ class ApiController < ApplicationController
         if params[:search]
           @tournaments = Tournament.search(params[:search]).order("created_at DESC")
         else
-          @tournaments = Tournament.all.sort_by{|t| t.daysUntil}.first(20)
+          @tournaments = Tournament.all.sort_by{|t| t.days_until_start}.first(20)
         end 
     end
     

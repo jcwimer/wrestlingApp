@@ -15,9 +15,9 @@ class PoolGeneration
 	end		
 
 	def roundRobin
-		wrestlers = @weight.wrestlersForPool(@pool)
-		poolMatches = RoundRobinTournament.schedule(wrestlers).reverse
-		poolMatches.each_with_index do |b, index|
+		wrestlers = @weight.wrestlers_in_pool(@pool)
+		pool_matches = RoundRobinTournament.schedule(wrestlers).reverse
+		pool_matches.each_with_index do |b, index|
 			round = index + 1
 			bouts = b.map
 			bouts.each do |bout|

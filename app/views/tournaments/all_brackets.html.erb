@@ -74,7 +74,7 @@ li:first-child,li:last-child {
                 <% @weight = w %>
                 <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
                 <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
-                <% @pools = w.poolRounds(@matches) %>
+                <% @pools = w.pool_rounds(@matches) %>
                 <%= render 'pool' %>
             </td>
             

@@ -62,7 +62,7 @@ class MatsControllerTest < ActionController::TestCase
   end
   
   def wipe
-    @tournament.destroyAllMatches
+    @tournament.destroy_all_matches
   end
 
   test "logged in tournament owner should get edit mat page" do

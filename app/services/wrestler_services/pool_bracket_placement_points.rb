@@ -16,7 +16,7 @@ class PoolBracketPlacementPoints
         if @bracket == "fourPoolsToSemi"
            whilePointsAreZero { @points = fourPoolsToSemi }
         end
-        if @wrestler.weight.wrestlers.size <= 6 && @wrestler.weight.allPoolMatchesFinished(1)
+        if @wrestler.weight.wrestlers.size <= 6 && @wrestler.weight.all_pool_matches_finished(1)
             whilePointsAreZero { @points = onePool }
         end
         return @points
@@ -29,11 +29,11 @@ class PoolBracketPlacementPoints
     end
     
     def bracket_position_size(bracket_position_name)
-        @wrestler.allMatches.select{|m| m.bracket_position == bracket_position_name}.size
+        @wrestler.all_matches.select{|m| m.bracket_position == bracket_position_name}.size
     end
     
     def won_bracket_position_size(bracket_position_name)
-        @wrestler.matchesWon.select{|m| m.bracket_position == bracket_position_name}.size
+        @wrestler.matches_won.select{|m| m.bracket_position == bracket_position_name}.size
     end
     
     def fourPoolsToQuarter
@@ -67,14 +67,14 @@ class PoolBracketPlacementPoints
     end
     
     def onePool
-           poolOrder = @wrestler.weight.poolOrder(1)
-           if @wrestler == poolOrder.first
+           pool_placement_order = @wrestler.weight.pool_placement_order(1)
+           if @wrestler == pool_placement_order.first
                return firstPlace
-           elsif @wrestler == poolOrder.second 
+           elsif @wrestler == pool_placement_order.second 
                 return secondPlace
-           elsif @wrestler == poolOrder.third 
+           elsif @wrestler == pool_placement_order.third 
                 return thirdPlace
-           elsif @wrestler == poolOrder.fourth 
+           elsif @wrestler == pool_placement_order.fourth 
                 return fourthPlace
            end
             return 0

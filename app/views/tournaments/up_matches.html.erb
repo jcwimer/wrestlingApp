@@ -29,10 +29,10 @@
       <% @mats.each.map do |m| %>
         <tr>
           <td><%= m.name %></td>
-          <td><% if m.unfinishedMatches.first %><strong><%=m.unfinishedMatches.first.bout_number%></strong> - <%= m.unfinishedMatches.first.weight_max %> lbs<br><%= m.unfinishedMatches.first.w1_name %> vs. <%= m.unfinishedMatches.first.w2_name %><% end %></td>
-          <td><% if m.unfinishedMatches.second %><strong><%=m.unfinishedMatches.second.bout_number%></strong> - <%= m.unfinishedMatches.second.weight_max %> lbs<br><%= m.unfinishedMatches.second.w1_name %> vs. <%= m.unfinishedMatches.second.w2_name %><% end %></td>
-          <td><% if m.unfinishedMatches.third %><strong><%=m.unfinishedMatches.third.bout_number%></strong> - <%= m.unfinishedMatches.third.weight_max %> lbs<br><%= m.unfinishedMatches.third.w1_name %> vs. <%= m.unfinishedMatches.third.w2_name %><% end %></td>
-          <td><% if m.unfinishedMatches.fourth %><strong><%=m.unfinishedMatches.fourth.bout_number%></strong> - <%= m.unfinishedMatches.fourth.weight_max %> lbs<br><%= m.unfinishedMatches.fourth.w1_name %> vs. <%= m.unfinishedMatches.fourth.w2_name %><% end %></td>
+          <td><% if m.unfinished_matches.first %><strong><%=m.unfinished_matches.first.bout_number%></strong> - <%= m.unfinished_matches.first.weight_max %> lbs<br><%= m.unfinished_matches.first.w1_name %> vs. <%= m.unfinished_matches.first.w2_name %><% end %></td>
+          <td><% if m.unfinished_matches.second %><strong><%=m.unfinished_matches.second.bout_number%></strong> - <%= m.unfinished_matches.second.weight_max %> lbs<br><%= m.unfinished_matches.second.w1_name %> vs. <%= m.unfinished_matches.second.w2_name %><% end %></td>
+          <td><% if m.unfinished_matches.third %><strong><%=m.unfinished_matches.third.bout_number%></strong> - <%= m.unfinished_matches.third.weight_max %> lbs<br><%= m.unfinished_matches.third.w1_name %> vs. <%= m.unfinished_matches.third.w2_name %><% end %></td>
+          <td><% if m.unfinished_matches.fourth %><strong><%=m.unfinished_matches.fourth.bout_number%></strong> - <%= m.unfinished_matches.fourth.weight_max %> lbs<br><%= m.unfinished_matches.fourth.w1_name %> vs. <%= m.unfinished_matches.fourth.w2_name %><% end %></td>
         </tr>
       <% end %>
     </tbody>

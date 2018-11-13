@@ -20,7 +20,7 @@ json.cache! ["api_tournament", @tournament] do
         json.original_seed wrestler.original_seed
         json.criteria wrestler.criteria
         json.extra wrestler.extra
-        json.seasonWinPercentage wrestler.seasonWinPercentage
+        json.season_win_percentage wrestler.season_win_percentage
         json.season_win wrestler.season_win
         json.season_loss wrestler.season_loss
       end
@@ -28,7 +28,7 @@ json.cache! ["api_tournament", @tournament] do
     
     json.mats @tournament.mats do |mat|
       json.name mat.name
-      json.unfinishedMatches mat.unfinishedMatches do |match|
+      json.unfinished_matches mat.unfinished_matches do |match|
         json.bout_number match.bout_number
         json.w1_name match.w1_name
         json.w2_name match.w2_name

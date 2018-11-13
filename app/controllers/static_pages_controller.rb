@@ -4,7 +4,7 @@ class StaticPagesController < ApplicationController
 		tournaments_created = current_user.tournaments
 		tournaments_delegated = current_user.delegated_tournaments
 		all_tournaments = tournaments_created + tournaments_delegated
-		@tournaments = all_tournaments.sort_by{|t| t.daysUntil}
+		@tournaments = all_tournaments.sort_by{|t| t.days_until_start}
 		@schools = current_user.delegated_schools
 	end
 

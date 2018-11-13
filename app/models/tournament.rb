@@ -14,7 +14,7 @@ class Tournament < ActiveRecord::Base
 	  where("date LIKE ? or name LIKE ?", "%#{search}%", "%#{search}%")
 	end
 
-	def daysUntil
+	def days_until_start
 		time = (Date.today - self.date).to_i
 		if time < 0
 			time = time * -1
@@ -26,7 +26,7 @@ class Tournament < ActiveRecord::Base
 		["Pool to bracket"]
 	end
 
-	def createCustomWeights(value)
+	def create_pre_defined_weights(value)
 		weights.destroy_all
 		if value == 'hs'
 			Weight::HS_WEIGHT_CLASSES.each do |w|
@@ -37,32 +37,32 @@ class Tournament < ActiveRecord::Base
 		end
 	end
 
-	def destroyAllMatches
+	def destroy_all_matches
 		matches.destroy_all
 	end
 
-	def matchesByRound(round)
+	def matches_by_round(round)
 		matches.joins(:weight).where(round: round).order("weights.max")
 	end
 	
-	def totalRounds
+	def total_rounds
 		self.matches.sort_by{|m| m.round}.last.round	
 	end
 	
-	def assignMats(matsToAssign)
-		if matsToAssign.count > 0
-			until matsToAssign.sort_by{|m| m.id}.last.matches.count == 4
-				matsToAssign.sort_by{|m| m.id}.each do |m|
-					m.assignNextMatch	
+	def assign_mats(mats_to_assign)
+		if mats_to_assign.count > 0
+			until mats_to_assign.sort_by{|m| m.id}.last.matches.count == 4
+				mats_to_assign.sort_by{|m| m.id}.each do |m|
+					m.assign_next_match	
 				end
 			end	
 		end
 	end
 	
-	def resetMats
-		matchesToReset = matches.select{|m| m.mat_id != nil}
-		# matchesToReset.update_all( {:mat_id => nil } )
-		matchesToReset.each do |m|
+	def reset_mats
+		matches_to_reset = matches.select{|m| m.mat_id != nil}
+		# matches_to_reset.update_all( {:mat_id => nil } )
+		matches_to_reset.each do |m|
 			m.mat_id = nil
 			m.save
 		end
@@ -83,7 +83,7 @@ class Tournament < ActiveRecord::Base
       point_adjustments
     end
     
-    def removeSchoolDelegations
+    def remove_school_delegations
 	    self.schools.each do |s|
 	      s.delegates.each do |d|
 	        d.destroy
@@ -91,7 +91,7 @@ class Tournament < ActiveRecord::Base
 	    end
   	end
   	
-  	def poolToBracketWeightsWithTooManyWrestlers
+  	def pool_to_bracket_weights_with_too_many_wrestlers
   		if self.tournament_type == "Pool to bracket"
   			weightsWithTooManyWrestlers = weights.select{|w| w.wrestlers.size > 16}
   			if weightsWithTooManyWrestlers.size < 1
@@ -104,11 +104,11 @@ class Tournament < ActiveRecord::Base
   		end
   	end
   	
-  	def tournamentMatchGenerationError
+  	def match_generation_error
   		errorString = "There is a tournament error."
-  		if poolToBracketWeightsWithTooManyWrestlers != nil
+  		if pool_to_bracket_weights_with_too_many_wrestlers != nil
   			errorString = errorString + " The following weights have too many wrestlers "
-  			poolToBracketWeightsWithTooManyWrestlers.each do |w|
+  			pool_to_bracket_weights_with_too_many_wrestlers.each do |w|
   				errorString = errorString + "#{w.max} "
   			end
   			return errorString

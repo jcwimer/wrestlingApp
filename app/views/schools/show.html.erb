@@ -13,7 +13,7 @@
 
   <p>
     <strong>Team Points Deducted:</strong>
-    <%= @school.totalDeductedPoints %>
+    <%= @school.total_points_deducted %>
   </p>
   <p>
     <strong>Score:</strong>
@@ -57,11 +57,11 @@
             <td>
                 <%= wrestler.original_seed %>
             </td>
-            <td><%= wrestler.totalTeamPoints - wrestler.totalDeductedPoints %></td>
+            <td><%= wrestler.total_team_points - wrestler.total_points_deducted %></td>
             <td><% if wrestler.extra? == true %>
               Yes
              <% end %></td>
-             <td><%= wrestler.nextMatchBoutNumber %> <%= wrestler.nextMatchMatName %></td>
+             <td><%= wrestler.next_match_bout_number %> <%= wrestler.next_match_mat_name %></td>
              <td>
               <%= link_to 'Show', wrestler , :class=>"btn btn-default btn-sm" %>
               <% if can? :manage, wrestler.school %>

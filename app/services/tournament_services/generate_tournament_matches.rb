@@ -53,7 +53,7 @@ class GenerateTournamentMatches
     end
 
     def moveFinalsMatchesToLastRound
-      finalsRound = @tournament.totalRounds
+      finalsRound = @tournament.total_rounds
       finalsMatches = @tournament.matches.reload.select{|m| m.bracket_position == "1/2" || m.bracket_position == "3/4" || m.bracket_position == "5/6" || m.bracket_position == "7/8"}
       finalsMatches. each do |m|
         m.round = finalsRound
@@ -66,7 +66,7 @@ class GenerateTournamentMatches
       if matsToAssign.count > 0
         until matsToAssign.sort_by{|m| m.id}.last.matches.count == 4
           matsToAssign.sort_by{|m| m.id}.each do |m|
-            m.assignNextMatch
+            m.assign_next_match
           end
         end
       end

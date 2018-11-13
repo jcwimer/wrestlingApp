@@ -13,7 +13,7 @@ class PoolOrder
 	
 	def setOriginalPoints
 	   @wrestlers.each do |w|
-	       w.poolAdvancePoints = w.poolWins.size
+	       w.poolAdvancePoints = w.pool_wins.size
 	   end
 	end
 	
@@ -50,7 +50,7 @@ class PoolOrder
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostTechs }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostMajors }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostDecisionPointsScored }
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { fastestPin }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { fastest_pin }
 		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { coinFlip }
 	end
 	
@@ -58,7 +58,7 @@ class PoolOrder
 	def headToHead
 	   wrestlersWithSamePoints.each do |wr|
 	        otherWrestler = wrestlersWithSamePoints.select{|w| w.id != wr.id}.first
-	        if wr.matchAgainst(otherWrestler).first.winner_id == wr.id
+	        if wr.match_against(otherWrestler).first.winner_id == wr.id
 	        	addPointsToWrestlersAhead(wr)
 	            addPoints(wr)
 	        end
@@ -79,10 +79,10 @@ class PoolOrder
 	def deductedPoints
 		pointsArray = []
 		wrestlersWithSamePoints.each do |w|
-			pointsArray << w.totalDeductedPoints
+			pointsArray << w.total_points_deducted
 		end
 		leastPoints = pointsArray.min
-		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.totalDeductedPoints == leastPoints}
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.total_points_deducted == leastPoints}
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	
@@ -92,39 +92,39 @@ class PoolOrder
 	def mostDecisionPointsScored
 		pointsArray = []
 		wrestlersWithSamePoints.each do |w|
-			pointsArray << w.decisionPointsScored
+			pointsArray << w.decision_points_scored
 		end
 		mostPoints = pointsArray.max
-		wrestlersWithMostPoints = wrestlersWithSamePoints.select{|w| w.decisionPointsScored == mostPoints}
+		wrestlersWithMostPoints = wrestlersWithSamePoints.select{|w| w.decision_points_scored == mostPoints}
 		addPointsToWrestlersAhead(wrestlersWithMostPoints.first)
 		wrestlersWithMostPoints.each do |wr|
 			addPoints(wr)
 		end
 		secondPoints = pointsArray.sort[-2]
-		wrestlersWithSecondMostPoints = wrestlersWithSamePoints.select{|w| w.decisionPointsScored == secondPoints}
+		wrestlersWithSecondMostPoints = wrestlersWithSamePoints.select{|w| w.decision_points_scored == secondPoints}
 		addPointsToWrestlersAhead(wrestlersWithSecondMostPoints.first)
 		wrestlersWithSecondMostPoints.each do |wr|
 			addPoints(wr)
 		end
 	end
 	
-	def fastestPin
+	def fastest_pin
 		wrestlersWithSamePointsWithPins = []
 		wrestlersWithSamePoints.each do |wr|
-			if wr.pinWins.size > 0
+			if wr.pin_wins.size > 0
 				wrestlersWithSamePointsWithPins << wr	
 			end
 		end
 		if wrestlersWithSamePointsWithPins.size > 0
-			fastest = wrestlersWithSamePointsWithPins.sort_by{|w| w.fastestPin.pinTime}.first.fastestPin
-			secondFastest = wrestlersWithSamePointsWithPins.sort_by{|w| w.fastestPin.pinTime}.second.fastestPin
-			wrestlersWithFastestPin = wrestlersWithSamePointsWithPins.select{|w| w.fastestPin.pinTime == fastest.pinTime}
+			fastest = wrestlersWithSamePointsWithPins.sort_by{|w| w.fastest_pin.pin_time_in_seconds}.first.fastest_pin
+			secondFastest = wrestlersWithSamePointsWithPins.sort_by{|w| w.fastest_pin.pin_time_in_seconds}.second.fastest_pin
+			wrestlersWithFastestPin = wrestlersWithSamePointsWithPins.select{|w| w.fastest_pin.pin_time_in_seconds == fastest.pin_time_in_seconds}
 			addPointsToWrestlersAhead(wrestlersWithFastestPin.first)
 			wrestlersWithFastestPin.each do |wr|
 				addPoints(wr)
 			end
 			
-			wrestlersWithSecondFastestPin = wrestlersWithSamePointsWithPins.select{|w| w.fastestPin.pinTime == secondFastest.pinTime}
+			wrestlersWithSecondFastestPin = wrestlersWithSamePointsWithPins.select{|w| w.fastest_pin.pin_time_in_seconds == secondFastest.pin_time_in_seconds}
 			addPointsToWrestlersAhead(wrestlersWithSecondFastestPin.first)
 			wrestlersWithSecondFastestPin.each do |wr|
 				addPoints(wr)
@@ -135,10 +135,10 @@ class PoolOrder
 	def teamPoints
 		pointsArray = []
 		wrestlersWithSamePoints.each do |w|
-			pointsArray << w.teamPointsEarned
+			pointsArray << w.team_points_earned
 		end
 		mostPoints = pointsArray.max
-		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.teamPointsEarned == mostPoints}
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.team_points_earned == mostPoints}
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	
@@ -148,10 +148,10 @@ class PoolOrder
 	def mostFalls
 		pointsArray = []
 		wrestlersWithSamePoints.each do |w|
-			pointsArray << w.pinWins.size
+			pointsArray << w.pin_wins.size
 		end
 		mostPoints = pointsArray.max
-		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.pinWins.size == mostPoints}
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.pin_wins.size == mostPoints}
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	
@@ -161,10 +161,10 @@ class PoolOrder
 	def mostTechs
 		pointsArray = []
 		wrestlersWithSamePoints.each do |w|
-			pointsArray << w.techWins.size
+			pointsArray << w.tech_wins.size
 		end
 		mostPoints = pointsArray.max
-		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.techWins.size == mostPoints}
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.tech_wins.size == mostPoints}
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	
@@ -174,10 +174,10 @@ class PoolOrder
 	def mostMajors
 		pointsArray = []
 		wrestlersWithSamePoints.each do |w|
-			pointsArray << w.majorWins.size
+			pointsArray << w.major_wins.size
 		end
 		mostPoints = pointsArray.max
-		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.majorWins.size == mostPoints}
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.major_wins.size == mostPoints}
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	

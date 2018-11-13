@@ -10,18 +10,18 @@ class Weight < ActiveRecord::Base
 	HS_WEIGHT_CLASSES = [106,113,120,126,132,138,145,152,160,170,182,195,220,285]
 	
 	before_destroy do 
-		self.tournament.destroyAllMatches
+		self.tournament.destroy_all_matches
 	end
 
 	before_save do
-		# self.tournament.destroyAllMatches
+		# self.tournament.destroy_all_matches
 	end
 
 	def pools_with_bye
 		pool = 1
 		pools_with_a_bye = []
 		until pool > self.pools do
-			if wrestlersForPool(pool).first.hasAPoolBye
+			if wrestlers_in_pool(pool).first.has_a_pool_bye
               pools_with_a_bye << pool
             end
             pool = pool + 1
@@ -29,19 +29,19 @@ class Weight < ActiveRecord::Base
 		pools_with_a_bye
 	end
 
-	def wrestlersForPool(poolNumber)
+	def wrestlers_in_pool(pool_number)
 		#For some reason this does not work
-		# wrestlers.select{|w| w.pool == poolNumber}
+		# wrestlers.select{|w| w.pool == pool_number}
 
 		#This does...
-		weightWrestlers = Wrestler.where(:weight_id => self.id)
-		weightWrestlers.select{|w| w.pool == poolNumber}
+		weight_wrestlers = Wrestler.where(:weight_id => self.id)
+		weight_wrestlers.select{|w| w.pool == pool_number}
 	end
 	
-	def allPoolMatchesFinished(pool)
-		@wrestlers = wrestlersForPool(pool)
+	def all_pool_matches_finished(pool)
+		@wrestlers = wrestlers_in_pool(pool)
 		@wrestlers.each do |w|
-			if w.poolMatches.size != w.finishedPoolMatches.size
+			if w.pool_matches.size != w.finished_pool_matches.size
 				return false
 			end
    		end
@@ -59,14 +59,14 @@ class Weight < ActiveRecord::Base
 		end
 	end
 	
-	def poolSeedOrder(pool)
-		# wrestlersForPool(pool).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]}	
-		return wrestlersForPool(pool).sort_by{|w|w.bracket_line}
+	def pool_wrestlers_sorted_by_bracket_line(pool)
+		# wrestlers_in_pool(pool).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]}	
+		return wrestlers_in_pool(pool).sort_by{|w|w.bracket_line}
 	end
 	
 	
-	def swapWrestlers(wrestler1_id,wrestler2_id)
-		SwapWrestlers.new.swapWrestlers(wrestler1_id,wrestler2_id)
+	def swap_wrestlers_bracket_lines(wrestler1_id,wrestler2_id)
+		SwapWrestlers.new.swap_wrestlers_bracket_lines(wrestler1_id,wrestler2_id)
 	end
 
 
@@ -86,13 +86,13 @@ class Weight < ActiveRecord::Base
 		end
 	end
 
-	def poolRounds(matches)
-		@matchups = matches.select{|m| m.weight_id == self.id}
-		@poolMatches = @matchups.select{|m| m.bracket_position == "Pool"}
-		return @poolMatches.sort_by{|m| m.round}.last.round
+	def pool_rounds(matches)
+		matchups = matches.select{|m| m.weight_id == self.id}
+		pool_matches = matchups.select{|m| m.bracket_position == "Pool"}
+		return pool_matches.sort_by{|m| m.round}.last.round
 	end
 
-	def totalRounds(matches)
+	def total_rounds(matches)
 		@matchups = matches.select{|m| m.weight_id == self.id}
 		@lastRound = matches.sort_by{|m| m.round}.last.round
 		count = 0
@@ -106,11 +106,11 @@ class Weight < ActiveRecord::Base
 		return count
 	end
 	
-	def poolOrder(pool)
-		PoolOrder.new(wrestlersForPool(pool)).getPoolOrder
+	def pool_placement_order(pool)
+		PoolOrder.new(wrestlers_in_pool(pool)).getPoolOrder
 	end
 
-	def wrestlersWithoutPool
+	def wrestlers_without_pool_assignment
 		wrestlers.select{|w| w.pool == nil}
 	end
 			

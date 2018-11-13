@@ -74,9 +74,9 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
     tournament.weights.each do |w|
       w.wrestlers.each do |wr|
         round = 1
-        if w.totalRounds(matchups) > 5
-          until round > w.poolRounds(matchups) do
-            if wr.boutByRound(round) == "BYE"
+        if w.total_rounds(matchups) > 5
+          until round > w.pool_rounds(matchups) do
+            if wr.bout_by_round(round) == "BYE"
               message = "BYE"
             end
             round += 1
@@ -94,7 +94,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
 
   test "tournament can be set to high school weight classes" do
     @tournament.weights.destroy_all
-    @tournament.createCustomWeights("hs")
+    @tournament.create_pre_defined_weights("hs")
     assert_equal Weight::HS_WEIGHT_CLASSES.size, @tournament.weights.size
   end
 
@@ -251,7 +251,7 @@ class PoolbracketMatchupsTest < ActionDispatch::IntegrationTest
   end
   
   test "finals matches in last round" do
-    lastRound = @tournament.totalRounds
+    lastRound = @tournament.total_rounds
     finalsMatches = @tournament.matches.select{|m| m.bracket_position == "1/2" || m.bracket_position == "3/4" || m.bracket_position == "5/6" || m.bracket_position == "7/8"} 
     finalsMatches.each do |m|
       assert_equal lastRound, m.round

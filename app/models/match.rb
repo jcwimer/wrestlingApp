@@ -13,19 +13,19 @@ class Match < ActiveRecord::Base
 		   	wrestler2.touch
 		end
 		if self.mat
-			self.mat.assignNextMatch
+			self.mat.assign_next_match
 		end
 		advance_wrestlers
-		calcSchoolPoints
+		calculate_school_points
 	  end
 	end
 
 	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ"]
 
-	def calcSchoolPoints
+	def calculate_school_points
 		if self.w1 && self.w2
-			wrestler1.school.calcScore
-			wrestler2.school.calcScore
+			wrestler1.school.calculate_score
+			wrestler2.school.calculate_score
 	   	end
 	end
 
@@ -38,12 +38,12 @@ class Match < ActiveRecord::Base
 		end
 	end
 
-	def pinTime
+	def pin_time_in_seconds
 		if self.win_type == "Pin"
 			time = self.score.delete("")
-			minInSeconds = time.partition(':').first.to_i * 60
+			minutes_in_seconds = time.partition(':').first.to_i * 60
 			sec = time.partition(':').last.to_i
-			return minInSeconds + sec
+			return minutes_in_seconds + sec
 		else
 			nil
 		end
@@ -57,7 +57,7 @@ class Match < ActiveRecord::Base
 	end
 
 
-	def bracketScore
+	def bracket_score_string
 		if self.finished != 1
 		  return ""
 		end
@@ -99,7 +99,7 @@ class Match < ActiveRecord::Base
 			self.loser2_name
 		end
 	end
-	def winnerName
+	def winner_name
 		if self.finished != 1
 			return ""
 		end
@@ -114,17 +114,17 @@ class Match < ActiveRecord::Base
 		self.weight.max
 	end
 
-	def replaceLoserNameWithWrestler(w,loserName)
-		if self.loser1_name == loserName
+	def replace_loser_name_with_wrestler(w,loser_name)
+		if self.loser1_name == loser_name
 			self.w1 = w.id
 			self.save
 		end
-		if self.loser2_name == loserName
+		if self.loser2_name == loser_name
 			self.w2 = w.id
 			self.save
 		end
 	end
-	def poolNumber
+	def pool_number
 		if self.w1?
 			wrestler1.pool
 		end

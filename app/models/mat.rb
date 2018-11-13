@@ -6,21 +6,21 @@ class Mat < ActiveRecord::Base
 
 	before_destroy do
 		if tournament.matches.size > 0
-			tournament.resetMats
+			tournament.reset_mats
 			matsToAssign = tournament.mats.select{|m| m.id != self.id}
-			tournament.assignMats(matsToAssign)
+			tournament.assign_mats(matsToAssign)
 		end
 	end
 
 	after_create do
 		if tournament.matches.size > 0
-			tournament.resetMats
+			tournament.reset_mats
 			matsToAssign = tournament.mats
-			tournament.assignMats(matsToAssign)
+			tournament.assign_mats(matsToAssign)
 		end
 	end
 
-	def assignNextMatch
+	def assign_next_match
 		t_matches = tournament.matches.select{|m| m.mat_id == nil && m.finished != 1 && m.bout_number != nil}
 		if t_matches.size > 0
 			match = t_matches.sort_by{|m| m.bout_number}.first
@@ -29,7 +29,7 @@ class Mat < ActiveRecord::Base
 		end
 	end
 
-	def unfinishedMatches
+	def unfinished_matches
 		matches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
 	end
 

@@ -9,102 +9,102 @@ class Wrestler < ActiveRecord::Base
 	validates :name, :weight_id, :school_id, presence: true
 
 	before_destroy do 
-		# self.tournament.destroyAllMatches
+		# self.tournament.destroy_all_matches
 	end
 
 	before_create do
-		# self.tournament.destroyAllMatches
+		# self.tournament.destroy_all_matches
 	end
 		
 
-	def lastFinishedMatch
-		allMatches.select{|m| m.finished == 1}.sort_by{|m| m.bout_number}.last
+	def last_finished_match
+		all_matches.select{|m| m.finished == 1}.sort_by{|m| m.bout_number}.last
 	end
 
-	def totalTeamPoints
+	def total_team_points
 		CalculateWrestlerTeamScore.new(self).totalScore
 	end
 	
-	def teamPointsEarned
+	def team_points_earned
 		CalculateWrestlerTeamScore.new(self).earnedPoints
 	end
 	
-	def placementPoints
-		CalculateWrestlerTeamScore.new(self).placementPoints	
+	def placement_points
+		CalculateWrestlerTeamScore.new(self).placement_points	
 	end
 
-	def totalDeductedPoints
+	def total_points_deducted
 		CalculateWrestlerTeamScore.new(self).deductedPoints
 	end
 	
-	def nextMatch
-		unfinishedMatches.first
+	def next_match
+		unfinished_matches.first
 	end
 	
-	def nextMatchPositionNumber
-		pos = lastMatch.bracket_position_number
+	def next_match_position_number
+		pos = last_match.bracket_position_number
 		return (pos/2.0)	
 	end
 	
-	def lastMatch
-		finishedMatches.sort_by{|m| m.round}.reverse.first
+	def last_match
+		finished_matches.sort_by{|m| m.round}.reverse.first
 	end
 	
-	def winnerOfLastMatch?
-		if lastMatch.winner_id == self.id
+	def winner_of_last_match?
+		if last_match.winner_id == self.id
 			return true
 		else 
 			return false
 		end
 	end
 	
-	def nextMatchBoutNumber
-		if nextMatch
-			nextMatch.bout_number
+	def next_match_bout_number
+		if next_match
+			next_match.bout_number
 		else
 			""
 		end
 	end
 	
-	def nextMatchMatName
-		if nextMatch
-			nextMatch.mat_assigned
+	def next_match_mat_name
+		if next_match
+			next_match.mat_assigned
 		else
 			""
 		end
 	end
 
-	def unfinishedMatches
-		allMatches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
+	def unfinished_matches
+		all_matches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
 	end
 
-	def resultByBout(bout)
-	   bout_match = allMatches.select{|m| m.bout_number == bout and m.finished == 1}
+	def result_by_bout(bout)
+	   bout_match = all_matches.select{|m| m.bout_number == bout and m.finished == 1}
 	   if bout_match.size == 0
  		return ""
 	   end
 	   if bout_match.first.winner_id == self.id
-		return "W #{bout_match.first.bracketScore}"
+		return "W #{bout_match.first.bracket_score_string}"
 	   end
 	   if bout_match.first.winner_id != self.id
-		return "L #{bout_match.first.bracketScore}"
+		return "L #{bout_match.first.bracket_score_string}"
 	   end
 	end
 
-	def matchAgainst(opponent)
-		allMatches.select{|m| m.w1 == opponent.id or m.w2 == opponent.id}
+	def match_against(opponent)
+		all_matches.select{|m| m.w1 == opponent.id or m.w2 == opponent.id}
 	end
 
-	def isWrestlingThisRound(matchRound)
-		if allMatches.blank?
+	def is_wrestling_this_round(matchRound)
+		if all_matches.blank?
 			return false
 		else
 			return true
 		end
 	end
 
-	def boutByRound(round)
-		round_match = allMatches.select{|m| m.round == round}.first
+	def bout_by_round(round)
+		round_match = all_matches.select{|m| m.round == round}.first
 		if round_match.blank?
 			return "BYE"
 		else
@@ -112,93 +112,93 @@ class Wrestler < ActiveRecord::Base
 		end
 	end
 
-	def allMatches
+	def all_matches
 		return matches.select{|m| m.w1 == self.id or m.w2 == self.id}
 	end
        
-	def poolMatches
-		pool_matches = allMatches.select{|m| m.bracket_position == "Pool"}
-		pool_matches.select{|m| m.poolNumber == self.pool}
+	def pool_matches
+		all_weight_pool_matches = all_matches.select{|m| m.bracket_position == "Pool"}
+		all_weight_pool_matches.select{|m| m.pool_number == self.pool}
 	end
 
-	def hasAPoolBye
-		if weight.poolRounds(matches) > poolMatches.size
+	def has_a_pool_bye
+		if weight.pool_rounds(matches) > pool_matches.size
 			return true
 		else
 			return false
 		end
 	end
 	
-	def championshipAdvancementWins
-		matchesWon.select{|m| m.bracket_position == "Quarter" or m.bracket_position == "Semis"}
+	def championship_advancement_wins
+		matches_won.select{|m| m.bracket_position == "Quarter" or m.bracket_position == "Semis"}
 	end
 	
-	def consoAdvancementWins
-		matchesWon.select{|m| m.bracket_position == "Conso Semis"}
+	def consolation_advancement_wins
+		matches_won.select{|m| m.bracket_position == "Conso Semis"}
 	end
 	
-	def finishedMatches
-		allMatches.select{|m| m.finished == 1}
+	def finished_matches
+		all_matches.select{|m| m.finished == 1}
 	end
 
-	def finishedBracketMatches
-		finishedMatches.select{|m| m.bracket_position != "Pool"}
+	def finished_bracket_matches
+		finished_matches.select{|m| m.bracket_position != "Pool"}
 	end	
 
-	def finishedPoolMatches
-		finishedMatches.select{|m| m.bracket_position == "Pool"}
+	def finished_pool_matches
+		finished_matches.select{|m| m.bracket_position == "Pool"}
 	end
 	
-	def matchesWon
-		allMatches.select{|m| m.winner_id == self.id}	
+	def matches_won
+		all_matches.select{|m| m.winner_id == self.id}	
 	end
 	
-	def poolWins
-		matchesWon.select{|m| m.bracket_position == "Pool"}
+	def pool_wins
+		matches_won.select{|m| m.bracket_position == "Pool"}
 	end
 	
-	def pinWins
-		matchesWon.select{|m| m.win_type == "Pin" ||  m.win_type == "Forfeit" ||  m.win_type == "Injury Default" ||  m.win_type == "Default" ||  m.win_type == "DQ"}
+	def pin_wins
+		matches_won.select{|m| m.win_type == "Pin" ||  m.win_type == "Forfeit" ||  m.win_type == "Injury Default" ||  m.win_type == "Default" ||  m.win_type == "DQ"}
 	end
 	
-	def techWins
-		matchesWon.select{|m| m.win_type == "Tech Fall" }
+	def tech_wins
+		matches_won.select{|m| m.win_type == "Tech Fall" }
 	end
 	
-	def majorWins
-		matchesWon.select{|m| m.win_type == "Major" }
+	def major_wins
+		matches_won.select{|m| m.win_type == "Major" }
 	end
 	
-	def decisionWins
-		matchesWon.select{|m| m.win_type == "Decision" }
+	def decision_wins
+		matches_won.select{|m| m.win_type == "Decision" }
 	end
 	
-	def decisionPointsScored
-		pointsScored = 0
-		decisionWins.each do |m|
-			scoreOfMatch = m.score.delete(" ")
-			scoreOne = scoreOfMatch.partition('-').first.to_i
-			scoreTwo = scoreOfMatch.partition('-').last.to_i
-			if scoreOne > scoreTwo
-				pointsScored = pointsScored + scoreOne
-			elsif scoreTwo > scoreOne
-				pointsScored = pointsScored + scoreTwo
+	def decision_points_scored
+		points_scored = 0
+		decision_wins.each do |m|
+			score_of_match = m.score.delete(" ")
+			score_one = score_of_match.partition('-').first.to_i
+			score_two = score_of_match.partition('-').last.to_i
+			if score_one > score_two
+				points_scored = points_scored + score_one
+			elsif score_two > score_one
+				points_scored = points_scored + score_two
 			end
 		end
-		pointsScored
+		points_scored
 	end
 	
-	def fastestPin
-		pinWins.sort_by{|m| m.pinTime}.first
+	def fastest_pin
+		pin_wins.sort_by{|m| m.pin_time_in_seconds}.first
 	end
 	
-	def seasonWinPercentage
+	def season_win_percentage
 		win = self.season_win.to_f
 		loss = self.season_loss.to_f
 		if win > 0 and loss != nil
-			matchTotal = win + loss
-			percentageDec = win / matchTotal
-			percentage = percentageDec * 100
+			match_total = win + loss
+			percentage_dec = win / match_total
+			percentage = percentage_dec * 100
 			return percentage.to_i
 		elsif self.season_win == 0
 			return 0
