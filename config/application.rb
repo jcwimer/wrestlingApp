@@ -33,11 +33,11 @@ module Wrestling
       DeviseController.respond_to :html, :json
     end
     
+    config.active_record.sqlite3.represent_boolean_as_integer = true
+    
     config.autoload_paths += %W(#{config.root}/app/services/tournament_services)
     config.autoload_paths += %W(#{config.root}/app/services/wrestler_services)
     config.autoload_paths += %W(#{config.root}/app/services/weight_services)
     config.autoload_paths += %W(#{config.root}/app/services/bracket_advancement)
-  end
-
-  
+  end  
 end
