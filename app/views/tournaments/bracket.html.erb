@@ -80,6 +80,9 @@ li:first-child,li:last-child {
                 <% if @weight.pool_bracket_type == "fourPoolsToQuarter" %>
                 	<%= render 'fourPoolQuarterBracket' %>
                 <% end %>
+                <% if @weight.pool_bracket_type == "eightPoolsToQuarter" %>
+                  <%= render 'fourPoolQuarterBracket' %>
+                <% end %>
                 <% if @weight.pool_bracket_type == "fourPoolsToSemi" %>
                 	<%= render 'fourPoolSemiBracket' %>
                 <% end %>

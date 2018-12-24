@@ -771,7 +771,229 @@ swap_wrestlers_wrestler_8:
    criteria: 
    extra: 
 
+eight_pools_generation_wrestler_1:
+   name: Guy1
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_2:
+   name: Guy2
+   school_id: 5
+   weight_id: 8
+   original_seed: 2
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
 
-
-
-
+eight_pools_generation_wrestler_3:
+   name: Guy3
+   school_id: 5
+   weight_id: 8
+   original_seed: 3
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_4:
+   name: Guy4
+   school_id: 5
+   weight_id: 8
+   original_seed: 4
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_5:
+   name: Guy5
+   school_id: 5
+   weight_id: 8
+   original_seed: 5
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_6:
+   name: Guy6
+   school_id: 5
+   weight_id: 8
+   original_seed: 6
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_7:
+   name: Guy7
+   school_id: 5
+   weight_id: 8
+   original_seed: 7
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_8:
+   name: Guy8
+   school_id: 5
+   weight_id: 8
+   original_seed: 8
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_9:
+   name: Guy9
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_9:
+   name: Guy9
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_10:
+   name: Guy10
+   school_id: 5
+   weight_id: 8
+   original_seed: 1
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_11:
+   name: Guy11
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_12:
+   name: Guy12
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_13:
+   name: Guy13
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_14:
+   name: Guy14
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_15:
+   name: Guy15
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_16:
+   name: Guy16
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_17:
+   name: Guy17
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_18:
+   name: Guy18
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_19:
+   name: Guy19
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_20:
+   name: Guy20
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_21:
+   name: Guy21
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_22:
+   name: Guy22
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_23:
+   name: Guy23
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 
+eight_pools_generation_wrestler_24:
+   name: Guy24
+   school_id: 5
+   weight_id: 8
+   original_seed: 
+   season_loss: 0
+   season_win: 0
+   criteria: 
+   extra: 

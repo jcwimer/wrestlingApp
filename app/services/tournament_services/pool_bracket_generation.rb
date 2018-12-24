@@ -20,6 +20,8 @@ class PoolBracketGeneration
       return fourPoolsToQuarter()
     elsif @pool_bracket_type == "fourPoolsToSemi"
       return fourPoolsToSemi()
+    elsif @pool_bracket_type == "eightPoolsToQuarter"
+      return eightPoolsToQuarter()
     end
     return []
   end
@@ -59,6 +61,23 @@ class PoolBracketGeneration
     createMatchup("Winner Pool 2", "Winner Pool 3", "Semis", 2)
     createMatchup("Runner Up Pool 1", "Runner Up Pool 4", "Conso Semis", 1)
     createMatchup("Runner Up Pool 2", "Runner Up Pool 3", "Conso Semis", 2)
+    next_round
+    createMatchup("", "", "1/2", 1)
+    createMatchup("", "", "3/4", 1)
+    createMatchup("", "", "5/6", 1)
+    createMatchup("", "", "7/8", 1)
+  end
+
+  def eightPoolsToQuarter()
+    createMatchup("Winner Pool 1", "Winner Pool 8", "Quarter", 1)
+    createMatchup("Winner Pool 4", "Winner Pool 5", "Quarter", 2)
+    createMatchup("Winner Pool 2", "Winner Pool 7", "Quarter", 3)
+    createMatchup("Winner Pool 3", "Winner Pool 6", "Quarter", 4)
+    next_round
+    createMatchup("", "", "Semis", 1)
+    createMatchup("", "", "Semis", 2)
+    createMatchup("", "", "Conso Semis", 1)
+    createMatchup("", "", "Conso Semis", 2)
     next_round
     createMatchup("", "", "1/2", 1)
     createMatchup("", "", "3/4", 1)

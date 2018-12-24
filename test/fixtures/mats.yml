@@ -16,3 +16,8 @@
     name: 1
     tournament_id: 2
     id: 2
+
+ eight_pools_generation_mat:
+    name: 1
+    tournament_id: 4
+    id: 3

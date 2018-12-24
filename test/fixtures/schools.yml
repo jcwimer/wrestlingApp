@@ -20,3 +20,7 @@ swap_wrestlers:
   name: Central Crossing
   tournament_id: 3
 
+eight_pools_generation_school:
+  id: 5
+  name: Central Crossing
+  tournament_id: 4

@@ -7,7 +7,7 @@ class PoolToBracketGenerateLoserNames
       matches_by_weight = @tournament.matches.where(weight_id: weight.id)
       if weight.pool_bracket_type == "twoPoolsToSemi"
         twoPoolsToSemiLoser(matches_by_weight)
-      elsif weight.pool_bracket_type == "fourPoolsToQuarter"
+      elsif (weight.pool_bracket_type == "fourPoolsToQuarter") or (weight.pool_bracket_type == "eightPoolsToQuarter")
         fourPoolsToQuarterLoser(matches_by_weight)
       elsif weight.pool_bracket_type == "fourPoolsToSemi"
         fourPoolsToSemiLoser(matches_by_weight)
@@ -20,8 +20,8 @@ class PoolToBracketGenerateLoserNames
     @tournament.weights.each do |w|
       matches_by_weight = @tournament.matches.where(weight_id: w.id)
       if w.pool_bracket_type == "twoPoolsToSemi"
-        twoPoolsToSemiLoser(matches_by_weight)
-      elsif w.pool_bracket_type == "fourPoolsToQuarter"
+        twoPoolsToSemiLoser(matches_by_weight) 
+      elsif (w.pool_bracket_type == "fourPoolsToQuarter") or (w.pool_bracket_type == "eightPoolsToQuarter")
         fourPoolsToQuarterLoser(matches_by_weight)
       elsif w.pool_bracket_type == "fourPoolsToSemi"
         fourPoolsToSemiLoser(matches_by_weight)

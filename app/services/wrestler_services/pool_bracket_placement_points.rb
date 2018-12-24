@@ -10,7 +10,7 @@ class PoolBracketPlacementPoints
         if @bracket == "twoPoolsToSemi"
            whilePointsAreZero { @points = twoPoolsToSemi }
         end
-        if @bracket == "fourPoolsToQuarter"
+        if (@bracket == "fourPoolsToQuarter") or (@bracket == "eightPoolsToQuarter")
            whilePointsAreZero { @points = fourPoolsToQuarter }
         end
         if @bracket == "fourPoolsToSemi"
