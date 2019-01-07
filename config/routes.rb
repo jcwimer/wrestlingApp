@@ -62,6 +62,8 @@ Wrestling::Application.routes.draw do
   get "/api/index" => "api#index"
   post "/api/tournaments/new" => "newTournament"
 
+  match "/delayed_job" => DelayedJobWeb, :anchor => false, :via => [:get, :post]
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

@@ -56,6 +56,7 @@ gem 'puma'
 gem 'passenger'
 gem 'tzinfo-data'
 gem 'daemons'
+gem 'delayed_job_web'
 
 group :development do
  gem 'rubocop'
