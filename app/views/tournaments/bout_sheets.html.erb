@@ -1,0 +1,111 @@
+<style>
+    .pagebreak { 
+      page-break-after: always;
+        margin: 0px;
+        padding: 0px;
+        width: 7in; /* width: 7in; */
+        height: 9.5in; /* or height: 9.5in; */
+        font-size: 10px;
+        position: left;
+        left: 1in;
+        height: 1in;
+    }
+</style>
+<% @matches.each do |match| %>
+<% if match.w1 && match.w2 %>
+  <% w1 = Wrestler.find(match.w1) %>
+  <% w2 = Wrestler.find(match.w2) %>
+<% end %>
+<table class='pagebreak table table-striped table-bordered table-condensed'>
+<h4><strong>Bout Number: <%= match.bout_number %></strong></h4>
+<h4><strong>Weight Class: <%= match.weight.max %></strong></h4>
+<h4><strong>Round: <%= match.round %></strong></h4>
+<p><strong>Key: </strong>Takedown: T2, Escape: E1, Reversal: R2, Nearfall: N2 or N3, Stalling: S, Caution: C, Penalty Point: P1</p>
+
+  <thead>
+    <tr>
+      <th>Circle Winner</th>
+      <th>
+        <p><%= match.w1_name %></p>
+        <p><%= if w1 then w1.school.name end %></p>
+      </th>
+      <th>
+        <p><%= match.w2_name %></p>
+        <p><%= if w2 then w2.school.name end %></p>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td></td>
+        <td>red / green (circle one)</td>
+        <td>red / green (circle one)</td>
+      </tr>
+      <tr>
+        <td>Period 1</td>
+        <td><br><br><br><br><br><br><br><br><br></td>
+        <td><br><br><br><br><br><br><br><br><br></td>
+      </tr>
+      <tr>
+         <td>Choice</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+      </tr>
+      <tr>
+        <td>Period 2</td>
+        <td><br><br><br><br><br><br><br><br><br></td>
+        <td><br><br><br><br><br><br><br><br><br></td>
+      </tr>
+      <tr>
+         <td>Choice</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+      </tr>
+      <tr>
+        <td>Period 3</td>
+        <td><br><br><br><br><br><br><br><br><br></td>
+        <td><br><br><br><br><br><br><br><br><br></td>
+      </tr>
+      <tr>
+        <td>Overtime 1</td>
+        <td><br></td>
+        <td><br></td>
+      </tr>
+      <tr>
+         <td>Choice</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+      </tr>
+      <tr>
+        <td>Overtime 2</td>
+        <td><br><br></td>
+        <td><br><br></td>
+      </tr>
+      <tr>
+         <td>Choice</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+      </tr>
+      <tr>
+        <td>Overtime 3</td>
+        <td><br><br></td>
+        <td><br><br></td>
+      </tr>
+      <tr>
+         <td>Choice</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+         <td>top / bottom / neutral / defer (circle one)</td>
+      </tr>
+      <tr>
+        <td>Overtime 4</td>
+        <td><br><br></td>
+        <td><br><br></td>
+      </tr>
+      <tr>
+        <td><strong>Final Score</strong> (or pin time, default, disqualified, etc)</td>
+        <td><br><br></td>
+        <td><br><br></td>
+      </tr>
+  </tbody>
+</table>
+<% end %>

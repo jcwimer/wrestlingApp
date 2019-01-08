@@ -1,5 +1,5 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_action :set_tournament, only: [:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
   before_action :check_access_manage, only: [:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
   before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
@@ -184,6 +184,17 @@ class TournamentsController < ApplicationController
   def up_matches
     @matches = @tournament.matches.where("mat_id is NULL and (finished <> ? or finished is NULL)",1).order('bout_number ASC').limit(10).includes(:wrestlers)
     @mats = @tournament.mats.includes(:matches)
+  end
+
+  def bout_sheets
+    if params[:round]
+      round = params[:round]
+      if round != "All"
+        @matches = @tournament.matches.where("round = ?",round).sort_by{|match| match.bout_number}
+      else
+        @matches = @tournament.matches.sort_by{|match| match.bout_number}
+      end
+    end
   end
 
   def index

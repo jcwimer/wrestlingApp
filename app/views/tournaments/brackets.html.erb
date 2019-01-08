@@ -6,5 +6,5 @@
 <br>
 <% end %>
 <% if can? :manage, @tournament %>
-  <%= link_to "All Brackets (Printable)", "/tournaments/#{@tournament.id}/all_brackets?print=true" %>
+  <%= link_to "All Brackets (Printable)", "/tournaments/#{@tournament.id}/all_brackets?print=true", target: :_blank %>
 <% end %>

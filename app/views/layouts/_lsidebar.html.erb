@@ -20,7 +20,13 @@
                         <br><strong>Pages</strong><br>
                         <br><%= link_to "Weigh In Page" , "/tournaments/#{@tournament.id}/weigh_in" %>
                         <br><%= link_to "All Matches" , "/tournaments/#{@tournament.id}/matches" %>
-                        <br><%= link_to "Full Screen Bout Board" , "/tournaments/#{@tournament.id}/up_matches?print=true" %>
+                        <br><%= link_to "Full Screen Bout Board" , "/tournaments/#{@tournament.id}/up_matches?print=true" , target: :_blank  %>
+                        <br>Bout Sheets: <ul>
+                          <% 1.upto(@tournament.total_rounds) do |round| %>
+                            <li><%= link_to "Round #{round}" , "/tournaments/#{@tournament.id}/bout_sheets?round=#{round}&print=true" , target: :_blank  %></li>
+                          <% end %>
+                          <li><%= link_to "All Rounds" , "/tournaments/#{@tournament.id}/bout_sheets?round=All&print=true" , target: :_blank  %></li>
+                        </ul>
                         <br><%= link_to "Deduct Team Points" , "/tournaments/#{@tournament.id}/teampointadjust" %>
                         <% if can? :destroy, @tournament %>
                             <br><%= link_to "Tournament Delegation" , "/tournaments/#{@tournament.id}/delegate" %>

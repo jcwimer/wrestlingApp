@@ -37,6 +37,7 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/generate_matches' => 'tournaments#generate_matches'
   get 'tournaments/:id/team_scores' => 'tournaments#team_scores'
   get 'tournaments/:id/up_matches' => 'tournaments#up_matches', :as => :up_matches
+  get 'tournaments/:id/bout_sheets' => 'tournaments#bout_sheets'
   get 'tournaments/:id/no_matches' => 'tournaments#no_matches'
   get 'tournaments/:id/matches' => 'tournaments#matches'
   get 'tournaments/:id/delegate' => 'tournaments#delegate', :as => :tournament_delegate

@@ -2,6 +2,7 @@
 <html>
   <% if params[:print] %>
       <head>
+        <%= csrf_meta_tags %>
         <title>WrestlingDev</title>
         <%= render 'layouts/cdn' %>
           <%= render 'layouts/shim' %>
