@@ -46,7 +46,11 @@ class Tournament < ActiveRecord::Base
 	end
 	
 	def total_rounds
-		self.matches.sort_by{|m| m.round}.last.round	
+		if self.matches.count > 0
+		  self.matches.sort_by{|m| m.round}.last.round
+		else
+		  0
+		end
 	end
 	
 	def assign_mats(mats_to_assign)
