@@ -22,8 +22,10 @@
                         <br><%= link_to "All Matches" , "/tournaments/#{@tournament.id}/matches" %>
                         <br><%= link_to "Full Screen Bout Board" , "/tournaments/#{@tournament.id}/up_matches?print=true" , target: :_blank  %>
                         <br>Bout Sheets: <ul>
-                          <% 1.upto(@tournament.total_rounds) do |round| %>
-                            <li><%= link_to "Round #{round}" , "/tournaments/#{@tournament.id}/bout_sheets?round=#{round}&print=true" , target: :_blank  %></li>
+                          <% if @tournament.total_rounds > 0 %>
+                            <% 1.upto(@tournament.total_rounds) do |round| %>
+                              <li><%= link_to "Round #{round}" , "/tournaments/#{@tournament.id}/bout_sheets?round=#{round}&print=true" , target: :_blank  %></li>
+                            <% end %>
                           <% end %>
                           <li><%= link_to "All Rounds" , "/tournaments/#{@tournament.id}/bout_sheets?round=All&print=true" , target: :_blank  %></li>
                         </ul>
