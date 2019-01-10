@@ -1,7 +1,7 @@
 class SchoolsController < ApplicationController
-  before_action :set_school, only: [:show, :edit, :update, :destroy, :stats]
+  before_action :set_school, only: [:import_baumspage_roster, :show, :edit, :update, :destroy, :stats]
   before_action :check_access_director, only: [:new,:create,:destroy]
-  before_action :check_access_delegate, only: [:update,:edit]
+  before_action :check_access_delegate, only: [:import_baumspage_roster, :update,:edit]
 
 
   def stats
@@ -70,6 +70,16 @@ class SchoolsController < ApplicationController
     end
   end
 
+  def import_baumspage_roster
+    import_text = params[:school][:baums_text]
+    respond_to do |format|
+      if BaumspageRosterImport.new(@school,import_text).import_roster
+        format.html { redirect_to "/schools/#{@school.id}", notice: 'Import successful' }
+        format.json { render action: 'show', status: :created, location: @school }
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_school
@@ -78,7 +88,7 @@ class SchoolsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def school_params
-      params.require(:school).permit(:name, :score, :tournament_id)
+      params.require(:school).permit(:name, :score, :tournament_id, :baums_text)
     end
 
     def check_access_director

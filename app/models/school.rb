@@ -6,6 +6,8 @@ class School < ActiveRecord::Base
 	
 	validates :name, presence: true
 
+	attr_accessor :baums_text
+
 	before_destroy do 
 		self.tournament.destroy_all_matches
 	end

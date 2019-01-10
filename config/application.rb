@@ -39,5 +39,7 @@ module Wrestling
     config.autoload_paths += %W(#{config.root}/app/services/wrestler_services)
     config.autoload_paths += %W(#{config.root}/app/services/weight_services)
     config.autoload_paths += %W(#{config.root}/app/services/bracket_advancement)
+    config.autoload_paths += %W(#{config.root}/app/services/school_services)
+
   end  
 end

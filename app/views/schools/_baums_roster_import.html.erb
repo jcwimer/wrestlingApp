@@ -1,0 +1,11 @@
+<% if can? :manage, @school %> 
+  <br><br>
+  <h3>Import Baumspage Roster</h3>
+    <%= form_for(School.new, url: import_baumspage_roster_url(@school)) do |f| %>
+        <div class="field">
+          <%= f.label 'Baumspage roster text' %><br>
+          <%= f.text_area :baums_text, cols: "30", rows: "20"  %>
+        </div>
+        <%= submit_tag "Import", :class=>"btn btn-success", data: { confirm: 'Are you sure? This will delete your current roster.' }%>
+    <% end %>  
+<% end %>
