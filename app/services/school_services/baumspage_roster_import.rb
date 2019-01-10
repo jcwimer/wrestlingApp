@@ -28,7 +28,8 @@ class BaumspageRosterImport
 
   def parse_starter(line)
   	extra = false
-    wrestler_array = line.split(',')
+    # ,-1 allows the last field in split to be blank
+    wrestler_array = line.split(',',-1)
     wrestler_losses_array_spot = wrestler_array.size - 1
     wrestler_wins_array_spot = wrestler_array.size - 2
     last_criteria_array_spot = wrestler_wins_array_spot - 1
@@ -43,15 +44,22 @@ class BaumspageRosterImport
 
   def parse_extra(line)
   	extra = true
-    wrestler_array = line.split(',')
+    # ,-1 allows the last field in split to be blank
+    wrestler_array = line.split(',',-1)
     wrestler_losses_array_spot = wrestler_array.size - 1
     wrestler_wins_array_spot = wrestler_array.size - 2
     if wrestler_array[1]
-       create_wrestler("#{wrestler_array[2]} #{wrestler_array[1]}", "#{wrestler_array[0]}", "", "#{wrestler_array[wrestler_wins_array_spot]}", "#{wrestler_array[wrestler_losses_array_spot]}",extra)
+      create_wrestler("#{wrestler_array[2]} #{wrestler_array[1]}", "#{wrestler_array[0]}", "", "#{wrestler_array[wrestler_wins_array_spot]}", "#{wrestler_array[wrestler_losses_array_spot]}",extra)
     end
   end
 
   def create_wrestler(name,weight,criteria,season_win,season_loss,extra)
+    if season_win == ""
+      season_win = 0
+    end
+    if season_loss == ""
+      season_loss = 0
+    end
     wrestler = Wrestler.new
     wrestler.name = name
     wrestler.school_id = @school.id

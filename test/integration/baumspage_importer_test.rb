@@ -23,6 +23,9 @@ Some Guy
     guy = @school.wrestlers.select{|w| w.name == "Another Guy"}.first
     assert guy.season_win == 5
     assert guy.season_loss == 7
+    guy5 = @school.wrestlers.select{|w| w.name == "Another Guy5"}.first
+    assert guy5.season_win == 0
+    assert guy5.season_loss == 0
   end
 
 end
