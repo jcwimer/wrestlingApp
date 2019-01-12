@@ -24,7 +24,9 @@ class PoolAdvance
      runnerUpMatch = matches.select{|m| m.loser1_name == "Runner Up Pool #{pool}" || m.loser2_name == "Runner Up Pool #{pool}"}.first
      winner = pool_placement_order.first
      runnerUp = pool_placement_order.second
-     runnerUpMatch.replace_loser_name_with_wrestler(runnerUp,"Runner Up Pool #{pool}")
+     if runnerUpMatch
+       runnerUpMatch.replace_loser_name_with_wrestler(runnerUp,"Runner Up Pool #{pool}")
+     end
      winnerMatch.replace_loser_name_with_wrestler(winner,"Winner Pool #{pool}") 
    end
  end
