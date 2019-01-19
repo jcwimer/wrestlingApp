@@ -90,6 +90,26 @@ class Weight < ActiveRecord::Base
 		end
 	end
 
+	def pool_full(pool)
+      current_wrestlers = wrestlers_in_pool(pool)
+      if self.pool_bracket_type == "twoPoolsToSemi"
+      	max = 4
+      elsif self.pool_bracket_type == "twoPoolsToFinal"
+      	max = 5
+      elsif self.pool_bracket_type == "fourPoolsToQuarter"
+      	max = 3
+      elsif self.pool_bracket_type == "fourPoolsToSemi"
+      	max = 4
+      elsif self.pool_bracket_type == "eightPoolsToQuarter"
+      	max = 3
+      end
+      if max == current_wrestlers
+      	true
+      else
+      	false
+      end
+	end
+
 	def pool_rounds(matches)
 		matchups = matches.select{|m| m.weight_id == self.id}
 		pool_matches = matchups.select{|m| m.bracket_position == "Pool"}
