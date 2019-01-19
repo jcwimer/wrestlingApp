@@ -81,4 +81,12 @@ class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
     match2.save
     assert wrestler.reload.placement_points == 9
   end
+
+  test "Run through all matches works" do
+    GenerateTournamentMatches.new(@tournament).generate
+    @tournament.matches.sort{ |match| match.round }.each do |match|
+      match.winner_id = match.w1
+      match.save
+    end
+  end
 end
