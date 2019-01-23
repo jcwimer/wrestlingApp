@@ -1,6 +1,3 @@
-<%= link_to "Back to #{@match.tournament.name} matches", "/tournaments/#{@match.tournament.id}/matches", :class=>"btn btn-default" %>
-<br>
-<br>
 <h1><%= @w1.name %> VS. <%= @w2.name %></h1>
-
+<% @redirect_path = "/tournaments/#{@tournament.id}/matches" %>
 <%= render 'form' %>

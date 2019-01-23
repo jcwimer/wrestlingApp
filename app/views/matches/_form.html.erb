@@ -88,7 +88,8 @@
   <br>
 
   <%= f.hidden_field :finished, :value => 1 %>
-    <%= f.hidden_field :round, :value => @match.round %>
+  <%= f.hidden_field :round, :value => @match.round %>
+  <%= f.hidden_field :redirect_path, :value => @redirect_path %>
 
 <br>
 
