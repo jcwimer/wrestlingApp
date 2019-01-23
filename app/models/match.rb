@@ -131,10 +131,10 @@ class Match < ActiveRecord::Base
 	end
 
         def list_w2_stats
-          "#{w2_name}: #{w2_stat}"
+          "#{w2_name} (#{wrestler2.school.name}): #{w2_stat}"
         end
 
         def list_w1_stats
-          "#{w1_name}: #{w1_stat}"
+          "#{w1_name} (#{wrestler1.school.name}): #{w1_stat}"
         end
 end

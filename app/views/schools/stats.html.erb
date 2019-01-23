@@ -10,6 +10,7 @@
     <thead>
       <tr>
         <th>Wrester</th>
+        <th>Weight Class</th>
         <th>Bout</th>
         <th>Match Bracket Position</th>
         <th>Stats</th>
@@ -20,7 +21,8 @@
       <% @school.wrestlers.each do |wrestler| %>
         <% wrestler.all_matches.each do |m| %>
           <tr>
-            <td> <%= wrestler.name %>
+            <td><%= wrestler.name %></td>
+            <td><%= wrestler.weight.max %></td>
             <td><%= m.bout_number %></td>
             <td><%= m.bracket_position %></td>
             <td><%= m.list_w1_stats %><br><%= m.list_w2_stats %></td>
