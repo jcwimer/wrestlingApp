@@ -1,11 +1,6 @@
-  <strong>Mat <%= @mat.name %></strong>
-</p>
+<h3>Mat <%= @mat.name %></h3>
+<h3>Tournament: <%= @mat.tournament.name %></h3>
 
-<p>
-  <strong>Tournament:</strong>
-  <%= @mat.tournament.name %>
-</p>
-<% @redirect_path = request.original_fullpath %>
 <% if @match %>
 <%= render 'matches/form' %>
 <% else %>

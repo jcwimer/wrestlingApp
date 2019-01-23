@@ -12,6 +12,11 @@ class MatchesControllerTest < ActionController::TestCase
   def post_update
     patch :update, params: { id: @match.id, match: {tournament_id: 1, mat_id: 1} }
   end
+
+  def post_update_from_match_edit
+    get :edit, params: { id: @match.id }
+    patch :update, params: { id: @match.id, match: {tournament_id: 1, mat_id: 1} }
+  end
  
   def get_edit
     get :edit, params: { id: @match.id }
@@ -94,7 +99,12 @@ class MatchesControllerTest < ActionController::TestCase
   test "logged in tournament delegate should post update match" do
     sign_in_tournament_delegate
     post_update
-    assert_redirected_to mat_path(1) 
+    assert_redirected_to tournament_path(@tournament.id) 
   end
 
+  test "should redirect to all matches when posting a match update from match edit" do
+    sign_in_owner
+    post_update_from_match_edit
+    assert_redirected_to "/tournaments/#{@tournament.id}/matches" 
+  end
 end

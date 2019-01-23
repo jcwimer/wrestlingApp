@@ -4,9 +4,10 @@ class MatsControllerTest < ActionController::TestCase
   include Devise::Test::ControllerHelpers
 
   setup do
-     @tournament = Tournament.find(1)
+    @tournament = Tournament.find(1)
     # @tournament.generateMatchups
-     @mat = mats(:one)
+    @match = Match.where("tournament_id = ? and mat_id = ?",1,1).first
+    @mat = mats(:one)
   end
  
   def create
@@ -63,6 +64,14 @@ class MatsControllerTest < ActionController::TestCase
   
   def wipe
     @tournament.destroy_all_matches
+  end
+
+  def post_match_update_from_mat_show
+    get :show, params: { id: @mat.id }
+    old_controller = @controller
+    @controller = MatchesController.new
+    patch :update, params: { id: @match.id, match: {tournament_id: 1, mat_id: @mat.id} }
+    @controller = old_controller
   end
 
   test "logged in tournament owner should get edit mat page" do
@@ -203,7 +212,11 @@ class MatsControllerTest < ActionController::TestCase
     success
   end
 
-
+  test "redirect to mat show when posting a match from mat show" do
+    sign_in_owner
+    post_match_update_from_mat_show
+    assert_redirected_to "/mats/#{@mat.id}"
+  end
 #TESTS THAT NEED MATCHES PUT ABOVE THIS
   test "redirect show if no matches" do
     sign_in_owner

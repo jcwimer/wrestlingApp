@@ -19,6 +19,7 @@ class MatchesController < ApplicationController
       @wrestlers = [@w1,@w2]
       @tournament = @match.tournament
     end
+    session[:return_path] = "/tournaments/#{@tournament.id}/matches"
   end
 
 
@@ -27,8 +28,8 @@ class MatchesController < ApplicationController
   def update
     respond_to do |format|
       if @match.update(match_params)
-        if params[:match][:redirect_path]
-          format.html { redirect_to params[:match][:redirect_path], notice: 'Match was successfully updated.' }
+        if session[:return_path]
+          format.html { redirect_to session.delete(:return_path), notice: 'Match was successfully updated.' }
         else
           format.html { redirect_to "/tournaments/#{@match.tournament.id}", notice: 'Match was successfully updated.' }
         end
@@ -49,7 +50,7 @@ class MatchesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def match_params
-      params.require(:match).permit(:w1, :w2, :w1_stat, :w2_stat, :winner_id, :win_type, :score, :finished, :redirect_path)
+      params.require(:match).permit(:w1, :w2, :w1_stat, :w2_stat, :winner_id, :win_type, :score, :finished)
     end
 
     def check_access

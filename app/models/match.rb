@@ -5,7 +5,6 @@ class Match < ActiveRecord::Base
 	has_many :wrestlers, :through => :weight
         after_update :after_finished_actions, :if => :saved_change_to_finished?
         after_update :after_finished_actions, :if => :saved_change_to_winner_id?
-    attr_accessor :redirect_path
 
 	def after_finished_actions
 	  if self.finished == 1 && self.winner_id != nil

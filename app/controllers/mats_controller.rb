@@ -12,6 +12,7 @@ class MatsController < ApplicationController
       @w2 = @match.wrestler2
       @wrestlers = [@w1,@w2]
     end
+    session[:return_path] = request.original_fullpath
   end
 
   # GET /mats/new

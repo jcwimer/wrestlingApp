@@ -362,5 +362,15 @@ class TournamentsControllerTest < ActionController::TestCase
     redirect
   end
 
+  test 'logged in non owner should not get all matches page' do
+    sign_in_non_owner
+    get :matches, params: { id: 1 }
+    redirect
+  end
 
+  test 'logged in owner should get all matches page' do
+    sign_in_owner
+    get :matches, params: { id: 1 } 
+    success
+  end
 end
