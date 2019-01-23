@@ -43,6 +43,9 @@ li:first-child,li:last-child {
   border-right:1px solid #aaa; min-height:30px;
 }
 
+.bout-number + li {
+  valign: center;
+}
 .bracket-winner {
   border-bottom:1px solid #aaa;
 }
@@ -52,13 +55,6 @@ li:first-child,li:last-child {
 }
 </style>
 <% cache ["#{@weight.id}_bracket", @weight] do %>
-	</br>
-	</br>
-	</br>
-	
-	<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %>
-	<br>
-	<br>
 	<table class='pagebreak'>
         <h5><strong><%= @tournament.name %> - <%= @weight.max %> lbs Bracket</strong></h5>
         <tr>

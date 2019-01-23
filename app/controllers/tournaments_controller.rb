@@ -166,10 +166,6 @@ class TournamentsController < ApplicationController
     GenerateTournamentMatches.new(@tournament).generate
   end
 
-  def brackets
-    @weights = @tournament.weights.sort_by{|w| w.max}
-  end
-
   def team_scores
     @schools = @tournament.schools
     @schools = @schools.sort_by{|s| s.page_score_string}.reverse!

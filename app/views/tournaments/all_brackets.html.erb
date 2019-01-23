@@ -6,11 +6,11 @@
       border: none;
         margin: 0px;
         padding: 0px;
-        width: 7in; /* width: 7in; */
+        width: 8in; /* width: 7in; */
         height: 9.5in; /* or height: 9.5in; */
-        font-size: 10px;
+        font-size: 8px;
         position: relative;
-        left: 1in;
+        left: 0in;
         height: 1in;
     }
 /*
@@ -70,7 +70,7 @@ li:first-child,li:last-child {
         <table class='pagebreak'>
         <h5><strong><%= @tournament.name %> - <%= w.max %> lbs Bracket</strong></h5>
         <tr>
-            <td valign="top" style="padding: 10px;">
+            <td valign="top" style="padding: 0px;">
                 <% @weight = w %>
                 <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
                 <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
