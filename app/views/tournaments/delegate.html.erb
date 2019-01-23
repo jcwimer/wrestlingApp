@@ -1,9 +1,3 @@
-<%= link_to "Back to #{@tournament.name}", "/tournaments/#{@tournament.id}", :class=>"btn btn-default" %>
-<br>
-<br>
-
-
-
 <% if @users %>
     <h1>Search results</h1> <%= form_tag(tournament_delegate_path, :method => "get", id: "search-form") do %>
                                     <%= text_field_tag :search, params[:search], placeholder: "Search users" %>
