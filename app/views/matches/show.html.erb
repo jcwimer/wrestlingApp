@@ -1,38 +1,28 @@
+<h4>Bout: <%= @match.bout_number %></h4>
+<h4>Weight Class: <%= @match.wrestler1.weight.max %></h4>
+<table class="table table-striped table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th></th>
+        <th><%= @match.wrestler1.name %> (<%= @match.wrestler1.school.name %>)</th>
+        <th><%= @match.wrestler2.name %> (<%= @match.wrestler2.school.name %>)</th>
+      </tr>
+    </thead>
 
-<p>
-  <strong>R:</strong>
-  <%= @match.w1_name %>
-</p>
-
-<p>
-  <strong>G:</strong>
-  <%= @match.w2_name %>
-</p>
-
-<p>
-  <strong>G stat:</strong>
-  <%= @match.g_stat %>
-</p>
-
-<p>
-  <strong>R stat:</strong>
-  <%= @match.r_stat %>
-</p>
-
-<p>
-  <strong>Winner:</strong>
-  <%= @match.winner_id %>
-</p>
-
-<p>
-  <strong>Win type:</strong>
-  <%= @match.win_type %>
-</p>
-
-<p>
-  <strong>Score:</strong>
-  <%= @match.score %>
-</p>
-
-<%= link_to 'Edit', edit_match_path(@match) %> |
-<%= link_to 'Back', matches_path %>
+    <tbody>
+          <tr>
+            <td>Stats</td>
+            <td><%= @match.w1_stat %></td>
+            <td><%= @match.w2_stat %></td>
+          </tr>
+            <td>Winner</td>
+            <td><%= @match.winner_name %></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Score</td>
+            <td><%= @match.score %></td>
+            <td></td>
+          </tr>
+    </tbody>
+  </table>
