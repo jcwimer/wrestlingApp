@@ -37,7 +37,9 @@
                     </div>
                     <div class="row no-margin">
                         <div class="col-md-12" style="padding-left: 2%;">
-                          <p id="notice"><%= notice %></p>
+                          <% if notice %>
+                            <p id="notice" class="alert alert-success alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><%= notice %></p>
+                          <% end %>
                           <div id="view"><%= yield %></div>
                         </div>
                     </div>
