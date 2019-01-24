@@ -9,7 +9,7 @@ class Wrestler < ActiveRecord::Base
 	validates :name, :weight_id, :school_id, presence: true
 
 	before_destroy do 
-		# self.tournament.destroy_all_matches
+		self.tournament.destroy_all_matches
 	end
 
 	before_create do
