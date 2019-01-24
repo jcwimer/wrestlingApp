@@ -9,7 +9,7 @@ main {
 .round {
   display:flex;
   flex-direction:column;
-  width: 100px;
+  width: 200px;
   list-style:none;
   padding:0;
 }
@@ -40,11 +40,12 @@ li:first-child,li:last-child {
 }
 
 .game-top + li {
-  border-right:1px solid #aaa; min-height:30px;
+  border-right:1px solid #aaa; min-height:60px;
 }
 
-.bout-number + li {
-  valign: center;
+.bout-number {
+  text-align: center;
+  padding-top: 20px;
 }
 .bracket-winner {
   border-bottom:1px solid #aaa;
