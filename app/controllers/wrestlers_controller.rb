@@ -86,8 +86,9 @@ class WrestlersController < ApplicationController
     if params[:wrestler]['pool']
       @wrestler.pool = params[:wrestler]['pool']
       respond_to do |format|
+        message = "Wrestler has successfully been switched to a new pool. Matches for that weight are now in a weird state. Please re-generate matches when you are done with all of your changes."
         if @wrestler.update(wrestler_params)
-          format.html { redirect_to "/weights/#{@wrestler.weight.id}/", notice: 'Wrestler was successfully updated. Please re-generate this weight classes matches.' }
+          format.html { redirect_to "/tournaments/#{@tournament.id}/brackets/#{@wrestler.weight.id}/", notice: message }
           format.json { head :no_content }
         else
           format.html { render action: 'edit' }
@@ -103,10 +104,11 @@ class WrestlersController < ApplicationController
     @school = @wrestler.school
     @wrestler.destroy
     respond_to do |format|
+      message = "Wrestler was successfully deleted. This action has removed all matches. Please re-generate matches if you already had matches."
       if session[:return_path]
-        format.html { redirect_to session.delete(:return_path), notice: 'Wrestler was successfully deleted.' }
+        format.html { redirect_to session.delete(:return_path), notice: message }
       else
-        format.html { redirect_to @school, notice: 'Wrestler was successfully deleted.' }
+        format.html { redirect_to @school, notice: message }
         format.json { head :no_content }
       end
     end
