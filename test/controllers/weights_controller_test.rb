@@ -7,6 +7,7 @@ class WeightsControllerTest < ActionController::TestCase
      @tournament = Tournament.find(1)
     # @tournament.generateMatchups
      @weight = @tournament.weights.first
+     @wrestler = @weight.wrestlers.first
   end
  
   def create
@@ -51,6 +52,20 @@ class WeightsControllerTest < ActionController::TestCase
 
   def redirect
     assert_redirected_to '/static_pages/not_allowed'
+  end
+
+  def delete_wrestler_from_weight_show_page
+    get :show, params: { id: @weight.id }
+    old_controller = @controller
+    @controller = WrestlersController.new
+    delete :destroy, params: { id: @wrestler.id }
+    @controller = old_controller
+  end
+
+  test "redirect to weight show when deleting a wrestler from weight show" do
+    sign_in_owner
+    delete_wrestler_from_weight_show_page
+    assert_redirected_to "/weights/#{@weight.id}"
   end
 
   test "logged in tournament owner should get edit weight page" do

@@ -7,11 +7,14 @@ class WeightsController < ApplicationController
   # GET /weights/1.json
   def show
     if params[:wrestler]
-      Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
-      redirect_to @weight.tournament 
+      respond_to do |format|
+        Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
+        format.html { redirect_to @weight, notice: 'Seeds were successfully updated.' }
+      end
     end
     @wrestlers = @weight.wrestlers
     @tournament = @weight.tournament
+    session[:return_path] = "/weights/#{@weight.id}"
   end
 
   # GET /weights/new

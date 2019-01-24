@@ -43,8 +43,12 @@ class WrestlersController < ApplicationController
     @weights = @school.tournament.weights
     respond_to do |format|
       if @wrestler.save
-        format.html { redirect_to @school, notice: 'Wrestler was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @wrestler }
+        if session[:return_path]
+          format.html { redirect_to session.delete(:return_path), notice: 'Wrestler was successfully created.' }
+        else
+          format.html { redirect_to @school, notice: 'Wrestler was successfully created.' }
+          format.json { render action: 'show', status: :created, location: @wrestler }
+        end
       else
         format.html { render action: 'new' }
         format.json { render json: @wrestler.errors, status: :unprocessable_entity }
@@ -61,8 +65,12 @@ class WrestlersController < ApplicationController
     @school = @wrestler.school
     respond_to do |format|
       if @wrestler.update(wrestler_params)
-        format.html { redirect_to @school, notice: 'Wrestler was successfully updated.' }
-        format.json { head :no_content }
+        if session[:return_path]
+          format.html { redirect_to session.delete(:return_path), notice: 'Wrestler was successfully updated.' }
+        else
+          format.html { redirect_to @school, notice: 'Wrestler was successfully updated.' }
+          format.json { render action: 'show', status: :created, location: @wrestler }
+        end
       else
         format.html { render action: 'edit' }
         format.json { render json: @wrestler.errors, status: :unprocessable_entity }
@@ -95,8 +103,12 @@ class WrestlersController < ApplicationController
     @school = @wrestler.school
     @wrestler.destroy
     respond_to do |format|
-      format.html { redirect_to @school }
-      format.json { head :no_content }
+      if session[:return_path]
+        format.html { redirect_to session.delete(:return_path), notice: 'Wrestler was successfully deleted.' }
+      else
+        format.html { redirect_to @school, notice: 'Wrestler was successfully deleted.' }
+        format.json { head :no_content }
+      end
     end
   end
 
