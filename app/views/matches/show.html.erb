@@ -1,11 +1,11 @@
 <h4>Bout: <%= @match.bout_number %></h4>
-<h4>Weight Class: <%= @match.wrestler1.weight.max %></h4>
+<h4>Weight Class: <%= @match.weight.max %></h4>
 <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
         <th></th>
-        <th><%= @match.wrestler1.name %> (<%= @match.wrestler1.school.name %>)</th>
-        <th><%= @match.wrestler2.name %> (<%= @match.wrestler2.school.name %>)</th>
+        <th><%= @match.w1_name %> <%= "- #{@match.wrestler1.school.name}" if @match.wrestler1 %></th>
+        <th><%= @match.w2_name %> <%= "- #{@match.wrestler2.school.name}" if @match.wrestler2 %></th>
       </tr>
     </thead>
 

@@ -11,6 +11,15 @@ class School < ActiveRecord::Base
 	before_destroy do 
 		self.tournament.destroy_all_matches
 	end
+
+	def abbreviation
+      name_array = self.name.split(' ')
+      if name_array.size > 1
+      	return "#{name_array[0].chars.to_a.first}#{name_array[1].chars.to_a[0..1].join('').upcase}"
+      else
+        return "#{name_array[0].chars.to_a[0..2].join('').upcase}"
+      end
+	end
 	
 	#calculate score here
 	def page_score_string

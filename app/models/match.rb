@@ -99,6 +99,23 @@ class Match < ActiveRecord::Base
 			self.loser2_name
 		end
 	end
+
+	def w1_bracket_name
+      if self.w1 != nil
+      	return "#{w1_name} (#{wrestler1.school.abbreviation})"
+      else
+      	""
+      end
+	end
+
+	def w2_bracket_name
+      if self.w2 != nil
+      	return "#{w2_name} (#{wrestler2.school.abbreviation})"
+      else
+      	""
+      end
+	end
+
 	def winner_name
 		if self.finished != 1
 			return ""
@@ -110,6 +127,15 @@ class Match < ActiveRecord::Base
 			return self.w2_name
 		end
 	end
+
+    def bracket_winner_name
+      if winner_name != ""
+      	return "#{winner_name} (#{Wrestler.find(winner_id).school.abbreviation})"
+      else
+      	""
+      end
+    end
+
 	def weight_max
 		self.weight.max
 	end

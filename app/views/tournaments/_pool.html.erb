@@ -17,7 +17,7 @@
     	<tbody>
     		<% @wrestlers.select{|w| w.pool == @pool}.sort_by{|w| w.bracket_line}.each do |w| %>
     		<tr>
-    			<td><%= w.original_seed %> <%= w.name %> <%= w.season_win %>-<%= w.season_loss %> <%= w.school.name %></td>
+    			<td><%= w.original_seed %> <%= w.name %> - <%= w.school.name %></td>
     			<% @round = 1 %>
     			<% until @matches.select{|m| m.round == @round}.blank? %>
     			    <% if @round <= @pools %>
