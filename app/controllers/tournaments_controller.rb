@@ -13,7 +13,7 @@ class TournamentsController < ApplicationController
     @wrestler = Wrestler.find(params[:wrestler][:originalId])
     respond_to do |format|
       if SwapWrestlers.new.swap_wrestlers_bracket_lines(params[:wrestler][:originalId], params[:wrestler][:swapId])
-        format.html { redirect_to "/tournaments/#{@wrestler.tournament.id}/brackets/#{@wrestler.weight.id}", notice: 'Wrestler was successfully swaped.' }
+        format.html { redirect_to "/tournaments/#{@wrestler.tournament.id}/brackets/#{@wrestler.weight.id}", notice: 'Wrestlers successfully swapped.' }
         format.json { render action: 'show', status: :created, location: @wrestler }
       end
     end
@@ -149,7 +149,8 @@ class TournamentsController < ApplicationController
 
 
   def all_brackets
-
+    @schools = @tournament.schools
+    @schools = @schools.sort_by{|s| s.page_score_string}.reverse!
   end
 
   def bracket

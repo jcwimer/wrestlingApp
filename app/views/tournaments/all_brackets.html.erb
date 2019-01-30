@@ -71,6 +71,7 @@ li:first-child,li:last-child {
 </style>
     
     <div id="exportable">
+    <%= render :file => 'tournaments/team_scores' %>
     <% @tournament.weights.sort_by{|w| w.max}.each do |w| %>
         <table class='pagebreak'>
         <h5><strong><%= @tournament.name %> - <%= w.max %> lbs Bracket</strong></h5>
