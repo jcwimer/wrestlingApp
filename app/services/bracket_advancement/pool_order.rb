@@ -135,10 +135,10 @@ class PoolOrder
 	def teamPoints
 		pointsArray = []
 		wrestlersWithSamePoints.each do |w|
-			pointsArray << w.team_points_earned
+			pointsArray << w.total_pool_points_for_pool_order
 		end
 		mostPoints = pointsArray.max
-		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.team_points_earned == mostPoints}
+		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.total_pool_points_for_pool_order == mostPoints}
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
 		wrestlersWithLeastDeductedPoints.each do |wr|
 			addPoints(wr)	

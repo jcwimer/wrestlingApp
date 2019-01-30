@@ -36,6 +36,10 @@ class Wrestler < ActiveRecord::Base
 	def total_points_deducted
 		CalculateWrestlerTeamScore.new(self).deductedPoints
 	end
+
+	def total_pool_points_for_pool_order
+      CalculateWrestlerTeamScore.new(self).poolPoints + CalculateWrestlerTeamScore.new(self).bonusWinPoints
+	end
 	
 	def next_match
 		unfinished_matches.first
