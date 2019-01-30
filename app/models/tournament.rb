@@ -10,6 +10,8 @@ class Tournament < ActiveRecord::Base
 	
 	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
 
+	attr_accessor :import_text
+
 	def self.search(search)
 	  where("date LIKE ? or name LIKE ?", "%#{search}%", "%#{search}%")
 	end

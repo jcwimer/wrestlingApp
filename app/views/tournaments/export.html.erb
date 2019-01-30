@@ -1,0 +1,22 @@
+--COPY AND PASTE ALL OF THIS TEXT INTO A FILE ON YOUR COMPUTER--<br>
+--CLICK ANYWHERE ON THIS PAGE, PRESS CTRL + A (OR COMMAND + A ON MAC) TO SELECT ALL, THEN PRESS CTRL + C (OR COMMAND + C ON MAC) TO COPY--<br>
+--THEN IN A DOCUMENT, RIGHT CLICK PASTE--<br>
+--WE RECOMMEND USING NOTEPAD (NOT MICROSOFT WORD) TO SAVE THIS TEXT ON WINDOWS--<br>
+<br>
+<br>
+--TO RESTORE PASTE THIS TEXT INTO THE FORM ON THE TOURNAMENT HOME PAGE--<br>
+<br>
+<br>
+<% attribute_separator = ";;" %>
+<% model_separator = ",," %>
+--Tournament--<%= model_separator %><%= @tournament.name %><%= attribute_separator %><%= @tournament.address %><%= attribute_separator %><%= @tournament.director %><%= attribute_separator %><%= @tournament.director_email %><%= attribute_separator %><%= @tournament.tournament_type %><%= attribute_separator %><%= @tournament.weigh_in_ref %><%= attribute_separator %><%= @tournament.user_id %><%= attribute_separator %><%= @tournament.curently_generating_matches %><%= attribute_separator %><%= @tournament.date %>
+<br>
+--Schools--<% @tournament.schools.each do |school| %><%= model_separator %><%= school.name %><%= attribute_separator %><%= school.score %><% end %>
+<br>
+--Weights--<% @tournament.weights.each do |weight| %><%= model_separator %><%= weight.max %><% end %>
+<br>
+--Mats--<% @tournament.mats.each do |mat| %><%= model_separator %><%= mat.name %><% end %>
+<br>
+--Wrestlers--<% @tournament.wrestlers.each do |wrestler| %><%= model_separator %><%= wrestler.name %><%= attribute_separator %><%= wrestler.school.name %><%= attribute_separator %><%= wrestler.weight.max %><%= attribute_separator %><%= wrestler.bracket_line %><%= attribute_separator %><%= wrestler.original_seed %><%= attribute_separator %><%= wrestler.season_win %><%= attribute_separator %><%= wrestler.season_loss %><%= attribute_separator %><%= wrestler.criteria %><%= attribute_separator %><%= wrestler.extra %><%= attribute_separator %><%= wrestler.offical_weight %><%= attribute_separator %><%= wrestler.pool %><% end %>
+<br>
+--Matches--<% @tournament.matches.sort_by{|match| match.bout_number}.each do |match| %><%= model_separator %><%= Wrestler.where("id = ?",match.w1).first.name if match.w1 %><%= attribute_separator %><%= Wrestler.where("id = ?",match.w2).first.name if match.w2 %><%= attribute_separator %><%= match.w1_stat %><%= attribute_separator %><%= match.w2_stat %><%= attribute_separator %><%= Wrestler.where("id = ?",match.winner_id).first.name if match.winner_id %><%= attribute_separator %><%= match.win_type %><%= attribute_separator %><%= match.score %><%= attribute_separator %><%= match.round %><%= attribute_separator %><%= match.finished %><%= attribute_separator %><%= match.bout_number %><%= attribute_separator %><%= Weight.where("id = ?",match.weight_id).first.max if match.weight_id %><%= attribute_separator %><%= match.bracket_position %><%= attribute_separator %><%= match.bracket_position_number %><%= attribute_separator %><%= match.loser1_name %><%= attribute_separator %><%= match.loser2_name %><%= attribute_separator %><%= Mat.where("id = ?",match.mat_id).first.name if match.mat_id %><% end %>

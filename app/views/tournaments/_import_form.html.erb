@@ -1,0 +1,11 @@
+<% if can? :manage, @tournament %> 
+  <br><br>
+  <h3>Import Data</h3>
+    <%= form_for(Tournament.new, url: import_url(@tournament)) do |f| %>
+        <div class="field">
+          <%= f.label 'Import text' %><br>
+          <%= f.text_area :import_text, cols: "30", rows: "20"  %>
+        </div>
+        <%= submit_tag "Import", :class=>"btn btn-success", data: { confirm: 'Are you sure? This will delete everything for the current tournament and restore it with the backup text pasted below.' }%>
+    <% end %>  
+<% end %>

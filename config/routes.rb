@@ -50,6 +50,8 @@ Wrestling::Application.routes.draw do
   delete 'tournaments/:id/:teampointadjust/remove_teampointadjust' => 'tournaments#remove_teampointadjust'
   get 'tournaments/:id/error' => 'tournaments#error'
   post "/tournaments/:id/swap" => "tournaments#swap", :as => :swap_wrestlers
+  get 'tournaments/:id/export' => "tournaments#export"
+  post "/tournaments/:id/import" => "tournaments#import", :as => :import  
 
   post 'weights/:id/re_gen' => 'weights#re_gen', :as => :regen_weight
   post "/wrestlers/update_pool" => "wrestlers#update_pool"
