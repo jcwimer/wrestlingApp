@@ -104,7 +104,7 @@ class Match < ActiveRecord::Base
       if self.w1 != nil
       	return "#{w1_name} (#{wrestler1.school.abbreviation})"
       else
-      	""
+      	"#{w1_name}"
       end
 	end
 
@@ -112,7 +112,7 @@ class Match < ActiveRecord::Base
       if self.w2 != nil
       	return "#{w2_name} (#{wrestler2.school.abbreviation})"
       else
-      	""
+      	"#{w2_name}"
       end
 	end
 
