@@ -19,7 +19,7 @@
             <option value="red">Red</option>
         </select>
         <br>School: <%= @w1.school.name %>
-        <br>Last Match: <%= if @w1.last_match != nil then time_ago_in_words(@w2.last_match.updated_at) else "N/A" end%></th>
+        <br>Last Match: <%= if @w1.last_match != nil then time_ago_in_words(@w1.last_match.updated_at) else "N/A" end%></th>
         <th>Name: <%= @w2.name %> <select id="w2-color" onchange="changeW2Color(this)">
             <option value="red">Red</option>
             <option value="green">Green</option>

@@ -63,15 +63,16 @@ class Match < ActiveRecord::Base
 		end
 		if self.finished == 1
 		  if self.win_type == "Default"
-		  	return "Def"
+		  	return "(Def)"
 		  elsif self.win_type == "Injury Default"
-		  	return "Inj"
+		  	return "(Inj)"
 		  elsif self.win_type == "DQ"
-		  	return "DQ"
+		  	return "(DQ)"
 		  elsif self.win_type == "Forfeit"
-		  	return "For"
+		  	return "(For)"
 		  else
-		  	return "(#{self.score})"
+		  	win_type_abbreviation = "#{self.win_type.chars.to_a[0..2].join('')}"
+		  	return "(#{win_type_abbreviation} #{self.score})"
 		  end
 		end
 	end
