@@ -7,6 +7,8 @@ class GeneratePoolNumbers
     	@weight.wrestlers.each do |wrestler|
           if wrestler.pool and (wrestler.pool) > (@weight.pools)
           	resetPool
+          elsif @weight.one_pool_empty
+          	resetPool
           end
     	end
 		if @weight.pools == 4

@@ -37,6 +37,15 @@ class Weight < ActiveRecord::Base
 		weight_wrestlers = Wrestler.where(:weight_id => self.id)
 		weight_wrestlers.select{|w| w.pool == pool_number}
 	end
+
+	def one_pool_empty
+      (1..self.pools).each do |pool|
+        if wrestlers_in_pool(pool).size < 1
+          return true
+        end
+      end
+      return false
+	end
 	
 	def all_pool_matches_finished(pool)
 		@wrestlers = wrestlers_in_pool(pool)
