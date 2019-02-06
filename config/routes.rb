@@ -52,6 +52,7 @@ Wrestling::Application.routes.draw do
   post "/tournaments/:id/swap" => "tournaments#swap", :as => :swap_wrestlers
   get 'tournaments/:id/export' => "tournaments#export"
   post "/tournaments/:id/import" => "tournaments#import", :as => :import  
+  get "/tournaments/:id/brackets" => "tournaments#show"
 
   post 'weights/:id/re_gen' => 'weights#re_gen', :as => :regen_weight
   post "/wrestlers/update_pool" => "wrestlers#update_pool"
