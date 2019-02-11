@@ -1,41 +1,41 @@
-<h1>My Tournaments</h1>
-<script>
+<% if @tournaments.size > 0 %>
+  <h3>My Tournaments</h3>
+  <script>
   // $(document).ready(function() {
   //   $('#tournamentList').dataTable();
   //   pagingType: "bootstrap";
   // } );
-</script>
-</br>
-<table class="table table-hover" id="tournamentList">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Date</th>
-      <th><% if user_signed_in? %><%= link_to ' New Tournament', new_tournament_path, :class=>"fas fa-plus" %></th><% end %>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @tournaments.each do |tournament| %>
+  </script>
+  <table class="table table-hover" id="tournamentList">
+    <thead>
       <tr>
-        <td><%= link_to "#{tournament.name}", tournament %></td>
-        <td><%= tournament.date %></td>
-          <% if can? :manage, tournament %>
-          <td>
-            <%= link_to '', edit_tournament_path(tournament), :class=>"fas fa-edit" %>
-            <% if can? :destroy, tournament %>
-              <%= link_to '', tournament, method: :delete, data: { confirm: "Are you sure you want to delete #{tournament.name}?" }, :class=>"fas fa-trash-alt" %>
-            <% end %>
-          </td>
-          <% end %>
+        <th>Name</th>
+        <th>Date</th>
+        <th><% if user_signed_in? %><%= link_to ' New Tournament', new_tournament_path, :class=>"fas fa-plus" %></th><% end %>
       </tr>
-    <% end %>
-  </tbody>
-</table>
-<br>
-<% if @schools.size > 0 %>
-  <h1>My Schools</h1>
+    </thead>
+
+    <tbody>
+      <% @tournaments.each do |tournament| %>
+        <tr>
+          <td><%= link_to "#{tournament.name}", tournament %></td>
+          <td><%= tournament.date %></td>
+            <% if can? :manage, tournament %>
+            <td>
+              <%= link_to '', edit_tournament_path(tournament), :class=>"fas fa-edit" %>
+              <% if can? :destroy, tournament %>
+                <%= link_to '', tournament, method: :delete, data: { confirm: "Are you sure you want to delete #{tournament.name}?" }, :class=>"fas fa-trash-alt" %>
+              <% end %>
+            </td>
+            <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
   <br>
+<% end %>
+<% if @schools.size > 0 %>
+  <h3>My Schools</h3>
   <table class="table table-hover" id="tournamentList">
     <thead>
       <tr>
@@ -56,6 +56,3 @@
     </tbody>
   </table>
 <% end %>
-<br>
-
-
