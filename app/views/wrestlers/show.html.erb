@@ -1,17 +1,11 @@
-
-
-  <%= link_to "Back to #{@school.name}", "/schools/#{@school.id}", :class=>"btn btn-default" %>
-  <% if can? :manage, @school %>
-    | <%= link_to "Edit #{@wrestler.name}", edit_wrestler_path(@wrestler), :class=>"btn btn-primary" %>
-  <% end %>
-<% cache ["#{@wrestler.id}", @wrestler] do %>
+<%= link_to "Back to #{@school.name}", "/schools/#{@school.id}", :class=>"btn btn-sm btn-default" %>
   <br>
   <br>
   <p>
     <strong>Name:</strong>
-    <%= @wrestler.name %>
+    <%= @wrestler.name %> <% if can? :manage, @school %><%= link_to " Edit", edit_wrestler_path(@wrestler), :class=>"fas fa-edit" %><% end %>
   </p>
-
+<% cache ["#{@wrestler.id}", @wrestler] do %>
   <p>
     <strong>School:</strong>
     <%= @wrestler.school.name %>
