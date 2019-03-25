@@ -1,6 +1,6 @@
 FROM ruby:2.5.1-slim
 
-HEALTHCHECK --start-period=60s CMD curl --insecure https://127.0.0.1/
+HEALTHCHECK --start-period=60s CMD curl http://127.0.0.1/
 
 ENV TINI_VERSION v0.18.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
@@ -51,5 +51,6 @@ EXPOSE 443
 # Tini solves the zombie PID problem
 ENTRYPOINT ["/tini", "--"]
 
-CMD bundle exec puma -w 3 -t 5:5 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt' -e production
+CMD bundle exec puma -w 3 -t 5:5 -b 'tcp://0.0.0.0:80' -e production
+#CMD bundle exec puma -w 3 -t 5:5 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt' -e production
 #CMD bundle exec passenger start --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key
