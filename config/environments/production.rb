@@ -94,8 +94,10 @@ Wrestling::Application.configure do
   config.assets.compile = true
   config.assets.digest = true
 
-  #Added by me to force SSL in production
-  config.force_ssl = true
+  #Added by me to force SSL in production on heroku
+  if ENV["IS_HEROKU"] == "true"
+    config.force_ssl = true
+  end
   
   #MAIL
 	 config.action_mailer.smtp_settings = {
