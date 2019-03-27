@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wrestlingdev-memcached
+  labels:
+    app: wrestlingdev
+spec:
+  ports:
+    - port: 11211
+  selector:
+    app: wrestlingdev
+    tier: memcached
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wrestlingdev-memcached-deployment
+  labels:
+    app: wrestlingdev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wrestlingdev
+  template:
+    metadata:
+      labels:
+        app: wrestlingdev
+        tier: memcached
+    spec:
+      containers:
+      - name: wrestlingdev-memcached
+        image: memcached
+        ports:
+        - containerPort: 11211
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: "64Mi"
+          requests:
+            memory: "64Mi"
+            cpu: "0.1"
