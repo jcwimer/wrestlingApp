@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wrestlingdev-mariadb
+  labels:
+    app: wrestlingdev
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: wrestlingdev
+    tier: mariadb
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wrestlingdev-mariadb-pv-claim
+  labels:
+    app: wrestlingdev
+spec:
+  storageClassName: standard
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: wrestlingdev-mariadb
+  labels:
+    app: wrestlingdev
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wrestlingdev
+        tier: mariadb
+    spec:
+      containers:
+      - image: mariadb:10.3
+        name: mariadb
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        ports:
+        - containerPort: 3306
+          name: mariadb
+        volumeMounts:
+        - name: wrestlingdev-mariadb-persistent-storage
+          mountPath: /var/lib/mysql
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            memory: "256Mi"
+            cpu: "0.2"
+      volumes:
+      - name: wrestlingdev-mariadb-persistent-storage
+        persistentVolumeClaim:
+          claimName: wrestlingdev-mariadb-pv-claim

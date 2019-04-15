@@ -64,8 +64,6 @@ services:
       database:
       caching:
     restart: always
-    healthcheck:
-        test: kill -0 1
     command: bundle exec bin/delayed_job -n 1 run
 
   memcached:

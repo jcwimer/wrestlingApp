@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wrestlingdev-app-ingress
+spec:
+  rules:
+  - host: wrestlingdev.jqw43.platform-lab.cloud.cas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: wrestlingdev-app
+          servicePort: 80
+  tls:
+    - hosts:
+      - wrestlingdev.jqw43.platform-lab.cloud.cas.org
