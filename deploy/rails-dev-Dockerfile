@@ -16,10 +16,11 @@ RUN echo "America/New_York" > /etc/timezone \
  && rm /etc/localtime \
  && ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 
-RUN gem install --no-rdoc --no-ri bundler
+RUN echo 'gem: --no-rdoc --no-ri' > /root/.gemrc
+RUN gem install bundler
 ADD Gemfile* /tmp/
 WORKDIR /tmp
-RUN bundle install --without production
+RUN bundle install --jobs 4 --without production
 
 RUN mkdir /rails
 WORKDIR /rails

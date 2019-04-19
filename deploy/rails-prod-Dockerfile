@@ -24,13 +24,14 @@ RUN apt-get -qq update \
     /tmp/* \
     /var/tmp/*
 
-RUN gem install --no-rdoc --no-ri bundler
+RUN echo 'gem: --no-rdoc --no-ri' > /root/.gemrc
+RUN gem install bundler
 #Cache gems so they don't install on every code change
 RUN rm -rf /rails && mkdir /rails
 WORKDIR /rails
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
-RUN bundle install
+RUN bundle install --jobs 4
 
 # Copy site into place.
 ADD . /rails/
