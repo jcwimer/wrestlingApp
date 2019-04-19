@@ -113,10 +113,9 @@ class ActiveSupport::TestCase
     for number in (1..number_of_wrestlers) do 
       wrestler = Wrestler.new
       wrestler.name = "Test#{naming_number}"
-      school = @tournament.schools.sample
       wrestler.school_id = school.id
       wrestler.weight_id = weight.id
-      if seed <= 4
+      if (number_of_wrestlers <= 10 and seed <= 4) or (number_of_wrestlers > 10 and seed <= 8) 
         wrestler.original_seed = seed
       end
       wrestler.save

@@ -2,11 +2,10 @@ require 'test_helper'
 
 class EightPoolToFourPoolChangesTest < ActionDispatch::IntegrationTest
   def setup
-    @tournament = Tournament.find(4)
+    create_pool_tournament_single_weight(24)
   end
 
   test "All wrestlers get matches after a weight switches from 8 pool to 4 pool" do
-    GenerateTournamentMatches.new(@tournament).generate
     assert @tournament.matches.count == 36
     assert @tournament.weights.first.pools == 8
     count = 1

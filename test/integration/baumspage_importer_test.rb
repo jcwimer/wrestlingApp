@@ -2,7 +2,9 @@ require 'test_helper'
 
 class BaumspageImporterTest < ActionDispatch::IntegrationTest
   def setup
-    @school = School.find(1)
+    create_pool_tournament
+    #Needs 106-126 or test will fail
+    @school = @tournament.schools.sample
     @baums_text = "***** 2019-01-09 13:36:50 *****
 Some School
 Some Guy

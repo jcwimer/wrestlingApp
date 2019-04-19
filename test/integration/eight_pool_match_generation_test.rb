@@ -2,11 +2,10 @@ require 'test_helper'
 
 class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
   def setup
-    @tournament = Tournament.find(4)
+    create_pool_tournament_single_weight(24)
   end
 
   test "Match generation works" do
-    GenerateTournamentMatches.new(@tournament).generate
     assert @tournament.matches.count == 36
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter"}.count == 4
     assert @tournament.matches.select{|m| m.bracket_position == "Semis"}.count == 2
@@ -20,16 +19,15 @@ class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
   end
 
   test "Seeded wrestlers go to correct pool" do
-    GenerateTournamentMatches.new(@tournament).generate
-    guy10 = @tournament.wrestlers.select{|w| w.name == "Guy10"}.first
-    guy2 = @tournament.wrestlers.select{|w| w.name == "Guy2"}.first
-    guy3 = @tournament.wrestlers.select{|w| w.name == "Guy3"}.first
-    guy4 = @tournament.wrestlers.select{|w| w.name == "Guy4"}.first
-    guy5 = @tournament.wrestlers.select{|w| w.name == "Guy5"}.first
-    guy6 = @tournament.wrestlers.select{|w| w.name == "Guy6"}.first
-    guy7 = @tournament.wrestlers.select{|w| w.name == "Guy7"}.first
-    guy8 = @tournament.wrestlers.select{|w| w.name == "Guy8"}.first
-    assert guy10.pool == 1
+    guy1 = get_wrestler_by_name("Test1")
+    guy2 = get_wrestler_by_name("Test2")
+    guy3 = get_wrestler_by_name("Test3")
+    guy4 = get_wrestler_by_name("Test4")
+    guy5 = get_wrestler_by_name("Test5")
+    guy6 = get_wrestler_by_name("Test6")
+    guy7 = get_wrestler_by_name("Test7")
+    guy8 = get_wrestler_by_name("Test8")
+    assert guy1.pool == 1
     assert guy2.pool == 2
     assert guy3.pool == 3
     assert guy4.pool == 4
@@ -40,7 +38,6 @@ class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
   end
 
   test "Loser names set up correctly" do
-    GenerateTournamentMatches.new(@tournament).generate
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 1}.first.loser1_name == "Winner Pool 1"
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 1}.first.loser2_name == "Winner Pool 8"
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 2}.first.loser1_name == "Winner Pool 4"
@@ -62,16 +59,14 @@ class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
   end
 
   test "Each wrestler has two pool matches" do
-    GenerateTournamentMatches.new(@tournament).generate
     @tournament.wrestlers.each do |wrestler|
       assert wrestler.pool_matches.size == 2
     end
   end
 
   test "Placement points are given when moving through bracket" do
-    GenerateTournamentMatches.new(@tournament).generate
     match = @tournament.matches.select{|m| m.bracket_position == "Quarter"}.first
-    wrestler = @tournament.wrestlers.select{|w| w.name == "Guy10"}.first
+    wrestler = get_wrestler_by_name("Test1")
     match.w1 = wrestler.id
     match.save
     assert wrestler.reload.placement_points == 3
@@ -83,7 +78,6 @@ class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
   end
 
   test "Run through all matches works" do
-    GenerateTournamentMatches.new(@tournament).generate
     @tournament.matches.sort{ |match| match.round }.each do |match|
       match.winner_id = match.w1
       match.save
