@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_17_133030) do
+ActiveRecord::Schema.define(version: 2019_04_19_142230) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
@@ -146,6 +146,8 @@ ActiveRecord::Schema.define(version: 2018_09_17_133030) do
     t.boolean "extra"
     t.decimal "offical_weight"
     t.integer "pool"
+    t.integer "pool_placement"
+    t.string "pool_placement_tiebreaker"
     t.index ["weight_id"], name: "index_wrestlers_on_weight_id"
   end
 

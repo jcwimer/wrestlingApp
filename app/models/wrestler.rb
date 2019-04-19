@@ -40,6 +40,10 @@ class Wrestler < ActiveRecord::Base
 	def total_pool_points_for_pool_order
       CalculateWrestlerTeamScore.new(self).poolPoints + CalculateWrestlerTeamScore.new(self).bonusWinPoints
 	end
+
+	def unfinished_pool_matches
+      unfinished_matches.select{|match| match.finished != 1}
+	end
 	
 	def next_match
 		unfinished_matches.first
@@ -194,6 +198,14 @@ class Wrestler < ActiveRecord::Base
 	
 	def fastest_pin
 		pin_wins.sort_by{|m| m.pin_time_in_seconds}.first
+	end
+
+	def pin_time
+      time = 0
+      pin_wins.each do | m |
+      	time = time + m.pin_time_in_seconds
+      end
+      time
 	end
 	
 	def season_win_percentage

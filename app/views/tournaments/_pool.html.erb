@@ -12,6 +12,7 @@
     			 <% end %>
     			 <% @round = @round + 1 %>
     			<% end %>
+                <th>Placement</th>
     		</tr>
     	</thead>
     	<tbody>
@@ -25,6 +26,7 @@
     			    <% end %>
     			    <% @round = @round + 1 %>
     			<% end %>
+                <td><%= w.pool_placement %><br><%= w.pool_placement_tiebreaker %></td>
 
     		</tr>
     		<% end %>

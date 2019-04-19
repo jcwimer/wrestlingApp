@@ -140,7 +140,7 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def pool_placement_order(pool)
-		PoolOrder.new(wrestlers_in_pool(pool)).getPoolOrder
+		#PoolOrder.new(wrestlers_in_pool(pool)).getPoolOrder
 	end
 
 	def wrestlers_without_pool_assignment

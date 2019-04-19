@@ -6,7 +6,7 @@ class PoolAdvance
  end
 
  def advanceWrestler
-   if @wrestler.weight.all_pool_matches_finished(@wrestler.pool) && @wrestler.finished_bracket_matches.size == 0
+   if @wrestler.pool_placement and @wrestler.weight.pools > 1
      poolToBracketAdvancment
    end
    if @wrestler.finished_bracket_matches.size > 0
@@ -15,20 +15,12 @@ class PoolAdvance
  end
 
  def poolToBracketAdvancment
-   pool = @wrestler.pool
-   if @wrestler.weight.wrestlers.size > 6
-     pool_placement_order = @wrestler.weight.pool_placement_order(pool)
-     #Take pool order and move winner and runner up to correct match based on w1_name and w2_name
-     matches = @wrestler.weight.matches
-     winnerMatch = matches.select{|m| m.loser1_name == "Winner Pool #{pool}" || m.loser2_name == "Winner Pool #{pool}"}.first
-     runnerUpMatch = matches.select{|m| m.loser1_name == "Runner Up Pool #{pool}" || m.loser2_name == "Runner Up Pool #{pool}"}.first
-     winner = pool_placement_order.first
-     runnerUp = pool_placement_order.second
-     if runnerUpMatch
-       runnerUpMatch.replace_loser_name_with_wrestler(runnerUp,"Runner Up Pool #{pool}")
-     end
-     winnerMatch.replace_loser_name_with_wrestler(winner,"Winner Pool #{pool}") 
-   end
+    if @wrestler.pool_placement == 2
+      runnerUpMatch.replace_loser_name_with_wrestler(runnerUp,"Runner Up Pool #{pool}")
+    end
+    if @wrestler.pool_placement == 1
+      winnerMatch.replace_loser_name_with_wrestler(winner,"Winner Pool #{pool}") 
+    end
  end
 
  def bracketAdvancment

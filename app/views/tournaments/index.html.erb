@@ -24,14 +24,14 @@
       <tr>
         <td><%= link_to "#{tournament.name}", tournament %></td>
         <td><%= tournament.date %></td>
+        <td>
           <% if can? :manage, tournament %>
-            <td>
             <%= link_to '', edit_tournament_path(tournament), :class=>"fas fa-edit" %>
             <% if can? :destroy, tournament %>
               <%= link_to '', tournament, method: :delete, data: { confirm: "Are you sure you want to delete #{tournament.name}?" }, :class=>"fas fa-trash-alt" %>
             <% end %>
-            </td>
         <% end %>  
+        </td>
       </tr>
     <% end %>
   </tbody>
