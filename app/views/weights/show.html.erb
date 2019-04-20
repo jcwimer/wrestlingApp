@@ -48,17 +48,42 @@
     	<% end %>
   	</tbody>
 </table>
-<br><p>*All wrestlers without a seed (determined by tournament director) will be assigned a random seed.</p>
+<br><p>*All wrestlers without a seed (determined by tournament director) will be assigned a bracket line.</p>
 		<% if can? :manage, @tournament %>
 		<br>
 	      <%= submit_tag "Save Seeds", :class=>"btn btn-success"%>
 	    <% end %>
     <% end %>
-
-
-
-
-
-
-
-
+<br>
+<% if @tournament.tournament_type == "Pool to bracket" %>
+<div>
+  <strong>Pool assignments by seed:</strong>
+  <ul>
+    <li>Two Pools
+      <ul>
+        <li>Pool 1: Seed 1 & 4</li>
+        <li>Pool 2: Seed 2 & 3</li>
+      </ul>
+    </li>
+    <li>Four Pools
+      <ul>
+        <li>Pool 1: Seed 1 & 8</li>
+        <li>Pool 2: Seed 2 & 7</li>
+        <li>Pool 3: Seed 3 & 6</li>
+        <li>Pool 4: Seed 4 & 5</li>
+      </ul>
+    </li>
+    <li>Four Pools
+      <ul>
+        <li>Pool 1: Seed 1</li>
+        <li>Pool 2: Seed 2</li>
+        <li>Pool 3: Seed 3</li>
+        <li>Pool 4: Seed 4</li>
+        <li>Pool 5: Seed 5</li>
+        <li>Pool 6: Seed 6</li>
+        <li>Pool 7: Seed 7</li>
+        <li>Pool 8: Seed 8</li>
+      </ul>
+    </li>
+</div>
+<% end %>
