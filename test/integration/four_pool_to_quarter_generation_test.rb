@@ -1,12 +1,12 @@
 require 'test_helper'
 
-class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
+class FourPoolToQuarterGenerationTest < ActionDispatch::IntegrationTest
   def setup
-    create_pool_tournament_single_weight(24)
+    create_pool_tournament_single_weight(12)
   end
 
   test "Match generation works" do
-    assert @tournament.matches.count == 36
+    assert @tournament.matches.count == 24
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter"}.count == 4
     assert @tournament.matches.select{|m| m.bracket_position == "Semis"}.count == 2
     assert @tournament.matches.select{|m| m.bracket_position == "Conso Semis"}.count == 2
@@ -14,8 +14,8 @@ class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
     assert @tournament.matches.select{|m| m.bracket_position == "3/4"}.count == 1
     assert @tournament.matches.select{|m| m.bracket_position == "5/6"}.count == 1
     assert @tournament.matches.select{|m| m.bracket_position == "7/8"}.count == 1
-    assert @tournament.matches.select{|m| m.bracket_position == "Pool"}.count == 24
-    assert @tournament.weights.first.pools == 8
+    assert @tournament.matches.select{|m| m.bracket_position == "Pool"}.count == 12
+    assert @tournament.weights.first.pools == 4
   end
 
   test "Seeded wrestlers go to correct pool" do
@@ -31,21 +31,21 @@ class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
     assert guy2.pool == 2
     assert guy3.pool == 3
     assert guy4.pool == 4
-    assert guy5.pool == 5
-    assert guy6.pool == 6
-    assert guy7.pool == 7
-    assert guy8.pool == 8
+    assert guy5.pool == 4
+    assert guy6.pool == 3
+    assert guy7.pool == 2
+    assert guy8.pool == 1
   end
 
   test "Loser names set up correctly" do
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 1}.first.loser1_name == "Winner Pool 1"
-    assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 1}.first.loser2_name == "Winner Pool 8"
+    assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 1}.first.loser2_name == "Runner Up Pool 2"
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 2}.first.loser1_name == "Winner Pool 4"
-    assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 2}.first.loser2_name == "Winner Pool 5"
+    assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 2}.first.loser2_name == "Runner Up Pool 3"
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 3}.first.loser1_name == "Winner Pool 2"
-    assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 3}.first.loser2_name == "Winner Pool 7"
+    assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 3}.first.loser2_name == "Runner Up Pool 1"
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 4}.first.loser1_name == "Winner Pool 3"
-    assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 4}.first.loser2_name == "Winner Pool 6"
+    assert @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.bracket_position_number == 4}.first.loser2_name == "Runner Up Pool 4"
     quarters = @tournament.matches.reload.select{|m| m.bracket_position == "Quarter"}
     assert @tournament.matches.select{|m| m.bracket_position == "Conso Semis" && m.bracket_position_number == 1}.first.loser1_name == "Loser of #{quarters.select{|m| m.bracket_position_number == 1}.first.bout_number}"
     assert @tournament.matches.select{|m| m.bracket_position == "Conso Semis" && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{quarters.select{|m| m.bracket_position_number == 2}.first.bout_number}"
