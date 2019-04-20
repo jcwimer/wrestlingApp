@@ -94,6 +94,8 @@ class WrestlingdevImporter
       new_wrestler.extra = wrestler_array[8]
       new_wrestler.offical_weight = wrestler_array[9]
       new_wrestler.pool = wrestler_array[10]
+      new_wrestler.pool_placement = wrestler_array[11]
+      new_wrestler.pool_placement_tiebreaker = wrestler_array[12]
       new_wrestler.save
     end
   end
