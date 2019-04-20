@@ -9,33 +9,3 @@ one:
   tournament_type: Pool to bracket
   user_id: 1
   date: 2015-12-30
-  
-two:
-  id: 2
-  name: Comet Classic 2
-  address: Some Place
-  director: Jacob Cody Wimer
-  director_email: jacob.wimer@gmail.com
-  tournament_type: Pool to bracket
-  user_id: 1
-  date: 2015-12-30
-  
-swap_wrestlers_tournament:
-  id: 3
-  name: Comet Classic 2
-  address: Some Place
-  director: Jacob Cody Wimer
-  director_email: jacob.wimer@gmail.com
-  tournament_type: Pool to bracket
-  user_id: 1
-  date: 2015-12-30
-
-eight_pools_generation_tournament:
-  id: 4
-  name: Comet Classic 2
-  address: Some Place
-  director: Jacob Cody Wimer
-  director_email: jacob.wimer@gmail.com
-  tournament_type: Pool to bracket
-  user_id: 1
-  date: 2015-12-30

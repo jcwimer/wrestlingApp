@@ -9,18 +9,3 @@ two:
   id: 2
   name: Grove City
   tournament_id: 1
-  
-three:
-  id: 3
-  name: Central Crossing
-  tournament_id: 2
-
-swap_wrestlers:
-  id: 4
-  name: Central Crossing
-  tournament_id: 3
-
-eight_pools_generation_school:
-  id: 5
-  name: Central Crossing
-  tournament_id: 4
