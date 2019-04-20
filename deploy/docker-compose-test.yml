@@ -32,7 +32,7 @@ services:
       - "80:80"
       - "443:443"
     healthcheck: 
-      test: curl --insecure https://127.0.0.1/
+      test: curl http://127.0.0.1/
 
   db:
     image: mysql:5.7
