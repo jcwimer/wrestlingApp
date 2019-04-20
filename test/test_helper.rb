@@ -107,6 +107,13 @@ class ActiveSupport::TestCase
     GenerateTournamentMatches.new(@tournament).generate
   end
 
+  def team_point_adjusts_for_wrestler(wrestler_name,points)
+    adjust = Teampointadjust.new
+    adjust.points = points
+    adjust.wrestler_id = get_wrestler_by_name(wrestler_name)
+    adjust.save
+  end
+
   def create_wrestlers_for_weight(weight, school, number_of_wrestlers, naming_start_number)
     naming_number = naming_start_number
     seed = 1

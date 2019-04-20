@@ -63,6 +63,24 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     end_match(match_wrestler_vs("Test5","Test6"),"Test5")    	
   end
 
+  def finishWithTieMostTeamPointsTwoWayTie
+    end_match_with_pin(match_wrestler_vs("Test1","Test2"),"Test1")
+    end_match_with_pin(match_wrestler_vs("Test1","Test3"),"Test3")
+    end_match(match_wrestler_vs("Test1","Test4"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test5"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test6"),"Test1")
+    end_match(match_wrestler_vs("Test2","Test3"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test4"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test5"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test6"),"Test2")
+    end_match(match_wrestler_vs("Test3","Test4"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test5"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test6"),"Test3")
+    end_match(match_wrestler_vs("Test4","Test5"),"Test4")
+    end_match(match_wrestler_vs("Test4","Test6"),"Test4")
+    end_match(match_wrestler_vs("Test5","Test6"),"Test5")       
+  end
+
   def finishedWithTieMostFalls
     #Test1 has 12 points
     #Test2 has 12 points
@@ -129,7 +147,92 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     end_match(match_wrestler_vs("Test5","Test6"),"Test5") 
   end
 
+  def finishedWithTieQuickestPinTwoWayTie
+    #Test1 has 5:20 of pin time
+    #Test2 has 9:20 of pin time
+    #Test3 has 5:20 of pin time
+
+    end_match_with_pin(match_wrestler_vs("Test1","Test2"),"Test1")
+    end_match_with_pin(match_wrestler_vs("Test1","Test3"),"Test3")
+    end_match_with_quick_pin(match_wrestler_vs("Test1","Test4"),"Test1")
+    end_match_with_quick_pin(match_wrestler_vs("Test1","Test5"),"Test1")
+    end_match_with_quick_pin(match_wrestler_vs("Test1","Test6"),"Test1")
+    end_match_with_pin(match_wrestler_vs("Test2","Test3"),"Test2")
+    end_match_with_quick_pin(match_wrestler_vs("Test2","Test4"),"Test2")
+    end_match_with_quick_pin(match_wrestler_vs("Test2","Test5"),"Test2")
+    end_match_with_quick_pin(match_wrestler_vs("Test2","Test6"),"Test2")
+    end_match_with_quick_pin(match_wrestler_vs("Test3","Test4"),"Test3")
+    end_match_with_quick_pin(match_wrestler_vs("Test3","Test5"),"Test3")
+    end_match_with_quick_pin(match_wrestler_vs("Test3","Test6"),"Test3")
+    end_match(match_wrestler_vs("Test4","Test5"),"Test4")
+    end_match(match_wrestler_vs("Test4","Test6"),"Test4")
+    end_match(match_wrestler_vs("Test5","Test6"),"Test5") 
+  end
+
   def finishedWithTieCoinFlip
+    end_match(match_wrestler_vs("Test1","Test2"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test3"),"Test3")
+    end_match(match_wrestler_vs("Test1","Test4"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test5"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test6"),"Test1")
+    end_match(match_wrestler_vs("Test2","Test3"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test4"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test5"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test6"),"Test2")
+    end_match(match_wrestler_vs("Test3","Test4"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test5"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test6"),"Test3")
+    end_match(match_wrestler_vs("Test4","Test5"),"Test4")
+    end_match(match_wrestler_vs("Test4","Test6"),"Test4")
+    end_match(match_wrestler_vs("Test5","Test6"),"Test5") 
+  end
+
+  def finishedWithDeductedPoints
+    team_point_adjusts_for_wrestler("Test2", 1)
+    team_point_adjusts_for_wrestler("Test3", 2)
+
+    end_match(match_wrestler_vs("Test1","Test2"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test3"),"Test3")
+    end_match(match_wrestler_vs("Test1","Test4"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test5"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test6"),"Test1")
+    end_match(match_wrestler_vs("Test2","Test3"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test4"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test5"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test6"),"Test2")
+    end_match(match_wrestler_vs("Test3","Test4"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test5"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test6"),"Test3")
+    end_match(match_wrestler_vs("Test4","Test5"),"Test4")
+    end_match(match_wrestler_vs("Test4","Test6"),"Test4")
+    end_match(match_wrestler_vs("Test5","Test6"),"Test5") 
+  end
+
+  def finishedWithDeductedPointsTwoWayTie
+    team_point_adjusts_for_wrestler("Test1", 2)
+    team_point_adjusts_for_wrestler("Test2", 1)
+    team_point_adjusts_for_wrestler("Test3", 1)
+
+    end_match(match_wrestler_vs("Test1","Test2"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test3"),"Test3")
+    end_match(match_wrestler_vs("Test1","Test4"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test5"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test6"),"Test1")
+    end_match(match_wrestler_vs("Test2","Test3"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test4"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test5"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test6"),"Test2")
+    end_match(match_wrestler_vs("Test3","Test4"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test5"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test6"),"Test3")
+    end_match(match_wrestler_vs("Test4","Test5"),"Test4")
+    end_match(match_wrestler_vs("Test4","Test6"),"Test4")
+    end_match(match_wrestler_vs("Test5","Test6"),"Test5") 
+  end
+
+  def finishedWithDeductedPointsTwoWayTieWithZero
+    team_point_adjusts_for_wrestler("Test1", 1)
+
     end_match(match_wrestler_vs("Test1","Test2"),"Test1")
     end_match(match_wrestler_vs("Test1","Test3"),"Test3")
     end_match(match_wrestler_vs("Test1","Test4"),"Test1")
@@ -170,6 +273,19 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6
   end
 
+  test "Pool order three way tie with most team points but most team points are tied between two wrestlers" do
+    finishWithTieMostTeamPointsTwoWayTie
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement = 2
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement_tiebreaker = "Team Points"
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement = 3
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker = ""
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement = 1
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement_tiebreaker = "Head to Head"
+    assert Wrestler.find(translate_name_to_id("Test4")).pool_placement = 4
+    assert Wrestler.find(translate_name_to_id("Test5")).pool_placement = 5
+    assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6
+  end
+
   test "Pool order three way tie with most pins" do
   	finishWithTieMostTeamPoints
     assert Wrestler.find(translate_name_to_id("Test1")).pool_placement = 1
@@ -201,9 +317,61 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert Wrestler.find(translate_name_to_id("Test1")).pool_placement = 1
     assert Wrestler.find(translate_name_to_id("Test1")).pool_placement_tiebreaker = "Pin Time"
     assert Wrestler.find(translate_name_to_id("Test2")).pool_placement = 2
-    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker = "Pin Time"
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker = "Head to Head"
     assert Wrestler.find(translate_name_to_id("Test3")).pool_placement = 3
     assert Wrestler.find(translate_name_to_id("Test3")).pool_placement_tiebreaker = ""
+    assert Wrestler.find(translate_name_to_id("Test4")).pool_placement = 4
+    assert Wrestler.find(translate_name_to_id("Test5")).pool_placement = 5
+    assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6
+  end
+
+   test "Pool order three way tie with quickest pin times but pin time accumulation is tied between two wrestlers" do
+    finishedWithTieQuickestPinTwoWayTie
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement = 2
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement_tiebreaker = "Pin Time"
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement = 3
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker = ""
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement = 1
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement_tiebreaker = "Head to Head"
+    assert Wrestler.find(translate_name_to_id("Test4")).pool_placement = 4
+    assert Wrestler.find(translate_name_to_id("Test5")).pool_placement = 5
+    assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6
+  end
+
+  test "Pool order three way tie with deducted points" do
+    finishedWithDeductedPoints
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement = 1
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement_tiebreaker = "Head to Head"
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement = 2
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker = "Least Deducted Points"
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement = 1
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement_tiebreaker = ""
+    assert Wrestler.find(translate_name_to_id("Test4")).pool_placement = 4
+    assert Wrestler.find(translate_name_to_id("Test5")).pool_placement = 5
+    assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6
+  end
+
+  test "Pool order three way tie with deducted points but least deducted is tied between two wrestlers" do
+    finishedWithDeductedPointsTwoWayTie
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement = 3
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement_tiebreaker = ""
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement = 2
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker = "Least Deducted Points"
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement = 1
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement_tiebreaker = "Head to Head"
+    assert Wrestler.find(translate_name_to_id("Test4")).pool_placement = 4
+    assert Wrestler.find(translate_name_to_id("Test5")).pool_placement = 5
+    assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6
+  end
+
+  test "Pool order three way tie with deducted points but least deducted is tied between two wrestlers with zero" do
+    finishedWithDeductedPointsTwoWayTieWithZero
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement = 3
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement_tiebreaker = ""
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement = 2
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker = "Least Deducted Points"
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement = 1
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement_tiebreaker = "Head to Head"
     assert Wrestler.find(translate_name_to_id("Test4")).pool_placement = 4
     assert Wrestler.find(translate_name_to_id("Test5")).pool_placement = 5
     assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6

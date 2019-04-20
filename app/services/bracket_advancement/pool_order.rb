@@ -46,7 +46,7 @@ class PoolOrder
 	
 	def breakTie
 		originalTieSize = wrestlersWithSamePoints.size
-		#ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
+		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
 		if originalTieSize == 2
 	    	ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { headToHead }
 		end
@@ -134,14 +134,6 @@ class PoolOrder
 			wrestlersWithFastestPin = wrestlersWithSamePointsWithPins.select{|w| w.fastest_pin.pin_time_in_seconds == fastest.pin_time_in_seconds}
 			addPointsToWrestlersAhead(wrestlersWithFastestPin.first)
 			wrestlersWithFastestPin.each do |wr|
-				wr.pool_placement_tiebreaker = "Pin Time"
-		        wr.save
-				addPoints(wr)
-			end
-			
-			wrestlersWithSecondFastestPin = wrestlersWithSamePointsWithPins.select{|w| w.fastest_pin.pin_time_in_seconds == secondFastest.pin_time_in_seconds}
-			addPointsToWrestlersAhead(wrestlersWithSecondFastestPin.first)
-			wrestlersWithSecondFastestPin.each do |wr|
 				wr.pool_placement_tiebreaker = "Pin Time"
 		        wr.save
 				addPoints(wr)
