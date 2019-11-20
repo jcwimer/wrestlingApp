@@ -1,25 +1,19 @@
 sudo: required
-
 language: minimal
-
 services:
-  - docker
-
+- docker
 addons:
   apt:
     packages:
-      - docker-ce
-
+    - docker-ce
 env:
-  - DOCKER_COMPOSE_VERSION=1.22.0
-
+- DOCKER_COMPOSE_VERSION=1.22.0
 script:
-  - bash bin/run-tests-with-docker.sh
-
+- bash bin/run-tests-with-docker.sh
 deploy:
   provider: heroku
   api_key:
-    secure: qGhRB1ESkHeTTLTtejb84k84nKudeIWWdg2LkTnQ21yP/2SVkEPcWXSXYSaMs5lYkmedhzzdZU9e/Lbe8mOpy0Eqv0I0QItkDpCdDVeEFWsUPFXvd2B8IuO4tOIbUNjhvLAvW4JbIEpnMvQQUFTXW7yUd3SZqPjZHtSA6pNqDvZzDOKjrYfzEUxlF6FycG+XlOaoon1pvqc+p8JK/J5H8P7Nj4og0ynJwLYUIuMjt1empTOLESGVSZ5uM44le2Cq76Bar28xiCBso9LJ7SnsvZRZjNJ2zy4YhM6iYI4w/L2h7RO9WX1qBOODseXc1gzfD3jGoeCPmy41f7Gpay8N4F2y821XI0Ai03qiR3MvjfP8Gkq7irgNZnrCfsae6+yANjno9e7fv5+KbH9XrCqQETREears4zDPfRihwJC+No2iKIXn54BJpCR5pUHVDyRGv+M3QETjmPzwtU62BK1uYlhUOmQHnHTomLLOE9cJto4B26oeG1IaKdyhhvZwOTxAPvyAwlXbsF/NsSZ6RhLMUuMM9PThN28c/7htwgD+SpsaklvDxv8rt6uAQ8KI8kzFNGrxMZnxdFc9zPVyp1B18YbgbGstQRO3HTkMkg9inQBR511MCTp7EE2DJr3sA7jAiwR/Y3s7AzfJixAowHKoOiYv+4H6YgHv11ti7aK/7KM=
+    secure: Ta9bwau8v0BxR92LZndTOPcxucNHQPe/sc9yqrSKvId1QqShm9PjfiOWAL6sjvCEnBxMJW5xvRXjovHWcpAS50IkUSAkFoYMypBhoUtXhGv7Bgy6POJanDEnVFY+h97lZW9aNiU7qVRprjS0+CdOGbPuNWscSDWgV017YmjiSx4ViRtZNyKV77kTx3bvK9A/yCzll+cVoRP4HoyFXVa9HO2xgUXFTm70nWEDuDcWA6z5EATheXhgC4450XFIR14P7CEs9kP1RWDDQ81OPKCjC2pkB24LKyMK75D7vt8DvwncSjw2oDbMQS4HgNr3RnekrjIoAlauuLQFLaZFXMNgP/UTuCE/5log0qyx3EJgrNC0WEfW7l0HkxWrll4HRulentK32eUDCvsjW6fSwcMMfkyLXspvz4GyjFazXAN8Bez8BN34QTj3klERRWEqTVz4wI1YYFkLXMu5U6tKvdV3Hs9inSVXzjlwtyGfR5mhSSQCXHKRpF0/z6npldYHeRBX9tUCBPjk+MUij4vNoPM3Aj6KrrfoQ42QncsmXETKHwOCPQ2qCQ3Bl8X4WqfeQqrL/JAxCzXrCatrnEXf3WmPOcdb8uzomK05sxF7PnIAnASdttQUJemAx+ygdaFDgT+ABctVsYh2IElKceo67/6eByGgbgOKFr7maznJO+po0B0=
   app: wrestlingapp
   on:
     repo: jcwimer/wrestlingApp
