@@ -5,7 +5,7 @@ ruby '2.6.5'
 gem 'rails', '6.0.1'
 # Use sqlite3 as the database for Active Record
 #gem 'sqlite3', '~> 1.3', '< 1.4', :group => :development
-gem 'sqlite3'
+gem 'sqlite3', :group => :development
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
