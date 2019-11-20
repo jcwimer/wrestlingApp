@@ -1,0 +1,47 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wrestlingdev-db-create-migrate
+spec:
+  template:
+    spec:
+      containers:
+      - name: wrestlingdev-db-create-migrate
+        image: jcwimer/wrestlingdev:prod
+        imagePullPolicy: Always
+        command: ["/bin/sh","-c"]
+        args: ["bundle exec rake db:create; bundle exec rake db:migrate"]
+        env:
+        - name: RAILS_ENV
+          value: production
+        - name: WRESTLINGDEV_DB_NAME
+          value: wrestlingdev
+        - name: WRESTLINGDEV_DB_USR
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: dbusername
+        - name: WRESTLINGDEV_DB_PWD
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: dbpassword
+        - name: WRESTLINGDEV_DB_PORT
+          value: "3306"
+        - name: MEMCACHIER_SERVERS
+          value: wrestlingdev-memcached:11211
+        - name: WRESTLINGDEV_DB_HOST
+          value: mariadb
+         - name: WRESTLINGDEV_DEVISE_SECRET_KEY
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: devisesecretkey
+        - name: WRESTLINGDEV_SECRET_KEY_BASE
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: railssecretkey
+      restartPolicy: OnFailure
+  backoffLimit: 10

@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wrestlingdev-app-ingress-external
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    certmanager.k8s.io/acme-challenge-type: http01
+spec:
+  rules:
+  - host: wrestlingdev.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: wrestlingdev-app
+          servicePort: 80
+  tls:
+    - hosts:
+      - wrestlingdev.com
+      secretName: letsencrypt-prod
