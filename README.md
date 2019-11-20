@@ -36,7 +36,7 @@ To deploy a a full local version of the app `bash deploy/deploy-test.sh` (this r
 
 # Deployment
 
-The production version of this is currently deployed in Kubernetes. See [Deploying with Kubernetes](deploy/kubernetes/READEME.md)
+The production version of this is currently deployed in Kubernetes. See [Deploying with Kubernetes](deploy/kubernetes/README.md)
 
 **Required environment variables for deployment**
 * `WRESTLINGDEV_DB_NAME=databasename`
