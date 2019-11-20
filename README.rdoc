@@ -16,9 +16,9 @@ MIT License
 
 <b>Development details:</b>
 
-* Ruby 2.5.1
+* Ruby 2.6.5
 
-* Rails 5.2.2
+* Rails 6.0.1
 
 * Install gems without production <tt>bundle install --without production</tt>
 
