@@ -5,6 +5,7 @@ RUN apt-get -qq update \
     build-essential \
     sqlite3 \
     nodejs \
+    sudo \
   && apt-get -qq clean \
   && rm -rf \
     /var/lib/apt/lists/* \
