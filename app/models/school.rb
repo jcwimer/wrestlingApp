@@ -31,12 +31,18 @@ class School < ActiveRecord::Base
 	end
 	
 	def calculate_score
-    	newScore = total_points_scored_by_wrestlers - total_points_deducted
+        if Rails.env.production?
+        	self.delay(:job_owner_id => self.tournament.id, :job_owner_type => "Calculate team score for #{self.name}").calculate_score_raw
+        else
+        	calculate_score_raw
+        end
+    	
+   	end
+
+	def calculate_score_raw
+        newScore = total_points_scored_by_wrestlers - total_points_deducted
     	self.score = newScore
     	self.save
-   	end
-   	if Rails.env.production?
-		handle_asynchronously :calculate_score
 	end
 	
 	def total_points_scored_by_wrestlers

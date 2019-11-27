@@ -12,6 +12,10 @@ class Tournament < ActiveRecord::Base
 
 	attr_accessor :import_text
 
+	def deferred_jobs
+        Delayed::Job.where(job_owner_id: self.id)
+	end
+
 	def self.search(search)
 	  where("date LIKE ? or name LIKE ?", "%#{search}%", "%#{search}%")
 	end

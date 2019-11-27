@@ -7,15 +7,20 @@ class WrestlingdevImporter
   end
 
   def import
+    if Rails.env.production?
+        self.delay(:job_owner_id => @tournament.id, :job_owner_type => "Importing a backup").import_raw
+    else
+        import_raw
+    end
+  end
+
+  def import_raw
     @tournament.curently_generating_matches = 1
     @tournament.save
     destroy_all
     parse_text
     @tournament.curently_generating_matches = nil
     @tournament.save
-  end
-  if Rails.env.production?
-    handle_asynchronously :import
   end
 
   def destroy_all

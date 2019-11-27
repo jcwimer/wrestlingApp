@@ -4,28 +4,38 @@ class GenerateTournamentMatches
     end
 
     def generateWeight(weight)
-        WipeTournamentMatches.new(@tournament).wipeWeightMatches(weight)
-        @tournament.curently_generating_matches = 1
-        @tournament.save
-        unAssignBouts
-        unAssignMats
-        PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatchesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
-        postMatchCreationActions
-        PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNamesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
+      if Rails.env.production?
+        self.delay(:job_owner_id => @tournament.id, :job_owner_type => "Generate matches for weights class #{weight.max}").generate_weight_raw(weight)
+      else
+        self.generate_weight_raw(weight)
+      end
     end
-    if Rails.env.production?
-      handle_asynchronously :generateWeight
+
+    def generate_weight_raw(weight)
+      WipeTournamentMatches.new(@tournament).wipeWeightMatches(weight)
+      @tournament.curently_generating_matches = 1
+      @tournament.save
+      unAssignBouts
+      unAssignMats
+      PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatchesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
+      postMatchCreationActions
+      PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNamesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
     end
 
     def generate
+      if Rails.env.production?
+        self.delay(:job_owner_id => @tournament.id, :job_owner_type => "Generate matches for all weights").generate_raw
+      else
+        self.generate_raw
+      end        
+    end
+
+    def generate_raw
         standardStartingActions
         PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatches if @tournament.tournament_type == "Pool to bracket"
         postMatchCreationActions
         PoolToBracketMatchGeneration.new(@tournament).assignLoserNames if @tournament.tournament_type == "Pool to bracket"
     end
-    if Rails.env.production?
-		handle_asynchronously :generate
-	end
 
     def standardStartingActions
         @tournament.curently_generating_matches = 1
