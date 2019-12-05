@@ -51,8 +51,9 @@ EXPOSE 443
 # Tini solves the zombie PID problem
 ENTRYPOINT ["/tini", "--"]
 
-CMD bundle exec passenger start --max-pool-size 3 --min-instances 3 --environment production -p 80
+CMD bundle exec passenger start --max-pool-size 2 --min-instances 2 --environment production -p 80
 # Higher max pool uses more ram
+# Followed recommendation from: https://blog.phusion.nl/2015/11/10/heroku-and-passenger-focus-on-the-app-performance/
 
 #CMD bundle exec puma -w 3 -t 5:5 -b 'tcp://0.0.0.0:80' -e production
 #CMD bundle exec puma -w 3 -t 5:5 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt' -e production
