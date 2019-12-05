@@ -73,8 +73,8 @@ spec:
             cpu: "0.5"
             memory: "768Mi"
           requests:
-            memory: "512Mi"
-            cpu: "0.5"
+            memory: "300Mi"
+            cpu: "0.3"
         livenessProbe:
           httpGet:
             path: /
@@ -93,12 +93,12 @@ spec:
     kind: Deployment
     name: wrestlingdev-app-deployment
   minReplicas: 2
-  maxReplicas: 4
+  maxReplicas: 5
   metrics:
   - type: Resource
     resource:
       name: cpu
-      targetAverageUtilization: 300
+      targetAverageUtilization: 75
   # - type: Resource
   #   resource:
   #     name: memory
@@ -163,6 +163,6 @@ spec:
             cpu: "0.5"
             memory: "512Mi"
           requests:
-            memory: "512Mi"
+            memory: "200Mi"
             cpu: "0.2"
 
