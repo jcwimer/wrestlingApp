@@ -27,3 +27,6 @@ Each push to master updates the docker `prod` tag and also pushes a tag with the
 ## I'm a pro. What's bad about this?
 Right now, mariadb's root password comes from the secrets.yaml and wrestlingdev uses the root password to run. Ideally, you'd create another secret for mariadb's root password and you'd create a user specifically for wrestlingdev.
 From a mysql shell> `CREATE USER ${username} IDENTIFIED BY '${password}'; GRANT ALL PRIVILEGES ON  ${database}.* TO ${username}; FLUSH PRIVILEGES;` $database would be wrestlingdev. I'll do this automatically later.
+
+## Recommended cloud machines
+In production, this runs on GKE. I have two node pools. The first is 2 x `n2-high-cpu-2` ($12.63/month preemptible). That pool can run 1 "copy" of the application. That means 2 x app pods, 1 x worker, 1 x memcached, and 1 x mariadb. The second node pool is an autoscale from 0-10 and is of the machine type `n1-standard-1` ($7.30/ month preemptible). This pool is scritly for scaling the app pods and the worker pods.
