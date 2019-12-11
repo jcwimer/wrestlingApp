@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_20_021620) do
+ActiveRecord::Schema.define(version: 2019_11_26_174257) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
@@ -24,6 +24,8 @@ ActiveRecord::Schema.define(version: 2019_04_20_021620) do
     t.string "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer "job_owner_id"
+    t.string "job_owner_type"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
