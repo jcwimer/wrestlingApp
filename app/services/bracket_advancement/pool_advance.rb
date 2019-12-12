@@ -1,12 +1,12 @@
 class PoolAdvance
 
- def initialize(wrestler,previousMatch)
+ def initialize(wrestler)
 		@wrestler = wrestler
-		@previousMatch = previousMatch
+		@last_match = @wrestler.last_match
  end
 
  def advanceWrestler
-   if @wrestler.pool_placement and @wrestler.weight.pools > 1
+   if @wrestler.weight.pools > 1 and @wrestler.finished_bracket_matches.size < 1
      poolToBracketAdvancment
    end
    if @wrestler.finished_bracket_matches.size > 0
@@ -15,19 +15,25 @@ class PoolAdvance
  end
 
  def poolToBracketAdvancment
-    if @wrestler.pool_placement == 2
-      runnerUpMatch.replace_loser_name_with_wrestler(runnerUp,"Runner Up Pool #{pool}")
+    pool = @wrestler.pool
+    # This has to always run because the last match in a pool might not be a pool winner or runner up
+    winner = Wrestler.where("weight_id = ? and pool_placement = 1 and pool = ?",@wrestler.weight.id, pool).first
+    runner_up = Wrestler.where("weight_id = ? and pool_placement = 2 and pool = ?",@wrestler.weight.id, pool).first
+    if runner_up
+      runner_up_match = Match.where("weight_id = ? and (loser1_name = ? or loser2_name = ?)",@wrestler.weight.id, "Runner Up Pool #{pool}", "Runner Up Pool #{pool}").first
+      runner_up_match.replace_loser_name_with_wrestler(runner_up,"Runner Up Pool #{pool}")
     end
-    if @wrestler.pool_placement == 1
-      winnerMatch.replace_loser_name_with_wrestler(winner,"Winner Pool #{pool}") 
+    if winner
+      winner_match = Match.where("weight_id = ? and (loser1_name = ? or loser2_name = ?)",@wrestler.weight.id, "Winner Pool #{pool}", "Winner Pool #{pool}").first
+      winner_match.replace_loser_name_with_wrestler(winner,"Winner Pool #{pool}") 
     end
  end
 
  def bracketAdvancment
-   if @previousMatch.winner_id == @wrestler.id
+   if @last_match.winner_id == @wrestler.id
 	    winnerAdvance
    end
-   if @previousMatch.winner_id != @wrestler.id
+   if @last_match.winner_id != @wrestler.id
 	    loserAdvance
    end
  end

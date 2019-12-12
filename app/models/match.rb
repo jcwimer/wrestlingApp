@@ -19,7 +19,8 @@ class Match < ActiveRecord::Base
 		calculate_school_points
 	  end
 	end
-
+    
+    BRACKET_POSITIONS = ["Pool","1/2","3/4","5/6","7/8","Quarter","Semis","Conso Semis"]
 	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ"]
 
 	def calculate_school_points
@@ -29,6 +30,13 @@ class Match < ActiveRecord::Base
 	   	end
 	end
 
+    def wrestler_in_match(wrestler)
+        if self.w1 == wrestler.id or self.w2 == wrestler.id
+            return true
+        else
+        	return false
+        end
+    end
 
 	def mat_assigned
 		if self.mat

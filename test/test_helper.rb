@@ -32,6 +32,7 @@ class ActiveSupport::TestCase
     @weight.save
     create_wrestlers_for_weight(@weight, @school, number_of_wrestlers, 1)
     GenerateTournamentMatches.new(@tournament).generate
+    return @tournament
   end
 
   def create_pool_tournament

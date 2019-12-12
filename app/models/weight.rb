@@ -48,8 +48,8 @@ class Weight < ActiveRecord::Base
 	end
 	
 	def all_pool_matches_finished(pool)
-		@wrestlers = wrestlers_in_pool(pool)
-		@wrestlers.each do |w|
+		wrestlers = wrestlers_in_pool(pool)
+		wrestlers.each do |w|
 			if w.pool_matches.size != w.finished_pool_matches.size
 				return false
 			end
@@ -58,14 +58,14 @@ class Weight < ActiveRecord::Base
 	end
 
 	def pools
-		@wrestlers = self.wrestlers
-		if @wrestlers.size <= 6
+		wrestlers = self.wrestlers
+		if wrestlers.size <= 6
 			self.pools = 1
-		elsif  (@wrestlers.size > 6) && (@wrestlers.size <= 10)
+		elsif  (wrestlers.size > 6) && (wrestlers.size <= 10)
 			self.pools = 2
-		elsif (@wrestlers.size > 10) && (@wrestlers.size <= 16)
+		elsif (wrestlers.size > 10) && (wrestlers.size <= 16)
 			self.pools = 4
-		elsif (@wrestlers.size > 16) && (@wrestlers.size <= 24)
+		elsif (wrestlers.size > 16) && (wrestlers.size <= 24)
 			self.pools = 8
 		end
 	end

@@ -17,12 +17,10 @@ class AdvanceWrestler
     end
     
     def pool_to_bracket_advancement
-      if @wrestler.weight.all_pool_matches_finished(@wrestler.pool) and (@wrestler.finished_bracket_matches.size == 0 or @wrestler.weight.pools == 1)
+      if @wrestler.weight.all_pool_matches_finished(@wrestler.pool) and (@wrestler.finished_bracket_matches.size < 1)
         PoolOrder.new(@wrestler.weight.wrestlers_in_pool(@wrestler.pool)).getPoolOrder
       end
-      if @wrestler.weight.all_pool_matches_finished(@wrestler.pool)
-        PoolAdvance.new(@wrestler,@wrestler.last_match).advanceWrestler
-      end
+      PoolAdvance.new(@wrestler).advanceWrestler
     end
 
 end
