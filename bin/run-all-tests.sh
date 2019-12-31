@@ -2,7 +2,7 @@
 project_dir="$(dirname $( dirname $(readlink -f ${BASH_SOURCE[0]})))"
 
 cd ${project_dir}
-rake db:migrate RAILS_ENV=test
+bundle exec rake db:migrate RAILS_ENV=test
 CI=true brakeman
-hakiri gemfile:scan --force
-rake test
+bundle exec hakiri gemfile:scan --force
+bundle exec rake test

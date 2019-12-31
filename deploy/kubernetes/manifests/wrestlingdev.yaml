@@ -166,6 +166,21 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: railssecretkey
+        - name: WRESTLINGDEV_SECRET_KEY_BASE
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: railssecretkey
+        - name: WRESTLINGDEV_EMAIL_PWD
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: gmailpassword
+        - name: WRESTLINGDEV_EMAIL
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: gmailemail
         command: ["bundle"]
         args: ["exec", "bin/delayed_job", "-n", "1", "run"]
         resources:
