@@ -46,7 +46,8 @@ The production version of this is currently deployed in Kubernetes. See [Deployi
 * `WRESTLINGDEV_DB_PORT=databaseport`
 * `WRESTLINGDEV_DEVISE_SECRET_KEY=devise_key` can be generated with `rake secret`
 * `WRESTLINGDEV_SECRET_KEY_BASE=secret_key` can be generated with `rake secret`
-* `WRESTLINGDEV_EMAIL_PWD=emailpwd`
+* `WRESTLINGDEV_EMAIL_PWD=emailpwd` Email has to be a gmail account for now.
+* `WRESTLINGDEV_EMAIL=email address`
 
 **Optional environment variables**
 * `MEMCACHIER_PASSWORD=memcachier_password` needed for caching password

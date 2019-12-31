@@ -68,6 +68,16 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: railssecretkey
+        - name: WRESTLINGDEV_EMAIL_PWD
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: gmailpassword
+        - name: WRESTLINGDEV_EMAIL
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: gmailemail
         resources:
           limits:
             cpu: "0.5"
