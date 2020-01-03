@@ -63,6 +63,24 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     end_match(match_wrestler_vs("Test5","Test6"),"Test5")    	
   end
 
+  def finishWithTieMostTeamPointsSecondPlace
+    end_match(match_wrestler_vs("Test1","Test2"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test3"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test4"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test5"),"Test1")
+    end_match(match_wrestler_vs("Test1","Test6"),"Test1")
+    end_match_with_pin(match_wrestler_vs("Test2","Test3"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test4"),"Test4")
+    end_match(match_wrestler_vs("Test2","Test5"),"Test2")
+    end_match(match_wrestler_vs("Test2","Test6"),"Test2")
+    end_match(match_wrestler_vs("Test3","Test4"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test5"),"Test3")
+    end_match(match_wrestler_vs("Test3","Test6"),"Test3")
+    end_match(match_wrestler_vs("Test4","Test5"),"Test4")
+    end_match(match_wrestler_vs("Test4","Test6"),"Test4")
+    end_match(match_wrestler_vs("Test5","Test6"),"Test5")       
+  end
+
   def finishWithTieMostTeamPointsTwoWayTie
     end_match_with_pin(match_wrestler_vs("Test1","Test2"),"Test1")
     end_match_with_pin(match_wrestler_vs("Test1","Test3"),"Test3")
@@ -269,6 +287,20 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert Wrestler.find(translate_name_to_id("Test3")).pool_placement = 3
     assert Wrestler.find(translate_name_to_id("Test3")).pool_placement_tiebreaker = ""
     assert Wrestler.find(translate_name_to_id("Test4")).pool_placement = 4
+    assert Wrestler.find(translate_name_to_id("Test5")).pool_placement = 5
+    assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6
+  end
+
+  test "Pool order three way tie with most team points where first place won by wins" do
+    finishWithTieMostTeamPointsSecondPlace
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement = 1
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement_tiebreaker = ""
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement = 2
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker = "Team Points"
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement = 3
+    assert Wrestler.find(translate_name_to_id("Test3")).pool_placement_tiebreaker = "Head to Head"
+    assert Wrestler.find(translate_name_to_id("Test4")).pool_placement = 4
+    assert Wrestler.find(translate_name_to_id("Test4")).pool_placement_tiebreaker = ""
     assert Wrestler.find(translate_name_to_id("Test5")).pool_placement = 5
     assert Wrestler.find(translate_name_to_id("Test6")).pool_placement = 6
   end

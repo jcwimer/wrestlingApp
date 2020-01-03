@@ -18,6 +18,8 @@ class PoolOrder
 	
 	def setOriginalPoints
 	   @wrestlers.each do |w|
+	   	   w.pool_placement_tiebreaker = nil
+	   	   w.pool_placement = nil
 	       w.poolAdvancePoints = w.pool_wins.size
 	   end
 	end
@@ -31,42 +33,44 @@ class PoolOrder
 	
 	def wrestlersWithSamePoints
 		@wrestlers.each do |w|
-	       wrestlersWithSamePoints = @wrestlers.select{|wr| wr.poolAdvancePoints == w.poolAdvancePoints}
-	       if wrestlersWithSamePoints.size > 0
-	       	 return wrestlersWithSamePoints
+	       wrestlersWithSamePointsLocal = @wrestlers.select{|wr| wr.poolAdvancePoints == w.poolAdvancePoints}
+	       if wrestlersWithSamePointsLocal.size > 1
+	       	 return wrestlersWithSamePointsLocal
 	       end
 	    end
+	    return []
 	end
 	
 	def ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
 		if wrestlersWithSamePoints.size == originalTieSize
-			yield	
+			return true
+		else 
+		    return false	
 		end
 	end
 	
 	def breakTie
 		originalTieSize = wrestlersWithSamePoints.size
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { deductedPoints }
+		deductedPoints(originalTieSize) if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
 		if originalTieSize == 2
-	    	ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { headToHead }
+	    	headToHead if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
 		end
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { teamPoints }
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostFalls }
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostTechs }
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostMajors }
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { mostDecisionPointsScored }
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { fastest_pins }
-		ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize) { coinFlip }
+		teamPoints if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
+        mostFalls if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
+		mostTechs if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
+		mostMajors if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
+		mostDecisionPointsScored if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
+		fastest_pins if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
+		coinFlip if ifWrestlersWithSamePointsIsSameAsOriginal(originalTieSize)
 	end
 	
 	
 	def headToHead
 	   wrestlersWithSamePoints.each do |wr|
 	        otherWrestler = wrestlersWithSamePoints.select{|w| w.id != wr.id}.first
-	        if wr.match_against(otherWrestler).first.winner_id == wr.id
+	        if otherWrestler and wr.match_against(otherWrestler).first.winner_id == wr.id
 	        	addPointsToWrestlersAhead(wr)
 	        	wr.pool_placement_tiebreaker = "Head to Head"
-		        wr.save
 	            addPoints(wr)
 	        end
 	   end
@@ -83,7 +87,7 @@ class PoolOrder
 		end
 	end
 	
-	def deductedPoints
+	def deductedPoints(originalTieSize)
 		pointsArray = []
 		wrestlersWithSamePoints.each do |w|
 			pointsArray << w.total_points_deducted
@@ -91,10 +95,11 @@ class PoolOrder
 		leastPoints = pointsArray.min
 		wrestlersWithLeastDeductedPoints = wrestlersWithSamePoints.select{|w| w.total_points_deducted == leastPoints}
 		addPointsToWrestlersAhead(wrestlersWithLeastDeductedPoints.first)
-		wrestlersWithLeastDeductedPoints.each do |wr|
-			wr.pool_placement_tiebreaker = "Least Deducted Points"
-		    wr.save
-			addPoints(wr)	
+		if wrestlersWithLeastDeductedPoints.size != originalTieSize
+			wrestlersWithLeastDeductedPoints.each do |wr|
+				wr.pool_placement_tiebreaker = "Least Deducted Points"
+				addPoints(wr)	
+			end
 		end
 	end
 	
@@ -108,7 +113,6 @@ class PoolOrder
 		addPointsToWrestlersAhead(wrestlersWithMostPoints.first)
 		wrestlersWithMostPoints.each do |wr|
 			wr.pool_placement_tiebreaker = "Points Scored"
-		    wr.save
 			addPoints(wr)
 		end
 		secondPoints = pointsArray.sort[-2]
@@ -116,7 +120,6 @@ class PoolOrder
 		addPointsToWrestlersAhead(wrestlersWithSecondMostPoints.first)
 		wrestlersWithSecondMostPoints.each do |wr|
 			wr.pool_placement_tiebreaker = "Points Scored"
-		    wr.save
 			addPoints(wr)
 		end
 	end
@@ -135,7 +138,6 @@ class PoolOrder
 			addPointsToWrestlersAhead(wrestlersWithFastestPin.first)
 			wrestlersWithFastestPin.each do |wr|
 				wr.pool_placement_tiebreaker = "Pin Time"
-		        wr.save
 				addPoints(wr)
 			end
 		end
@@ -151,7 +153,6 @@ class PoolOrder
 		addPointsToWrestlersAhead(wrestlersSortedByTeamPoints.first)
 		wrestlersSortedByTeamPoints.each do |wr|
 			wr.pool_placement_tiebreaker = "Team Points"
-		    wr.save
 			addPoints(wr)	
 		end	
 	end
@@ -166,7 +167,6 @@ class PoolOrder
 		addPointsToWrestlersAhead(wrestlersSortedByFallWins.first)
 		wrestlersSortedByFallWins.each do |wr|
 			wr.pool_placement_tiebreaker = "Most Pins"
-		    wr.save
 			addPoints(wr)	
 		end	
 	end
@@ -181,7 +181,6 @@ class PoolOrder
 		addPointsToWrestlersAhead(wrestlersSortedByTechWins.first)
 		wrestlersSortedByTechWins.each do |wr|
 			wr.pool_placement_tiebreaker = "Most Techs"
-		    wr.save
 			addPoints(wr)	
 		end	
 	end
@@ -196,7 +195,6 @@ class PoolOrder
 		addPointsToWrestlersAhead(wrestlersSortedByMajorWins.first)
 		wrestlersSortedByMajorWins.each do |wr|
 			wr.pool_placement_tiebreaker = "Most Majors"
-		    wr.save
 			addPoints(wr)	
 		end	
 	end
@@ -204,7 +202,6 @@ class PoolOrder
 	def coinFlip
 		wrestler = wrestlersWithSamePoints.sample
 		wrestler.pool_placement_tiebreaker = "Coin Flip"
-		wrestler.save
 		addPointsToWrestlersAhead(wrestler)
 	    addPoints(wrestler)
 	end
