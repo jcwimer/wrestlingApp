@@ -5,6 +5,8 @@ class Match < ActiveRecord::Base
 	has_many :wrestlers, :through => :weight
         after_update :after_finished_actions, :if => :saved_change_to_finished?
         after_update :after_finished_actions, :if => :saved_change_to_winner_id?
+        after_update :after_finished_actions, :if => :saved_change_to_win_type?
+        after_update :after_finished_actions, :if => :saved_change_to_score?
 
 	def after_finished_actions
 	  if self.finished == 1 && self.winner_id != nil
