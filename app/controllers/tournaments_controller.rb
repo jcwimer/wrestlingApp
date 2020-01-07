@@ -83,7 +83,7 @@ class TournamentsController < ApplicationController
 
   def school_delegate
     if params[:search]
-      @users = User.search(params[:search])
+      @users = User.limit(200).search(params[:search])
     elsif params[:school_delegate]
       @delegate = SchoolDelegate.new
       @delegate.user_id = params[:school_delegate]["user_id"]
@@ -107,7 +107,7 @@ class TournamentsController < ApplicationController
 
   def delegate
     if params[:search]
-      @users = User.search(params[:search])
+      @users = User.limit(200).search(params[:search])
     elsif params[:tournament_delegate]
       @delegate = TournamentDelegate.new
       @delegate.user_id = params[:tournament_delegate]["user_id"]
@@ -210,7 +210,7 @@ class TournamentsController < ApplicationController
 
   def index
     if params[:search]
-      @tournaments = Tournament.search(params[:search]).order("created_at DESC")
+      @tournaments = Tournament.limit(200).search(params[:search]).order("created_at DESC")
     else
       @tournaments = Tournament.all.sort_by{|t| t.days_until_start}.first(20)
     end
