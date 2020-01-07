@@ -51,7 +51,7 @@ class TwoPoolToSemiGenerationTest < ActionDispatch::IntegrationTest
     wrestler = get_wrestler_by_name("Test1")
     match.w1 = wrestler.id
     match.save
-    assert wrestler.reload.placement_points == 9
+    assert wrestler.reload.placement_points == 4
   end
 
   test "Run through all matches works" do

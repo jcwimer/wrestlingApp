@@ -2,6 +2,7 @@ class PoolBracketPlacementPoints
     def initialize(wrestler)
 		@wrestler = wrestler
 		@bracket = wrestler.weight.pool_bracket_type
+        @largest_bracket = wrestler.tournament.weights.sort_by{|w| w.wrestlers.size}.first.pool_bracket_type
     end
     
     def calcPoints
@@ -20,6 +21,14 @@ class PoolBracketPlacementPoints
             whilePointsAreZero { @points = onePool }
         end
         return @points
+    end
+
+    def number_of_placers
+        if @largest_bracket == "twoPoolsToSemi" or @largest_bracket == "twoPoolsToFinal" or @largest_bracket == "onePool"
+            return 4
+        else
+            return 8
+        end 
     end
     
     def whilePointsAreZero
@@ -108,34 +117,50 @@ class PoolBracketPlacementPoints
     end
     
     def firstPlace
-       16
+        if number_of_placers == 4
+            return 14
+        else    
+            return 16
+        end
     end
     
     def secondPlace
-        12
+        if number_of_placers == 4
+            return 10
+        else    
+            return 12
+        end
     end
     
     def thirdPlace
-        10  
+        if number_of_placers == 4
+            return 9
+        else    
+            return 7
+        end
     end
     
     def fourthPlace
-        9  
+        if number_of_placers == 4
+            return 4
+        else    
+            return 7
+        end
     end
     
     def fifthPlace
-        7  
+        5  
     end
     
     def sixthPlace
-        6  
+        3  
     end
     
     def seventhPlace
-        4  
+        2  
     end
     
     def eighthPlace
-        3 
+        1 
     end
 end

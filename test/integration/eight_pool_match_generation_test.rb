@@ -72,12 +72,12 @@ class EightPoolMatchGenerationTest < ActionDispatch::IntegrationTest
     wrestler = get_wrestler_by_name("Test1")
     match.w1 = wrestler.id
     match.save
-    assert wrestler.reload.placement_points == 3
+    assert wrestler.reload.placement_points == 1
 
     match2 = @tournament.matches.select{|m| m.bracket_position == "Semis"}.first
     match2.w1 = wrestler.id
     match2.save
-    assert wrestler.reload.placement_points == 9
+    assert wrestler.reload.placement_points == 7
   end
 
   test "Run through all matches works" do
