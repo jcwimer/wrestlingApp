@@ -25,7 +25,21 @@
             <td><%= wrestler.weight.max %></td>
             <td><%= m.bout_number %></td>
             <td><%= m.bracket_position %></td>
-            <td><%= m.list_w1_stats %><br><%= m.list_w2_stats %></td>
+            <td>
+              <table class="table table-sm table-bordered">
+                
+                <tbody>
+                  <tr>
+                    <td><%= m.w1_name %></td>
+                    <td><%= m.w1_stat %></td>
+                  </tr>
+                  <tr>
+                    <td><%= m.w2_name %></td>
+                    <td><%= m.w2_stat %></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
             <td><%= wrestler.result_by_bout(m.bout_number) %>
           </tr>
         <% end %>
