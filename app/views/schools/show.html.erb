@@ -27,6 +27,7 @@
       <tr>
         <th>Name</th>
         <th>Weight</th>
+        <th>Record/Seed Criteria</th>
         <th>Seed</th>
         <th>Team Points Scored</th>
         <th>Extra?</th>
@@ -40,6 +41,7 @@
           <tr>
             <td><%= link_to "#{wrestler.name}", wrestler %></td>
             <td><%= wrestler.weight.max %></td>
+            <td><%= wrestler.season_win %>-<%= wrestler.season_loss %> <%= wrestler.criteria %></td>
             <td>
                 <%= wrestler.original_seed %>
             </td>
