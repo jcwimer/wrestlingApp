@@ -17,12 +17,17 @@
 4. A single job runner to run wrestlingdev background jobs.
 
 ## How do I update the app?
-Each push to master updates the docker `prod` tag and also pushes a tag with the git hash.
+First, be sure your secrets.yaml has all envs up to date. Then, make sure you get all manifest changes
+1. Run `kubectl apply -f https://raw.githubusercontent.com/jcwimer/wrestlingApp/master/deploy/kubernetes/manifests/wrestlingdev.yaml`
+
+Each push to master updates the docker `prod` tag and also pushes a tag with the git hash. You will want to update to those tags.
 1. Set the git hash as a variable `TAG=$(git rev-parse --verify HEAD)`
 2. Update the wrestlingdev deployment tag `kubectl --record deployment.apps/wrestlingdev-app-deployment set image deployment.v1.apps/wrestlingdev-app-deployment wrestlingdev-app=jcwimer/wrestlingdev:${TAG}`
 3. Update the wrestlingdev job runner tag `kubectl --record deployment.apps/wrestlingdev-worker-deployment set image deployment.v1.apps/wrestlingdev-worker-deployment wrestlingdev-worker=jcwimer/wrestlingdev:${TAG}`
-4. Delete the db migrations job so you can re-run it `kubectl delete job wrestlingdev-db-create-migrate`
-5. Re-run the db migrations job `kubectl apply -f deploy/kubernetes/manifests/db-migration.yaml`
+
+Finally, run db-migrations
+1. Delete the db migrations job so you can re-run it `kubectl delete job wrestlingdev-db-create-migrate`
+2. Re-run the db migrations job `kubectl apply -f https://raw.githubusercontent.com/jcwimer/wrestlingApp/master/deploy/kubernetes/manifests/db-migration.yaml`
 
 ## I'm a pro. What's bad about this?
 Right now, mariadb's root password comes from the secrets.yaml and wrestlingdev uses the root password to run. Ideally, you'd create another secret for mariadb's root password and you'd create a user specifically for wrestlingdev.

@@ -32,7 +32,10 @@ spec:
         - name: MEMCACHIER_SERVERS
           value: wrestlingdev-memcached:11211
         - name: WRESTLINGDEV_DB_HOST
-          value: wrestlingdev-mariadb
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: dbhost
         - name: WRESTLINGDEV_DEVISE_SECRET_KEY
           valueFrom:
            secretKeyRef:
