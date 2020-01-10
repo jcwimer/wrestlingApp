@@ -19,7 +19,7 @@
 </p>
 <br>
 <h3>Schools</h3>
-<p>(Click to see lineups, score breakdowns, and stats)</p>
+<p>Click to see lineups, bout numbers, score breakdowns, and stats. Brackets can be found in the white nav-bar up top.</p>
 <br>
 <table class="table table-hover table-condensed">
   <thead>
@@ -97,6 +97,7 @@
     </tbody>
   </table>
 <% end %>
+<% if can? :manage, @tournament %>
 <br>
 <h3>Background Jobs</h3>
 <p>This is a list of queued or running background jobs. Match generation, bracket advancement, team score calculation, etc.</p>
@@ -125,6 +126,7 @@
     <% end %>
   </tbody>
 </table>
+<% end %>
 <br>
 <br>
 <%= render 'import_form' %>
