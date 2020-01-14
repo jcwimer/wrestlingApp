@@ -1,6 +1,6 @@
 class WeightsController < ApplicationController
-  before_action :set_weight, only: [:show, :edit, :update, :destroy,:re_gen]
-  before_action :check_access, only: [:new,:create,:update,:destroy,:edit, :re_gen]
+  before_action :set_weight, only: [:pool_order, :show, :edit, :update, :destroy,:re_gen]
+  before_action :check_access, only: [:pool_order, :new,:create,:update,:destroy,:edit, :re_gen]
 
 
   # GET /weights/1
@@ -76,6 +76,21 @@ class WeightsController < ApplicationController
   def re_gen
     @tournament = @weight.tournament
     GenerateTournamentMatches.new(@tournament).generateWeight(@weight)
+  end
+
+  def pool_order
+    pool = params[:pool_to_order].to_i
+    if @weight.all_pool_matches_finished(pool)
+      PoolOrder.new(@weight.wrestlers_in_pool(pool)).getPoolOrder
+      respond_to do |format|
+        format.html { redirect_to @tournament, notice: "Pool #{pool} placing is updating for weight class #{@weight.max}." }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to @tournament, notice: "Pool #{pool} for weight class #{@weight.max} still has matches to finish." }
+      end
+    end
+
   end
 
   private

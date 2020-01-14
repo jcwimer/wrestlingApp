@@ -58,7 +58,7 @@ li:first-child,li:last-child {
 }
 </style>
 <% cache ["#{@weight.id}_bracket", @weight] do %>
-	<table class='smallText'>
+  <table class='smallText'>
         <h5><strong><%= @tournament.name %> - <%= @weight.max %> lbs Bracket</strong></h5>
         <tr>
             <td valign="top" style="padding: 10px;">
@@ -71,19 +71,19 @@ li:first-child,li:last-child {
             
             <td valign="top" style="padding: 10px;">
                 <% if @weight.pool_bracket_type == "twoPoolsToFinal" %>
-                	<%= render 'twoPoolFinalBracket' %>
+                  <%= render 'twoPoolFinalBracket' %>
                 <% end %>
                 <% if @weight.pool_bracket_type == "twoPoolsToSemi" %>
-                	<%= render 'twoPoolSemiBracket' %>
+                  <%= render 'twoPoolSemiBracket' %>
                 <% end %>
                 <% if @weight.pool_bracket_type == "fourPoolsToQuarter" %>
-                	<%= render 'fourPoolQuarterBracket' %>
+                  <%= render 'fourPoolQuarterBracket' %>
                 <% end %>
                 <% if @weight.pool_bracket_type == "eightPoolsToQuarter" %>
                   <%= render 'fourPoolQuarterBracket' %>
                 <% end %>
                 <% if @weight.pool_bracket_type == "fourPoolsToSemi" %>
-                	<%= render 'fourPoolSemiBracket' %>
+                  <%= render 'fourPoolSemiBracket' %>
                 <% end %>
             </td>
         </tr>
@@ -91,22 +91,20 @@ li:first-child,li:last-child {
 <% end %>
 
 <% if can? :manage, @tournament %> 
-	<br><br>
-	<h3>Swap Bracket Position</h3>
-	  <%= form_for(Wrestler.new, url: swap_wrestlers_path(@tournament)) do |f| %>
-	      <div class="field">
-	        <%= f.label 'Wrestler 1' %><br>
-	        <%= f.collection_select :originalId, @weight.wrestlers, :id, :name %>
-	      </div>
-	      <div class="field">
-	        <%= f.label 'Wrestler 2' %><br>
-	        <%= f.collection_select :swapId, @weight.wrestlers, :id, :name %>
-	      </div>
-	      <br>
-	      <%= submit_tag "Swap", :class=>"btn btn-success"%>
-	  <% end %>  
-<% end %>
-<% if can? :manage, @tournament %> 
+  <br><br>
+  <h3>Swap Bracket Position</h3>
+    <%= form_for(Wrestler.new, url: swap_wrestlers_path(@tournament)) do |f| %>
+        <div class="field">
+          <%= f.label 'Wrestler 1' %><br>
+          <%= f.collection_select :originalId, @weight.wrestlers, :id, :name %>
+        </div>
+        <div class="field">
+          <%= f.label 'Wrestler 2' %><br>
+          <%= f.collection_select :swapId, @weight.wrestlers, :id, :name %>
+        </div>
+        <br>
+        <%= submit_tag "Swap", :class=>"btn btn-success"%>
+    <% end %>  
   <br><br>
   <h3>Move wrestler to pool with a bye</h3>
     <%= form_tag '/wrestlers/update_pool' do %>
@@ -121,4 +119,15 @@ li:first-child,li:last-child {
         <br>
         <%= submit_tag "Move", :class=>"btn btn-success"%>
     <% end %>  
+    <br><br>
+  <h3>Rerun getting pool order</h3>
+  <p>If you changed the result of a match that changes the ranking of a pool.</p>
+  <%= form_tag "/weights/#{@weight.id}/pool_order", :method => :post do %>
+    <div class="field">
+        <%= label_tag 'Pool to order' %><br>
+        <%= select_tag :pool_to_order, options_for_select((1..@weight.pools).step(1).to_a) %>
+    </div>
+    <br>
+    <%= submit_tag "Get Pool Order", :class=>"btn btn-success"%>
+  <% end %>
 <% end %>

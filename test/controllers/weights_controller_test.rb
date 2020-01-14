@@ -29,6 +29,10 @@ class WeightsControllerTest < ActionController::TestCase
   def get_edit
     get :edit, params: { id: @weight.id }
   end
+
+  def get_pool_order
+    post :pool_order, params: {pool_to_order: 1, id: @weight.id}
+  end
   
   def sign_in_owner
     sign_in users(:one)
@@ -179,6 +183,30 @@ class WeightsControllerTest < ActionController::TestCase
   test "logged school delegate not tournament owner cannot destroy weight" do
     sign_in_school_delegate
     destroy
+    redirect
+  end
+
+  test "logged in tournament owner can calculate a pool" do
+    sign_in_owner
+    get_pool_order
+    assert_redirected_to tournament_path(@tournament.id)
+  end
+  
+  test "logged in tournament delegate can calculate a pool" do
+    sign_in_tournament_delegate
+    get_pool_order
+    assert_redirected_to tournament_path(@tournament.id)
+  end
+
+  test "logged in user not tournament owner cannot calculate a pool" do
+    sign_in_non_owner
+    get_pool_order
+    redirect
+  end
+  
+  test "logged school delegate not tournament owner cannot calculate a pool" do
+    sign_in_school_delegate
+    get_pool_order
     redirect
   end
 
