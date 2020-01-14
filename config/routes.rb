@@ -69,6 +69,8 @@ Wrestling::Application.routes.draw do
 
   match "/delayed_job" => DelayedJobWeb, :anchor => false, :via => [:get, :post]
 
+  get "/matches/:id/stat" => "matches#stat", :as => :stat_match_path
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

@@ -21,6 +21,15 @@ class MatchesControllerTest < ActionController::TestCase
   def get_edit
     get :edit, params: { id: @match.id }
   end
+
+  def post_update_from_match_stat
+    get :stat, params: { id: @match.id }
+    patch :update, params: { id: @match.id, match: {tournament_id: 1, mat_id: 1} }
+  end
+ 
+  def get_stat
+    get :stat, params: { id: @match.id }
+  end
   
   def sign_in_owner
     sign_in users(:one)
@@ -73,6 +82,17 @@ class MatchesControllerTest < ActionController::TestCase
     redirect
   end
 
+  test "logged school delegate should not get stat match page if not owner" do
+    sign_in_school_delegate
+    get_stat
+    redirect
+  end
+
+  test "non logged in user should not get stat match page" do
+    get_stat
+    redirect
+  end
+
   test "non logged in user should get post update match" do
     post_update
     assert_redirected_to '/static_pages/not_allowed' 
@@ -95,6 +115,12 @@ class MatchesControllerTest < ActionController::TestCase
     get_edit
     success
   end
+
+  test "logged in tournament delegate should get stat match page" do
+    sign_in_tournament_delegate
+    get_stat
+    success
+  end
   
   test "logged in tournament delegate should post update match" do
     sign_in_tournament_delegate
@@ -105,6 +131,12 @@ class MatchesControllerTest < ActionController::TestCase
   test "should redirect to all matches when posting a match update from match edit" do
     sign_in_owner
     post_update_from_match_edit
+    assert_redirected_to "/tournaments/#{@tournament.id}/matches" 
+  end
+
+  test "should redirect to all matches when posting a match update from match stat" do
+    sign_in_owner
+    post_update_from_match_stat
     assert_redirected_to "/tournaments/#{@tournament.id}/matches" 
   end
 end

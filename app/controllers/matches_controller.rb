@@ -1,6 +1,6 @@
 class MatchesController < ApplicationController
-  before_action :set_match, only: [:show, :edit, :update, :destroy]
-  before_action :check_access, only: [:edit,:update]
+  before_action :set_match, only: [:show, :edit, :update, :destroy, :stat]
+  before_action :check_access, only: [:edit,:update, :stat]
 
   # GET /matches/1
   # GET /matches/1.json
@@ -11,6 +11,16 @@ class MatchesController < ApplicationController
 
   # GET /matches/1/edit
   def edit
+    if params[:match]
+      @match = Match.where(:id => params[:match]).includes(:wrestlers).first
+    end
+    if @match
+      @wrestlers = @match.weight.wrestlers
+    end
+    session[:return_path] = "/tournaments/#{@match.tournament.id}/matches"
+  end
+
+   def stat
     if params[:match]
       @match = Match.where(:id => params[:match]).includes(:wrestlers).first
     end
