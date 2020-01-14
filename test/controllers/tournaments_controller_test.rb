@@ -374,13 +374,13 @@ class TournamentsControllerTest < ActionController::TestCase
   test "logged in tournament owner can calculate team scores" do
     sign_in_owner
     post :calculate_team_scores, params: { id: 1 }
-    success
+    assert_redirected_to "/tournaments/#{@tournament.id}"
   end
 
   test "logged in tournament delegate can calculate team scores" do
     sign_in_delegate
     post :calculate_team_scores, params: { id: 1 }
-    success
+    assert_redirected_to "/tournaments/#{@tournament.id}"
   end
 
   test "logged in non tournament owner cannot calculate team scores" do
