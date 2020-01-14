@@ -322,11 +322,8 @@ class TournamentsControllerTest < ActionController::TestCase
     patch :remove_delegate, params: { id: 1, delegate: TournamentDelegate.find(1) }
     redirect
   end
-  
-  
-  
-  
-   test 'logged in tournament delegate can adjust team points' do
+    
+  test 'logged in tournament delegate can adjust team points' do
     sign_in_delegate
     get :teampointadjust, params: { id: 1 }
     success
@@ -372,5 +369,29 @@ class TournamentsControllerTest < ActionController::TestCase
     sign_in_owner
     get :matches, params: { id: 1 } 
     success
+  end
+
+  test "logged in tournament owner can calculate team scores" do
+    sign_in_owner
+    post :calculate_team_scores, params: { id: 1 }
+    success
+  end
+
+  test "logged in tournament delegate can calculate team scores" do
+    sign_in_delegate
+    post :calculate_team_scores, params: { id: 1 }
+    success
+  end
+
+  test "logged in non tournament owner cannot calculate team scores" do
+    sign_in_non_owner
+    post :calculate_team_scores, params: { id: 1 }
+    redirect
+  end
+  
+  test "logged in school delegate cannot calculate team scores" do
+    sign_in_school_delegate
+    post :calculate_team_scores, params: { id: 1 }
+    redirect
   end
 end
