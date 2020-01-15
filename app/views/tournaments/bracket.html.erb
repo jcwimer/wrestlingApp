@@ -90,52 +90,6 @@ li:first-child,li:last-child {
         </table>
 <% end %>
 
-<% if can? :manage, @tournament %> 
-<h3>Tournament Director Bracket Actions</h3>
-  <table class="table">
-    <tr>
-      <td>
-  <strong>Swap Bracket Position</strong>
-    <%= form_for(Wrestler.new, url: swap_wrestlers_path(@tournament)) do |f| %>
-        <div class="field">
-          <%= f.label 'Wrestler 1' %><br>
-          <%= f.collection_select :originalId, @weight.wrestlers, :id, :name %>
-        </div>
-        <div class="field">
-          <%= f.label 'Wrestler 2' %><br>
-          <%= f.collection_select :swapId, @weight.wrestlers, :id, :name %>
-        </div>
-        <br>
-        <%= submit_tag "Swap", :class=>"btn btn-success"%>
-    <% end %>  
-  </td>
-  <td>
-  <strong>Move wrestler to pool with a bye</strong>
-    <%= form_tag '/wrestlers/update_pool' do %>
-        <div class="field">
-          <%= label_tag 'Wrestler to move' %><br>
-          <%= collection_select(:wrestler, :id, @weight.wrestlers, :id, :name) %>
-        </div>
-        <div class="field">
-          <%= label_tag 'Pool to move to' %><br>
-          <%= select :wrestler, :pool, @weight.pools_with_bye %>
-        </div>
-        <br>
-        <%= submit_tag "Move", :class=>"btn btn-success"%>
-    <% end %>  
-  </td>
-  <td>
-  <strong>Rerun getting pool placement</strong>
-  <p>If you changed the result of a match that changes the ranking of a pool.</p>
-  <%= form_tag "/weights/#{@weight.id}/pool_order", :method => :post do %>
-    <div class="field">
-        <%= label_tag 'Pool to place' %><br>
-        <%= select_tag :pool_to_order, options_for_select((1..@weight.pools).step(1).to_a) %>
-    </div>
-    <br>
-    <%= submit_tag "Get Pool Placement", :class=>"btn btn-success"%>
-  <% end %>
-  </td>
-</tr>
-</table>
+<% if @tournament.tournament_type == "Pool to bracket" %> 
+  <%= render 'pool_bracket_director_actions' %>
 <% end %>
