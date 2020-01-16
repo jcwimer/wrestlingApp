@@ -2,6 +2,7 @@ class PoolBracketPlacementPoints
     def initialize(wrestler)
 		@wrestler = wrestler
 		@bracket = wrestler.weight.pool_bracket_type
+        # reverse is needed below for descending order
         @largest_bracket = wrestler.tournament.weights.sort_by{|w| w.wrestlers.size}.reverse.first.pool_bracket_type
     end
     
