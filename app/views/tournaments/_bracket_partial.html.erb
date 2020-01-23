@@ -1,0 +1,95 @@
+<style>
+table.smallText tr td { font-size: 10px; }
+/*
+ *  Bracket Layout Specifics
+*/
+main {
+  display:flex;
+}
+
+.round {
+  display:flex;
+  flex-direction:column;
+  width: 145px;
+  list-style:none;
+  padding:0;
+  font-size: 10px;
+}
+
+.game + li {
+  flex-grow:1;
+}
+
+li:first-child,li:last-child {
+  flex-grow:.5;
+}
+
+.game {
+  padding-left:5px;
+}
+
+.winner {
+  font-weight:bold;
+}
+
+.game span {
+  float:right;
+  margin-right:5px;
+}
+
+.game-top {
+  border-bottom:1px solid #aaa;
+}
+
+.game-top + li {
+  border-right:1px solid #aaa; min-height:5px;
+}
+
+.bout-number {
+  text-align: center;
+  padding-top: 15px;
+}
+.bracket-winner {
+  border-bottom:1px solid #aaa;
+}
+
+.game-bottom {
+  border-bottom:1px solid #aaa; border-right:1px solid #aaa;
+}
+</style>
+  <table class='smallText'>
+        <h5><strong><%= @tournament.name %> - <%= @weight.max %> lbs Bracket</strong></h5>
+        <tr>
+          <% if @tournament.tournament_type == "Pool to bracket" %>
+            <td valign="top" style="padding: 10px;">
+                <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
+                <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
+                <% @pools = @weight.pool_rounds(@matches) %>
+                <%= render 'pool' %>
+            </td>
+            
+            
+            <td valign="top" style="padding: 10px;">
+                <% if @weight.pool_bracket_type == "twoPoolsToFinal" %>
+                  <%= render 'twoPoolFinalBracket' %>
+                <% end %>
+                <% if @weight.pool_bracket_type == "twoPoolsToSemi" %>
+                  <%= render 'twoPoolSemiBracket' %>
+                <% end %>
+                <% if @weight.pool_bracket_type == "fourPoolsToQuarter" %>
+                  <%= render 'fourPoolQuarterBracket' %>
+                <% end %>
+                <% if @weight.pool_bracket_type == "eightPoolsToQuarter" %>
+                  <%= render 'fourPoolQuarterBracket' %>
+                <% end %>
+                <% if @weight.pool_bracket_type == "fourPoolsToSemi" %>
+                  <%= render 'fourPoolSemiBracket' %>
+                <% end %>
+            </td>
+          <% elsif @tournament.tournament_type == "Modified 16 Man Double Elimination" %>
+          <td valign="top" style="padding: 10px;">
+            <%= render 'modified_sixteen_man_double_elimination_bracket' %>
+          </td>
+          <% end %>
+        </tr>
+        </table>

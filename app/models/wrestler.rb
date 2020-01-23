@@ -138,11 +138,11 @@ class Wrestler < ActiveRecord::Base
 	end
 	
 	def championship_advancement_wins
-		matches_won.select{|m| m.bracket_position == "Quarter" or m.bracket_position == "Semis"}
+		matches_won.select{|m| (m.bracket_position == "Quarter" or m.bracket_position == "Semis" or m.bracket_position == "Bracket") and m.win_type != "BYE"}
 	end
 	
 	def consolation_advancement_wins
-		matches_won.select{|m| m.bracket_position == "Conso Semis"}
+		matches_won.select{|m| (m.bracket_position == "Conso Semis" or m.bracket_position == "Conso" or m.bracket_position == "Conso Quarter") and m.win_type != "BYE"}
 	end
 	
 	def finished_matches
@@ -162,7 +162,7 @@ class Wrestler < ActiveRecord::Base
 	end
 	
 	def pool_wins
-		matches_won.select{|m| m.bracket_position == "Pool"}
+		matches_won.select{|m| m.bracket_position == "Pool" and m.win_type != "BYE"}
 	end
 	
 	def pin_wins

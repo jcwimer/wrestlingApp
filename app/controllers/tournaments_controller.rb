@@ -181,8 +181,10 @@ class TournamentsController < ApplicationController
         @weight = Weight.where(:id => params[:weight]).includes(:matches,:wrestlers).first
         @matches = @weight.matches
         @wrestlers = @weight.wrestlers.includes(:school)
-        @pools = @weight.pool_rounds(@matches)
-        @bracketType = @weight.pool_bracket_type
+        if @tournament.tournament_type == "Pool to bracket"
+          @pools = @weight.pool_rounds(@matches)
+          @bracketType = @weight.pool_bracket_type
+        end
       end
   end
 

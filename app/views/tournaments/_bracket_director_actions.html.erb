@@ -1,0 +1,22 @@
+<% if can? :manage, @tournament %> 
+  <h3>Tournament Director Bracket Actions</h3>
+  <table class="table">
+    <tr>
+      <td>
+        <strong>Swap Bracket Position</strong>
+        <%= form_for(Wrestler.new, url: swap_wrestlers_path(@tournament)) do |f| %>
+          <div class="field">
+            <%= f.label 'Wrestler 1' %><br>
+            <%= f.collection_select :originalId, @weight.wrestlers, :id, :name %>
+          </div>
+          <div class="field">
+            <%= f.label 'Wrestler 2' %><br>
+            <%= f.collection_select :swapId, @weight.wrestlers, :id, :name %>
+          </div>
+          <br>
+          <%= submit_tag "Swap", :class=>"btn btn-success"%>
+        <% end %>  
+      </td>
+    </tr>
+  </table>
+<% end %>

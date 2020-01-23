@@ -48,120 +48,72 @@ class PoolBracketPlacementPoints
     
     def fourPoolsToQuarter
         if bracket_position_size("Semis") > 0
-           return fourthPlace
+           return PlacementPoints.new(number_of_placers).fourthPlace
         end
         if bracket_position_size("Quarter") > 0
-            return eighthPlace
+            return PlacementPoints.new(number_of_placers).eighthPlace
         end
         return 0
     end
     
     def twoPoolsToSemi
         if bracket_position_size("Semis") > 0
-            return fourthPlace
+            return PlacementPoints.new(number_of_placers).fourthPlace
         end
         if bracket_position_size("Conso Semis") > 0
-            return eighthPlace
+            return PlacementPoints.new(number_of_placers).eighthPlace
         end
         return 0
     end
     
     def fourPoolsToSemi
         if bracket_position_size("Semis") > 0
-            return fourthPlace
+            return PlacementPoints.new(number_of_placers).fourthPlace
         end
         if bracket_position_size("Conso Semis") > 0
-            return eighthPlace
+            return PlacementPoints.new(number_of_placers).eighthPlace
         end
         return 0
     end
     
     def onePool
            if @wrestler.pool_placement == 1
-               return firstPlace
+               return PlacementPoints.new(number_of_placers).firstPlace
            elsif @wrestler.pool_placement == 2
-                return secondPlace
+                return PlacementPoints.new(number_of_placers).secondPlace
            elsif @wrestler.pool_placement == 3 
-                return thirdPlace
+                return PlacementPoints.new(number_of_placers).thirdPlace
            elsif @wrestler.pool_placement == 4 
-                return fourthPlace
+                return PlacementPoints.new(number_of_placers).fourthPlace
            end
             return 0
     end
     
     def finalMatchPoints
         if  won_bracket_position_size("1/2") > 0
-            return firstPlace
+            return PlacementPoints.new(number_of_placers).firstPlace
         end
         if  won_bracket_position_size("3/4") > 0
-            return thirdPlace
+            return PlacementPoints.new(number_of_placers).thirdPlace
         end
         if  won_bracket_position_size("5/6") > 0
-            return fifthPlace
+            return PlacementPoints.new(number_of_placers).fifthPlace
         end
         if  won_bracket_position_size("7/8") > 0
-            return seventhPlace
+            return PlacementPoints.new(number_of_placers).seventhPlace
         end
         if bracket_position_size("1/2") > 0
-            return secondPlace
+            return PlacementPoints.new(number_of_placers).secondPlace
         end
         if bracket_position_size("3/4") > 0
-            return fourthPlace
+            return PlacementPoints.new(number_of_placers).fourthPlace
         end
         if bracket_position_size("5/6") > 0
-            return sixthPlace
+            return PlacementPoints.new(number_of_placers).sixthPlace
         end
         if bracket_position_size("7/8") > 0
-            return eighthPlace
+            return PlacementPoints.new(number_of_placers).eighthPlace
         end
         return 0
-    end
-    
-    def firstPlace
-        if number_of_placers == 4
-            return 14
-        else    
-            return 16
-        end
-    end
-    
-    def secondPlace
-        if number_of_placers == 4
-            return 10
-        else    
-            return 12
-        end
-    end
-    
-    def thirdPlace
-        if number_of_placers == 4
-            return 9
-        else    
-            return 7
-        end
-    end
-    
-    def fourthPlace
-        if number_of_placers == 4
-            return 4
-        else    
-            return 7
-        end
-    end
-    
-    def fifthPlace
-        5  
-    end
-    
-    def sixthPlace
-        3  
-    end
-    
-    def seventhPlace
-        2  
-    end
-    
-    def eighthPlace
-        1 
     end
 end

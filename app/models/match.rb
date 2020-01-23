@@ -22,8 +22,24 @@ class Match < ActiveRecord::Base
 	  end
 	end
     
-    BRACKET_POSITIONS = ["Pool","1/2","3/4","5/6","7/8","Quarter","Semis","Conso Semis"]
-	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ"]
+    BRACKET_POSITIONS = ["Pool","1/2","3/4","5/6","7/8","Quarter","Semis","Conso Semis","Bracket","Conso", "Conso Quarter"]
+	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ", "BYE"]
+
+	def is_consolation_match
+        if self.bracket_position == "Conso" or self.bracket_position == "Conso Quarter" or self.bracket_position == "Conso Semis" or self.bracket_position == "3/4" or self.bracket_position == "5/6" or self.bracket_position == "7/8"
+        	return true
+        else
+        	return false
+        end
+	end
+
+	def is_championship_match
+        if self.bracket_position == "Pool" or self.bracket_position == "Quarter" or self.bracket_position == "Semis" or self.bracket_position == "Bracket" or self.bracket_position == "1/2"
+        	return true
+        else
+        	return false
+        end
+	end
 
 	def calculate_school_points
 		if self.w1 && self.w2
@@ -60,10 +76,12 @@ class Match < ActiveRecord::Base
 	end
 
 	def advance_wrestlers
-	   if self.w1 && self.w2
+	   if self.w1
 		AdvanceWrestler.new(wrestler1).advance
-		AdvanceWrestler.new(wrestler2).advance
 	   end
+	   if self.w2
+	   	AdvanceWrestler.new(wrestler2).advance
+       end
 	end
 
 
@@ -127,6 +145,22 @@ class Match < ActiveRecord::Base
       end
 	end
 
+	def w1_bracket_name_round_one
+      if self.w1 != nil
+      	return "#{wrestler1.original_seed} #{w1_name} - #{wrestler1.school.name}"
+      else
+      	"#{w1_name}"
+      end
+	end
+
+	def w2_bracket_name_round_one
+      if self.w2 != nil
+      	return "#{wrestler2.original_seed} #{w2_name} - #{wrestler2.school.name}"
+      else
+      	"#{w2_name}"
+      end
+	end
+
 	def winner_name
 		if self.finished != 1
 			return ""
@@ -161,6 +195,18 @@ class Match < ActiveRecord::Base
 			self.save
 		end
 	end
+
+    def replace_loser_name_with_bye(loser_name)
+		if self.loser1_name == loser_name
+			self.loser1_name = "BYE"
+			self.save
+		end
+		if self.loser2_name == loser_name
+			self.loser2_name = "BYE"
+			self.save
+		end
+	end
+
 	def pool_number
 		if self.w1?
 			wrestler1.pool
@@ -168,10 +214,18 @@ class Match < ActiveRecord::Base
 	end
 
         def list_w2_stats
-          "#{w2_name} (#{wrestler2.school.name}): #{w2_stat}"
+          if self.w2
+            "#{w2_name} (#{wrestler2.school.name}): #{w2_stat}"
+          else
+          	""
+          end
         end
 
         def list_w1_stats
-          "#{w1_name} (#{wrestler1.school.name}): #{w1_stat}"
+          if self.w1
+            "#{w1_name} (#{wrestler1.school.name}): #{w1_stat}"
+          else
+          	""
+          end
         end
 end

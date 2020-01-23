@@ -29,7 +29,7 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def tournament_types
-		["Pool to bracket"]
+		["Pool to bracket","Modified 16 Man Double Elimination"]
 	end
 
 	def create_pre_defined_weights(value)
@@ -113,15 +113,33 @@ class Tournament < ActiveRecord::Base
   			nil
   		end
   	end
+
+  	def modified_sixteen_man_number_of_wrestlers
+  		error_string = ""
+        if self.tournament_type == "Modified 16 Man Double Elimination"
+        	weights_with_too_many_wrestlers = weights.select{|w| w.wrestlers.size > 16}
+        	weight_with_too_few_wrestlers = weights.select{|w| w.wrestlers.size < 12}
+        	weights_with_too_many_wrestlers.each do |weight|
+        		error_string = error_string + " The weight class #{weight.max} has more than 16 wrestlers."
+        	end
+        	weight_with_too_few_wrestlers.each do |weight|
+        		error_string = error_string + " The weight class #{weight.max} has less than 12 wrestlers."
+        	end
+        end
+        return error_string
+  	end
   	
   	def match_generation_error
   		errorString = "There is a tournament error."
+  		modified_sixteen_man_error = modified_sixteen_man_number_of_wrestlers
   		if pool_to_bracket_weights_with_too_many_wrestlers != nil
   			errorString = errorString + " The following weights have too many wrestlers "
   			pool_to_bracket_weights_with_too_many_wrestlers.each do |w|
   				errorString = errorString + "#{w.max} "
   			end
   			return errorString
+  		elsif modified_sixteen_man_error.length > 0
+  			return errorString + modified_sixteen_man_error
   		else
   			nil
   		end

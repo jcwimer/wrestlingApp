@@ -33,8 +33,10 @@ class GenerateTournamentMatches
     def generate_raw
         standardStartingActions
         PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatches if @tournament.tournament_type == "Pool to bracket"
+        ModifiedSixteenManMatchGeneration.new(@tournament).generate_matches if @tournament.tournament_type == "Modified 16 Man Double Elimination"
         postMatchCreationActions
         PoolToBracketMatchGeneration.new(@tournament).assignLoserNames if @tournament.tournament_type == "Pool to bracket"
+        ModifiedSixteenManGenerateLoserNames.new(@tournament).assign_loser_names if @tournament.tournament_type == "Modified 16 Man Double Elimination"
     end
 
     def standardStartingActions
@@ -45,7 +47,7 @@ class GenerateTournamentMatches
     end
 
     def postMatchCreationActions
-        moveFinalsMatchesToLastRound
+        moveFinalsMatchesToLastRound if @tournament.tournament_type == "Pool to bracket"
         assignBouts
         assignFirstMatchesToMats
         @tournament.curently_generating_matches = nil
