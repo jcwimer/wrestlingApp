@@ -12,6 +12,7 @@ class DoubleEliminationAdvance
    if @last_match.winner_id != @wrestler.id
 	    loser_advance
    end
+   advance_double_byes
  end
 
  def winner_advance
@@ -103,5 +104,32 @@ class DoubleEliminationAdvance
         next_match.advance_wrestlers
       end
     end
+ end
+
+ def advance_double_byes
+   weight = @wrestler.weight
+   weight.matches.select{|m| m.loser1_name == "BYE" and m.loser2_name == "BYE"}.each do |match|
+      match.finished = 1
+      match.win_type = "BYE"
+      next_match_position_number = (match.bracket_position_number / 2.0).ceil
+      after_matches = weight.matches.select{|m| m.round > match.round and m.is_consolation_match == match.is_consolation_match }.sort_by{|m| m.round}
+      next_matches = weight.matches.select{|m| m.round == after_matches.first.round and m.is_consolation_match == match.is_consolation_match }
+      this_round_matches = weight.matches.select{|m| m.round == match.round and m.is_consolation_match == match.is_consolation_match }
+
+      if next_matches.size == this_round_matches.size
+        next_match = next_matches.select{|m| m.bracket_position_number == match.bracket_position_number}.first
+        next_match.loser2_name = "BYE"
+        next_match.save
+      elsif next_matches.size < this_round_matches.size and next_matches.size > 0
+        next_match = next_matches.select{|m| m.bracket_position_number == next_match_position_number}.first
+        if next_match.bracket_position_number == next_match_position_number
+          next_match.loser2_name = "BYE"
+        else
+          next_match.loser1_name = "BYE"
+        end
+      end
+      next_match.save
+      match.save
+   end
  end
 end

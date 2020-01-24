@@ -147,7 +147,7 @@ class Match < ActiveRecord::Base
 
 	def w1_bracket_name_round_one
       if self.w1 != nil
-      	return "#{wrestler1.original_seed} #{w1_name} - #{wrestler1.school.name}"
+      	return "#{wrestler1.original_seed} #{w1_name} - #{wrestler1.school.abbreviation}"
       else
       	"#{w1_name}"
       end
@@ -155,7 +155,7 @@ class Match < ActiveRecord::Base
 
 	def w2_bracket_name_round_one
       if self.w2 != nil
-      	return "#{wrestler2.original_seed} #{w2_name} - #{wrestler2.school.name}"
+      	return "#{wrestler2.original_seed} #{w2_name} - #{wrestler2.school.abbreviation}"
       else
       	"#{w2_name}"
       end
