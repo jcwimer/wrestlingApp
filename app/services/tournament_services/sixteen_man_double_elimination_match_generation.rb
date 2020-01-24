@@ -1,21 +1,15 @@
 class SixteenManDoubleEliminationMatchGeneration
-    def initialize( tournament )
-      @tournament = tournament
+    def initialize( weight )
+      @weight = weight
     end
 
-    def generate_matches
-      @tournament.weights.each do |weight|
-      	generate_matches_for_weight(weight)
-      end
-    end
-
-    def generate_matches_for_weight(weight)
-      round_one(weight)
-      round_two(weight)
-      round_three(weight)
-      round_four(weight)
-      round_five(weight)
-      round_six(weight)
+    def generate_matches_for_weight
+      round_one(@weight)
+      round_two(@weight)
+      round_three(@weight)
+      round_four(@weight)
+      round_five(@weight)
+      round_six(@weight)
     end
 
     def round_one(weight)
@@ -81,7 +75,7 @@ class SixteenManDoubleEliminationMatchGeneration
     end
 
     def create_matchup(w1, w2, bracket_position, bracket_position_number,round,weight)
-        @tournament.matches.create(
+        @weight.tournament.matches.create(
           w1: w1,
           w2: w2,
           weight_id: weight.id,

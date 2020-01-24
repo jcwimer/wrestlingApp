@@ -13,7 +13,7 @@
                 <% @weight = weight %>
                 <%= render 'bracket_partial' %>
             </td>
-          <% elsif @tournament.tournament_type == "Modified 16 Man Double Elimination" %>
+          <% elsif @tournament.tournament_type == "Modified 16 Man Double Elimination" or @tournament.tournament_type == "Double Elimination 1-6" %>
           <td valign="top" style="padding: 10px;">
             <!-- Need to define what the tournaments#bracket controller defines -->
             <% @matches = weight.matches %>

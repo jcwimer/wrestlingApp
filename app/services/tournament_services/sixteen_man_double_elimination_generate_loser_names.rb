@@ -1,21 +1,19 @@
 class SixteenManDoubleEliminationGenerateLoserNames
-    def initialize( tournament )
-      @tournament = tournament
+    def initialize( weight )
+      @weight = weight
     end
 
-   def assign_loser_names
+   def assign_loser_names_for_weight
     matches_by_weight = nil
-    @tournament.weights.each do |w|
-      matches_by_weight = @tournament.matches.where(weight_id: w.id)
-      conso_round_2(matches_by_weight)
-      conso_round_3(matches_by_weight)
-      conso_round_5(matches_by_weight)
-      fifth_sixth(matches_by_weight)
-      save_matches(matches_by_weight)
-      matches_by_weight = @tournament.matches.where(weight_id: w.id).reload
-      advance_bye_matches_championship(matches_by_weight)
-      save_matches(matches_by_weight)
-    end
+    matches_by_weight = @weight.matches
+    conso_round_2(matches_by_weight)
+    conso_round_3(matches_by_weight)
+    conso_round_5(matches_by_weight)
+    fifth_sixth(matches_by_weight)
+    save_matches(matches_by_weight)
+    matches_by_weight = @weight.matches.reload
+    advance_bye_matches_championship(matches_by_weight)
+    save_matches(matches_by_weight)
    end
 
    def conso_round_2(matches)

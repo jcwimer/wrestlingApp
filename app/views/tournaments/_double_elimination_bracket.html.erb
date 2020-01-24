@@ -1,0 +1,5 @@
+<% if @weight.wrestlers.size <= 16 and @weight.wrestlers.size >= 9 %>
+  <%= render 'sixteen_man_double_elimination_bracket' %>
+<% elsif @weight.wrestlers.size >= 4 and @weight.wrestlers.size <= 8 %>
+  <%= render 'eight_man_double_elimination_bracket' %>
+ <% end %>
