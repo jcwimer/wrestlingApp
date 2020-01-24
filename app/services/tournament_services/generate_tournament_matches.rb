@@ -49,7 +49,7 @@ class GenerateTournamentMatches
     end
 
     def postMatchCreationActions
-        moveFinalsMatchesToLastRound if @tournament.tournament_type == "Pool to bracket"
+        moveFinalsMatchesToLastRound
         assignBouts
         assignFirstMatchesToMats
         @tournament.curently_generating_matches = nil
