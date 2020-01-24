@@ -29,7 +29,7 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def tournament_types
-		["Pool to bracket","Modified 16 Man Double Elimination"]
+		["Pool to bracket","Modified 16 Man Double Elimination","Double Elimination 1-6"]
 	end
 
 	def create_pre_defined_weights(value)
