@@ -3,6 +3,6 @@
 <% end %>
 <% if @tournament.tournament_type == "Pool to bracket" %> 
   <%= render 'pool_bracket_director_actions' %>
-<% elsif @tournament.tournament_type == "Modified 16 Man Double Elimination" %>
+<% elsif @tournament.tournament_type == "Modified 16 Man Double Elimination" or @tournament.tournament_type == "Double Elimination 1-6" %>
   <%= render 'bracket_director_actions' %>
 <% end %>
