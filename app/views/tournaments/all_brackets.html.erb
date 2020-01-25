@@ -1,5 +1,20 @@
-<% cache ["#{@tournament.id}_all_brackets", @tournament] do %>    
-    <div id="exportable">
+<style>
+    .pagebreak { 
+      page-break-after: always;
+      border: none;
+        margin: 0px;
+        padding: 0px;
+        width: 8in; /* width: 7in; */
+        height: 9.5in; /* or height: 9.5in; */
+        font-size: 8px;
+        position: relative;
+        left: 0in;
+        height: 1in;
+    }
+</style>
+
+<% cache ["#{@tournament.id}_all_brackets", @tournament] do %> 
+  <div id="exportable" >   
     <%= render :file => 'tournaments/team_scores' %>
     <% @tournament.weights.sort_by{|w| w.max}.each do |weight| %>
         <table class='pagebreak'>
@@ -24,5 +39,5 @@
         </tr>
         </table>
     <% end %>
-    </div>
+  </div>
 <% end %>
