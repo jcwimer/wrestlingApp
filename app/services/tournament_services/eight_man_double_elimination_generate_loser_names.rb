@@ -18,11 +18,11 @@ class EightManDoubleEliminationGenerateLoserNames
    def conso_round_2(matches)
      matches.select{|m| m.bracket_position == "Conso Quarter"}.sort_by{|m| m.bracket_position_number}.each do |match|
         if match.bracket_position_number == 1
-          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 1 and m.round == 1 and m.bracket_position == "Quarter"}.first.bout_number}"
-          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 2 and m.round == 1 and m.bracket_position == "Quarter"}.first.bout_number}"
+          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 4 and m.round == 1 and m.bracket_position == "Quarter"}.first.bout_number}"
+          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 3 and m.round == 1 and m.bracket_position == "Quarter"}.first.bout_number}"
         elsif match.bracket_position_number == 2
-          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 3 and m.round == 1 and m.bracket_position == "Quarter"}.first.bout_number}"
-          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 4 and m.round == 1 and m.bracket_position == "Quarter"}.first.bout_number}"
+          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 2 and m.round == 1 and m.bracket_position == "Quarter"}.first.bout_number}"
+          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 1 and m.round == 1 and m.bracket_position == "Quarter"}.first.bout_number}"
         end
       end
    end
