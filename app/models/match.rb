@@ -3,15 +3,14 @@ class Match < ActiveRecord::Base
 	belongs_to :weight, touch: true
 	belongs_to :mat, touch: true
 	has_many :wrestlers, :through => :weight
-        after_update :after_finished_actions, :if => :saved_change_to_finished?
-        after_update :after_finished_actions, :if => :saved_change_to_winner_id?
-        after_update :after_finished_actions, :if => :saved_change_to_win_type?
-        after_update :after_finished_actions, :if => :saved_change_to_score?
+        after_update :after_finished_actions, :if => :saved_change_to_finished? or :saved_change_to_winner_id? or :saved_change_to_win_type? or :saved_change_to_score?
 
 	def after_finished_actions
 	  if self.finished == 1 && self.winner_id != nil
-	  	if self.w1 && self.w2
+	  	if self.w1
 		   	wrestler1.touch
+		end
+		if self.w2
 		   	wrestler2.touch
 		end
 		if self.mat
@@ -77,10 +76,10 @@ class Match < ActiveRecord::Base
 
 	def advance_wrestlers
 	   if self.w1
-		AdvanceWrestler.new(wrestler1).advance
+		AdvanceWrestler.new(wrestler1, self).advance
 	   end
 	   if self.w2
-	   	AdvanceWrestler.new(wrestler2).advance
+	   	AdvanceWrestler.new(wrestler2, self).advance
        end
 	end
 

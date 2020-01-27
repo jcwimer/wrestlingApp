@@ -1,7 +1,8 @@
 class AdvanceWrestler
-    def initialize( wrestler )
+    def initialize( wrestler, last_match )
       @wrestler = wrestler
       @tournament = @wrestler.tournament
+      @last_match = last_match
     end
     
     def advance
@@ -14,7 +15,7 @@ class AdvanceWrestler
 
     def advance_raw
         pool_to_bracket_advancement if @tournament.tournament_type == "Pool to bracket"
-        DoubleEliminationAdvance.new(@wrestler).bracket_advancement if @tournament.tournament_type == "Modified 16 Man Double Elimination" or
+        DoubleEliminationAdvance.new(@wrestler, @last_match).bracket_advancement if @tournament.tournament_type == "Modified 16 Man Double Elimination" or
           @tournament.tournament_type == "Double Elimination 1-6"
     end
     
