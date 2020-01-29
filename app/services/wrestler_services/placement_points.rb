@@ -21,9 +21,9 @@ class PlacementPoints
     
     def thirdPlace
         if @number_of_placers == 4
-            return 9
-        else    
             return 7
+        else    
+            return 9
         end
     end
     
