@@ -1,11 +1,32 @@
-<h3>About WrestlingDev</h3>
+<h2>About WrestlingDev</h2>
 <br>
 <p>WrestlingDev was created to help bring wrestling into the 21st century for <strong>free</strong>. This site is <a href="https://github.com/jcwimer/wrestlingApp">open source</a> and is supported by the ads on the sidebar.</p>
 <br>
-<h4>Features</h4>
+<h3>Features</h3>
+<p>Wrestlingdev supports the following features:</p>
+<ul>
+  <li>Tournament Types
+    <ul>
+      <li>Pool to bracket (adhears to 5 match per day rule)</li>
+      <li>Double elimination 16 man and 8 man</li>
+    </ul>
+  </li>
+  <li>Team point calculation</li>
+  <li>Bracket generation</li>
+  <li>Bracket advancement</li>
+  <li>Bout board</li>
+  <li>Coach Information
+    <ul>
+      <li>Score breakdown per wrestler</li>
+      <li>Next bout number for each wrestler</li>
+      <li>Next mat assignment for each wrestler</li>
+    </ul>
+  </li>
+</ul>
 <br>
+<h3>Pool to bracket information</h3>
 <p>At this moment in time, WrestlingDev supports a pool to bracket type tournament for up to 24 wrestlers per weight. The bracket format follows OHSAA's 5 match per day rule. WrestlingDev will automatically generate brackets, generate bout numbers, generate and update a bout board, track team points, and update brackets.</p>
-<p>For pool to bracket tournaments, pool tie breakers are the following:</p>
+<h4>Pool tiebreakers</h4>
 <ul>
     <li>Least team points deducted</li>
     <li>Head to head</li>
@@ -18,7 +39,7 @@
     <li>Coin flip</li>
 </ul>
 <p>If three wrestlers are tied, they will be put through this sequence until two wrestlers are left. Once two wrestlers are left, the pool runner up will be decided by head to head.</p>
-<p>For pool to bracket tournaments, team points will be calculated as follows:</p>
+<h4>Pool to bracket scoring</h4>
 <ul>
     <li>Pool win: 2pt</li>
     <li>Win in championship bracket: 2pt</li>
@@ -28,7 +49,30 @@
     <li>Win by fall, default, dq: 2pt extra</li>
     <li>BYE points: 2pt (if you win at least 1 match in a pool with a BYE)</li>
 </ul>
-<p>Placement points will happen as follows (based on the largest bracket of the tournament):</p>
+<p>See placement points below (based on the largest bracket of the tournament)</p>
+<h4>Pool Types</h4>
+<ul>
+    <li>Single pool round robin - 2-5 wrestlers, place 1-4.</li>
+    <li>Two Pools of 4 (3 matches each) to a semi final bracket - 6-8 wrestlers, place 1-4.</li>
+    <li>Two Pools of 5 (4 matches each) to a championship and 3rd/4th match - 8-10 wrestlers, place 1-4.</li>
+    <li>Four pools of 3 (2 matches each) to a quarter final bracket - 9-12 wrestlers, place 1-8.</li>
+    <li>Four pools of 4 (3 matches each) to a semi final bracket - 13-16 wrestlers, place 1-8.</li>
+    <li>Eight pools of 3 (2 matches each) to a quarter final bracket - 17-24 wrestlers, place 1-8.</li>
+</ul>
+<br>
+<h3>Double Elimination Information</h3>
+<p>Right now, double elimination brackets only support 8 and 16 man brackets (4-16 wrestlers).</p>
+<h4>Double elimination scoring</h4>
+<ul>
+  <li>Championship win: 2pt</li>
+  <li>Consolation win: 1pt</li>
+  <li>Win by major: 1pt extra</li>
+  <li>Win by tech: 1.5pt extra</li>
+  <li>Win by fall, default, dq, etc: 2pt extra</li>
+  <li>BYE points: 2pts if you have a bye in the championship bracket and win the next match. 1pt if you have a bye in the consolation bracket and win the next match.</li>
+</ul>
+<br>
+<h3>Placement Points</h3>
 <table class="table table-hover table-condensed">
   <thead>
     <tr>
@@ -81,20 +125,10 @@
 </table>
 <p>Finals matches will only recieve extra placement points for placing higher and bonus points for pin, tech, major, etc. Please note, only brackets with four pools place up to 8. Brackets with 1 or 2 pools only place top 4.</p>
 <br>
-<h4>Pool Types</h4>
-<ul>
-    <li>Single pool round robin - 2-5 wrestlers, place 1-4.</li>
-    <li>Two Pools of 4 (3 matches each) to a semi final bracket - 6-8 wrestlers, place 1-4.</li>
-    <li>Two Pools of 5 (4 matches each) to a championship and 3rd/4th match - 8-10 wrestlers, place 1-4.</li>
-    <li>Four pools of 3 (2 matches each) to a quarter final bracket - 9-12 wrestlers, place 1-8.</li>
-    <li>Four pools of 4 (3 matches each) to a semi final bracket - 13-16 wrestlers, place 1-8.</li>
-    <li>Eight pools of 3 (2 matches each) to a quarter final bracket - 17-24 wrestlers, place 1-8.</li>
-</ul>
+<h3>Future Plans</h3>
 <br>
-<h4>Future Plans</h4>
+<p>Future development plans to support 32 and 64 man double elimination as well as modified (5 per day match rule) 16 and 32 man double elimination brackets are underway.</p>
 <br>
-<p>Future development plans to support normal double elimination brackets are underway.</p>
-<br>
-<h4>Contact</h4>
+<h3>Contact</h3>
 <br>
 <p>Suggestions, criticism, and kind words are welcomed. Please contact us.</p>
