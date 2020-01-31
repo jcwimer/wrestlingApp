@@ -35,6 +35,41 @@ class ActiveSupport::TestCase
     return @tournament
   end
 
+  def create_double_elim_tournament_single_weight_1_6(number_of_wrestlers)
+    @tournament = Tournament.new
+    @tournament.name = "Test Tournament"
+    @tournament.address = "some place"
+    @tournament.director = "some guy"
+    @tournament.director_email= "test@test.com"
+    @tournament.tournament_type = "Double Elimination 1-6"
+    @tournament.date = "2015-12-30"
+    @tournament.save
+    @school = School.new
+    @school.name = "Test"
+    @school.tournament_id = @tournament.id
+    @school.save
+    @weight = Weight.new
+    @weight.max = 106
+    @weight.tournament_id = @tournament.id
+    @weight.save
+    create_wrestlers_for_weight_for_double_elim(@weight, @school, number_of_wrestlers, 1)
+    GenerateTournamentMatches.new(@tournament).generate
+    return @tournament
+  end
+
+  def create_wrestlers_for_weight_for_double_elim(weight, school, number_of_wrestlers, naming_start_number)
+    naming_number = naming_start_number
+    for number in (1..number_of_wrestlers) do 
+      wrestler = Wrestler.new
+      wrestler.name = "Test#{naming_number}"
+      wrestler.school_id = school.id
+      wrestler.weight_id = weight.id
+      wrestler.original_seed = naming_number
+      wrestler.save
+      naming_number = naming_number + 1
+    end
+  end
+
   def create_pool_tournament
     @tournament = Tournament.new
     @tournament.name = "Test Tournament"
