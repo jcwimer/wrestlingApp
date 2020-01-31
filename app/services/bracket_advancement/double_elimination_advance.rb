@@ -67,9 +67,7 @@ class DoubleEliminationAdvance
  end
  
  def update_new_match(match, wrestler_number)
-     puts "!!!!!!!!!!!!!!!!!!!!!!"
-     puts "#{match.bout_number} is getting #{@wrestler.name} as wrestler #{wrestler_number}"
-     if wrestler_number == 2 or match.loser1_name.include? "Loser of"
+     if wrestler_number == 2 or (match.loser1_name and match.loser1_name.include? "Loser of")
 	      match.w2 = @wrestler.id
       	match.save
      elsif  wrestler_number == 1
