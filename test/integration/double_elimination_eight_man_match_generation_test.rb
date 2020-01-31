@@ -54,8 +54,8 @@ class DoubleEliminationEightManMatchGeneration < ActionDispatch::IntegrationTest
     match4 = @tournament.matches.select{|match| match.round == 1 and match.bracket_position_number == 4}.first
 
     assert @tournament.matches.select{|m| m.bracket_position == "Conso Quarter" && m.bracket_position_number == 1}.first.loser1_name == "BYE"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso Quarter" && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{match3.bout_number}"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso Quarter" && m.bracket_position_number == 2}.first.loser1_name == "Loser of #{match2.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Quarter" && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{match2.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Quarter" && m.bracket_position_number == 2}.first.loser1_name == "Loser of #{match3.bout_number}"
     assert @tournament.matches.select{|m| m.bracket_position == "Conso Quarter" && m.bracket_position_number == 2}.first.loser2_name == "BYE"
 
     semis1 = @tournament.matches.select{|match| match.bracket_position == "Semis" and match.bracket_position_number == 1}.first
@@ -63,8 +63,8 @@ class DoubleEliminationEightManMatchGeneration < ActionDispatch::IntegrationTest
     consosemis1 = @tournament.matches.select{|match| match.bracket_position == "Conso Semis" and match.bracket_position_number == 1}.first
     consosemis2 = @tournament.matches.select{|match| match.bracket_position == "Conso Semis" and match.bracket_position_number == 2}.first
 
-    assert consosemis1.loser1_name == "Loser of #{semis1.bout_number}"  
-    assert consosemis2.loser1_name == "Loser of #{semis2.bout_number}"  
+    assert consosemis1.loser1_name == "Loser of #{semis2.bout_number}"  
+    assert consosemis2.loser1_name == "Loser of #{semis1.bout_number}"  
 
     assert @tournament.matches.select{|m| m.bracket_position == "5/6" && m.bracket_position_number == 1}.first.loser1_name == "Loser of #{consosemis1.bout_number}"
     assert @tournament.matches.select{|m| m.bracket_position == "5/6" && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{consosemis2.bout_number}" 

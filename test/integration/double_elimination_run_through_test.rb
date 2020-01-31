@@ -31,17 +31,17 @@ class DoubleEliminationRunThrough < ActionDispatch::IntegrationTest
 
     conso_quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.sort_by{|m| m.bracket_position_number}
     assert conso_quarter.first.reload.loser1_name == "BYE"
-    assert conso_quarter.first.reload.wrestler2.name == "Test6"
-    assert conso_quarter.second.reload.wrestler1.name == "Test5"
+    assert conso_quarter.first.reload.wrestler2.name == "Test5"
+    assert conso_quarter.second.reload.wrestler1.name == "Test6"
     assert conso_quarter.second.reload.loser2_name == "BYE"
 
     conso_semis = matches.select{|m| m.bracket_position == "Conso Semis"}.sort_by{|m| m.bracket_position_number}
-    assert conso_semis.first.reload.wrestler1.name == "Test1"
-    assert conso_semis.first.reload.wrestler2.name == "Test6"
-    assert conso_semis.second.reload.wrestler1.name == "Test3"
-    assert conso_semis.second.reload.wrestler2.name == "Test5"
-    winner_by_name("Test1",conso_semis.first)
-    winner_by_name("Test5",conso_semis.second)
+    assert conso_semis.first.reload.wrestler1.name == "Test3"
+    assert conso_semis.first.reload.wrestler2.name == "Test5"
+    assert conso_semis.second.reload.wrestler1.name == "Test1"
+    assert conso_semis.second.reload.wrestler2.name == "Test6"
+    winner_by_name("Test5",conso_semis.first)
+    winner_by_name("Test1",conso_semis.second)
 
     first_finals = matches.select{|m| m.bracket_position == "1/2"}.first
     third_finals = matches.select{|m| m.bracket_position == "3/4"}.first
@@ -50,11 +50,11 @@ class DoubleEliminationRunThrough < ActionDispatch::IntegrationTest
     assert first_finals.reload.wrestler1.name == "Test4"
     assert first_finals.reload.wrestler2.name == "Test2"
 
-    assert third_finals.reload.wrestler1.name == "Test1"
-    assert third_finals.reload.wrestler2.name == "Test5"
+    assert third_finals.reload.wrestler1.name == "Test5"
+    assert third_finals.reload.wrestler2.name == "Test1"
 
-    assert fifth_finals.reload.wrestler1.name == "Test6"
-    assert fifth_finals.reload.wrestler2.name == "Test3"
+    assert fifth_finals.reload.wrestler1.name == "Test3"
+    assert fifth_finals.reload.wrestler2.name == "Test6"
 
     # DEBUG
     # matches.sort_by{|m| m.bout_number}.each do |match|
