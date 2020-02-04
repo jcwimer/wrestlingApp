@@ -78,7 +78,7 @@ class DoubleEliminationEightManMatchGeneration < ActionDispatch::IntegrationTest
 
     match2 = @tournament.matches.select{|m| m.bracket_position == "Conso Semis"}.first
     wrestler2 = get_wrestler_by_name("Test2")
-    match2.w1 = wrestler.id
+    match2.w1 = wrestler2.id
     match2.save
 
     assert wrestler.reload.placement_points == 3
