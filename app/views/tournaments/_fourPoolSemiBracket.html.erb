@@ -1,124 +1,34 @@
 <h5>Bracket After Pool</h5>
-<main id="bracket">
-	<ul class="round round-1">
-		<% @matches.select{|m|m.bracket_position == "Semis"}.sort_by{|m| m.bracket_position_number}.each do |match| %>
-		<li>&nbsp;</li>
-		
-		<li class="game game-top "><%= match.w1_bracket_name %> <span></span></li>
-		<li class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_bracket_name %><span></span></li>
-
-		<li>&nbsp;</li>
-		
-		<% end %>
-	</ul>
-	<ul class="round round-2">
-		<% @matches.select{|m|m.bracket_position == "1/2"}.each do |match| %>
-		<li>&nbsp;</li>
-		
-		<li class="game game-top "><%= match.w1_bracket_name %> <span></span></li>
-		<li class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_bracket_name %><span></span></li>
-
-		<li>&nbsp;</li>
-		
-	</ul>
-	<ul class="round round-3">
-		<li>&nbsp;</li>
-		
-		<li class="bracket-winner"><%= match.bracket_winner_name %><span></span></li>
-		1st
-
-		<li>&nbsp;</li>
-		
-	</ul>	
-		<% end %>
-</main>
-
-<main id="bracket">
-	<ul class="round round-1">
-		<% @matches.select{|m|m.bracket_position == "3/4"}.each do |match| %>
-		<li>&nbsp;</li>
-		
-		<li class="game game-top "><%= match.w1_bracket_name %> <span></span></li>
-		<li class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_bracket_name %><span></span></li>
-
-		<li>&nbsp;</li>
-		
-	</ul>
-	<ul class="round round-2">
-		<li>&nbsp;</li>
-		
-		<li class="bracket-winner"><%= match.bracket_winner_name %><span></span></li>
-		3rd
-
-		<li>&nbsp;</li>
-		
-	</ul>	
-		<% end %>
-</main>
-
-
-<main id="bracket">
-	<ul class="round round-1">
-		<% @matches.select{|m|m.bracket_position == "Conso Semis"}.sort_by{|m| m.bracket_position_number}.each do |match| %>
-		<li>&nbsp;</li>
-		
-		<li class="game game-top "><%= match.w1_bracket_name %> <span></span></li>
-		<li class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_bracket_name %><span></span></li>
-
-		<li>&nbsp;</li>
-		
-		<% end %>
-	</ul>
-	<ul class="round round-2">
-		<% @matches.select{|m|m.bracket_position == "5/6"}.each do |match| %>
-		<li>&nbsp;</li>
-		
-		<li class="game game-top "><%= match.w1_bracket_name %> <span></span></li>
-		<li class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_bracket_name %><span></span></li>
-
-		<li>&nbsp;</li>
-		
-	</ul>
-	<ul class="round round-3">
-		<li>&nbsp;</li>
-		
-		<li class="bracket-winner"><%= match.bracket_winner_name %><span></span></li>
-		5th
-
-		<li>&nbsp;</li>
-		
-	</ul>	
-		<% end %>
-</main>
-<main id="bracket">
-	<ul class="round round-1">
-		<% @matches.select{|m|m.bracket_position == "7/8"}.each do |match| %>
-		<li>&nbsp;</li>
-		
-		<li class="game game-top "><%= match.w1_bracket_name %> <span></span></li>
-		<li class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_bracket_name %><span></span></li>
-
-		<li>&nbsp;</li>
-		
-	</ul>
-	<ul class="round round-2">
-		<li>&nbsp;</li>
-		
-		<li class="bracket-winner"><%= match.bracket_winner_name %><span></span></li>
-		7th
-
-		<li>&nbsp;</li>
-		
-	</ul>	
-		<% end %>
-</main>
-
-
-
-
+<div class="bracket">
+<!--Round 1-->
+  	<% @round_matches = @matches.select{|m|m.bracket_position == "Semis"} %>
+	<%= render 'bracket_round' %>
+<!--Round 2-->
+  	<% @final_match = @matches.select{|m|m.bracket_position == "1/2"} %>
+  	<% @winner_place = "1st" %>
+	<%= render 'bracket_final' %>
+</div>
+<br>
+<div class="bracket">
+<!--Round 1-->
+  <% @final_match = @matches.select{|m|m.bracket_position == "3/4"} %>
+  	<% @winner_place = "3rd" %>
+	<%= render 'bracket_final' %>
+</div>
+ <br>
+<div class="bracket">
+<!--Round 1 -->
+  	<% @round_matches = @matches.select{|m|m.bracket_position == "Conso Semis"} %>
+	<%= render 'bracket_round' %>
+<!--Round 2-->
+  	<% @final_match = @matches.select{|m|m.bracket_position == "5/6"} %>
+  	<% @winner_place = "5th" %>
+	<%= render 'bracket_final' %>
+</div>
+<br>
+<div class="bracket">
+<!--Round 1-->
+  <% @final_match = @matches.select{|m|m.bracket_position == "7/8"} %>
+  	<% @winner_place = "7th" %>
+	<%= render 'bracket_final' %>
+</div>

@@ -129,35 +129,47 @@ class Match < ActiveRecord::Base
 	end
 
 	def w1_bracket_name
-      if self.w1 != nil
-      	return "#{w1_name} (#{wrestler1.school.abbreviation})"
-      else
-      	"#{w1_name}"
+	  return_string = ""
+	  return_string_ending = ""
+      if self.w1 and self.winner_id == self.w1
+      	return_string = return_string + "<strong>"
+      	return_string_ending = return_string_ending + "</strong>"
       end
+      if self.w1 != nil
+      	if self.round == 1
+          if self.wrestler1.original_seed
+          	return_string = return_string + "[#{wrestler1.original_seed}] "
+          end
+          return_string = return_string + "#{w1_name} - #{wrestler1.school.name} (#{wrestler1.season_win}-#{wrestler1.season_loss})"
+      	else
+      	  return_string = return_string + "#{w1_name} (#{wrestler1.school.abbreviation})"
+      	end
+      else
+      	return_string = return_string + "#{w1_name}"
+      end
+      return return_string + return_string_ending
 	end
 
 	def w2_bracket_name
+      return_string = ""
+	  return_string_ending = ""
+      if self.w2 and self.winner_id == self.w2
+      	return_string = return_string + "<strong>"
+      	return_string_ending = return_string_ending + "</strong>"
+      end
       if self.w2 != nil
-      	return "#{w2_name} (#{wrestler2.school.abbreviation})"
+      	if self.round == 1
+      	  if self.wrestler2.original_seed
+          	return_string = return_string + "#{wrestler2.original_seed} "
+          end
+          return_string = return_string + "#{w2_name} - #{wrestler2.school.name} (#{wrestler2.season_win}-#{wrestler2.season_loss})"
+      	else
+      	  return_string = return_string + "#{w2_name} (#{wrestler2.school.abbreviation})"
+      	end
       else
-      	"#{w2_name}"
+      	return_string = return_string + "#{w2_name}"
       end
-	end
-
-	def w1_bracket_name_round_one
-      if self.w1 != nil
-      	return "#{wrestler1.original_seed} #{w1_name} - #{wrestler1.school.abbreviation}"
-      else
-      	"#{w1_name}"
-      end
-	end
-
-	def w2_bracket_name_round_one
-      if self.w2 != nil
-      	return "#{wrestler2.original_seed} #{w2_name} - #{wrestler2.school.abbreviation}"
-      else
-      	"#{w2_name}"
-      end
+      return return_string + return_string_ending
 	end
 
 	def winner_name

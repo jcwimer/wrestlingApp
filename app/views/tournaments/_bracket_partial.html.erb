@@ -3,58 +3,78 @@ table.smallText tr td { font-size: 10px; }
 /*
  *  Bracket Layout Specifics
 */
-main {
-  display:flex;
-}
-
-.round {
-  display:flex;
-  flex-direction:column;
-  width: 145px;
-  list-style:none;
-  padding:0;
+.bracket {
+  display: flex;
   font-size: 10px;
 }
-
-.game + li {
-  flex-grow:1;
-}
-
-li:first-child,li:last-child {
-  flex-grow:.5;
-}
-
 .game {
-  padding-left:5px;
+  min-width: 150px;
+  min-height: 50px;
+  /*background-color: #ddd;*/
+  border: 1px solid #ddd;
+  margin: 5px;
 }
 
-.winner {
-  font-weight:bold;
+/*.game:after {
+  content:'';
+  border-color: #4f7a38;
+  border-width: 2px;
+  position: absolute;
+  display: block;
+  width: 10px;
+  right: -11px;
 }
 
-.game span {
-  float:right;
-  margin-right:5px;
+.game:nth-of-type(odd):after {
+  border-right-style: solid;
+  border-top-style: solid;
+  height: 100%;
+  top: 50%;
+}
+
+.game:nth-of-type(even):after {
+  border-right-style: solid;
+  border-bottom-style: solid;
+  height: 100%;
+  top: -50%;
+}
+
+.game:before {
+  content:'';
+  border-top: 2px solid #4f7a38;
+  position: absolute;
+  height: 2px;
+  width: 10px;
+  left: -10px;
+  top: 50%;
+}*/
+
+.round {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 
 .game-top {
-  border-bottom:1px solid #aaa;
-}
-
-.game-top + li {
-  border-right:1px solid #aaa; min-height:5px;
+  border-bottom:1px solid #ddd;
+  padding: 2px;
+  min-height: 12px;
 }
 
 .bout-number {
   text-align: center;
-  padding-top: 15px;
+  /*padding-top: 15px;*/
 }
 .bracket-winner {
-  border-bottom:1px solid #aaa;
+  border-bottom:1px solid #ddd;
+  padding: 2px;
+  min-height: 12px;
 }
 
 .game-bottom {
-  border-bottom:1px solid #aaa; border-right:1px solid #aaa;
+  border-top:1px solid #ddd;
+  padding: 2px;
+  min-height: 12px;
 }
 </style>
   <table class='smallText'>

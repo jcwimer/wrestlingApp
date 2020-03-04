@@ -1,47 +1,14 @@
 <h5>Bracket After Pool</h5>
-<main id="bracket">
-	<ul class="round round-1">
-		<% @matches.select{|m|m.bracket_position == "1/2"}.each do |match| %>
-		<li>&nbsp;</li>
-		
-		<li class="game game-top "><%= match.w1_bracket_name %> <span></span></li>
-		<li class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_bracket_name %><span></span></li>
-
-		<li>&nbsp;</li>
-		
-	</ul>
-	<ul class="round round-2">
-		<li>&nbsp;</li>
-		
-		<li class="bracket-winner"><%= match.bracket_winner_name %><span></span></li>
-		1st
-
-		<li>&nbsp;</li>
-	</ul>
-		<% end %>
-</main>
-
-<main id="bracket">
-	<ul class="round round-1">
-		<% @matches.select{|m|m.bracket_position == "3/4"}.each do |match| %>
-		<li>&nbsp;</li>
-		
-		<li class="game game-top "><%= match.w1_bracket_name %> <span></span></li>
-		<li class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</li>
-		<li class="game game-bottom "><%= match.w2_bracket_name %><span></span></li>
-
-		<li>&nbsp;</li>
-		
-	</ul>
-	<ul class="round round-2">
-		<li>&nbsp;</li>
-		
-		<li class="bracket-winner"><%= match.bracket_winner_name %> <span></span></li>
-		3rd
-
-		<li>&nbsp;</li>
-	</ul>
-		<% end %>
-</main>
-
+<div class="bracket">
+<!--Round 1-->
+  	<% @final_match = @matches.select{|m|m.bracket_position == "1/2"} %>
+  	<% @winner_place = "1st" %>
+	<%= render 'bracket_final' %>
+</div>
+<br>
+<div class="bracket">
+<!--Round 1-->
+  <% @final_match = @matches.select{|m|m.bracket_position == "3/4"} %>
+  	<% @winner_place = "3rd" %>
+	<%= render 'bracket_final' %>
+</div>
