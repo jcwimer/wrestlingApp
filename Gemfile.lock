@@ -174,7 +174,7 @@ GEM
     passenger (6.0.4)
       rack
       rake (>= 0.8.1)
-    puma (4.3.0)
+    puma (4.3.5)
       nio4r (~> 2.0)
     pusher-client (0.6.2)
       json
