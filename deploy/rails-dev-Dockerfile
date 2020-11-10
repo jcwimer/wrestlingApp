@@ -1,4 +1,4 @@
-FROM ruby:2.6.5
+FROM ruby:2.7.2
 
 RUN apt-get -qq update \
   && apt-get -qq install -y \
@@ -22,7 +22,8 @@ RUN gem install bundler
 RUN gem update --system
 ADD Gemfile* /tmp/
 WORKDIR /tmp
-RUN bundle install --jobs 4 --without production
+RUN bundle config set without 'production'
+RUN bundle install --jobs 4
 
 RUN mkdir /rails
 WORKDIR /rails
