@@ -4,7 +4,5 @@ jobs:
    machine: true
    steps:
      - checkout
-     # start proprietary DB using private Docker image
-     # with credentials stored in the UI
      - run: |
          bash bin/run-tests-with-docker.sh
