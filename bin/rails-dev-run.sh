@@ -12,4 +12,4 @@ fi
 
 docker build -t $1 -f ${project_dir}/deploy/rails-dev-Dockerfile ${project_dir}
 docker run -it -p 3000:3000 -v ${project_dir}:/rails $1 /bin/bash
-sudo chown -R ${USER}:${USER} ${project_dir}
+sudo chown -R ${USER_ID}:${USER_ID} ${project_dir}
