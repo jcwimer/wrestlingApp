@@ -1,4 +1,15 @@
 version: 2
+workflows: # Define a Workflow running the build job, then the deploy job
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master # Only deploys when the commit is on the Master branch
 jobs:
  build:
    machine: true
@@ -7,22 +18,22 @@ jobs:
      - run: |
          bash bin/run-tests-with-docker.sh
          
-# https://github.com/circleci/circleci-docs/blob/master/jekyll/_cci1/continuous-deployment-with-heroku.md
-deployment:
-  production:
-    branch: master
-    commands:
-      - |
-        cat >~/.netrc <<EOF
-        machine api.heroku.com
-          login $HEROKU_EMAIL
-          password $HEROKU_TOKEN
-        machine git.heroku.com
-          login $HEROKU_EMAIL
-          password $HEROKU_TOKEN
-        EOF
-      - chmod 600 ~/.netrc # Heroku cli complains about permissions without this
-      - heroku git:remote -a wrestlingapp
-      - git push heroku master
-      - sleep 20s
-      - heroku run rake db:migrate --app wrestlingapp
+ # https://github.com/circleci/circleci-docs/blob/master/jekyll/_cci1/continuous-deployment-with-heroku.md
+ deploy:
+   machine: true
+   steps:
+     - checkout
+     - run: |
+         cat >~/.netrc <<EOF
+         machine api.heroku.com
+           login $HEROKU_EMAIL
+           password $HEROKU_TOKEN
+         machine git.heroku.com
+           login $HEROKU_EMAIL
+           password $HEROKU_TOKEN
+         EOF
+         chmod 600 ~/.netrc # Heroku cli complains about permissions without this
+         heroku git:remote -a wrestlingapp
+         git push heroku master
+         sleep 20s
+         heroku run rake db:migrate --app wrestlingapp
