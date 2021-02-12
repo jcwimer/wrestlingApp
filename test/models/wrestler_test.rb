@@ -8,6 +8,6 @@ class WrestlerTest < ActiveSupport::TestCase
    test "Wrestler validations" do
       wrestler = Wrestler.new
       assert_not wrestler.valid?
-      assert_equal [:name, :weight_id, :school_id], wrestler.errors.keys
+      assert_equal [:name, :weight_id, :school_id], wrestler.errors.attribute_names
     end
 end

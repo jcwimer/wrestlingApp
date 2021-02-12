@@ -9,6 +9,6 @@ class TournamentTest < ActiveSupport::TestCase
    test "Tournament validations" do
       tourney = Tournament.new
       assert_not tourney.valid?
-      assert_equal [:date, :name, :tournament_type, :address, :director, :director_email], tourney.errors.keys
+      assert_equal [:date, :name, :tournament_type, :address, :director, :director_email], tourney.errors.attribute_names
     end
 end

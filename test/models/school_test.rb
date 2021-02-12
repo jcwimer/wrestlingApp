@@ -8,6 +8,6 @@ class SchoolTest < ActiveSupport::TestCase
    test "School validations" do
       school = School.new
       assert_not school.valid?
-      assert_equal [:name], school.errors.keys
+      assert_equal [:name], school.errors.attribute_names
     end
 end
