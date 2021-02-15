@@ -145,17 +145,17 @@ class Tournament < ActiveRecord::Base
     end
   	
   	def match_generation_error
-  		errorString = "There is a tournament error."
+  		error_string = "There is a tournament error."
   		modified_sixteen_man_error = modified_sixteen_man_number_of_wrestlers
         double_elim_error = double_elim_number_of_wrestlers
   		if pool_to_bracket_weights_with_too_many_wrestlers != nil
-  			errorString = errorString + " The following weights have too many wrestlers "
+  			error_string = error_string + " The following weights have too many wrestlers "
   			pool_to_bracket_weights_with_too_many_wrestlers.each do |w|
-  				errorString = errorString + "#{w.max} "
+  				error_string = error_string + "#{w.max} "
   			end
-  			return errorString
+  			return error_string
   		elsif modified_sixteen_man_error.length > 0
-  			return errorString + modified_sixteen_man_error
+  			return error_string + modified_sixteen_man_error
   		elsif double_elim_error.length > 0
   			return error_string + double_elim_error
   		else
