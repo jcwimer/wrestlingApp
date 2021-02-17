@@ -15,7 +15,7 @@
 
 <% cache ["#{@tournament.id}_all_brackets", @tournament] do %> 
   <div id="exportable" >   
-    <%= render :file => 'tournaments/team_scores' %>
+    <%= render file: Rails.root.join('app/views/tournaments/team_scores.html.erb') %>
     <% @tournament.weights.sort_by{|w| w.max}.each do |weight| %>
         <table class='pagebreak'>
         <tr>
