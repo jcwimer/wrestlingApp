@@ -96,7 +96,7 @@ class Match < ActiveRecord::Base
 		  elsif self.win_type == "DQ"
 		  	return "(DQ)"
 		  elsif self.win_type == "Forfeit"
-		  	return "(For)"
+		  	return "(FF)"
 		  else
 		  	win_type_abbreviation = "#{self.win_type.chars.to_a[0..2].join('')}"
 		  	return "(#{win_type_abbreviation} #{self.score})"
