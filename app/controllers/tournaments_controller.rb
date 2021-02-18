@@ -165,7 +165,7 @@ class TournamentsController < ApplicationController
   end
 
   def create_custom_weights
-    @custom = params[:customValue].to_s
+    @custom = params[:customValue].split(",")
     @tournament.create_pre_defined_weights(@custom)
     redirect_to "/tournaments/#{@tournament.id}"
   end

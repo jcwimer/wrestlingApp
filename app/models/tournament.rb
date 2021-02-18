@@ -31,15 +31,11 @@ class Tournament < ActiveRecord::Base
 	def tournament_types
 		["Pool to bracket","Modified 16 Man Double Elimination","Double Elimination 1-6"]
 	end
-
-	def create_pre_defined_weights(value)
+	
+	def create_pre_defined_weights(weight_classes)
 		weights.destroy_all
-		if value == 'hs'
-			Weight::HS_WEIGHT_CLASSES.each do |w|
-				weights.create(max: w)
-			end
-		else
-			raise "Unspecified behavior"
+		weight_classes.each do |w|
+			weights.create(max: w)
 		end
 	end
 

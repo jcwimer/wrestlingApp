@@ -7,7 +7,11 @@ class Weight < ActiveRecord::Base
 	
 	validates :max, presence: true
 
-	HS_WEIGHT_CLASSES = [106,113,120,126,132,138,145,152,160,170,182,195,220,285]
+    # passed via layouts/_tournament-navbar.html.erb
+    # tournaments controller does a .split(',') on this string and creates an array via commas
+    # tournament model runs the code via method create_pre_defined_weights
+	HS_WEIGHT_CLASSES = "106,113,120,126,132,138,145,152,160,170,182,195,220,285"
+	HS_GIRLS_WEIGHT_CLASSES = "101,106,111,116,121,126,131,137,143,150,160,170,189,235"
 	
 	before_destroy do 
 		self.tournament.destroy_all_matches
