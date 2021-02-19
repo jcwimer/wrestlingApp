@@ -14,10 +14,15 @@ class School < ActiveRecord::Base
 
 	def abbreviation
       name_array = self.name.split(' ')
-      if name_array.size > 1
-      	return "#{name_array[0].chars.to_a.first}#{name_array[1].chars.to_a[0..1].join('').upcase}"
+      if name_array.size > 2
+      	# If three words, use first letter of first word, first letter of second, and first two of third
+      	return "#{name_array[0].chars.to_a.first}#{name_array[1].chars.to_a.first}#{name_array[2].chars.to_a[0..1].join('').upcase}"
+      elsif name_array.size > 1
+        # If two words use first letter of first word and first three of the second
+      	return "#{name_array[0].chars.to_a.first}#{name_array[1].chars.to_a[0..2].join('').upcase}"
       else
-        return "#{name_array[0].chars.to_a[0..2].join('').upcase}"
+      	# If one word use first four letters
+        return "#{name_array[0].chars.to_a[0..3].join('').upcase}"
       end
 	end
 	
