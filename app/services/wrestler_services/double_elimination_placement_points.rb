@@ -1,9 +1,7 @@
 class DoubleEliminationPlacementPoints
     def initialize(wrestler)
 		@wrestler = wrestler
-		if wrestler.tournament.tournament_type == "Double Elimination 1-6"
-		    @number_of_placers = 6
-		end
+		@number_of_placers = @wrestler.tournament.number_of_placers
     end
 
     def calc_points

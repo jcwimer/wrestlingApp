@@ -1,6 +1,7 @@
 class ModifiedSixteenManMatchGeneration
     def initialize( tournament )
       @tournament = tournament
+      @number_of_placers = @tournament.number_of_placers
     end
 
     def generate_matches
@@ -57,6 +58,9 @@ class ModifiedSixteenManMatchGeneration
       create_matchup(nil,nil,"1/2",1,5,weight)
       create_matchup(nil,nil,"3/4",1,5,weight)
       create_matchup(nil,nil,"5/6",1,5,weight)
+      if @number_of_placers >= 8
+        create_matchup(nil,nil,"7/8",1,5,weight)
+      end
     end
 
     def wrestler_with_seed(seed,weight)

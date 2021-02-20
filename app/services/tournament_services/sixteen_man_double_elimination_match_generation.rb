@@ -1,6 +1,7 @@
 class SixteenManDoubleEliminationMatchGeneration
     def initialize( weight )
       @weight = weight
+      @number_of_placers = @weight.tournament.number_of_placers
     end
 
     def generate_matches_for_weight

@@ -26,8 +26,8 @@ class CalculateWrestlerTeamScore
 
     def placement_points
         return PoolBracketPlacementPoints.new(@wrestler).calcPoints if @tournament.tournament_type == "Pool to bracket"
-        return ModifiedSixteenManPlacementPoints.new(@wrestler).calc_points if @tournament.tournament_type == "Modified 16 Man Double Elimination"
-        return DoubleEliminationPlacementPoints.new(@wrestler).calc_points if @tournament.tournament_type == "Double Elimination 1-6"
+        return ModifiedSixteenManPlacementPoints.new(@wrestler).calc_points if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
+        return DoubleEliminationPlacementPoints.new(@wrestler).calc_points if @tournament.tournament_type.include? "Regular Double Elimination"
         return 0
     end
 

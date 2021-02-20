@@ -10,6 +10,7 @@ class ModifiedSixteenManGenerateLoserNames
       conso_round_2(matches_by_weight)
       conso_round_3(matches_by_weight)
       third_fourth(matches_by_weight)
+      seventh_eighth(matches_by_weight)
       save_matches(matches_by_weight)
       matches_by_weight = @tournament.matches.where(weight_id: w.id).reload
       advance_bye_matches_championship(matches_by_weight)
@@ -55,11 +56,17 @@ class ModifiedSixteenManGenerateLoserNames
           match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position == "Semis"}.second.bout_number}"
       end
    end
+   
+   def seventh_eighth(matches)
+     matches.select{|m| m.bracket_position == "7/8"}.sort_by{|m| m.bracket_position_number}.each do |match|
+          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position == "Conso Semis"}.first.bout_number}"
+          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position == "Conso Semis"}.second.bout_number}"
+      end
+   end
 
    def advance_bye_matches_championship(matches)
       matches.select{|m| m.round == 1 and m.bracket_position == "Bracket"}.sort_by{|m| m.bracket_position_number}.each do |match|
         if match.w1 == nil or match.w2 == nil
-          puts match.bout_number
           match.finished = 1
           match.win_type = "BYE"
           if match.w1 != nil

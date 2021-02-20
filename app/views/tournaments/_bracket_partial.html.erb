@@ -106,7 +106,7 @@ table.smallText tr td { font-size: 10px; }
                   <%= render 'fourPoolSemiBracket' %>
                 <% end %>
             </td>
-          <% elsif @tournament.tournament_type == "Modified 16 Man Double Elimination" %>
+          <% elsif @tournament.tournament_type.include? "Modified 16 Man Double Elimination" %>
           <td valign="top" style="padding: 10px;">
             <%= render 'modified_sixteen_man_double_elimination_bracket' %>
           </td>

@@ -33,12 +33,12 @@ class GenerateTournamentMatches
     def generate_raw
         standardStartingActions
         PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatches if @tournament.tournament_type == "Pool to bracket"
-        ModifiedSixteenManMatchGeneration.new(@tournament).generate_matches if @tournament.tournament_type == "Modified 16 Man Double Elimination"
-        DoubleEliminationMatchGeneration.new(@tournament).generate_matches if @tournament.tournament_type == "Double Elimination 1-6"
+        ModifiedSixteenManMatchGeneration.new(@tournament).generate_matches if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
+        DoubleEliminationMatchGeneration.new(@tournament).generate_matches if @tournament.tournament_type.include? "Regular Double Elimination"
         postMatchCreationActions
         PoolToBracketMatchGeneration.new(@tournament).assignLoserNames if @tournament.tournament_type == "Pool to bracket"
-        ModifiedSixteenManGenerateLoserNames.new(@tournament).assign_loser_names if @tournament.tournament_type == "Modified 16 Man Double Elimination"
-        DoubleEliminationGenerateLoserNames.new(@tournament).assign_loser_names if @tournament.tournament_type == "Double Elimination 1-6"
+        ModifiedSixteenManGenerateLoserNames.new(@tournament).assign_loser_names if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
+        DoubleEliminationGenerateLoserNames.new(@tournament).assign_loser_names if @tournament.tournament_type.include? "Regular Double Elimination"
     end
 
     def standardStartingActions

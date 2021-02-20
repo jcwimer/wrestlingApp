@@ -1,7 +1,8 @@
 class ModifiedSixteenManPlacementPoints
     def initialize(wrestler)
 		@wrestler = wrestler
-		@number_of_placers = 6
+		@wrestler = wrestler
+		@number_of_placers = @wrestler.tournament.number_of_placers
     end
 
     def calc_points
@@ -17,6 +18,10 @@ class ModifiedSixteenManPlacementPoints
             return PlacementPoints.new(@number_of_placers).fifthPlace
         elsif bracket_position_size("5/6") > 0
         	return PlacementPoints.new(@number_of_placers).sixthPlace
+        elsif won_bracket_position_size("7/8") > 0
+            return PlacementPoints.new(@number_of_placers).seventhPlace
+        elsif bracket_position_size("Conso Semis") > 0 and @number_of_placers >= 8
+            return PlacementPoints.new(@number_of_placers).eighthPlace 
         else
         	return 0
         end

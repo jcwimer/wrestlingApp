@@ -29,7 +29,15 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def tournament_types
-		["Pool to bracket","Modified 16 Man Double Elimination","Double Elimination 1-6"]
+		["Pool to bracket","Modified 16 Man Double Elimination 1-6","Modified 16 Man Double Elimination 1-8","Regular Double Elimination 1-6"]
+	end
+	
+	def number_of_placers
+		if self.tournament_type.include? "1-8"
+			return 8
+		elsif self.tournament_type.include? "1-6"
+		  return 6
+		end
 	end
 	
 	def create_pre_defined_weights(weight_classes)
@@ -112,7 +120,7 @@ class Tournament < ActiveRecord::Base
 
   	def modified_sixteen_man_number_of_wrestlers
   		error_string = ""
-        if self.tournament_type == "Modified 16 Man Double Elimination"
+        if self.tournament_type.include? "Modified 16 Man Double Elimination"
         	weights_with_too_many_wrestlers = weights.select{|w| w.wrestlers.size > 16}
         	weight_with_too_few_wrestlers = weights.select{|w| w.wrestlers.size < 12}
         	weights_with_too_many_wrestlers.each do |weight|
