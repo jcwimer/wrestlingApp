@@ -28,17 +28,18 @@ class DoubleEliminationAdvance
      update_new_match(new_match, get_wrestler_number)
   elsif @last_match.bracket_position == "Conso Semis"
      # if its a regular double elim
-     if Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Conso Semis",@next_match_position_number.ceil,@wrestler.weight_id).first.loser1_name != nil
+     if @wrestler.tournament.tournament_type.include? "Regular Double Elimination"
       new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","3/4",@next_match_position_number.ceil,@wrestler.weight_id).first
       update_new_match(new_match, get_wrestler_number)
      # if it's a special bracket where consolations wrestler for 5th
-     else
+     elsif @wrestler.tournament.tournament_type.include? "Modified 16 Man Double Elimination"
        new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","5/6",@next_match_position_number.ceil,@wrestler.weight_id).first
        update_new_match(new_match, get_wrestler_number)
      end
   elsif @last_match.bracket_position == "Conso Quarter"
      next_round_matches = Match.where("weight_id = ? and bracket_position = ?", @wrestler.weight_id, "Conso Semis").sort_by{|m| m.round}
      this_round_matches = Match.where("weight_id = ? and round = ? and bracket_position = ?", @wrestler.weight_id, @last_match.round, "Conso Quarter")
+     # bracket position is different depending on if a semi loser is dropping or if there are 4 conso quarter matches
      if next_round_matches.size == this_round_matches.size
        # if a semi loser is dropping down
        new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Conso Semis",@last_match.bracket_position_number,@wrestler.weight_id).first
