@@ -53,9 +53,7 @@ class School < ActiveRecord::Base
 	def total_points_scored_by_wrestlers
 		points = 0.0
 		self.wrestlers.each do |w|
-			if w.extra != true
-				points = points + w.total_team_points
-			end
+			points = points + w.total_team_points
 		end
 		points
 	end
@@ -64,11 +62,6 @@ class School < ActiveRecord::Base
 		points = 0.0
 		deductedPoints.each do |d|
 			points = points + d.points
-		end
-		self.wrestlers.each do |w|
-			w.deductedPoints.each do |d|
-				points = points + d.points
-			end
 		end
 		points
 	end
