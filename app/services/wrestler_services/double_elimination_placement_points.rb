@@ -20,7 +20,7 @@ class DoubleEliminationPlacementPoints
         elsif won_bracket_position_size("7/8") > 0
             return PlacementPoints.new(@number_of_placers).seventhPlace
         elsif bracket_position_size("Conso Quarter") > 0 and @number_of_placers >= 8
-            return PlacementPoints.new(@number_of_placers).eigthPlace 
+            return PlacementPoints.new(@number_of_placers).eighthPlace 
         else
         	return 0
         end

@@ -29,7 +29,7 @@ class Tournament < ActiveRecord::Base
 	end
 
 	def tournament_types
-		["Pool to bracket","Modified 16 Man Double Elimination 1-6","Modified 16 Man Double Elimination 1-8","Regular Double Elimination 1-6"]
+		["Pool to bracket","Modified 16 Man Double Elimination 1-6","Modified 16 Man Double Elimination 1-8","Regular Double Elimination 1-6","Regular Double Elimination 1-8"]
 	end
 	
 	def number_of_placers

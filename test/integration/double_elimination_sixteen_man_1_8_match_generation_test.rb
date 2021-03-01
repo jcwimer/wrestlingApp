@@ -1,15 +1,16 @@
 require 'test_helper'
 
-class DoubleEliminationSixteenManMatchGeneration < ActionDispatch::IntegrationTest
+class DoubleEliminationSixteenManEightPlacesMatchGeneration < ActionDispatch::IntegrationTest
   def setup
-    create_double_elim_tournament_single_weight_1_6(14)
+    create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
   end
 
   test "Match generation works" do
-    assert @tournament.matches.count == 29
+    assert @tournament.matches.count == 30
     assert @tournament.matches.select{|m| m.bracket_position == "1/2"}.count == 1
     assert @tournament.matches.select{|m| m.bracket_position == "3/4"}.count == 1
     assert @tournament.matches.select{|m| m.bracket_position == "5/6"}.count == 1
+    assert @tournament.matches.select{|m| m.bracket_position == "7/8"}.count == 1
     assert @tournament.matches.select{|m| m.bracket_position == "Bracket" and m.round == 1}.count == 8
     assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2}.count == 4
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter"}.count == 4
@@ -107,7 +108,12 @@ class DoubleEliminationSixteenManMatchGeneration < ActionDispatch::IntegrationTe
     assert consosemis2.loser1_name == "Loser of #{semis2.bout_number}"  
 
     assert @tournament.matches.select{|m| m.bracket_position == "5/6" && m.bracket_position_number == 1}.first.loser1_name == "Loser of #{consosemis1.bout_number}"
-    assert @tournament.matches.select{|m| m.bracket_position == "5/6" && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{consosemis2.bout_number}" 
+    assert @tournament.matches.select{|m| m.bracket_position == "5/6" && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{consosemis2.bout_number}"
+    
+    consoquarters1 = @tournament.matches.select{|match| match.bracket_position == "Conso Quarter" and match.bracket_position_number == 1}.first
+    consoquarters2 = @tournament.matches.select{|match| match.bracket_position == "Conso Quarter" and match.bracket_position_number == 2}.first
+    assert @tournament.matches.select{|m| m.bracket_position == "7/8" && m.bracket_position_number == 1}.first.loser1_name == "Loser of #{consoquarters1.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "7/8" && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{consoquarters2.bout_number}" 
   end
 
   test "Placement points are given when moving through bracket" do
@@ -120,9 +126,15 @@ class DoubleEliminationSixteenManMatchGeneration < ActionDispatch::IntegrationTe
     wrestler2 = get_wrestler_by_name("Test2")
     match2.w1 = wrestler2.id
     match2.save
+    
+    match3 = @tournament.matches.select{|m| m.bracket_position == "Conso Quarter"}.first
+    wrestler3 = get_wrestler_by_name("Test3")
+    match3.w1 = wrestler3.id
+    match3.save
 
     assert wrestler.reload.placement_points == 3
     assert wrestler2.reload.placement_points == 3
+    assert wrestler3.reload.placement_points == 1
   end
 
   test "Run through all matches works" do

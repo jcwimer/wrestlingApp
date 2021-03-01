@@ -10,6 +10,7 @@ class SixteenManDoubleEliminationGenerateLoserNames
     conso_round_3(matches_by_weight)
     conso_round_5(matches_by_weight)
     fifth_sixth(matches_by_weight)
+    seventh_eighth(matches_by_weight)
     save_matches(matches_by_weight)
     matches_by_weight = @weight.matches.reload
     advance_bye_matches_championship(matches_by_weight)
@@ -62,6 +63,13 @@ class SixteenManDoubleEliminationGenerateLoserNames
      matches.select{|m| m.bracket_position == "5/6"}.sort_by{|m| m.bracket_position_number}.each do |match|
           match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position == "Conso Semis"}.first.bout_number}"
           match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position == "Conso Semis"}.second.bout_number}"
+      end
+   end
+   
+   def seventh_eighth(matches)
+     matches.select{|m| m.bracket_position == "7/8"}.sort_by{|m| m.bracket_position_number}.each do |match|
+          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position == "Conso Quarter"}.first.bout_number}"
+          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position == "Conso Quarter"}.second.bout_number}"
       end
    end
 

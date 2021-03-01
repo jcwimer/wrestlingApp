@@ -58,6 +58,9 @@ class SixteenManDoubleEliminationMatchGeneration
       create_matchup(nil,nil,"1/2",1,6,weight)
       create_matchup(nil,nil,"3/4",1,6,weight)
       create_matchup(nil,nil,"5/6",1,6,weight)
+      if @number_of_placers >= 8
+        create_matchup(nil,nil,"7/8",1,6,weight)
+      end
     end
 
     def wrestler_with_seed(seed,weight)
