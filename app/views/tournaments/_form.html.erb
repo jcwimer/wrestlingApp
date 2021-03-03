@@ -35,6 +35,10 @@
     <%= f.label :tournament_type %><br>
     <%= f.select :tournament_type, @tournament.tournament_types %>
   </div>
+  <br>
+  <div>
+    See About page for information on tournament types: <%= link_to "About", "/static_pages/about" %>
+  </div>
 <%= f.hidden_field :user_id, :value => current_user.id %>
     <br>
     <br>
