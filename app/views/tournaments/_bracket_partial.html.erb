@@ -110,7 +110,7 @@ table.smallText tr td { font-size: 10px; }
           <td valign="top" style="padding: 10px;">
             <%= render 'modified_sixteen_man_double_elimination_bracket' %>
           </td>
-          <% elsif @tournament.tournament_type.incude? "Regular Double Elimination" %>
+          <% elsif @tournament.tournament_type.include? "Regular Double Elimination" %>
           <td valign="top" style="padding: 10px;">
             <%= render 'double_elimination_bracket' %>
           </td>
