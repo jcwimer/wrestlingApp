@@ -81,6 +81,21 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: gmailemail
+        - name: WRESTLINGDEV_INFLUXDB_DATABASE
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: influxdb_database
+        - name: WRESTLINGDEV_INFLUXDB_HOST
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: influxdb_hostname
+        - name: WRESTLINGDEV_INFLUXDB_PORT
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: influxdb_port
         resources:
           limits:
             cpu: "0.5"
@@ -187,6 +202,21 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: gmailemail
+        - name: WRESTLINGDEV_INFLUXDB_DATABASE
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: influxdb_database
+        - name: WRESTLINGDEV_INFLUXDB_HOST
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: influxdb_hostname
+        - name: WRESTLINGDEV_INFLUXDB_PORT
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: influxdb_port
         command: ["bundle"]
         args: ["exec", "bin/delayed_job", "-n", "1", "run"]
         resources:

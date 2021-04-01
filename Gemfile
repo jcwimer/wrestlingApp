@@ -38,7 +38,6 @@ gem 'spring', :group => :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-
 #Installed by me
 group :production do
   gem 'rails_12factor'
@@ -48,6 +47,7 @@ group :production do
   gem 'dalli'
 end
 
+gem 'influxdb-rails'
 gem 'devise'
 gem 'cancancan'
 gem 'round_robin_tournament'

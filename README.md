@@ -54,3 +54,8 @@ The production version of this is currently deployed in Kubernetes. See [Deployi
 * `MEMCACHIER_SERVERS=memcachier_hostname:memcachier_port` needed for caching
 * `MEMCACHIER_USERNAME=memcachier_username` needed for caching
 * `WRESTLINGDEV_NEW_RELIC_LICENSE_KEY=new_relic_license_key` this is only needed to use new relic
+* `WRESTLINGDEV_INFLUXDB_DATABASE=influx_db_name` to send metrics to influxdb this is required
+* `WRESTLINGDEV_INFLUXDB_HOST=influx_db_ip_or_hostname` to send metrics to influxdb this is required
+* `WRESTLINGDEV_INFLUXDB_PORT=influx_db_port` to send metrics to influxdb this is required
+* `WRESTLINGDEV_INFLUXDB_USERNAME=influx_db_username` to send metrics to influxdb this is optional
+* `WRESTLINGDEV_INFLUXDB_PASSWORD=influx_db_password` to send metrics to influxdb this is optional
