@@ -81,6 +81,8 @@ services:
       - "8086:8086"
     networks:
       metrics:
+    volumes:
+      - influxdb:/var/lib/influxdb
 
   memcached:
     image: memcached:1.5
