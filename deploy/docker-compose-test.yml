@@ -6,6 +6,7 @@ networks:
 
 volumes:
   mysql:
+  influxdb:
   
 services:
   app:
@@ -86,7 +87,7 @@ services:
 
   memcached:
     image: memcached:1.5
-    mem_limit: 64000000
+    mem_limit: "64000000"
     restart: always
     networks:
       caching:
