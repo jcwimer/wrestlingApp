@@ -2,10 +2,10 @@
 This application is being created to run a wrestling tournament.
 
 ### Current master status
-[![Build Status](https://circleci.com/gh/jcwimer/wrestlingApp/tree/master.svg)](https://travis-ci.org/jcwimer/wrestlingApp)
+[![Build Status](https://circleci.com/gh/jcwimer/wrestlingApp/tree/master.svg)](https://circleci.com/gh/jcwimer/wrestlingApp/tree/master)
 
 ### Current development status
-[![Build Status](https://circleci.com/gh/jcwimer/wrestlingApp/tree/development.svg)](https://travis-ci.org/jcwimer/wrestlingApp)
+[![Build Status](https://circleci.com/gh/jcwimer/wrestlingApp/tree/development.svg)](https://circleci.com/gh/jcwimer/wrestlingApp/tree/development)
 
 # Info
 **License:** MIT License
