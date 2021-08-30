@@ -17,6 +17,7 @@ RUN apt-get -qq update \
     default-libmysqlclient-dev \
     nodejs \
     tzdata \
+    git \
   && apt-get -qq clean \
   && apt-get autoremove -y \
   && rm -rf \
