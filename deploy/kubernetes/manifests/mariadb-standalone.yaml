@@ -26,13 +26,16 @@ spec:
     requests:
       storage: 20Gi
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wrestlingdev-mariadb
   labels:
     app: wrestlingdev
 spec:
+  selector:
+    matchLabels:
+      app: wrestlingdev
   strategy:
     type: Recreate
   template:
@@ -40,6 +43,9 @@ spec:
       labels:
         app: wrestlingdev
         tier: mariadb
+      annotations:
+        prometheus.io/port: "9125"
+        prometheus.io/scrape: "true"
     spec:
       containers:
       - image: mariadb:10.3
@@ -63,6 +69,111 @@ spec:
           requests:
             memory: "256Mi"
             cpu: "0.2"
+      - image: jcwimer/mariadb-rclone-backup-docker:10.3
+        name: mariadb-backup
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: dbpassword
+        - name: CRON_SCHEDULE
+          value: "@hourly"  # hourly
+        - name: DB_USERNAME
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: dbusername
+        - name: DB_HOST
+          value: "127.0.0.1"
+        - name: DAYS_TO_KEEP
+          value: "7"
+        - name: RCLONE_TYPE
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: rclone_type
+        - name: S3_ACCESS_ID
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: s3_access_id
+        - name: S3_ACCESS_KEY
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: s3_access_key
+        - name: S3_ENDPOINT
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: s3_endpoint
+        - name: S3_REGION
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: s3_region
+        - name: RCLONE_EXTRA_ARGS
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: rclone_extra_args
+        - name: RCLONE_PATH
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: rclone_path
+        volumeMounts:
+        - name: wrestlingdev-mariadb-persistent-storage
+          mountPath: /var/lib/mysql
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: "100Mi"
+          requests:
+            memory: "50Mi"
+            cpu: "0.1"
+      - image: prom/mysqld-exporter:v0.11.0
+        name: mariadb-exporter
+        ports:
+        - containerPort: 9125
+          name: http"
+        args:
+        - --web.listen-address=0.0.0.0:9125
+        - --web.telemetry-path=/metrics
+        - --collect.heartbeat
+        - --collect.heartbeat.database=sys_operator
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: dbpassword
+        - name: DB_USERNAME
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: dbusername
+        - name: DB_HOST
+          value: "127.0.0.1:3306"
+        - name: DATA_SOURCE_NAME
+          value: $(DB_USERNAME):$(DB_PASSWORD)@($(DB_HOST))/
+        - name: DAYS_TO_KEEP
+          value: "7"
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: 9125
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 30
       volumes:
       - name: wrestlingdev-mariadb-persistent-storage
         persistentVolumeClaim:
