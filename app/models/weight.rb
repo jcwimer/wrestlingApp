@@ -10,8 +10,8 @@ class Weight < ActiveRecord::Base
     # passed via layouts/_tournament-navbar.html.erb
     # tournaments controller does a .split(',') on this string and creates an array via commas
     # tournament model runs the code via method create_pre_defined_weights
-	HS_WEIGHT_CLASSES = "106,113,120,126,132,138,145,152,160,170,182,195,220,285"
-	HS_GIRLS_WEIGHT_CLASSES = "101,106,111,116,121,126,131,137,143,150,160,170,189,235"
+	HS_WEIGHT_CLASSES = "106,113,120,126,132,138,144,150,157,165,175,190,215,285."
+	HS_GIRLS_WEIGHT_CLASSES = "100,105,110,115,120,125,130,135,140,145,155,170,190,235"
 	
 	before_destroy do 
 		self.tournament.destroy_all_matches

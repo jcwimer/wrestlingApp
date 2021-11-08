@@ -3,6 +3,7 @@ class Match < ActiveRecord::Base
 	belongs_to :weight, touch: true
 	belongs_to :mat, touch: true
 	has_many :wrestlers, :through => :weight
+	has_many :schools, :through => :wrestlers
         after_update :after_finished_actions, :if => :saved_change_to_finished? or :saved_change_to_winner_id? or :saved_change_to_win_type? or :saved_change_to_score?
 
 	def after_finished_actions

@@ -134,7 +134,7 @@ class TournamentsController < ApplicationController
   end
 
   def matches
-    @matches = @tournament.matches.sort_by{|m| m.bout_number}
+    @matches = @tournament.matches.includes(:wrestlers,:schools).sort_by{|m| m.bout_number}
     if @match
       @w1 = @match.wrestler1
       @w2 = @match.wrestler2
