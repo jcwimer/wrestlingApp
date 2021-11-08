@@ -17,8 +17,7 @@ task :finish_seed_tournaments => :environment do
         end
       end
     end
-  end
-  
+
   finish_tournament(200)
   finish_tournament(201)
   finish_tournament(202)
