@@ -30,7 +30,7 @@ From here, you can run the normal rails commands.
 * `rails generate blah blah blah`
 * ` rails s -b 0.0.0.0` port 3000 is exposed. You can open [http://localhost:3000](http://localhost:3000) after running that command
 * etc.
-* `rake finish_seed_tournament` will complete all matches from the seed data. This command takes about 5 minutes to execute
+* `rake finish_seed_tournaments` will complete all matches from the seed data. This command takes about 5 minutes to execute
 
 To deploy a a full local version of the app `bash deploy/deploy-test.sh` (this requires docker-compose to be installed). This deploys a full version of the app. App, delayed job, memcached, and mariadb. Now, you can open [http://localhost](http://localhost). Delayed jobs are turned off in dev and everything that is a delayed job in prod just runs in browser.
 
