@@ -3,13 +3,13 @@ json.cache! ["api_tournament", @tournament] do
     json.content(@tournament)
     json.(@tournament, :id, :name, :address, :director, :director_email, :tournament_type, :created_at, :updated_at, :user_id)
     
-    json.schools @tournament.schools do |school|
+    json.schools @schools do |school|
       json.id school.id
       json.name school.name
       json.score school.score
     end
     
-    json.weights @tournament.weights do |weight|
+    json.weights @weights do |weight|
       json.id weight.id
       json.max weight.max
       json.bracket_size weight.bracket_size
@@ -26,7 +26,7 @@ json.cache! ["api_tournament", @tournament] do
       end
     end
     
-    json.mats @tournament.mats do |mat|
+    json.mats @mats do |mat|
       json.name mat.name
       json.unfinished_matches mat.unfinished_matches do |match|
         json.bout_number match.bout_number
@@ -35,7 +35,7 @@ json.cache! ["api_tournament", @tournament] do
       end
     end
     
-    json.unassignedMatches @tournament.matches.select{|m| m.mat_id == nil}.sort_by{|m| m.bout_number}[0...9] do |match|
+    json.unassignedMatches @matches.select{|m| m.mat_id == nil}.sort_by{|m| m.bout_number}[0...9] do |match|
         json.bout_number match.bout_number
         json.w1_name match.w1_name
         json.w2_name match.w2_name
@@ -43,7 +43,7 @@ json.cache! ["api_tournament", @tournament] do
         json.round match.round
     end
     
-    json.matches @tournament.matches do |match|
+    json.matches @matches do |match|
         json.bout_number match.bout_number
         json.w1_name match.w1_name
         json.w2_name match.w2_name

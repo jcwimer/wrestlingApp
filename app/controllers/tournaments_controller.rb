@@ -174,12 +174,14 @@ class TournamentsController < ApplicationController
   def all_brackets
     @schools = @tournament.schools
     @schools = @schools.sort_by{|s| s.page_score_string}.reverse!
+    @matches = @tournament.matches.includes(:wrestlers,:schools)
+    @weights = @tournament.weights.includes(:matches,:wrestlers)
   end
 
   def bracket
       if params[:weight]
         @weight = Weight.where(:id => params[:weight]).includes(:matches,:wrestlers).first
-        @matches = @weight.matches
+        @matches = @weight.matches.includes(:schools,:wrestlers)
         @wrestlers = @weight.wrestlers.includes(:school)
         if @tournament.tournament_type == "Pool to bracket"
           @pools = @weight.pool_rounds(@matches)

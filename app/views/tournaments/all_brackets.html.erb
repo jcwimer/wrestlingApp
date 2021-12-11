@@ -16,7 +16,7 @@
 <% cache ["#{@tournament.id}_all_brackets", @tournament] do %> 
   <div id="exportable" >   
     <%= render :template => 'tournaments/team_scores' %>
-    <% @tournament.weights.sort_by{|w| w.max}.each do |weight| %>
+    <% @weights.sort_by{|w| w.max}.each do |weight| %>
         <table class='pagebreak'>
         <tr>
           <% if @tournament.tournament_type == "Pool to bracket" %>

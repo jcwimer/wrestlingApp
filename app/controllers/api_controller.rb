@@ -15,6 +15,10 @@ class ApiController < ApplicationController
     
     def tournament
         @tournament = Tournament.where(:id => params[:tournament]).includes(:schools,:weights,:mats,:matches,:user,:wrestlers).first
+        @schools = @tournament.schools.includes(:wrestlers)
+        @weights = @tournament.weights.includes(:wrestlers)
+        @matches = @tournament.matches.includes(:wrestlers,:schools)
+        @mats = @tournament.mats.includes(:matches)
     end
     
     def newTournament
