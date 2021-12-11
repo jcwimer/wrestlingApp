@@ -10,41 +10,25 @@
        (adsbygoogle = window.adsbygoogle || []).push({});
      </script>
 <% end %>
-    <div class="afs_ads">&nbsp;</div>
 	<div class="alert alert-danger alert-dismissible" id="blocked_message" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 		<p>We've detected that you have an ad blocker enabled! Please consider disabling it for <strong>wrestlingdev.com</strong>. This site is free for users and supported by ads. Ad blockers also block performance monitoring that help us with user experience.</p>
     </div>
 <script>
-(function() {
-    var message = "We've detected that you have an ad blocker enabled! Please consider disabling it for wrestlingdev.com. This site is free for users and supported by ads. Ad blockers also block performance monitoring that help us with user experience.";
-
-        // Define a function for showing the message.
-        // Set a timeout of 2 seconds to give adblocker
-        // a chance to do its thing
-        var tryMessage = function() {
-            setTimeout(function() {
-                if(!document.getElementsByClassName) return;
-                var ads = document.getElementsByClassName('afs_ads'),
-                    ad  = ads[ads.length - 1];
-
-                if(!ad
-                    || ad.innerHTML.length == 0
-                    || ad.clientHeight === 0) {
-                    //alert(message);
-		    document.getElementById("blocked_message").style.display = 'block';
-                    //window.location.href = '[URL of the donate page. Remove the two slashes at the start of thsi line to enable.]';
-                } else {
-                    ad.style.display = 'none';
-                }
-
-            }, 2000);
-        }
-
-        /* Attach a listener for page load ... then show the message */
-        if(window.addEventListener) {
-            window.addEventListener('load', tryMessage, false);
-        } else {
-            window.attachEvent('onload', tryMessage); //IE
-        }
-})();
+let fakeAd = document.createElement("div");
+  fakeAd.className = "textads banner-ads banner_ads ad-unit ad-zone ad-space adsbox"
+      
+  fakeAd.style.height = "1px"
+    
+  document.body.appendChild(fakeAd)
+    
+  let x_width = fakeAd.offsetHeight;
+  let msg = document.getElementById("msg")
+    
+      
+    if(x_width){
+      console.log("No AdBlocker Detected")
+    }else{
+      console.log("AdBlocker detected")
+      document.getElementById("blocked_message").style.display = 'block';
+    }
 </script>
