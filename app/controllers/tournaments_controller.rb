@@ -17,7 +17,7 @@ class TournamentsController < ApplicationController
     respond_to do |format|
       if @tournament.calculate_all_team_scores
         format.html { redirect_to "/tournaments/#{@tournament.id}", notice: 'Team scores are calcuating.' }
-        format.json { render action: 'show', status: :created, location: @tournament }
+        format.json { head :no_content }
       end
     end
   end
@@ -27,7 +27,7 @@ class TournamentsController < ApplicationController
     respond_to do |format|
       if WrestlingdevImporter.new(@tournament,import_text).import
         format.html { redirect_to "/tournaments/#{@tournament.id}", notice: 'Import is on-going. This will take 1-5 minutes.' }
-        format.json { render action: 'show', status: :created, location: @tournament }
+        format.json { head :no_content }
       end
     end
   end
