@@ -13,6 +13,7 @@ class SchoolsController < ApplicationController
   def show
     session.delete(:return_path)
     @wrestlers = @school.wrestlers.includes(:deductedPoints,:matches,:weight,:school)
+    @tournament = @school.tournament
   end
 
   # GET /schools/new
