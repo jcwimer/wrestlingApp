@@ -40,6 +40,12 @@ class Tournament < ActiveRecord::Base
 		end
 	end
 	
+	def calculate_all_team_scores
+		self.schools.each do |school|
+      school.calculate_score
+    end
+	end
+	
 	def create_pre_defined_weights(weight_classes)
 		weights.destroy_all
 		weight_classes.each do |w|

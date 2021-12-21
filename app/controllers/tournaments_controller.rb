@@ -14,11 +14,11 @@ class TournamentsController < ApplicationController
   end
 
   def calculate_team_scores
-    @tournament.schools.each do |school|
-      school.calculate_score
-    end
     respond_to do |format|
-      format.html { redirect_to "/tournaments/#{@tournament.id}", notice: 'Team scores are calcuating.' }
+      if @tournament.calculate_all_team_scores
+        format.html { redirect_to "/tournaments/#{@tournament.id}", notice: 'Team scores are calcuating.' }
+        format.json { render action: 'show', status: :created, location: @tournament }
+      end
     end
   end
 
