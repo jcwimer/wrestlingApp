@@ -85,9 +85,22 @@ class Wrestler < ActiveRecord::Base
 	def unfinished_matches
 		all_matches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
 	end
-
+	
 	def result_by_bout(bout)
 	   bout_match = all_matches.select{|m| m.bout_number == bout and m.finished == 1}
+	   if bout_match.size == 0
+ 		return ""
+	   end
+	   if bout_match.first.winner_id == self.id
+		return "W #{bout_match.first.bracket_score_string}"
+	   end
+	   if bout_match.first.winner_id != self.id
+		return "L #{bout_match.first.bracket_score_string}"
+	   end
+	end
+
+	def result_by_id(id)
+	   bout_match = all_matches.select{|m| m.id == id and m.finished == 1}
 	   if bout_match.size == 0
  		return ""
 	   end
@@ -117,6 +130,15 @@ class Wrestler < ActiveRecord::Base
 			return "BYE"
 		else
 			return round_match.bout_number
+		end
+	end
+	
+	def match_id_by_round(round)
+		round_match = all_matches.select{|m| m.round == round}.first
+		if round_match.blank?
+			return "BYE"
+		else
+			return round_match.id
 		end
 	end
 

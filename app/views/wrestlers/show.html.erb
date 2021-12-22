@@ -85,7 +85,7 @@
           <td><%= m.bout_number %></td>
           <td><%= m.bracket_position %></td>
           <td><%= m.list_w1_stats %><br><%= m.list_w2_stats %></td>
-          <td><%= @wrestler.result_by_bout(m.bout_number) %>
+          <td><%= @wrestler.result_by_id(m.id) %>
         </tr>
       <% end %>
     </tbody>
