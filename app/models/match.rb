@@ -137,7 +137,7 @@ class Match < ActiveRecord::Base
       	return_string_ending = return_string_ending + "</strong>"
       end
       if self.w1 != nil
-      	if self.round == 1
+      	if self.round == 1 and self.bracket_position == "Bracket"
           if self.wrestler1.original_seed
           	return_string = return_string + "[#{wrestler1.original_seed}] "
           end
@@ -159,7 +159,7 @@ class Match < ActiveRecord::Base
       	return_string_ending = return_string_ending + "</strong>"
       end
       if self.w2 != nil
-      	if self.round == 1
+      	if self.round == 1 and self.bracket_position == "Bracket"
       	  if self.wrestler2.original_seed
           	return_string = return_string + "#{wrestler2.original_seed} "
           end
