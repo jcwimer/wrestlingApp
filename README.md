@@ -34,6 +34,14 @@ From here, you can run the normal rails commands.
 
 To deploy a a full local version of the app `bash deploy/deploy-test.sh` (this requires docker-compose to be installed). This deploys a full version of the app. App, delayed job, memcached, and mariadb. Now, you can open [http://localhost](http://localhost). Delayed jobs are turned off in dev and everything that is a delayed job in prod just runs in browser.
 
+To run a single test file:
+1. Get a shell with ruby and rails: `bash bin/rails-dev-run.sh wrestlingdev-development`
+2. `rake test TEST=test/models/match_test.rb`
+
+To run a single test inside a file:
+1. Get a shell with ruby and rails: `bash bin/rails-dev-run.sh wrestlingdev-development`
+2. `rake test TEST=test/models/match_test.rb TESTOPTS="--name='/test_Match_should_not_be_valid_if_an_incorrect_win_type_is_given/'"`
+
 # Deployment
 
 The production version of this is currently deployed in Kubernetes. See [Deploying with Kubernetes](deploy/kubernetes/README.md)

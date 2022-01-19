@@ -87,7 +87,7 @@
   </div>
   <br>
   <div class="field">
-    <%= f.label "Final Score" %> Also put pin time here if applicable. If default or forfeit, leave blank. Example: 7-2, 17-2, or 2:34<br>
+    <%= f.label "Final Score" %> For decision, major, or tech fall put the score here in Number-Number format. If pin, put the accumulated pin time in the format MM:SS. If default, injury default, dq, bye, or forfeit, leave blank. Examples: 7-2, 17-2, 0:30, or 2:34<br>
     <%= f.text_field :score %>
   </div>
   <br>
@@ -104,6 +104,9 @@
 <% end %>
 
 <script>
+  // Localstorage
+  // https://stackoverflow.com/questions/12806198/how-do-i-save-data-on-localstorage-in-ruby-on-rails-3-2-8
+
   //Create person object
   function Person(stats){
   	this.stats=stats;
@@ -112,11 +115,28 @@
   //Declare variables
   var w1=new Person("");
   var w2=new Person("");
+  updatejsvalues();
+
+  // Get variables
+  var tournament=<%= @match.tournament.id %>;
+  var bout=<%= @match.bout_number %>;
+
+  // if localstorage tournament id and bout number are the same and the html stat values are blank
+  // if the html stat values are not blank we want to honor what came from the db
+  if (localStorage.getItem('wrestler1') && localStorage.tournament == tournament && localStorage.bout == bout && document.getElementById("match_w1_stat").value == "" && document.getElementById("match_w2_stat").value == "") {
+    w1.stats = localStorage.getItem('wrestler1');
+    w2.stats = localStorage.getItem('wrestler2');
+    updatehtmlvalues();
+  } else {
+    updateLocalStorage();
+  }
+
 
   function updatehtmlvalues(){
   	document.getElementById("match_w1_stat").value = w1.stats;
   	document.getElementById("match_w2_stat").value = w2.stats;
   }
+  
   function updatejsvalues(){
   	w1.stats=document.getElementById("match_w1_stat").value;
   	w2.stats=document.getElementById("match_w2_stat").value;
@@ -130,6 +150,14 @@
     updatejsvalues();
   	wrestler.stats = wrestler.stats + text + " ";
   	updatehtmlvalues();
+  	updateLocalStorage();
+  }
+  
+  function updateLocalStorage(){
+    localStorage.setItem("wrestler1",w1.stats);
+    localStorage.setItem("wrestler2",w2.stats);
+    localStorage.setItem("bout", bout);
+    localStorage.setItem("tournament", tournament);
   }
   
   //For Changing button colors
@@ -178,7 +206,7 @@
     redColor("w1-top");
     redColor("w1-bottom");
     redColor("w1-nuetral");
-    redColor("w1-differ");
+    redColor("w1-defer");
     redColor("w1-stalling");
     redColor("w1-caution");
   }
@@ -194,7 +222,7 @@
     greenColor("w1-top");
     greenColor("w1-bottom");
     greenColor("w1-nuetral");
-    greenColor("w1-differ");
+    greenColor("w1-defer");
     greenColor("w1-stalling");
     greenColor("w1-caution");
   }
@@ -210,7 +238,7 @@
     redColor("w2-top");
     redColor("w2-bottom");
     redColor("w2-nuetral");
-    redColor("w2-differ");
+    redColor("w2-defer");
     redColor("w2-stalling");
     redColor("w2-caution");
   }
@@ -226,7 +254,7 @@
     greenColor("w2-top");
     greenColor("w2-bottom");
     greenColor("w2-nuetral");
-    greenColor("w2-differ");
+    greenColor("w2-defer");
     greenColor("w2-stalling");
     greenColor("w2-caution");
   }

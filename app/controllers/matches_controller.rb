@@ -46,7 +46,7 @@ class MatchesController < ApplicationController
         end
         format.json { head :no_content }
       else
-        format.html { render action: 'edit' }
+        format.html { redirect_to session.delete(:return_path), alert: "Match did not save because: #{@match.errors.full_messages.to_s}" }
         format.json { render json: @match.errors, status: :unprocessable_entity }
       end
     end

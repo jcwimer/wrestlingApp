@@ -16,6 +16,7 @@ class PoolToBracketAdvancementTest < ActionDispatch::IntegrationTest
         match.winner_id = match.w2
       end
       match.finished = 1
+      match.win_type = "Decision"
       match.score = "2-1"
       match.save
     end

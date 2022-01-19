@@ -12,6 +12,7 @@ task :finish_seed_tournaments => :environment do
         end
         if match.winner_id
           match.finished = 1
+          match.win_type = "Decision"
           match.score = "2-1"
           match.save
         end

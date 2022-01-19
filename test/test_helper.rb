@@ -191,7 +191,7 @@ class ActiveSupport::TestCase
 
   def end_match(match,winner)
      match.win_type = "Decision"
-     match.score = 1-0
+     match.score = "1-0"
      save_match(match,winner)
   end
   

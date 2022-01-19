@@ -4,6 +4,7 @@ class Match < ActiveRecord::Base
 	belongs_to :mat, touch: true
 	has_many :wrestlers, :through => :weight
 	has_many :schools, :through => :wrestlers
+	validate :score_validation, :win_type_validation, :bracket_position_validation
         after_update :after_finished_actions, :if => :saved_change_to_finished? or :saved_change_to_winner_id? or :saved_change_to_win_type? or :saved_change_to_score?
 
 	def after_finished_actions
@@ -24,6 +25,34 @@ class Match < ActiveRecord::Base
     
     BRACKET_POSITIONS = ["Pool","1/2","3/4","5/6","7/8","Quarter","Semis","Conso Semis","Bracket","Conso", "Conso Quarter"]
 	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ", "BYE"]
+	
+	def score_validation
+		if finished == 1
+		    if win_type == "Pin" and ! score.match(/^[0-5]?[0-9]:[0-5][0-9]/)
+		    	errors.add(:score, "needs to be in time format MM:SS when win type is Pin example: 1:23 or 10:03")
+		    end
+		    if win_type == "Decision" or win_type == "Tech Fall" or win_type == "Major" and ! score.match(/^[0-9]?[0-9]-[0-9]?[0-9]/)
+		    	errors.add(:score, "needs to be in Number-Number format when win type is Decision, Tech Fall, and Major example: 10-2")
+		    end
+		    if (win_type == "Forfeit" or win_type == "Injury Default" or win_type == "Default" or win_type == "BYE" or win_type == "DQ") and (score != "")
+		    	errors.add(:score, "needs to be blank when win type is Forfeit, Injury Default, Default, BYE, or DQ win_type")
+		    end
+		end
+	end
+	
+	def win_type_validation
+	  if finished == 1
+	    if ! WIN_TYPES.include? win_type
+	  	  errors.add(:win_type, "can only be one of the following #{WIN_TYPES.to_s}")
+	    end
+	  end
+	end
+	
+	def bracket_position_validation
+	  if ! BRACKET_POSITIONS.include? bracket_position
+	  	errors.add(:bracket_position, "can only be one of the following #{BRACKET_POSITIONS.to_s}")
+	  end
+	end
 
 	def is_consolation_match
         if self.bracket_position == "Conso" or self.bracket_position == "Conso Quarter" or self.bracket_position == "Conso Semis" or self.bracket_position == "3/4" or self.bracket_position == "5/6" or self.bracket_position == "7/8"

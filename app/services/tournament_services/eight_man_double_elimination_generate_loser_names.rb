@@ -52,11 +52,13 @@ class EightManDoubleEliminationGenerateLoserNames
           if match.w1 != nil
             match.winner_id = match.w1
             match.loser2_name = "BYE"
+            match.score = ""
             match.save
             match.advance_wrestlers
           elsif match.w2 != nil
             match.winner_id = match.w2
             match.loser1_name = "BYE"
+            match.score = ""
             match.save
             match.advance_wrestlers
           end

@@ -40,6 +40,9 @@
                           <% if notice %>
                             <p id="notice" class="alert alert-success alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><%= notice %></p>
                           <% end %>
+                          <% if alert %>
+                            <p id="alert" class="alert alert-danger alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><%= alert %></p>
+                          <% end %>
                           <div id="view"><%= yield %></div>
                         </div>
                     </div>
