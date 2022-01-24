@@ -30,6 +30,7 @@ class WrestlersController < ApplicationController
 
   # GET /wrestlers/1/edit
   def edit
+    @tournament = @wrestler.tournament
     @weight = @wrestler.weight
     @weights = @school.tournament.weights.sort_by{|w| w.max}
     @school = @wrestler.school

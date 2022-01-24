@@ -15,34 +15,34 @@
 <table class="table">
   <thead>
       <tr>
-        <th>Name: <%= @w1.name %> <select id="w1-color" onchange="changeW1Color(this)">
+        <th>Name: <%= @wrestler1_name %> <select id="w1-color" onchange="changeW1Color(this)">
             <option value="green">Green</option>
             <option value="red">Red</option>
         </select>
-        <br>School: <%= @w1.school.name %>
-        <br>Last Match: <%= if @w1.last_match != nil then time_ago_in_words(@w1.last_match.updated_at) else "N/A" end%></th>
-        <th>Name: <%= @w2.name %> <select id="w2-color" onchange="changeW2Color(this)">
+        <br>School: <%= @wrestler1_school_name %>
+        <br>Last Match: <%= @wrestler1_last_match %></th>
+        <th>Name: <%= @wrestler2_name %> <select id="w2-color" onchange="changeW2Color(this)">
             <option value="red">Red</option>
             <option value="green">Green</option>
         </select>
-        <br>School: <%= @w2.school.name %>
-        <br>Last Match: <%= if @w2.last_match != nil then time_ago_in_words(@w2.last_match.updated_at) else "N/A" end%></th>
+        <br>School: <%= @wrestler2_school_name %>
+        <br>Last Match: <%= @wrestler2_last_match %></th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><%= @w1.name %> Stats: <br><%= f.text_area :w1_stat, cols: "30", rows: "10"  %></td>
-        <td><%= @w2.name %> Stats: <br><%= f.text_area :w2_stat, cols: "30", rows: "10"  %></td>
+        <td><%= @wrestler1_name %> Stats: <br><%= f.text_area :w1_stat, cols: "30", rows: "10"  %></td>
+        <td><%= @wrestler2_name %> Stats: <br><%= f.text_area :w2_stat, cols: "30", rows: "10"  %></td>
       </tr>
       <tr>
-        <td><%= @w1.name %> Scoring <br><button id="w1-takedown" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'T2')">T2</button>
+        <td><%= @wrestler1_name %> Scoring <br><button id="w1-takedown" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'T2')">T2</button>
         <button id="w1-escape" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'E1')">E1</button>
         <button id="w1-reversal" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'R2')">R2</button>
         <button id="w1-nf2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N2')">N2 </button>
         <button id="w1-nf3" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N3')">N3</button>
         <button id="w1-nf4" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N4')">N4</button>
         <button id="w1-penalty" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P1')">P1</button></td>
-        <td><%= @w2.name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'T2')">T2</button>
+        <td><%= @wrestler2_name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'T2')">T2</button>
         <button id="w2-escape" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'E1')">E1</button>
         <button id="w2-reversal" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'R2')">R2</button>
         <button id="w2-nf2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N2')">N2</button>
@@ -51,19 +51,19 @@
         <button id="w2-penalty" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P1')">P1</button></td>
       </tr>
       <tr>
-        <td><%= @w1.name %> Choice <br><button id="w1-top" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Top|')">Chose Top</button>
+        <td><%= @wrestler1_name %> Choice <br><button id="w1-top" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Top|')">Chose Top</button>
         <button id="w1-bottom" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Bottom|')">Chose Bottom</button>
         <button id="w1-nuetral" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Nuetral|')">Chose Nuetral</button>
         <button id="w1-defer" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Deferred|')">Deferred</button></td>
-        <td><%= @w2.name %> Choice <br><button id="w2-top" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Chose Top|')">Chose Top</button>
+        <td><%= @wrestler2_name %> Choice <br><button id="w2-top" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Chose Top|')">Chose Top</button>
         <button id="w2-bottom" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Chose Bottom|')">Chose Bottom</button>
         <button id="w2-nuetral" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Chose Nuetral|')">Chose Nuetral</button>
         <button id="w2-defer" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Deferred|')">Deferred</button></td>
       </tr>
       <tr>
-        <td><%= @w1.name %> Warnings <br><button id="w1-stalling" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'S')">Stalling</button>
+        <td><%= @wrestler1_name %> Warnings <br><button id="w1-stalling" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'S')">Stalling</button>
         <button id="w1-caution" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'C')">Caution</button></td>
-        <td><%= @w2.name %> Warnings <br><button id="w2-stalling" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'S')">Stalling</button>
+        <td><%= @wrestler2_name %> Warnings <br><button id="w2-stalling" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'S')">Stalling</button>
         <button id="w2-caution" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'C')">Caution</button></td>
       </tr>
       <tr>
@@ -83,7 +83,7 @@
   <br>
   <div class="field">
     <%= f.label "Winner" %> Please choose the winner<br>
-    <%= f.collection_select :winner_id, @wrestlers, :id, :name %>
+    <%= f.collection_select :winner_id, @wrestlers, :id, :name, include_blank: true %>
   </div>
   <br>
   <div class="field">

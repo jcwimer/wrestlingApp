@@ -2,12 +2,12 @@
 <%= form_for(@match) do |f| %>
 <div class="field">
     <%= f.label "Wrestler 1" %><br>
-    <%= f.collection_select :w1, @wrestlers, :id, :name %>
+    <%= f.collection_select :w1, @wrestlers, :id, :name, include_blank: true %>
 </div>
 <div>vs</div>
 <div class="field">
     <%= f.label "Wrestler 2" %><br>
-    <%= f.collection_select :w2, @wrestlers, :id, :name %>
+    <%= f.collection_select :w2, @wrestlers, :id, :name, include_blank: true %>
 </div>
 <div class="actions">
     <%= f.submit onclick: "return confirm('Is the name of the winner ' + document.getElementById('match_winner_id').options[document.getElementById('match_winner_id').selectedIndex].text + '?')", :class=>"btn btn-success" %>

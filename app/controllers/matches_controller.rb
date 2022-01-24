@@ -16,6 +16,7 @@ class MatchesController < ApplicationController
     end
     if @match
       @wrestlers = @match.weight.wrestlers
+      @tournament = @match.tournament
     end
     session[:return_path] = "/tournaments/#{@match.tournament.id}/matches"
   end
@@ -24,10 +25,36 @@ class MatchesController < ApplicationController
     if params[:match]
       @match = Match.where(:id => params[:match]).includes(:wrestlers).first
     end
+    @wrestlers = []
     if @match
-      @w1 = @match.wrestler1
-      @w2 = @match.wrestler2
-      @wrestlers = [@w1,@w2]
+      if @match.w1
+        @wrestler1_name = @match.wrestler1.name
+        @wrestler1_school_name = @match.wrestler1.school.name
+        if @match.wrestler1.last_match
+          @wrestler1_last_match = time_ago_in_words(@match.wrestler1.last_match.updated_at)
+        else
+          @wrestler1_last_match = "N/A"
+        end
+        @wrestlers.push(@match.wrestler1)
+      else
+        @wrestler1_name = "Not assigned"
+        @wrestler1_school_name = "N/A"
+        @wrestler1_last_match = "N/A"
+      end
+      if @match.w2
+        @wrestler2_name = @match.wrestler2.name
+        @wrestler2_school_name = @match.wrestler2.school.name
+        if @match.wrestler2.last_match
+          @wrestler2_last_match = time_ago_in_words(@match.wrestler2.last_match.updated_at)
+        else
+          @wrestler1_last_match = "N/A"
+        end
+        @wrestlers.push(@match.wrestler2)
+      else
+        @wrestler2_name = "Not assigned"
+        @wrestler2_school_name = "N/A"
+        @wrestler2_last_match = "N/A"
+      end
       @tournament = @match.tournament
     end
     session[:return_path] = "/tournaments/#{@tournament.id}/matches"

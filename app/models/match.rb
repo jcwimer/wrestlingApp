@@ -28,6 +28,9 @@ class Match < ActiveRecord::Base
 	
 	def score_validation
 		if finished == 1
+			if ! winner_id
+				errors.add(:winner_id, "cannot be blank")
+			end
 		    if win_type == "Pin" and ! score.match(/^[0-5]?[0-9]:[0-5][0-9]/)
 		    	errors.add(:score, "needs to be in time format MM:SS when win type is Pin example: 1:23 or 10:03")
 		    end
