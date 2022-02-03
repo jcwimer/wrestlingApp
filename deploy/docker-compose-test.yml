@@ -28,6 +28,7 @@ services:
       - WRESTLINGDEV_INFLUXDB_DATABASE=wrestlingdev
       - WRESTLINGDEV_INFLUXDB_HOST=influxdb
       - WRESTLINGDEV_INFLUXDB_PORT=8086
+      - PASSENGER_POOL_SIZE=${PASSENGER_POOL_SIZE}
     networks:
       database:
       caching:
@@ -67,6 +68,7 @@ services:
       - WRESTLINGDEV_INFLUXDB_DATABASE=wrestlingdev
       - WRESTLINGDEV_INFLUXDB_HOST=influxdb
       - WRESTLINGDEV_INFLUXDB_PORT=8086
+      - PASSENGER_POOL_SIZE=${PASSENGER_POOL_SIZE}
     networks:
       database:
       caching:

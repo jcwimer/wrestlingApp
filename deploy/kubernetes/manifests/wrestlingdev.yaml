@@ -34,12 +34,14 @@ spec:
         image: jcwimer/wrestlingdev:prod
         imagePullPolicy: Always
         command: ["bundle"]
-        args: ["exec", "passenger", "start", "-p", "80", "--max-pool-size", "3","--environment", "production"]
+        args: ["exec", "passenger", "start", "-p", "80", "--max-pool-size", "2","--environment", "production"]
         ports:
         - containerPort: 80
         env:
         - name: RAILS_ENV
           value: production
+        - name: PASSENGER_POOL_SIZE
+          value: "2"
         - name: WRESTLINGDEV_DB_NAME
           value: wrestlingdev
         - name: WRESTLINGDEV_DB_USR

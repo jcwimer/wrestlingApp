@@ -52,7 +52,7 @@ EXPOSE 443
 # Tini solves the zombie PID problem
 ENTRYPOINT ["/tini", "--"]
 
-CMD bundle exec passenger start --max-pool-size 2 --min-instances 2 --environment production -p 80
+CMD bundle exec passenger start --max-pool-size ${PASSENGER_POOL_SIZE} --min-instances ${PASSENGER_POOL_SIZE} --environment production -p 80
 # Higher max pool uses more ram
 # Followed recommendation from: https://blog.phusion.nl/2015/11/10/heroku-and-passenger-focus-on-the-app-performance/
 
