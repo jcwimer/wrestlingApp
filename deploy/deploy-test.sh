@@ -5,7 +5,7 @@ RAM_MB=$(expr $RAM_KB / 1024)
 RAM_GB=$(expr $RAM_MB / 1024)
 RAM_WITHOUT_OTHER_SERVICES=$(expr $RAM_MB - 1024) # other services use ~1024MB of RAM
 PASSENGER_POOL_FACTOR=$(expr $RAM_WITHOUT_OTHER_SERVICES / 256) # 2 pool workers use ~256MB of RAM
-PASSENGER_POOL_SIZE=$(expr $PASSENGER_POOL_FACTOR * 2)
+export PASSENGER_POOL_SIZE=$(expr $PASSENGER_POOL_FACTOR * 2)
 
 #docker build -t wrestlingdev:test -f ${project_dir}/deploy/rails-prod-Dockerfile ${project_dir}
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml kill
