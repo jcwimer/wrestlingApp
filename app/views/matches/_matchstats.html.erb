@@ -42,6 +42,7 @@
         <button id="w1-nf3" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N3')">N3</button>
         <button id="w1-nf4" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N4')">N4</button>
         <button id="w1-penalty" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P1')">P1</button></td>
+        <button id="w1-penalty2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w1,'P2')">P2</button></td>
         <td><%= @wrestler2_name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'T2')">T2</button>
         <button id="w2-escape" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'E1')">E1</button>
         <button id="w2-reversal" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'R2')">R2</button>
@@ -49,6 +50,7 @@
         <button id="w2-nf3" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N3')">N3</button>
         <button id="w2-nf4" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N4')">N4</button>
         <button id="w2-penalty" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P1')">P1</button></td>
+        <button id="w2-penalty2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P2')">P2</button></td>
       </tr>
       <tr>
         <td><%= @wrestler1_name %> Choice <br><button id="w1-top" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Top|')">Chose Top</button>
@@ -200,6 +202,7 @@
     redColor("w1-escape");
     redColor("w1-reversal");
     redColor("w1-penalty");
+    redColor("w1-penalty2");
     redColor("w1-nf4");
     redColor("w1-nf3");
     redColor("w1-nf2");
@@ -216,6 +219,7 @@
     greenColor("w1-escape");
     greenColor("w1-reversal");
     greenColor("w1-penalty");
+    greenColor("w1-penalty2");
     greenColor("w1-nf4");
     greenColor("w1-nf3");
     greenColor("w1-nf2");
@@ -232,6 +236,7 @@
     redColor("w2-escape");
     redColor("w2-reversal");
     redColor("w2-penalty");
+    redColor("w2-penalty2");
     redColor("w2-nf4");
     redColor("w2-nf3");
     redColor("w2-nf2");
@@ -248,6 +253,7 @@
     greenColor("w2-escape");
     greenColor("w2-reversal");
     greenColor("w2-penalty");
+    greenColor("w2-penalty2");
     greenColor("w2-nf4");
     greenColor("w2-nf3");
     greenColor("w2-nf2");
