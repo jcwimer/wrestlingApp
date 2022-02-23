@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_22_161151) do
+ActiveRecord::Schema.define(version: 2022_02_23_185853) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 2021_02_22_161151) do
     t.index ["mat_id"], name: "index_matches_on_mat_id"
     t.index ["tournament_id"], name: "index_matches_on_tournament_id"
     t.index ["w1", "w2"], name: "index_matches_on_w1_and_w2"
+    t.index ["weight_id"], name: "index_matches_on_weight_id"
   end
 
   create_table "mats", force: :cascade do |t|
@@ -150,6 +151,7 @@ ActiveRecord::Schema.define(version: 2021_02_22_161151) do
     t.integer "pool"
     t.integer "pool_placement"
     t.string "pool_placement_tiebreaker"
+    t.index ["school_id"], name: "index_wrestlers_on_school_id"
     t.index ["weight_id"], name: "index_wrestlers_on_weight_id"
   end
 
