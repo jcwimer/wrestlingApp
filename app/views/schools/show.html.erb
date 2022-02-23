@@ -1,3 +1,4 @@
+<% cache ["#{@school.id}_school_show", @school] do %>
   <p>
     <strong>Name:</strong>
     <%= @school.name %>
@@ -60,7 +61,7 @@
       <% end %>
     </tbody>
   </table>
-
+<% end %>
 <% if can? :manage, @school %>
   <%= render 'baums_roster_import' %>
 <% end %>
