@@ -1,11 +1,11 @@
-<% if @users %>
     <h1>Search results</h1> <%= form_tag(tournament_delegate_path, :method => "get", id: "search-form") do %>
                                     <%= text_field_tag :search, params[:search], placeholder: "Search users" %>
                                     <%= submit_tag "Search" %>
                                   <% end %>
-                                  <p>Search by email address</p>
+                                  <p>Search by email address to delegate tournament permissions</p>
     </br>
     </br>
+<% if @user %>
     <table class="table table-striped table-bordered table-condensed">
         	<thead>
         		<tr>
@@ -14,32 +14,23 @@
         		</tr>
         	</thead>
         	<tbody>
-        		<% @users.each do |user| %>
               			<tr>
-              				<td><%= user.email %></td>
+              				<td><%= @user.email %></td>
               				<td>
               			<%= form_for TournamentDelegate.new, :url => url_for(:controller => 'tournaments', :action => 'delegate', :method => "post") do |f| %>
-                  		    <%= f.hidden_field :user_id, :value => user.id %>
+                  		    <%= f.hidden_field :user_id, :value => @user.id %>
                             <% if can? :manage, @tournament %>
                               <%= submit_tag "Give permissions", :class=>"btn btn-success"%>
                             <% end %>
                         <% end %>
                       </td>
               			</tr>
-            	
-            <% end %>
           	</tbody>
         </table>
 <% end %>
 
 <% if @users_delegates %>
-    <h1>Delegated users</h1> <%= form_tag(tournament_delegate_path, :method => "get", id: "search-form") do %>
-                                    <%= text_field_tag :search, params[:search], placeholder: "Search users" %>
-                                    <%= submit_tag "Search" %>
-                                  <% end %>
-                                  <p>Search by email address</p>
-    </br>
-    </br>
+    <h1>Delegated users</h1>
     <table class="table table-striped table-bordered table-condensed">
         	<thead>
         		<tr>

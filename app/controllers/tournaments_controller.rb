@@ -92,7 +92,7 @@ class TournamentsController < ApplicationController
 
   def school_delegate
     if params[:search]
-      @users = User.limit(200).search(params[:search])
+      @user = User.where('email = ?', params[:search]).first
     elsif params[:school_delegate]
       @delegate = SchoolDelegate.new
       @delegate.user_id = params[:school_delegate]["user_id"]
@@ -104,19 +104,18 @@ class TournamentsController < ApplicationController
           format.html { redirect_to "/tournaments/#{@tournament.id}/school_delegate", notice: 'There was an issue delegating permissions please try again' }
         end
       end
-    else
-      @users_delegates = []
-      @tournament.schools.each do |s|
-        s.delegates.each do |d|
-          @users_delegates << d
-        end
+    end
+    @users_delegates = []
+    @tournament.schools.each do |s|
+      s.delegates.each do |d|
+        @users_delegates << d
       end
     end
   end
 
   def delegate
     if params[:search]
-      @users = User.limit(200).search(params[:search])
+      @user = User.where('email = ?', params[:search]).first
     elsif params[:tournament_delegate]
       @delegate = TournamentDelegate.new
       @delegate.user_id = params[:tournament_delegate]["user_id"]
@@ -128,9 +127,8 @@ class TournamentsController < ApplicationController
           format.html { redirect_to "/tournaments/#{@tournament.id}/delegate", notice: 'There was an issue delegating permissions please try again' }
         end
       end
-    else
-      @users_delegates = @tournament.delegates
     end
+    @users_delegates = @tournament.delegates
   end
 
   def matches
@@ -230,9 +228,9 @@ class TournamentsController < ApplicationController
   end
 
   def show
-    @schools = @tournament.schools.includes(:delegates)
+    @schools = @tournament.schools.includes(:delegates).sort_by{|school|school.name}
     @weights = @tournament.weights.sort_by{|x|[x.max]}
-    @mats = @tournament.mats
+    @mats = @tournament.mats.sort_by{|mat|mat.name}
   end
 
   def new
