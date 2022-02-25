@@ -82,6 +82,7 @@ class WrestlingdevImporter
 
   def parse_wrestlers(wrestlers)
     wrestlers.each do | wrestler |
+      puts wrestler
       wrestler_array = wrestler.split(@attribute_separator,-1)
       new_wrestler = Wrestler.new
       new_wrestler.name = wrestler_array[0]
@@ -107,6 +108,7 @@ class WrestlingdevImporter
 
   def parse_matches(matches)
     matches.each do | match |
+      puts match
       @tournament.reload
       @tournament.mats.reload
       match_array = match.split(@attribute_separator,-1)
@@ -147,6 +149,7 @@ class WrestlingdevImporter
 
   def parse_schools(schools)
     schools.each do | school |
+      puts school
       school_array = school.split(@attribute_separator,-1)
       new_school = School.new
       new_school.tournament_id = @tournament.id
@@ -158,6 +161,7 @@ class WrestlingdevImporter
 
   def parse_weights(weights)
     weights.each do | weight |
+      puts weight
       weight_array = weight.split(@attribute_separator,-1)
       new_weight = Weight.new
       new_weight.tournament_id = @tournament.id
@@ -168,6 +172,7 @@ class WrestlingdevImporter
 
   def parse_mats(mats)
     mats.each do | mat |
+      puts mat
       mat_array = mat.split(@attribute_separator,-1)
       new_mat = Mat.new
       new_mat.tournament_id = @tournament.id
