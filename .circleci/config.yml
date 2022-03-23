@@ -20,7 +20,9 @@ jobs:
          
  # https://github.com/circleci/circleci-docs/blob/master/jekyll/_cci1/continuous-deployment-with-heroku.md
  deploy:
-   machine: true
+   machine:
+     image: ubuntu-2004:current
+     docker_layer_caching: true
    steps:
      - checkout
      - run: |
