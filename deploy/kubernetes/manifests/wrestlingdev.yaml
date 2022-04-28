@@ -100,7 +100,6 @@ spec:
              key: influxdb_port
         resources:
           limits:
-            cpu: "0.5"
             memory: "768Mi"
           requests:
             memory: "300Mi"
@@ -119,7 +118,7 @@ metadata:
   name: wrestlingdev-app-deployment-autoscale
 spec:
   scaleTargetRef:
-    apiVersion: extensions/v1beta1
+    apiVersion: apps/v1
     kind: Deployment
     name: wrestlingdev-app-deployment
   minReplicas: 2
@@ -223,7 +222,6 @@ spec:
         args: ["exec", "bin/delayed_job", "-n", "1", "run"]
         resources:
           limits:
-            cpu: "0.5"
             memory: "512Mi"
           requests:
             memory: "200Mi"

@@ -64,7 +64,6 @@ spec:
           mountPath: /var/lib/mysql
         resources:
           limits:
-            cpu: "0.5"
             memory: "512Mi"
           requests:
             memory: "256Mi"
@@ -128,7 +127,6 @@ spec:
           mountPath: /var/lib/mysql
         resources:
           limits:
-            cpu: "0.2"
             memory: "100Mi"
           requests:
             memory: "50Mi"
@@ -162,7 +160,6 @@ spec:
           value: "7"
         resources:
           limits:
-            cpu: "100m"
             memory: "128Mi"
           requests:
             memory: "32Mi"

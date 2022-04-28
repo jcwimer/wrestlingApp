@@ -48,7 +48,6 @@ spec:
           mountPath: /var/lib/influxdb
         resources:
           limits:
-            cpu: "0.7"
             memory: "512Mi"
           requests:
             memory: "128Mi"
