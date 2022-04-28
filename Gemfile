@@ -42,7 +42,6 @@ gem 'spring', :group => :development
 group :production do
   gem 'rails_12factor'
   gem 'mysql2'
-  gem 'therubyracer'
   gem 'newrelic_rpm'
   gem 'dalli'
 end
