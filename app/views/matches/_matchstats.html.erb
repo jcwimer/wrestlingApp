@@ -20,13 +20,13 @@
             <option value="red">Red</option>
         </select>
         <br>School: <%= @wrestler1_school_name %>
-        <br>Last Match: <%= @wrestler1_last_match %></th>
+        <br>Last Match: <%= @wrestler1_last_match ? time_ago_in_words(@wrestler1_last_match.updated_at) : "N/A" %></th>
         <th>Name: <%= @wrestler2_name %> <select id="w2-color" onchange="changeW2Color(this)">
             <option value="red">Red</option>
             <option value="green">Green</option>
         </select>
         <br>School: <%= @wrestler2_school_name %>
-        <br>Last Match: <%= @wrestler2_last_match %></th>
+        <br>Last Match: <%= @wrestler2_last_match ? time_ago_in_words(@wrestler2_last_match.updated_at) : "N/A" %></th>
       </tr>
     </thead>
     <tbody>
@@ -41,15 +41,15 @@
         <button id="w1-nf2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N2')">N2 </button>
         <button id="w1-nf3" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N3')">N3</button>
         <button id="w1-nf4" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N4')">N4</button>
-        <button id="w1-penalty" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P1')">P1</button></td>
-        <button id="w1-penalty2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w1,'P2')">P2</button></td>
+        <button id="w1-penalty" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P1')">P1</button>
+        <button id="w1-penalty2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P2')">P2</button></td>
         <td><%= @wrestler2_name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'T2')">T2</button>
         <button id="w2-escape" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'E1')">E1</button>
         <button id="w2-reversal" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'R2')">R2</button>
         <button id="w2-nf2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N2')">N2</button>
         <button id="w2-nf3" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N3')">N3</button>
         <button id="w2-nf4" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N4')">N4</button>
-        <button id="w2-penalty" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P1')">P1</button></td>
+        <button id="w2-penalty" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P1')">P1</button>
         <button id="w2-penalty2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P2')">P2</button></td>
       </tr>
       <tr>

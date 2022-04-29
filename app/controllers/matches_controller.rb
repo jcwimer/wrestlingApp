@@ -30,30 +30,22 @@ class MatchesController < ApplicationController
       if @match.w1
         @wrestler1_name = @match.wrestler1.name
         @wrestler1_school_name = @match.wrestler1.school.name
-        if @match.wrestler1.last_match
-          @wrestler1_last_match = time_ago_in_words(@match.wrestler1.last_match.updated_at)
-        else
-          @wrestler1_last_match = "N/A"
-        end
+        @wrestler1_last_match = @match.wrestler1.last_match
         @wrestlers.push(@match.wrestler1)
       else
         @wrestler1_name = "Not assigned"
         @wrestler1_school_name = "N/A"
-        @wrestler1_last_match = "N/A"
+        @wrestler1_last_match = nil
       end
       if @match.w2
         @wrestler2_name = @match.wrestler2.name
         @wrestler2_school_name = @match.wrestler2.school.name
-        if @match.wrestler2.last_match
-          @wrestler2_last_match = time_ago_in_words(@match.wrestler2.last_match.updated_at)
-        else
-          @wrestler1_last_match = "N/A"
-        end
+        @wrestler2_last_match = @match.wrestler2.last_match
         @wrestlers.push(@match.wrestler2)
       else
         @wrestler2_name = "Not assigned"
         @wrestler2_school_name = "N/A"
-        @wrestler2_last_match = "N/A"
+        @wrestler2_last_match = nil
       end
       @tournament = @match.tournament
     end
