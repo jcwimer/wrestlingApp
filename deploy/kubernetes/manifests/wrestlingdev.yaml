@@ -134,9 +134,9 @@ spec:
   #     targetAverageValue: 100Mi
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: wrestlingdev-worker-deployment
+  name: wrestlingdev-worker
   labels:
     app: wrestlingdev
 spec:
@@ -144,6 +144,7 @@ spec:
   selector:
     matchLabels:
       app: wrestlingdev
+  serviceName: wrestlingdev-worker
   template:
     metadata:
       labels:
@@ -183,11 +184,6 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: devisesecretkey
-        - name: WRESTLINGDEV_SECRET_KEY_BASE
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: railssecretkey
         - name: WRESTLINGDEV_SECRET_KEY_BASE
           valueFrom:
            secretKeyRef:

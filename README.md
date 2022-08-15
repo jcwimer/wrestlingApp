@@ -42,6 +42,15 @@ To run a single test inside a file:
 1. Get a shell with ruby and rails: `bash bin/rails-dev-run.sh wrestlingdev-development`
 2. `rake test TEST=test/models/match_test.rb TESTOPTS="--name='/test_Match_should_not_be_valid_if_an_incorrect_win_type_is_given/'"`
 
+## Update gems
+
+1. `bash bin/run-rails-dev.sh wrestlingdev-dev` to open a contianer with a rails shell available
+2. `bundle config --delete without` to remove the bundle config that ignores production gems
+3. `bundle update`
+
+Note: If updating rails, do not change the version in `Gemfile` until after you run `bash bin/run-rails-dev.sh wrestlingdev-dev`. Creating the container will fail due to a mismatch in Gemfile and Gemfile.lock.
+Then run `rails app:update` to update rails.
+
 # Deployment
 
 The production version of this is currently deployed in Kubernetes. See [Deploying with Kubernetes](deploy/kubernetes/README.md)
