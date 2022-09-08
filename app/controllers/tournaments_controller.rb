@@ -221,7 +221,8 @@ class TournamentsController < ApplicationController
 
   def index
     if params[:search]
-      @tournaments = Tournament.limit(200).search(params[:search]).order("created_at DESC")
+      # @tournaments = Tournament.limit(200).search(params[:search]).order("date DESC")
+      @tournaments = Tournament.limit(200).search_date_name(params[:search]).order("date DESC")
     else
       @tournaments = Tournament.all.sort_by{|t| t.days_until_start}.first(20)
     end

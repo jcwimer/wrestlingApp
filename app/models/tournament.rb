@@ -16,9 +16,26 @@ class Tournament < ActiveRecord::Base
         Delayed::Job.where(job_owner_id: self.id)
 	end
 
-	def self.search(search)
-	  where("date LIKE ? or name LIKE ?", "%#{search}%", "%#{search}%")
-	end
+	def self.search_date_name(pattern)
+  if pattern.blank?  # blank? covers both nil and empty string
+    all
+  else
+    search_functions = []
+    search_variables = []
+    search_terms = pattern.split(' ').map{|word| "%#{word.downcase}%"}
+    search_terms.each do |word|
+      search_functions << '(LOWER(name) LIKE ? or LOWER(date) LIKE ?)'
+      # add twice for both ?'s in the function above
+      search_variables << word
+      search_variables << word
+    end
+    like_patterns = search_functions.join(' and ')
+    # puts "where(#{like_patterns})"
+    # puts *search_variables
+    # example: (LOWER(name LIKE ? or LOWER(date) LIKE ?) and (LOWER(name) LIKE ? or LOWER(date) LIKE ?), %test%, %test%, %2016%, %2016%
+    where("#{like_patterns}", *search_variables)
+  end
+end
 
 	def days_until_start
 		time = (Date.today - self.date).to_i
