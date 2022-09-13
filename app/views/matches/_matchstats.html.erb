@@ -84,12 +84,17 @@
   </div>
   <br>
   <div class="field">
+    <%= f.label "Overtime Type" %> Leave blank if not overtime. For High School the 1st overtime is SV-1, second overtime is TB-1, third overtime is UTB.<br>
+    <%= f.select(:overtime_type, Match::OVERTIME_TYPES) %>
+  </div>
+  <br>
+  <div class="field">
     <%= f.label "Winner" %> Please choose the winner<br>
     <%= f.collection_select :winner_id, @wrestlers, :id, :name, include_blank: true %>
   </div>
   <br>
   <div class="field">
-    <%= f.label "Final Score" %> For decision, major, or tech fall put the score here in Number-Number format. If pin, put the accumulated pin time in the format MM:SS. If default, injury default, dq, bye, or forfeit, leave blank. Examples: 7-2, 17-2, 0:30, or 2:34<br>
+    <%= f.label "Final Score" %> For decision, major, or tech fall put the score here in Number-Number format. If pin, put the accumulated pin time in the format MM:SS. If default, injury default, dq, bye, or forfeit, leave blank. Examples: 7-2, 17-2, 0:30, or 2:34.<br>
     <%= f.text_field :score %>
   </div>
   <br>

@@ -26,6 +26,8 @@ jobs:
    steps:
      - checkout
      - run: |
+         echo Deploys are happening on my home Jenkins server
+         echo this is a placeholder in case I want to move that
          cat >~/.netrc <<EOF
          machine api.heroku.com
            login $HEROKU_EMAIL
@@ -34,8 +36,8 @@ jobs:
            login $HEROKU_EMAIL
            password $HEROKU_TOKEN
          EOF
-         chmod 600 ~/.netrc # Heroku cli complains about permissions without this
-         heroku git:remote -a wrestlingapp
-         git push heroku master
-         sleep 20s
-         heroku run rake db:migrate --app wrestlingapp
+         #chmod 600 ~/.netrc # Heroku cli complains about permissions without this
+         #heroku git:remote -a wrestlingapp
+         #git push heroku master
+         #sleep 20s
+         #heroku run rake db:migrate --app wrestlingapp

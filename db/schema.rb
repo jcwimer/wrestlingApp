@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_23_185853) do
+ActiveRecord::Schema.define(version: 2022_09_12_171922) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 2022_02_23_185853) do
     t.string "loser1_name"
     t.string "loser2_name"
     t.integer "mat_id"
+    t.string "overtime_type"
     t.index ["mat_id"], name: "index_matches_on_mat_id"
     t.index ["tournament_id"], name: "index_matches_on_tournament_id"
     t.index ["w1", "w2"], name: "index_matches_on_w1_and_w2"

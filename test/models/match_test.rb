@@ -117,4 +117,13 @@ class MatchTest < ActiveSupport::TestCase
      match.save
      assert !match.valid?
    end
+   test "Match should not be valid if an incorrect overtime_type is given" do
+     create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
+     matches = @tournament.matches.reload
+     round1 = matches.select{|m| m.round == 1}
+     match = matches.first
+     match.overtime_type = "TEST"
+     match.save
+     assert !match.valid?
+   end
 end

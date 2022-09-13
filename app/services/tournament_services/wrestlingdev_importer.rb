@@ -143,6 +143,7 @@ class WrestlingdevImporter
       new_match.loser1_name = match_array[13]
       new_match.loser2_name = match_array[14]
       # new_match.mat_id = mat_id if match_array[15].size > 0
+      new_match.overtime_type = match_array[16]
       new_match.save
     end
   end

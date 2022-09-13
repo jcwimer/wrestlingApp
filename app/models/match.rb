@@ -4,7 +4,7 @@ class Match < ActiveRecord::Base
 	belongs_to :mat, touch: true
 	has_many :wrestlers, :through => :weight
 	has_many :schools, :through => :wrestlers
-	validate :score_validation, :win_type_validation, :bracket_position_validation
+	validate :score_validation, :win_type_validation, :bracket_position_validation, :overtime_type_validation
         after_update :after_finished_actions, :if => :saved_change_to_finished? or :saved_change_to_winner_id? or :saved_change_to_win_type? or :saved_change_to_score?
 
 	def after_finished_actions
@@ -25,6 +25,7 @@ class Match < ActiveRecord::Base
     
     BRACKET_POSITIONS = ["Pool","1/2","3/4","5/6","7/8","Quarter","Semis","Conso Semis","Bracket","Conso", "Conso Quarter"]
 	WIN_TYPES = ["Decision", "Major", "Tech Fall", "Pin", "Forfeit", "Injury Default", "Default", "DQ", "BYE"]
+	OVERTIME_TYPES = ["", "SV-1", "TB-1", "UTB", "SV-2", "TB-2", "OT"] # had to keep the blank here for validations
 	
 	def score_validation
 		if finished == 1
@@ -48,6 +49,13 @@ class Match < ActiveRecord::Base
 	    if ! WIN_TYPES.include? win_type
 	  	  errors.add(:win_type, "can only be one of the following #{WIN_TYPES.to_s}")
 	    end
+	  end
+	end
+	
+	def overtime_type_validation
+	  # overtime_type can be nil or of type OVERTIME_TYPES
+	  if overtime_type != nil and ! OVERTIME_TYPES.include? overtime_type
+	  	  errors.add(:overtime_type, "can only be one of the following #{OVERTIME_TYPES.to_s}")
 	  end
 	end
 	
@@ -122,9 +130,11 @@ class Match < ActiveRecord::Base
 		  return ""
 		end
 		if self.finished == 1
-		  if self.win_type == "Default"
-		  	return "(Def)"
-		  elsif self.win_type == "Injury Default"
+		  overtime_type_abbreviation = ""
+		  if self.overtime_type != "" and self.overtime_type
+		  	overtime_type_abbreviation = " #{self.overtime_type}"
+		  end
+		  if self.win_type == "Injury Default"
 		  	return "(Inj)"
 		  elsif self.win_type == "DQ"
 		  	return "(DQ)"
@@ -132,7 +142,7 @@ class Match < ActiveRecord::Base
 		  	return "(FF)"
 		  else
 		  	win_type_abbreviation = "#{self.win_type.chars.to_a[0..2].join('')}"
-		  	return "(#{win_type_abbreviation} #{self.score})"
+		  	return "(#{win_type_abbreviation} #{self.score}#{overtime_type_abbreviation})"
 		  end
 		end
 	end
