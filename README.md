@@ -44,7 +44,7 @@ To run a single test inside a file:
 
 ## Update gems
 
-1. `bash bin/run-rails-dev.sh wrestlingdev-dev` to open a contianer with a rails shell available
+1. `bash bin/rails-dev-run.sh wrestlingdev-dev` to open a contianer with a rails shell available
 2. `bundle config --delete without` to remove the bundle config that ignores production gems
 3. `bundle update`
 
