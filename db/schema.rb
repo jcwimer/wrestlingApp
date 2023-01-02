@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_12_171922) do
+ActiveRecord::Schema.define(version: 2023_01_02_040503) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 2022_09_12_171922) do
     t.integer "user_id"
     t.integer "curently_generating_matches"
     t.date "date"
+    t.boolean "is_public"
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 

@@ -21,6 +21,7 @@ class ActiveSupport::TestCase
     @tournament.director_email= "test@test.com"
     @tournament.tournament_type = "Pool to bracket"
     @tournament.date = "2015-12-30"
+    @tournament.is_public = true
     @tournament.save
     @school = School.new
     @school.name = "Test"
@@ -43,6 +44,7 @@ class ActiveSupport::TestCase
     @tournament.director_email= "test@test.com"
     @tournament.tournament_type = "Regular Double Elimination 1-6"
     @tournament.date = "2015-12-30"
+    @tournament.is_public = true
     @tournament.save
     @school = School.new
     @school.name = "Test"
@@ -65,6 +67,7 @@ class ActiveSupport::TestCase
     @tournament.director_email= "test@test.com"
     @tournament.tournament_type = tournament_type
     @tournament.date = "2015-12-30"
+    @tournament.is_public = true
     @tournament.save
     @school = School.new
     @school.name = "Test"
@@ -100,6 +103,7 @@ class ActiveSupport::TestCase
     @tournament.director_email= "test@test.com"
     @tournament.tournament_type = "Pool to bracket"
     @tournament.date = "2015-12-30"
+    @tournament.is_public = true
     @tournament.save
     
     # First school

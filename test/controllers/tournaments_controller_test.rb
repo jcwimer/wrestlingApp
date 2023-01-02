@@ -14,6 +14,18 @@ class TournamentsControllerTest < ActionController::TestCase
   def post_update
     patch :update, params: { id: 1, tournament: {name: @tournament.name} }
   end
+
+  def get_bracket
+    get :up_matches, params: { id: 1 }
+  end
+
+  def get_all_brackets
+    get :all_brackets, params: { id: 1 }
+  end
+
+  def get_up_matches
+    get :up_matches, params: { id: 1 }
+  end
  
   def get_edit
     get :edit, params: { id: 1 }
@@ -211,6 +223,248 @@ class TournamentsControllerTest < ActionController::TestCase
     redirect
   end
   
+  # BRACKETS PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
+  test "logged in school delegate cannot get bracket page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_school_delegate
+    get_bracket
+    redirect
+  end
+  
+  test "logged in user cannot get bracket page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_non_owner
+    get_bracket
+    redirect
+  end
+  
+  test "logged in tournament delegate can get bracket page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_delegate
+    get_bracket
+    success
+  end
+  
+  test "logged in tournament owner can get bracket page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_owner
+    get_bracket
+    success
+  end
+  
+  test "non logged in user cannot get bracket page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    get_bracket
+    redirect 
+  end
+  
+  # BRACKETS PAGE PERMISSIONS WHEN TOURNAMENT IS PUBLIC
+  test "logged in school delegate can get bracket page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_school_delegate
+    get_bracket
+    success
+  end
+  
+  test "logged in user can get bracket page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_non_owner
+    get_bracket
+    success
+  end
+  
+  test "logged in tournament delegate can get bracket page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_delegate
+    get_bracket
+    success
+  end
+  
+  test "logged in tournament owner can get bracket page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_owner
+    get_bracket
+    success
+  end
+  
+  test "non logged in user can get bracket page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    get_bracket
+    success 
+  end
+  # END BRACKETS PAGE PERMISSIONS
+
+  # ALL BRACKETS PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
+  test "logged in school delegate cannot get all brackets page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_school_delegate
+    get_all_brackets
+    redirect
+  end
+  
+  test "logged in user cannot get all brackets page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_non_owner
+    get_all_brackets
+    redirect
+  end
+  
+  test "logged in tournament delegate can get all brackets page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_delegate
+    get_all_brackets
+    success
+  end
+  
+  test "logged in tournament owner can get all brackets page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_owner
+    get_all_brackets
+    success
+  end
+  
+  test "non logged in user cannot get all brackets page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    get_all_brackets
+    redirect 
+  end
+  
+  # ALL BRACKETS PAGE PERMISSIONS WHEN TOURNAMENT IS PUBLIC
+  test "logged in school delegate can get all brackets page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_school_delegate
+    get_all_brackets
+    success
+  end
+  
+  test "logged in user can get all brackets page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_non_owner
+    get_all_brackets
+    success
+  end
+  
+  test "logged in tournament delegate can get all brackets page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_delegate
+    get_all_brackets
+    success
+  end
+  
+  test "logged in tournament owner can get all brackets page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_owner
+    get_all_brackets
+    success
+  end
+  
+  test "non logged in user can get all brackets page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    get_all_brackets
+    success 
+  end
+  # END ALL BRACKETS PAGE PERMISSIONS
+
+  # UP MATCHES PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
+  test "logged in school delegate cannot get up matches page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_school_delegate
+    get_up_matches
+    redirect
+  end
+  
+  test "logged in user cannot get up matches page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_non_owner
+    get_up_matches
+    redirect
+  end
+  
+  test "logged in tournament delegate can get up matches page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_delegate
+    get_up_matches
+    success
+  end
+  
+  test "logged in tournament owner can get up matches page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_owner
+    get_up_matches
+    success
+  end
+  
+  test "non logged in user cannot get up matches page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    get_up_matches
+    redirect 
+  end
+  
+  # UP MATCHES PAGE PERMISSIONS WHEN TOURNAMENT IS PUBLIC
+  test "logged in school delegate can get up matches page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_school_delegate
+    get_up_matches
+    success
+  end
+  
+  test "logged in user can get up matches page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_non_owner
+    get_up_matches
+    success
+  end
+  
+  test "logged in tournament delegate can get up matches page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_delegate
+    get_up_matches
+    success
+  end
+  
+  test "logged in tournament owner can get up matches page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_owner
+    get_up_matches
+    success
+  end
+  
+  test "non logged in user can get up matches page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    get_up_matches
+    success 
+  end
+  # END UP MATCHES PAGE PERMISSIONS
 
 #TESTS THAT NEED MATCHES PUT ABOVE THIS
   test "redirect up_matches if no matches" do

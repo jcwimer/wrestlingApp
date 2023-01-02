@@ -43,6 +43,15 @@
 <%= f.hidden_field :user_id, :value => current_user.id %>
     <br>
     <br>
+  <div class="field">
+    <%= f.label "Information is public" %> <br />
+    <%= f.check_box :is_public %> <br />
+  </div>
+  <div>
+    Leave this unchecked until you're ready to share seeding info, brackets, and lineups.
+  </div>
+  <br>
+  <br>
   <div class="actions">
     <%= f.submit 'Submit',:class=>"btn btn-success" %>
   </div>

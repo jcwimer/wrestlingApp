@@ -9,3 +9,4 @@ one:
   tournament_type: Pool to bracket
   user_id: 1
   date: 2015-12-30
+  is_public: true

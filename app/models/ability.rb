@@ -38,6 +38,16 @@ class Ability
       cannot :destroy, Tournament do |tournament|
         tournament.delegates.map(&:user_id).include? user.id
       end
+      # Can read tournament if tournament owner or tournament delegate
+      can :read, Tournament do |tournament|
+        if tournament.is_public
+          true
+        elsif tournament.delegates.map(&:user_id).include? user.id or tournament.user_id == user.id
+          true
+        else
+          false
+        end
+      end
       #Can manage school if tournament owner
       can :manage, School do |school|
         school.tournament.user_id == user.id
@@ -52,6 +62,34 @@ class Ability
       end
       cannot :destroy, School do |school|
         school.delegates.map(&:user_id).include? user.id
+      end
+      # Can read school if school delegate, tournament delegate, or tournament director
+      can :read, School do |school|
+        if school.tournament.is_public
+          true
+        elsif school.delegates.map(&:user_id).include? user.id or school.tournament.delegates.map(&:user_id).include? user.id or school.tournament.user_id == user.id
+          true
+        else
+          false
+        end
+      end
+    # Default for non logged in users
+    else
+      # Can read tournament if tournament is public
+      can :read, Tournament do |tournament|
+        if tournament.is_public
+          true
+        else
+          false
+        end
+      end
+      # Can read school if tournament is public
+      can :read, School do |school|
+        if school.tournament.is_public
+          true
+        else
+          false
+        end
       end
     end
   end

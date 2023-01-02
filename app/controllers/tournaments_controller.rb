@@ -4,6 +4,7 @@ class TournamentsController < ApplicationController
   before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
   before_action :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
+  before_action :check_access_read, only: [:up_matches,:bracket,:all_brackets]
 
   def weigh_in_sheet
 
@@ -289,7 +290,7 @@ class TournamentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def tournament_params
-      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id, :date, :originalId, :swapId)
+      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id, :date, :originalId, :swapId, :is_public)
     end
 
   #Check for tournament owner
@@ -299,6 +300,10 @@ class TournamentsController < ApplicationController
 
   def check_access_manage
     authorize! :manage, @tournament
+  end
+
+  def check_access_read
+    authorize! :read, @tournament
   end
 
   def check_for_matches

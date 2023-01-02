@@ -17,6 +17,14 @@
   <strong>Tournament Type:</strong>
   <%= @tournament.tournament_type %>
 </p>
+<p>
+  <strong>Tournament Date:</strong>
+  <%= @tournament.date %>
+</p>
+<p>
+  <strong>Tournament Information Is Public:</strong>
+  <%= @tournament.is_public %>
+</p>
 <p>Brackets and team scores can be found in the white nav-bar up top.</p>
 <br>
 <h3>Schools</h3>
@@ -32,15 +40,20 @@
   <tbody>
     <% @schools.each do |school| %>
       <tr>
-        <td><%= link_to "#{school.name}", school %>
+        <td>
+          <% if can? :read, school %>
+            <%= link_to "#{school.name}", school %>
+          <% else %>
+            <%= "#{school.name}" %>
+          <% end %>
+        </td>
+        <td>
           <% if can? :manage, school %>
-            <td><%= link_to '', edit_school_path(school), :class=>"fas fa-edit" %>
+            <%= link_to '', edit_school_path(school), :class=>"fas fa-edit" %>
             <% if can? :manage, @tournament %>
               <%= link_to '', school, method: :delete, data: { confirm: "Are you sure you want to delete #{school.name}?" }, :class=>"fas fa-trash-alt" %>
             <% end %>
-            </td>
           <% end %>
-          
         </td>
       </tr>
     <% end %>
@@ -61,7 +74,13 @@
   <tbody>
     <% @weights.each do |weight| %>
       <tr>
-        <td><%= link_to "#{weight.max} lbs", weight %></td>
+        <td>
+          <% if can? :read, @tournament %>
+            <%= link_to "#{weight.max} lbs", weight %>
+          <% else %>
+            <%= "#{weight.max}" %>
+          <% end %>
+        </td>
         <td><%= weight.bracket_size %></td>
           <% if can? :manage, @tournament %>
           <td>

@@ -17,6 +17,10 @@ class SchoolsControllerTest < ActionController::TestCase
     get :new, params: { tournament: @tournament.id }
   end
 
+  def get_show
+    get :show, params: { id: @school.id }
+  end
+
   def post_update
     patch :update, params: { id: @school.id, school: {name: @school.name, tournament_id: @school.tournament_id} }
   end
@@ -204,5 +208,86 @@ Some Guy
     baums_import
     redirect
   end
+
+  # SHOW PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
+  test "logged in school delegate can get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_school_delegate
+    get_show
+    success
+  end
+  
+  test "logged in user cannot get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_non_owner
+    get_show
+    redirect
+  end
+  
+  test "logged in tournament delegate can get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_tournament_delegate
+    get_show
+    success
+  end
+  
+  test "logged in tournament owner can get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_owner
+    get_show
+    success
+  end
+  
+  test "non logged in user cannot get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    get_show
+    redirect 
+  end
+  
+  # SHOW PAGE PERMISSIONS WHEN TOURNAMENT IS PUBLIC
+  test "logged in school delegate can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_school_delegate
+    get_show
+    success
+  end
+  
+  test "logged in user can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_non_owner
+    get_show
+    success
+  end
+  
+  test "logged in tournament delegate can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_tournament_delegate
+    get_show
+    success
+  end
+  
+  test "logged in tournament owner can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_owner
+    get_show
+    success
+  end
+  
+  test "non logged in user can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    get_show
+    success 
+  end
+  # END SHOW PAGE PERMISSIONS
 
 end

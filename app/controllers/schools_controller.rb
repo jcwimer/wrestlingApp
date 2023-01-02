@@ -2,7 +2,7 @@ class SchoolsController < ApplicationController
   before_action :set_school, only: [:import_baumspage_roster, :show, :edit, :update, :destroy, :stats]
   before_action :check_access_director, only: [:new,:create,:destroy]
   before_action :check_access_delegate, only: [:import_baumspage_roster, :update,:edit]
-
+  before_action :check_read_access, only: [:show]
 
   def stats
     @tournament = @school.tournament
@@ -107,6 +107,10 @@ class SchoolsController < ApplicationController
 
     def check_access_delegate
     	authorize! :manage, @school
+    end
+    
+    def check_read_access
+      authorize! :read, @school
     end
 
 end

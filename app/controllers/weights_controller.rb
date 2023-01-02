@@ -1,6 +1,7 @@
 class WeightsController < ApplicationController
   before_action :set_weight, only: [:pool_order, :show, :edit, :update, :destroy,:re_gen]
-  before_action :check_access, only: [:pool_order, :new,:create,:update,:destroy,:edit, :re_gen]
+  before_action :check_access_manage, only: [:pool_order, :new,:create,:update,:destroy,:edit, :re_gen]
+  before_action :check_access_read, only: [:show]
 
 
   # GET /weights/1
@@ -103,7 +104,7 @@ class WeightsController < ApplicationController
     def weight_params
       params.require(:weight).permit(:max, :tournament_id, :mat_id)
     end
-  def check_access
+  def check_access_manage
     	if params[:tournament]
     	   @tournament = Tournament.find(params[:tournament])
     	elsif params[:weight]
@@ -113,6 +114,17 @@ class WeightsController < ApplicationController
     	end
     	authorize! :manage, @tournament
   end
+
+  def check_access_read
+    if params[:tournament]
+       @tournament = Tournament.find(params[:tournament])
+    elsif params[:weight]
+       @tournament = Tournament.find(params[:weight]["tournament_id"])
+    elsif @weight
+       @tournament = @weight.tournament
+    end
+    authorize! :read, @tournament
+end
 
 
 end

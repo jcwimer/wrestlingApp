@@ -30,6 +30,10 @@ class WeightsControllerTest < ActionController::TestCase
     get :edit, params: { id: @weight.id }
   end
 
+  def get_show
+    get :show, params: { id: @weight.id }
+  end
+
   def get_pool_order
     post :pool_order, params: {pool_to_order: 1, id: @weight.id}
   end
@@ -209,6 +213,87 @@ class WeightsControllerTest < ActionController::TestCase
     get_pool_order
     redirect
   end
+
+  # SHOW PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
+  test "logged in school delegate cannot get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_school_delegate
+    get_show
+    redirect
+  end
+
+  test "logged in user cannot get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_non_owner
+    get_show
+    redirect
+  end
+
+  test "logged in tournament delegate can get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_tournament_delegate
+    get_show
+    success
+  end
+
+  test "logged in tournament owner can get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_owner
+    get_show
+    success
+  end
+
+  test "non logged in user cannot get show page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    get_show
+    redirect 
+  end
+
+  # SHOW PAGE PERMISSIONS WHEN TOURNAMENT IS PUBLIC
+  test "logged in school delegate can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_school_delegate
+    get_show
+    success
+  end
+
+  test "logged in user can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_non_owner
+    get_show
+    success
+  end
+
+  test "logged in tournament delegate can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_tournament_delegate
+    get_show
+    success
+  end
+
+  test "logged in tournament owner can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_owner
+    get_show
+    success
+  end
+
+  test "non logged in user can get show page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    get_show
+    success 
+  end
+  # END SHOW PAGE PERMISSIONS
 
   test "view wegiht" do
     get :show, params: { id: 1 }
