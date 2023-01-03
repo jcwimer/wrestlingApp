@@ -25,7 +25,7 @@
   <strong>Tournament Information Is Public:</strong>
   <%= @tournament.is_public %>
 </p>
-<p>Brackets and team scores can be found in the white nav-bar up top.</p>
+<% if can? :read, @tournament %><p>Brackets and team scores can be found in the white nav-bar up top.</p><% end %>
 <br>
 <h3>Schools</h3>
 <p>Click to see lineups, bout numbers, score breakdowns, and stats.</p>
