@@ -26,6 +26,12 @@ class Mat < ActiveRecord::Base
 			match = t_matches.sort_by{|m| m.bout_number}.first
 			match.mat_id = self.id
 			if match.save
+				if match.w1
+					match.wrestler1.touch
+				end
+				if match.w2
+					match.wrestler2.touch
+				end
 				return true
 			else
 				return false
