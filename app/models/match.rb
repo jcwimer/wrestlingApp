@@ -8,13 +8,13 @@ class Match < ActiveRecord::Base
         after_update :after_finished_actions, :if => :saved_change_to_finished? or :saved_change_to_winner_id? or :saved_change_to_win_type? or :saved_change_to_score?
 
 	def after_finished_actions
+	  if self.w1
+		wrestler1.touch
+	  end
+	  if self.w2
+		wrestler2.touch
+	  end
 	  if self.finished == 1 && self.winner_id != nil
-	  	if self.w1
-		   	wrestler1.touch
-		end
-		if self.w2
-		   	wrestler2.touch
-		end
 		if self.mat
 			self.mat.assign_next_match
 		end
