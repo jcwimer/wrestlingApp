@@ -14,6 +14,10 @@ class MatsControllerTest < ActionController::TestCase
     post :create, params: { mat: {name: 'Mat100', tournament_id: 1} }
   end
 
+  def post_assign_next_match
+    post :assign_next_match, params: { mat: {name: 'Mat100', tournament_id; 1} }
+  end
+
   def new
     get :new, params: { tournament: @tournament.id }
   end
@@ -223,5 +227,35 @@ class MatsControllerTest < ActionController::TestCase
     wipe
     show
     no_matches
+  end
+
+  # Assign Next Match Permissions
+  test "logged in tournament owner should post assign_next_match mat page" do
+    sign_in_owner
+    post_assign_next_match
+    success
+  end
+  
+  test "logged in tournament delegate should post assign_next_match mat page" do
+    sign_in_tournament_delegate
+    post_assign_next_match
+    success
+  end
+
+  test "logged in user should not get post assign_next_match page if not owner" do
+    sign_in_non_owner
+    post_assign_next_match
+    redirect
+  end
+  
+  test "logged school delegate should not post assign_next_match mat page if not owner" do
+    sign_in_school_delegate
+    post_assign_next_match
+    redirect
+  end
+
+  test "non logged in user should not post assign_next_match mat page" do
+    post_assign_next_match
+    redirect
   end
 end
