@@ -1,16 +1,35 @@
 class MatsController < ApplicationController
-  before_action :set_mat, only: [:show, :edit, :update, :destroy]
-  before_action :check_access, only: [:new,:create,:update,:destroy,:edit,:show]
+  before_action :set_mat, only: [:show, :edit, :update, :destroy, :assign_next_match]
+  before_action :check_access, only: [:new,:create,:update,:destroy,:edit,:show, :assign_next_match]
   before_action :check_for_matches, only: [:show]
 
   # GET /mats/1
   # GET /mats/1.json
   def show
     @match = @mat.unfinished_matches.first
+    @wrestlers = []
     if @match
-      @w1 = @match.wrestler1
-      @w2 = @match.wrestler2
-      @wrestlers = [@w1,@w2]
+      if @match.w1
+        @wrestler1_name = @match.wrestler1.name
+        @wrestler1_school_name = @match.wrestler1.school.name
+        @wrestler1_last_match = @match.wrestler1.last_match
+        @wrestlers.push(@match.wrestler1)
+      else
+        @wrestler1_name = "Not assigned"
+        @wrestler1_school_name = "N/A"
+        @wrestler1_last_match = nil
+      end
+      if @match.w2
+        @wrestler2_name = @match.wrestler2.name
+        @wrestler2_school_name = @match.wrestler2.school.name
+        @wrestler2_last_match = @match.wrestler2.last_match
+        @wrestlers.push(@match.wrestler2)
+      else
+        @wrestler2_name = "Not assigned"
+        @wrestler2_school_name = "N/A"
+        @wrestler2_last_match = nil
+      end
+      @tournament = @match.tournament
     end
     session[:return_path] = request.original_fullpath
   end
@@ -40,6 +59,20 @@ class MatsController < ApplicationController
       else
         format.html { render action: 'new' }
         format.json { render json: @mat.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # POST /mats/1/assign_next_match
+  def assign_next_match
+    @tournament = @mat.tournament_id
+    respond_to do |format|
+      if @mat.assign_next_match
+        format.html { redirect_to "/tournaments/#{@mat.tournament.id}", notice: "Next Match on Mat #{@mat.name} successfully completed." }
+        format.json { head :no_content }
+      else
+        format.html { redirect_to "/tournaments/#{@mat.tournament.id}", alert: "There was an error." }
+        format.json { head :no_content }
       end
     end
   end

@@ -22,10 +22,16 @@ class Mat < ActiveRecord::Base
 
 	def assign_next_match
 		t_matches = tournament.matches.select{|m| m.mat_id == nil && m.finished != 1 && m.bout_number != nil}.sort_by{|m| m.bout_number}
-		if t_matches.size > 0
+		if t_matches.size > 0 and self.unfinished_matches.size < 4
 			match = t_matches.sort_by{|m| m.bout_number}.first
 			match.mat_id = self.id
-			match.save
+			if match.save
+				return true
+			else
+				return false
+			end
+		else
+			return true
 		end
 	end
 

@@ -110,7 +110,8 @@
             <% if can? :manage, @tournament %>
             <td>
              <%= link_to '', mat, method: :delete, data: { confirm: "Are you sure you want to delete Mat #{mat.name}?" }, :class=>"fas fa-trash-alt" %>
-            </td>
+             <%= link_to '', "/mats/#{mat.id}/assign_next_match", method: :post, :class=>"fas fa-solid fa-arrow-right" %>
+             </td>
             <% end %>
         </tr>
       <% end %>
