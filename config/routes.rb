@@ -1,6 +1,6 @@
 Wrestling::Application.routes.draw do
   resources :mats
-  post "mats/:id/assign_next_match" => "mats#assign_next_match"
+  post "mats/:id/assign_next_match" => "mats#assign_next_match", :as => :assign_next_match
 
   resources :matches
 

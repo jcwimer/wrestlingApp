@@ -15,7 +15,7 @@ class MatsControllerTest < ActionController::TestCase
   end
 
   def post_assign_next_match
-    post :assign_next_match, params: { mat: {name: 'Mat100', tournament_id; 1} }
+    post :assign_next_match, params: { id: @mat.id }
   end
 
   def new
@@ -233,13 +233,13 @@ class MatsControllerTest < ActionController::TestCase
   test "logged in tournament owner should post assign_next_match mat page" do
     sign_in_owner
     post_assign_next_match
-    success
+    assert_redirected_to "/tournaments/#{@mat.tournament_id}"
   end
   
   test "logged in tournament delegate should post assign_next_match mat page" do
     sign_in_tournament_delegate
     post_assign_next_match
-    success
+    assert_redirected_to "/tournaments/#{@mat.tournament_id}"
   end
 
   test "logged in user should not get post assign_next_match page if not owner" do
