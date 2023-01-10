@@ -32,6 +32,7 @@ class MatsController < ApplicationController
       @tournament = @match.tournament
     end
     session[:return_path] = request.original_fullpath
+    session[:error_return_path] = request.original_fullpath
   end
 
   # GET /mats/new

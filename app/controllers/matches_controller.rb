@@ -50,6 +50,7 @@ class MatchesController < ApplicationController
       @tournament = @match.tournament
     end
     session[:return_path] = "/tournaments/#{@tournament.id}/matches"
+    session[:error_return_path] = "/matches/#{@match.id}/stat"
   end
 
 
@@ -65,8 +66,13 @@ class MatchesController < ApplicationController
         end
         format.json { head :no_content }
       else
-        format.html { redirect_to session.delete(:return_path), alert: "Match did not save because: #{@match.errors.full_messages.to_s}" }
-        format.json { render json: @match.errors, status: :unprocessable_entity }
+        if session[:error_return_path]
+          format.html { redirect_to session.delete(:error_return_path), alert: "Match did not save because: #{@match.errors.full_messages.to_s}" }
+          format.json { render json: @match.errors, status: :unprocessable_entity }
+        else
+          format.html { redirect_to "/tournaments/#{@match.tournament.id}", alert: "Match did not save because: #{@match.errors.full_messages.to_s}" }
+          format.json { render json: @match.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
