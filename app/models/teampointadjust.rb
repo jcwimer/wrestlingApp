@@ -14,7 +14,7 @@ class Teampointadjust < ActiveRecord::Base
 	    #Team score needs calculated
         if self.wrestler_id != nil
             #In case this affects pool order
-            AdvanceWrestler.new(self.wrestler).advance
+            AdvanceWrestler.new(self.wrestler,self.wrestler.last_match).advance
 	        self.wrestler.school.calculate_score
 	    elsif self.school_id != nil
 	        self.school.calculate_score
