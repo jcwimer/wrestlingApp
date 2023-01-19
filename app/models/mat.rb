@@ -28,9 +28,11 @@ class Mat < ActiveRecord::Base
 			if match.save
 				if match.w1
 					match.wrestler1.touch
+					match.wrestler1.school.touch
 				end
 				if match.w2
 					match.wrestler2.touch
+					match.wrestler2.school.touch
 				end
 				return true
 			else
