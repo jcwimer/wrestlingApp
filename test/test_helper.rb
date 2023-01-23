@@ -172,7 +172,7 @@ class ActiveSupport::TestCase
   def team_point_adjusts_for_wrestler(wrestler_name,points)
     adjust = Teampointadjust.new
     adjust.points = points
-    adjust.wrestler_id = get_wrestler_by_name(wrestler_name)
+    adjust.wrestler_id = get_wrestler_by_name(wrestler_name).id
     adjust.save
   end
 
@@ -201,19 +201,19 @@ class ActiveSupport::TestCase
   
   def end_match_extra_points(match,winner)
      match.win_type = "Decision"
-     match.score = 0-2
+     match.score = "0-2"
      save_match(match,winner)
   end
   
   def end_match_with_major(match,winner)
      match.win_type = "Major"
-     match.score = 8-0
+     match.score = "8-0"
      save_match(match,winner)
   end
   
   def end_match_with_tech(match,winner)
      match.win_type = "Tech Fall"
-     match.score = 15-0
+     match.score = "15-0"
      save_match(match,winner)
   end
   
@@ -232,6 +232,12 @@ class ActiveSupport::TestCase
   def end_match_with_quick_pin(match,winner)
      match.win_type = "Pin"
      match.score = "1:20"
+     save_match(match,winner)
+  end
+  
+  def end_match_custom(match,win_type,score,winner)
+     match.win_type = win_type
+     match.score = score
      save_match(match,winner)
   end
   

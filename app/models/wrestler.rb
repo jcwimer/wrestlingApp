@@ -226,13 +226,40 @@ class Wrestler < ActiveRecord::Base
 		points_scored
 	end
 	
+	def decision_points_scored_pool
+		points_scored = 0
+		decision_wins.select{|m| m.bracket_position == "Pool"}.each do |m|
+			score_of_match = m.score.delete(" ")
+			score_one = score_of_match.partition('-').first.to_i
+			score_two = score_of_match.partition('-').last.to_i
+			if score_one > score_two
+				points_scored = points_scored + score_one
+			elsif score_two > score_one
+				points_scored = points_scored + score_two
+			end
+		end
+		points_scored
+	end
+	
 	def fastest_pin
 		pin_wins.sort_by{|m| m.pin_time_in_seconds}.first
+	end
+	
+	def fastest_pin_pool
+		pin_wins.select{|m| m.bracket_position == "Pool"}.sort_by{|m| m.pin_time_in_seconds}.first
 	end
 
 	def pin_time
       time = 0
       pin_wins.each do | m |
+      	time = time + m.pin_time_in_seconds
+      end
+      time
+	end
+	
+	def pin_time_pool
+      time = 0
+      pin_wins.select{|m| m.bracket_position == "Pool"}.each do | m |
       	time = time + m.pin_time_in_seconds
       end
       time
