@@ -128,17 +128,19 @@ end
 	    end
   	end
   	
-  	def pool_to_bracket_weights_with_too_many_wrestlers
-  		if self.tournament_type == "Pool to bracket"
-  			weightsWithTooManyWrestlers = weights.select{|w| w.wrestlers.size > 24}
-  			if weightsWithTooManyWrestlers.size < 1
-  				return nil
-  			else
-  				return weightsWithTooManyWrestlers
-  			end
-  		else
-  			nil
-  		end
+  	def pool_to_bracket_number_of_wrestlers
+  		error_string = ""
+      if self.tournament_type.include? "Pool to bracket"
+       	weights_with_too_many_wrestlers = weights.select{|w| w.wrestlers.size > 24}
+       	weight_with_too_few_wrestlers = weights.select{|w| w.wrestlers.size < 2}
+       	weights_with_too_many_wrestlers.each do |weight|
+       		error_string = error_string + " The weight class #{weight.max} has more than 24 wrestlers."
+       	end
+       	weight_with_too_few_wrestlers.each do |weight|
+       		error_string = error_string + " The weight class #{weight.max} has less than 2 wrestlers."
+       	end
+      end
+      return error_string
   	end
 
   	def modified_sixteen_man_number_of_wrestlers
@@ -158,7 +160,7 @@ end
 
   	def double_elim_number_of_wrestlers
   		error_string = ""
-        if self.tournament_type == "Double Elimination 1-6"
+        if self.tournament_type == "Double Elimination 1-6" or self.tournament_type == "Double Elimination 1-8"
         	weights_with_too_many_wrestlers = weights.select{|w| w.wrestlers.size > 16}
         	weight_with_too_few_wrestlers = weights.select{|w| w.wrestlers.size < 4}
         	weights_with_too_many_wrestlers.each do |weight|
@@ -174,14 +176,11 @@ end
   	def match_generation_error
   		error_string = "There is a tournament error."
   		modified_sixteen_man_error = modified_sixteen_man_number_of_wrestlers
-        double_elim_error = double_elim_number_of_wrestlers
-  		if pool_to_bracket_weights_with_too_many_wrestlers != nil
-  			error_string = error_string + " The following weights have too many wrestlers "
-  			pool_to_bracket_weights_with_too_many_wrestlers.each do |w|
-  				error_string = error_string + "#{w.max} "
-  			end
-  			return error_string
-  		elsif modified_sixteen_man_error.length > 0
+      double_elim_error = double_elim_number_of_wrestlers
+      pool_to_bracket_error = pool_to_bracket_number_of_wrestlers
+  		if pool_to_bracket_error.length > 0
+  			return error_string + pool_to_bracket_error
+   		elsif modified_sixteen_man_error.length > 0
   			return error_string + modified_sixteen_man_error
   		elsif double_elim_error.length > 0
   			return error_string + double_elim_error

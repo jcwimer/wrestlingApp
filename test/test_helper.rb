@@ -12,6 +12,28 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+  
+  def create_a_tournament_with_single_weight(tournament_type, number_of_wrestlers)
+    @tournament = Tournament.new
+    @tournament.name = "Test Tournament"
+    @tournament.address = "some place"
+    @tournament.director = "some guy"
+    @tournament.director_email= "test@test.com"
+    @tournament.tournament_type = tournament_type
+    @tournament.date = "2015-12-30"
+    @tournament.is_public = true
+    @tournament.save
+    @school = School.new
+    @school.name = "Test"
+    @school.tournament_id = @tournament.id
+    @school.save
+    @weight = Weight.new
+    @weight.max = 106
+    @weight.tournament_id = @tournament.id
+    @weight.save
+    create_wrestlers_for_weight(@weight, @school, number_of_wrestlers, 1)
+    return @tournament
+  end
 
   def create_pool_tournament_single_weight(number_of_wrestlers)
     @tournament = Tournament.new

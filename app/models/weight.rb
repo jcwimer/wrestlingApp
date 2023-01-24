@@ -12,6 +12,7 @@ class Weight < ActiveRecord::Base
     # tournament model runs the code via method create_pre_defined_weights
 	HS_WEIGHT_CLASSES = "106,113,120,126,132,138,144,150,157,165,175,190,215,285"
 	HS_GIRLS_WEIGHT_CLASSES = "100,105,110,115,120,125,130,135,140,145,155,170,190,235"
+	MS_WEIGHT_CLASSES = "80,86,92,98,104,110,116,122,128,134,142,150,160,172,205,245"
 	
 	before_destroy do 
 		self.tournament.destroy_all_matches
