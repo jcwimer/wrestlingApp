@@ -14,5 +14,6 @@ docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d
 # echo Make sure your local mysql database has a wrestlingtourney db
 docker exec -it deploy_app_1 rake db:create
 docker exec -it deploy_app_1 rake db:migrate
-echo To seed data run:
-echo docker exec -it deploy_app_1 rake db:seed
+
+echo Resetting the db with seed data
+docker exec -it deploy_app_1 bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 rake db:reset"
