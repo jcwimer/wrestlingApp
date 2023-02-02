@@ -37,8 +37,8 @@
     </thead>
 
     <tbody>
-<% cache ["#{@school.id}_school_show", @school] do %>
       <% @wrestlers.sort_by{|w| w.weight.max}.each do |wrestler| %>
+        <% cache ["#{wrestler.id}_school_show", @school] do %>
           <tr>
             <td><%= link_to "#{wrestler.name}", wrestler %></td>
             <td><%= wrestler.weight.max %></td>
@@ -49,7 +49,9 @@
             <td><%= wrestler.total_team_points - wrestler.total_points_deducted %></td>
             <td><% if wrestler.extra? == true %>
               Yes
-             <% end %></td>
+             <% end %>
+             </td>
+        <% end %>
              <td><%= wrestler.next_match_bout_number %> <%= wrestler.next_match_mat_name %></td>
             <% if can? :manage, wrestler.school %>
               <td>
@@ -61,7 +63,7 @@
       <% end %>
     </tbody>
   </table>
-<% end %>
+
 <% if can? :manage, @school %>
   <%= render 'baums_roster_import' %>
 <% end %>
