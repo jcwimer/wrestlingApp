@@ -28,10 +28,10 @@
       <% @mats.each.map do |m| %>
         <tr>
           <td><%= m.name %></td>
-          <td><% if m.unfinished_matches.first %><strong><%=m.unfinished_matches.first.bout_number%></strong> - <%= m.unfinished_matches.first.weight_max %> lbs<br><%= m.unfinished_matches.first.w1_bracket_name %> vs. <%= m.unfinished_matches.first.w2_bracket_name %><% end %></td>
-          <td><% if m.unfinished_matches.second %><strong><%=m.unfinished_matches.second.bout_number%></strong> - <%= m.unfinished_matches.second.weight_max %> lbs<br><%= m.unfinished_matches.second.w1_bracket_name %> vs. <%= m.unfinished_matches.second.w2_bracket_name %><% end %></td>
-          <td><% if m.unfinished_matches.third %><strong><%=m.unfinished_matches.third.bout_number%></strong> - <%= m.unfinished_matches.third.weight_max %> lbs<br><%= m.unfinished_matches.third.w1_bracket_name %> vs. <%= m.unfinished_matches.third.w2_bracket_name %><% end %></td>
-          <td><% if m.unfinished_matches.fourth %><strong><%=m.unfinished_matches.fourth.bout_number%></strong> - <%= m.unfinished_matches.fourth.weight_max %> lbs<br><%= m.unfinished_matches.fourth.w1_bracket_name %> vs. <%= m.unfinished_matches.fourth.w2_bracket_name %><% end %></td>
+          <td><% if m.unfinished_matches.first %><strong><%=m.unfinished_matches.first.bout_number%></strong> - <%= m.unfinished_matches.first.weight_max %><br><%= m.unfinished_matches.first.w1_bracket_name %> vs. <%= m.unfinished_matches.first.w2_bracket_name %><% end %></td>
+          <td><% if m.unfinished_matches.second %><strong><%=m.unfinished_matches.second.bout_number%></strong> - <%= m.unfinished_matches.second.weight_max %><br><%= m.unfinished_matches.second.w1_bracket_name %> vs. <%= m.unfinished_matches.second.w2_bracket_name %><% end %></td>
+          <td><% if m.unfinished_matches.third %><strong><%=m.unfinished_matches.third.bout_number%></strong> - <%= m.unfinished_matches.third.weight_max %><br><%= m.unfinished_matches.third.w1_bracket_name %> vs. <%= m.unfinished_matches.third.w2_bracket_name %><% end %></td>
+          <td><% if m.unfinished_matches.fourth %><strong><%=m.unfinished_matches.fourth.bout_number%></strong> - <%= m.unfinished_matches.fourth.weight_max %><br><%= m.unfinished_matches.fourth.w1_bracket_name %> vs. <%= m.unfinished_matches.fourth.w2_bracket_name %><% end %></td>
         </tr>
       <% end %>
     </tbody>
@@ -55,7 +55,7 @@
         <tr>
           <td>Round <%= m.round %></td>
           <td><%= m.bout_number %></td>
-          <td><%= m.weight_max %> lbs</td>
+          <td><%= m.weight_max %></td>
           <td><%= m.w1_bracket_name %> vs. <%= m.w2_bracket_name %></td>
         </tr>
       <% end %>

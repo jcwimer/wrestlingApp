@@ -76,7 +76,7 @@
       <tr>
         <td>
           <% if can? :read, @tournament %>
-            <%= link_to "#{weight.max} lbs", weight %>
+            <%= link_to "#{weight.max}", weight %>
           <% else %>
             <%= "#{weight.max}" %>
           <% end %>
