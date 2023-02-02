@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_02_040503) do
+ActiveRecord::Schema.define(version: 2023_02_02_130918) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
@@ -130,7 +130,7 @@ ActiveRecord::Schema.define(version: 2023_01_02_040503) do
   end
 
   create_table "weights", force: :cascade do |t|
-    t.integer "max"
+    t.decimal "max", precision: 15, scale: 1
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "tournament_id"
