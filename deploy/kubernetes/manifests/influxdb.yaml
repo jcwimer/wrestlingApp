@@ -46,12 +46,12 @@ spec:
         volumeMounts:
         - name: wrestlingdev-influxdb-persistent-storage
           mountPath: /var/lib/influxdb
-        resources:
-          limits:
-            memory: "512Mi"
-          requests:
-            memory: "128Mi"
-            cpu: "0.5"
+        # resources:
+        #   limits:
+        #     memory: "512Mi"
+        #   requests:
+        #     memory: "128Mi"
+        #     cpu: "0.5"
       volumes:
       - name: wrestlingdev-influxdb-persistent-storage
         persistentVolumeClaim:
@@ -65,9 +65,9 @@ metadata:
     app: wrestlingdev
     tier: metrics
 spec:
-  storageClassName: standard
+  # storageClassName: standard
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi         
+      storage: 20Gi

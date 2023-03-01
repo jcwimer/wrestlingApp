@@ -41,7 +41,10 @@ spec:
         - name: RAILS_ENV
           value: production
         - name: PASSENGER_POOL_SIZE
-          value: "2"
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: passenger_pool_size
         - name: WRESTLINGDEV_DB_NAME
           value: wrestlingdev
         - name: WRESTLINGDEV_DB_USR
@@ -98,12 +101,12 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: influxdb_port
-        resources:
-          limits:
-            memory: "768Mi"
-          requests:
-            memory: "300Mi"
-            cpu: "0.3"
+        # resources:
+        #   limits:
+        #     memory: "768Mi"
+        #   requests:
+        #     memory: "300Mi"
+        #     cpu: "0.3"
         livenessProbe:
           httpGet:
             path: /
@@ -111,23 +114,23 @@ spec:
           initialDelaySeconds: 180
           periodSeconds: 20
           timeoutSeconds: 10
----
-apiVersion: autoscaling/v2beta1
-kind: HorizontalPodAutoscaler
-metadata:
-  name: wrestlingdev-app-deployment-autoscale
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: wrestlingdev-app-deployment
-  minReplicas: 2
-  maxReplicas: 5
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageUtilization: 75
+# ---
+# apiVersion: autoscaling/v2beta1
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: wrestlingdev-app-deployment-autoscale
+# spec:
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: wrestlingdev-app-deployment
+#   minReplicas: 2
+#   maxReplicas: 5
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       targetAverageUtilization: 75
   # - type: Resource
   #   resource:
   #     name: memory
@@ -140,7 +143,7 @@ metadata:
   labels:
     app: wrestlingdev
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: wrestlingdev
@@ -216,10 +219,10 @@ spec:
              key: influxdb_port
         command: ["bundle"]
         args: ["exec", "bin/delayed_job", "-n", "1", "run"]
-        resources:
-          limits:
-            memory: "512Mi"
-          requests:
-            memory: "200Mi"
-            cpu: "0.2"
+        # resources:
+        #   limits:
+        #     memory: "512Mi"
+        #   requests:
+        #     memory: "200Mi"
+        #     cpu: "0.2"
 
