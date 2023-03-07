@@ -62,6 +62,8 @@ spec:
         volumeMounts:
         - name: wrestlingdev-mariadb-persistent-storage
           mountPath: /var/lib/mysql
+        - name: mysettings-config-volume
+          mountPath: /etc/mysql/mariadb.conf.d
         # resources:
         #   limits:
         #     memory: "512Mi"
@@ -125,8 +127,6 @@ spec:
         volumeMounts:
         - name: wrestlingdev-mariadb-persistent-storage
           mountPath: /var/lib/mysql
-        - name: mysettings-config-volume
-          mountPath: /etc/mysql/mariadb.conf.d
         # resources:
         #   limits:
         #     memory: "100Mi"
@@ -181,7 +181,6 @@ spec:
         configMap:
           name: mariadb-mysettings
 ---
-# /etc/mysql/mariadb.conf.d/70-mysettings.cnf
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -203,3 +202,5 @@ data:
     performance_schema=ON
     innodb_log_file_size=32M
     table_open_cache=4000
+    
+    # /etc/mysql/mariadb.conf.d/70-mysettings.cnf
