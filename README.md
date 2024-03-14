@@ -13,8 +13,8 @@ This application is being created to run a wrestling tournament.
 **Public Production Url:** [https://wrestlingdev.com](http://wrestlingdev.com)
 
 **App Info**
-* Ruby 3.0.0
-* Rails 6.1.2
+* Ruby 3.1.4
+* Rails 7.1.3.2
 * DB mysql or mariadb
 * Memcached
 * Delayed Jobs

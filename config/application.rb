@@ -21,9 +21,6 @@ module Wrestling
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 	
-	#Add Bootstrap SAAS to asset pipeline
-    config.assets.initialize_on_precompile = false
-    config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)
   #gzip assets
     config.middleware.use Rack::Deflater
     
@@ -33,11 +30,14 @@ module Wrestling
       DeviseController.respond_to :html, :json
     end
     
-    config.autoload_paths += %W(#{config.root}/app/services/tournament_services)
-    config.autoload_paths += %W(#{config.root}/app/services/wrestler_services)
-    config.autoload_paths += %W(#{config.root}/app/services/weight_services)
-    config.autoload_paths += %W(#{config.root}/app/services/bracket_advancement)
-    config.autoload_paths += %W(#{config.root}/app/services/school_services)
+    config.autoload_paths << "#{config.root}/app/services/tournament_services"
+    config.autoload_paths << "#{config.root}/app/services/wrestler_services"
+    config.autoload_paths << "#{config.root}/app/services/weight_services"
+    config.autoload_paths << "#{config.root}/app/services/bracket_advancement"
+    config.autoload_paths << "#{config.root}/app/services/school_services"
+    config.add_autoload_paths_to_load_path = false
 
+    config.active_support.cache_format_version = 7.1
+    # config.load_defaults 7.1
   end  
 end

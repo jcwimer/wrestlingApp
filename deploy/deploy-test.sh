@@ -11,9 +11,10 @@ export PASSENGER_POOL_SIZE=$(expr $PASSENGER_POOL_FACTOR '*' 1)
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml kill
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml build
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d
+sleep 30s
 # echo Make sure your local mysql database has a wrestlingtourney db
-docker exec -i deploy_app_1 rake db:create
-docker exec -i deploy_app_1 rake db:migrate
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app rake db:create
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app rake db:migrate
 
 echo Resetting the db with seed data
-docker exec -i deploy_app_1 bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 rake db:reset"
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 rake db:reset"

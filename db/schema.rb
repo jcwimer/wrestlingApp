@@ -10,20 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_02_130918) do
-
+ActiveRecord::Schema[7.1].define(version: 2024_03_11_103416) do
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
-    t.text "handler", null: false
+    t.text "handler"
     t.text "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
+    t.datetime "run_at", precision: nil
+    t.datetime "locked_at", precision: nil
+    t.datetime "failed_at", precision: nil
     t.string "locked_by"
     t.string "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "job_owner_id"
     t.string "job_owner_type"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
@@ -37,8 +36,8 @@ ActiveRecord::Schema.define(version: 2023_02_02_130918) do
     t.integer "winner_id"
     t.string "win_type"
     t.string "score"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "tournament_id"
     t.integer "round"
     t.integer "finished"
@@ -59,22 +58,22 @@ ActiveRecord::Schema.define(version: 2023_02_02_130918) do
   create_table "mats", force: :cascade do |t|
     t.string "name"
     t.integer "tournament_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["tournament_id"], name: "index_mats_on_tournament_id"
   end
 
   create_table "school_delegates", force: :cascade do |t|
     t.integer "user_id"
     t.integer "school_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "schools", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "tournament_id"
     t.decimal "score", precision: 15, scale: 1
     t.index ["tournament_id"], name: "index_schools_on_tournament_id"
@@ -83,8 +82,8 @@ ActiveRecord::Schema.define(version: 2023_02_02_130918) do
   create_table "teampointadjusts", force: :cascade do |t|
     t.integer "points"
     t.integer "wrestler_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "school_id"
     t.index ["wrestler_id"], name: "index_teampointadjusts_on_wrestler_id"
   end
@@ -92,8 +91,8 @@ ActiveRecord::Schema.define(version: 2023_02_02_130918) do
   create_table "tournament_delegates", force: :cascade do |t|
     t.integer "user_id"
     t.integer "tournament_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "tournaments", force: :cascade do |t|
@@ -101,8 +100,8 @@ ActiveRecord::Schema.define(version: 2023_02_02_130918) do
     t.string "address"
     t.string "director"
     t.string "director_email"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.text "tournament_type"
     t.text "weigh_in_ref"
     t.integer "user_id"
@@ -116,23 +115,23 @@ ActiveRecord::Schema.define(version: 2023_02_02_130918) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
     t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   create_table "weights", force: :cascade do |t|
     t.decimal "max", precision: 15, scale: 1
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "tournament_id"
     t.index ["tournament_id"], name: "index_weights_on_tournament_id"
   end
@@ -143,8 +142,8 @@ ActiveRecord::Schema.define(version: 2023_02_02_130918) do
     t.integer "weight_id"
     t.integer "bracket_line"
     t.integer "original_seed"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "season_win"
     t.integer "season_loss"
     t.string "criteria"
