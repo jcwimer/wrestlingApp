@@ -31,7 +31,7 @@
 	User.create(id: 1, email: 'test@test.com', password: 'password', password_confirmation: 'password')
 	
 	# Pool to bracket
-	tournament = Tournament.create(id: 200, name: 'Test1', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Pool to bracket', user_id: 1, date: Date.today, is_public: true)
+	tournament = Tournament.create(id: 200, name: 'Pool to bracket', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Pool to bracket', user_id: 1, date: Date.today, is_public: true)
 	create_schools(tournament, 16)
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
@@ -42,7 +42,7 @@
 	end
 	
 	# Modified 16 Man Double Elimination 1-6
-	tournament = Tournament.create(id: 201, name: 'Test2', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Modified 16 Man Double Elimination 1-6', user_id: 1, date: Date.today, is_public: true)
+	tournament = Tournament.create(id: 201, name: 'Modified 16 Man Double Elimination 1-6', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Modified 16 Man Double Elimination 1-6', user_id: 1, date: Date.today, is_public: true)
 	create_schools(tournament, 16)
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
@@ -53,7 +53,7 @@
 	end
 	
 	# Modified 16 Man Double Elimination 1-8
-	tournament = Tournament.create(id: 202, name: 'Test3', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Modified 16 Man Double Elimination 1-8', user_id: 1, date: Date.today, is_public: true)
+	tournament = Tournament.create(id: 202, name: 'Modified 16 Man Double Elimination 1-8', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Modified 16 Man Double Elimination 1-8', user_id: 1, date: Date.today, is_public: true)
 	create_schools(tournament, 16)
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
@@ -64,7 +64,7 @@
 	end
 	
 	# Regular Double Elimination 1-6
-	tournament = Tournament.create(id: 203, name: 'Test4', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-6', user_id: 1, date: Date.today, is_public: true)
+	tournament = Tournament.create(id: 203, name: 'Regular Double Elimination 1-6', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-6', user_id: 1, date: Date.today, is_public: true)
 	create_schools(tournament, 16)
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
@@ -75,7 +75,7 @@
 	end
 	
 	# Regular Double Elimination 1-8
-	tournament = Tournament.create(id: 204, name: 'Test5', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-8', user_id: 1, date: Date.today, is_public: true)
+	tournament = Tournament.create(id: 204, name: 'Regular Double Elimination 1-8', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-8', user_id: 1, date: Date.today, is_public: true)
 	create_schools(tournament, 16)
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
