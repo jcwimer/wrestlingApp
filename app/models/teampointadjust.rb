@@ -1,6 +1,6 @@
-class Teampointadjust < ActiveRecord::Base
-    belongs_to :wrestler, touch: true
-    belongs_to :school, touch: true
+class Teampointadjust < ApplicationRecord
+    belongs_to :wrestler, touch: true, optional: true
+    belongs_to :school, touch: true, optional: true
     
     after_save do
         advance_wrestlers_and_calc_team_score

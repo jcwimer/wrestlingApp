@@ -1,5 +1,5 @@
-class Weight < ActiveRecord::Base
-	belongs_to :tournament
+class Weight < ApplicationRecord
+	belongs_to :tournament, touch: true
 	has_many :wrestlers, dependent: :destroy
 	has_many :matches, dependent: :destroy
 

@@ -1,4 +1,4 @@
-class Wrestler < ActiveRecord::Base
+class Wrestler < ApplicationRecord
 	belongs_to :school, touch: true
 	belongs_to :weight, touch: true
 	has_one :tournament, through: :weight

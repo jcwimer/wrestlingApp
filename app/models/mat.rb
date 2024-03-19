@@ -1,4 +1,4 @@
-class Mat < ActiveRecord::Base
+class Mat < ApplicationRecord
 	belongs_to :tournament
 	has_many :matches
 

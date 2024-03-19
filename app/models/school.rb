@@ -1,4 +1,4 @@
-class School < ActiveRecord::Base
+class School < ApplicationRecord
 	belongs_to :tournament, touch: true
 	has_many :wrestlers, dependent: :destroy
 	has_many :deductedPoints, class_name: "Teampointadjust"

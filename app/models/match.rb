@@ -1,7 +1,7 @@
-class Match < ActiveRecord::Base
+class Match < ApplicationRecord
 	belongs_to :tournament, touch: true
 	belongs_to :weight, touch: true
-	belongs_to :mat, touch: true
+	belongs_to :mat, touch: true, optional: true
 	has_many :wrestlers, :through => :weight
 	has_many :schools, :through => :wrestlers
 	validate :score_validation, :win_type_validation, :bracket_position_validation, :overtime_type_validation

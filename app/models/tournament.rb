@@ -1,6 +1,6 @@
-class Tournament < ActiveRecord::Base
+class Tournament < ApplicationRecord
 
-	belongs_to :user
+	belongs_to :user, optional: true
 	has_many :schools, dependent: :destroy
 	has_many :weights, dependent: :destroy
 	has_many :mats, dependent: :destroy

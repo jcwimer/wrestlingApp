@@ -8,6 +8,6 @@ class MatTest < ActiveSupport::TestCase
    test "Mat validations" do
       mat = Mat.new
       assert_not mat.valid?
-      assert_equal [:name], mat.errors.attribute_names
+      assert_equal [:tournament, :name], mat.errors.attribute_names
     end
 end
