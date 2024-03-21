@@ -13,4 +13,8 @@
 //= require_tree .
 //= require jquery
 //= require jquery_ujs
+// Bootstrap 3.3.6 in vendor/assets/javascripts
+//= require bootstrap.min.js
+// Data Tables 1.10.6 in vendor/assets/javascripts
+//= require jquery.dataTables.min.js
 
