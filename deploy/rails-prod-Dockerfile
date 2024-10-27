@@ -1,4 +1,4 @@
-FROM ruby:3.1.4-slim
+FROM ruby:3.2.0-slim
 
 #HEALTHCHECK --start-period=60s CMD curl http://127.0.0.1/
 

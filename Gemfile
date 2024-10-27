@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.1.4'
+ruby '3.2.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '7.1.3.2'
 
@@ -11,8 +11,8 @@ gem 'rails-html-sanitizer'
 gem "sprockets-rails"
 
 # Use sqlite3 as the database for Active Record
-#gem 'sqlite3', '~> 1.3', '< 1.4', :group => :development
-gem 'sqlite3', :group => :development
+# can't use 2.0 maybe in a future rails upgrade?
+gem 'sqlite3', "~> 1.4", :group => :development
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
@@ -49,7 +49,6 @@ gem 'spring', :group => :development
 group :production do
   gem 'rails_12factor'
   gem 'mysql2'
-  gem 'newrelic_rpm'
   gem 'dalli'
 end
 
