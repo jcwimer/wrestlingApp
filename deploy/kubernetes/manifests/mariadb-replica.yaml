@@ -127,8 +127,6 @@ spec:
         volumeMounts:
         - name: wrestlingdev-mariadb-persistent-storage
           mountPath: /var/lib/mysql
-        - name: mysettings-config-volume
-          mountPath: /etc/mysql/mariadb.conf.d
         # resources:
         #   limits:
         #     memory: "100Mi"
@@ -204,5 +202,13 @@ data:
     performance_schema=ON
     innodb_log_file_size=32M
     table_open_cache=4000
+    # replica settings
+    server_id=2                                # Default server_id, can be overridden for master/slave
+    log_bin=mysql-bin                          # Enable binary logging
+    binlog_format=ROW                          # Recommended for replication
+    log_slave_updates=ON                       # Ensure slaves log updates (useful for multi-source replication)
+    sync_binlog=1                              # Flush binary logs after each transaction for safety
+    read_only=0                                # Default, will be managed by the init script
+    expire_logs_days=7                         # Retain binary logs for 7 days
     
     # /etc/mysql/mariadb.conf.d/70-mysettings.cnf
