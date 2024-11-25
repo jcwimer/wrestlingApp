@@ -44,4 +44,9 @@ if ENV['WRESTLINGDEV_INFLUXDB_HOST']
     ## infer the app name from the Rails.application class name.
     # config.application_name = Rails.application.class.parent_name
   end
+else
+  # Explicitly disable InfluxDB if the host environment variable is not set
+  InfluxDB::Rails.configure do |config|
+    config.ignored_environments = [Rails.env]
+  end
 end
