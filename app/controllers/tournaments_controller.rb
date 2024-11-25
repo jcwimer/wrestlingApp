@@ -1,6 +1,6 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:calculate_team_scores, :import,:export,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_action :check_access_manage, only: [:calculate_team_scores, :import,:export,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
+  before_action :set_tournament, only: [:reset_bout_board,:calculate_team_scores, :import,:export,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_action :check_access_manage, only: [:reset_bout_board,:calculate_team_scores, :import,:export,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
   before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
   before_action :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
@@ -248,6 +248,7 @@ class TournamentsController < ApplicationController
       redirect_to root_path
     end
     @tournament = Tournament.new(tournament_params)
+    @tournament.user_id = current_user.id
     respond_to do |format|
       if @tournament.save
         format.html { redirect_to @tournament, notice: 'Tournament was successfully created.' }
@@ -282,6 +283,11 @@ class TournamentsController < ApplicationController
   def error
   end
 
+  def reset_bout_board
+    @tournament.reset_and_fill_bout_board
+    redirect_to tournament_path(@tournament), notice: "Successfully reset the bout board."
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_tournament
@@ -290,7 +296,7 @@ class TournamentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def tournament_params
-      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :user_id, :date, :originalId, :swapId, :is_public)
+      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :date, :originalId, :swapId, :is_public)
     end
 
   #Check for tournament owner

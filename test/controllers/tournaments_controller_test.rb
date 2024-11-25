@@ -648,4 +648,18 @@ class TournamentsControllerTest < ActionController::TestCase
     post :calculate_team_scores, params: { id: 1 }
     redirect
   end
+
+  test "only owner can set user_id when creating a new tournament" do
+    # Sign in as owner and create a new tournament
+    sign_in_owner
+    post :create, params: { tournament: { name: 'New Tournament', address: '123 Main St', director: 'Director', director_email: 'director@example.com', date: '2024-01-01', tournament_type: 'Pool to bracket', is_public: false } }
+    new_tournament = Tournament.last
+    assert_equal users(:one).id, new_tournament.user_id, "The owner should be assigned as the user_id on creation"
+  
+    # Sign in as non-owner and try to update the tournament without changing user_id
+    sign_in_non_owner
+    patch :update, params: { id: new_tournament.id, tournament: { name: 'Updated Tournament', is_public: true } }
+    updated_tournament = Tournament.find(new_tournament.id)
+    assert_equal users(:one).id, updated_tournament.user_id, "The user_id should not change when the tournament is edited by a non-owner"
+  end
 end

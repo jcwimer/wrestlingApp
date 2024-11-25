@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_11_103416) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_27_203209) do
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
@@ -26,6 +26,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_103416) do
     t.integer "job_owner_id"
     t.string "job_owner_type"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
+  create_table "mat_assignment_rules", force: :cascade do |t|
+    t.integer "tournament_id", null: false
+    t.integer "mat_id", null: false
+    t.json "weight_classes", default: []
+    t.json "bracket_positions", default: []
+    t.json "rounds", default: []
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mat_id"], name: "index_mat_assignment_rules_on_mat_id"
+    t.index ["tournament_id"], name: "index_mat_assignment_rules_on_tournament_id"
   end
 
   create_table "matches", force: :cascade do |t|
@@ -156,4 +168,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_103416) do
     t.index ["weight_id"], name: "index_wrestlers_on_weight_id"
   end
 
+  add_foreign_key "mat_assignment_rules", "mats"
+  add_foreign_key "mat_assignment_rules", "tournaments"
 end

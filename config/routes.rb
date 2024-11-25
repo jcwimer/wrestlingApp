@@ -6,7 +6,12 @@ Wrestling::Application.routes.draw do
 
   devise_for :users
 
-  resources :tournaments
+  resources :tournaments do
+    resources :mat_assignment_rules, only: [:index, :new, :create, :edit, :update, :show, :destroy]
+    member do
+      post :reset_bout_board
+    end
+  end
 
   resources :schools
 

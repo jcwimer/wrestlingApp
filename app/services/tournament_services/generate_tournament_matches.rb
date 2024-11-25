@@ -16,7 +16,6 @@ class GenerateTournamentMatches
       @tournament.curently_generating_matches = 1
       @tournament.save
       unAssignBouts
-      unAssignMats
       PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatchesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
       postMatchCreationActions
       PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNamesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
@@ -51,7 +50,7 @@ class GenerateTournamentMatches
     def postMatchCreationActions
         moveFinalsMatchesToLastRound
         assignBouts
-        assignFirstMatchesToMats
+        @tournament.reset_and_fill_bout_board
         @tournament.curently_generating_matches = nil
         @tournament.save!
     end
@@ -72,17 +71,6 @@ class GenerateTournamentMatches
       finalsMatches. each do |m|
         m.round = finalsRound
         m.save
-      end
-    end
-
-    def assignFirstMatchesToMats
-      matsToAssign = @tournament.mats
-      if matsToAssign.count > 0
-        until matsToAssign.sort_by{|m| m.id}.last.matches.count == 4
-          matsToAssign.sort_by{|m| m.id}.each do |m|
-            m.assign_next_match
-          end
-        end
       end
     end
 

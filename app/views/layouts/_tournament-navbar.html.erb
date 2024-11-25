@@ -32,6 +32,8 @@
               <li><%= link_to "All Matches" , "/tournaments/#{@tournament.id}/matches" %></li>
               <li><%= link_to "Full Screen Bout Board" , "/tournaments/#{@tournament.id}/up_matches?print=true" , target: :_blank  %></li>
               <li><%= link_to "Deduct Team Points" , "/tournaments/#{@tournament.id}/teampointadjust" %></li>
+              <li><%= link_to "View All Mat Assignment Rules", tournament_mat_assignment_rules_path(@tournament) %></li>
+              <li><%= link_to "Reset Bout Board", reset_bout_board_tournament_path(@tournament), method: :post, data: { confirm: "Are you sure you want to reset the bout board?" } %></li>
               <% if can? :destroy, @tournament %>
                 <li><%= link_to "Tournament Delegation" , "/tournaments/#{@tournament.id}/delegate" %></li>
               <% end %>

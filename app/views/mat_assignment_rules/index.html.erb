@@ -1,0 +1,36 @@
+<table class="table table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Mat</th>
+      <th>Weight Classes (Max)</th>
+      <th>Bracket Positions</th>
+      <th>Rounds</th>
+      <th><%= link_to ' New Mat Assignment Rule', new_tournament_mat_assignment_rule_path(@tournament), :class=>"fas fa-plus" %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @mat_assignment_rules.each do |rule| %>
+      <tr>
+        <td><%= rule.mat.name %></td>
+
+        <!-- Display max values for each weight associated with the rule -->
+        <td>
+          <% rule.weight_classes.each do |weight_id| %>
+            <% weight = @weights_by_id[weight_id] %>
+            <%= weight ? weight.max : "N/A" %><%= ", " unless weight_id == rule.weight_classes.last %>
+          <% end %>
+        </td>
+
+        <!-- Display bracket positions and rounds -->
+        <td><%= rule.bracket_positions.join(", ") %></td>
+        <td><%= rule.rounds.join(", ") %></td>
+
+        <!-- Edit and Delete Actions -->
+        <td>
+          <%= link_to '', edit_tournament_mat_assignment_rule_path(@tournament, rule), :class=>"fas fa-edit" %>
+          <%= link_to '', tournament_mat_assignment_rule_path(@tournament, rule), method: :delete, data: { confirm: "Are you sure?" }, :class=>"fas fa-trash-alt" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

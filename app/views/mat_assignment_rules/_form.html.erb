@@ -1,0 +1,61 @@
+<%= form_with model: [@tournament, @mat_assignment_rule] do |form| %>
+  <!-- Mat Selection -->
+  <div>
+    <%= form.label :mat_id, "Select Mat" %><br>
+    <% if @available_mats.any? %>
+      <%= form.collection_select :mat_id, @available_mats, :id, :name, { prompt: "Choose a Mat" } %>
+    <% else %>
+      <p>No mats are available. Please create a mat first.</p>
+    <% end %>
+  </div>
+
+  <!-- Weight Classes as Checkboxes -->
+  <div>
+    <%= form.label :weight_classes, "Allowed Weight Classes" %><br>
+    <% if @tournament.weights.any? %>
+      <% @tournament.weights.each do |weight| %>
+        <div>
+          <%= check_box_tag "mat_assignment_rule[weight_classes][]", weight.id, @mat_assignment_rule.weight_classes.include?(weight.id) %>
+          <%= label_tag "mat_assignment_rule_weight_classes_#{weight.id}", weight.max %>
+        </div>
+      <% end %>
+    <% else %>
+      <p>No weight classes are available. Please create weight classes first.</p>
+    <% end %>
+  </div>
+
+  <!-- Bracket Positions as Checkboxes -->
+  <div>
+    <%= form.label :bracket_positions, "Allowed Bracket Positions" %><br>
+    <% if @unique_bracket_positions.present? %>
+      <% @unique_bracket_positions.each do |position| %>
+        <div>
+          <%= check_box_tag "mat_assignment_rule[bracket_positions][]", position, @mat_assignment_rule.bracket_positions.include?(position) %>
+          <%= label_tag "mat_assignment_rule_bracket_positions_#{position}", position %>
+        </div>
+      <% end %>
+    <% else %>
+      <p>No bracket positions are available. Please ensure matches have bracket positions set.</p>
+    <% end %>
+  </div>
+
+  <!-- Rounds as Checkboxes -->
+  <div>
+    <%= form.label :rounds, "Allowed Rounds" %><br>
+    <% if @unique_rounds.present? %>
+      <% @unique_rounds.each do |round| %>
+        <div>
+          <%= check_box_tag "mat_assignment_rule[rounds][]", round, @mat_assignment_rule.rounds.include?(round) %>
+          <%= label_tag "mat_assignment_rule_rounds_#{round}", round %>
+        </div>
+      <% end %>
+    <% else %>
+      <p>No rounds are available. Please ensure matches have rounds set.</p>
+    <% end %>
+  </div>
+
+  <!-- Submit Button -->
+  <div>
+    <%= form.submit 'Submit', :class=>"btn btn-success" %>
+  </div>
+<% end %>

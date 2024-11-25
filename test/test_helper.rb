@@ -104,16 +104,53 @@ class ActiveSupport::TestCase
     return @tournament
   end
 
+  def create_double_elim_tournament_1_6_with_multiple_weights_and_multiple_mats(number_of_wrestlers, number_of_weights, number_of_mats)
+    @tournament = Tournament.new
+    @tournament.name = "Test Tournament"
+    @tournament.address = "some place"
+    @tournament.director = "some guy"
+    @tournament.director_email = "test@test.com"
+    @tournament.tournament_type = "Regular Double Elimination 1-6"
+    @tournament.date = "2015-12-30"
+    @tournament.is_public = true
+    @tournament.save
+
+    @school = School.new
+    @school.name = "Test"
+    @school.tournament_id = @tournament.id
+    @school.save
+
+    @mats = []
+    (1..number_of_mats).each do |mat_number|
+      mat = Mat.new
+      mat.name = "Mat #{mat_number}"
+      mat.tournament_id = @tournament.id
+      mat.save
+      @mats << mat
+    end
+
+    (1..number_of_weights).each do |weight_number|
+      weight = Weight.new
+      weight.max = 100 + weight_number
+      weight.tournament_id = @tournament.id
+      weight.save
+      create_wrestlers_for_weight_for_double_elim(weight, @school, number_of_wrestlers, 1)
+    end
+
+    GenerateTournamentMatches.new(@tournament).generate
+    return @tournament
+  end
+
   def create_wrestlers_for_weight_for_double_elim(weight, school, number_of_wrestlers, naming_start_number)
     naming_number = naming_start_number
-    for number in (1..number_of_wrestlers) do 
+    (1..number_of_wrestlers).each do |number|
       wrestler = Wrestler.new
       wrestler.name = "Test#{naming_number}"
       wrestler.school_id = school.id
       wrestler.weight_id = weight.id
       wrestler.original_seed = naming_number
       wrestler.save
-      naming_number = naming_number + 1
+      naming_number += 1
     end
   end
 

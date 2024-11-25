@@ -7,6 +7,7 @@ class Tournament < ApplicationRecord
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
 	has_many :delegates, class_name: "TournamentDelegate"
+	has_many :mat_assignment_rules, dependent: :destroy
 	
 	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
 
@@ -17,25 +18,25 @@ class Tournament < ApplicationRecord
 	end
 
 	def self.search_date_name(pattern)
-  if pattern.blank?  # blank? covers both nil and empty string
-    all
-  else
-    search_functions = []
-    search_variables = []
-    search_terms = pattern.split(' ').map{|word| "%#{word.downcase}%"}
-    search_terms.each do |word|
-      search_functions << '(LOWER(name) LIKE ? or LOWER(date) LIKE ?)'
-      # add twice for both ?'s in the function above
-      search_variables << word
-      search_variables << word
-    end
-    like_patterns = search_functions.join(' and ')
-    # puts "where(#{like_patterns})"
-    # puts *search_variables
-    # example: (LOWER(name LIKE ? or LOWER(date) LIKE ?) and (LOWER(name) LIKE ? or LOWER(date) LIKE ?), %test%, %test%, %2016%, %2016%
-    where("#{like_patterns}", *search_variables)
-  end
-end
+		if pattern.blank?  # blank? covers both nil and empty string
+			all
+		else
+			search_functions = []
+			search_variables = []
+			search_terms = pattern.split(' ').map{|word| "%#{word.downcase}%"}
+			search_terms.each do |word|
+				search_functions << '(LOWER(name) LIKE ? or LOWER(date) LIKE ?)'
+				# add twice for both ?'s in the function above
+				search_variables << word
+				search_variables << word
+			end
+			like_patterns = search_functions.join(' and ')
+			# puts "where(#{like_patterns})"
+			# puts *search_variables
+			# example: (LOWER(name LIKE ? or LOWER(date) LIKE ?) and (LOWER(name) LIKE ? or LOWER(date) LIKE ?), %test%, %test%, %2016%, %2016%
+			where("#{like_patterns}", *search_variables)
+		end
+	end
 
 	def days_until_start
 		time = (Date.today - self.date).to_i
@@ -188,4 +189,23 @@ end
   			nil
   		end
   	end
+
+	def reset_and_fill_bout_board
+		reset_mats
+	  
+		if mats.any?
+		  4.times do
+			# Iterate over each mat and assign the next available match
+			mats.each do |mat|
+			  match_assigned = mat.assign_next_match
+			  # If no more matches are available, exit early
+			  unless match_assigned
+				puts "No more eligible matches to assign."
+				return
+			  end
+			end
+		  end
+		end
+	end
+	  
 end
