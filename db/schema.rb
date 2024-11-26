@@ -31,13 +31,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_27_203209) do
   create_table "mat_assignment_rules", force: :cascade do |t|
     t.integer "tournament_id", null: false
     t.integer "mat_id", null: false
-    t.json "weight_classes", default: []
-    t.json "bracket_positions", default: []
-    t.json "rounds", default: []
+    t.json "weight_classes"
+    t.json "bracket_positions"
+    t.json "rounds"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["mat_id"], name: "index_mat_assignment_rules_on_mat_id"
-    t.index ["tournament_id"], name: "index_mat_assignment_rules_on_tournament_id"
+    t.index ["mat_id"], name: "index_mat_assignment_rules_on_mat_id", unique: true
   end
 
   create_table "matches", force: :cascade do |t|
@@ -168,6 +167,4 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_27_203209) do
     t.index ["weight_id"], name: "index_wrestlers_on_weight_id"
   end
 
-  add_foreign_key "mat_assignment_rules", "mats"
-  add_foreign_key "mat_assignment_rules", "tournaments"
 end
