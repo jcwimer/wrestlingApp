@@ -201,7 +201,7 @@ class Match < ApplicationRecord
       	return_string_ending = return_string_ending + "</strong>"
       end
       if self.w2 != nil
-      	if self.round == 1 and self.bracket_position == "Bracket"
+      	if self.round == 1 and (self.bracket_position == "Bracket" or self.bracket_position == "Quarter")
       	  if self.wrestler2.original_seed
           	return_string = return_string + "#{wrestler2.original_seed} "
           end

@@ -153,5 +153,30 @@ class Weight < ApplicationRecord
 	def wrestlers_without_pool_assignment
 		wrestlers.select{|w| w.pool == nil}
 	end
-			
+
+	def calculate_bracket_size()
+		num_wrestlers = wrestlers.reload.size
+		return nil if num_wrestlers <= 0 # Handle invalid input
+	  
+		# Find the smallest power of 2 greater than or equal to num_wrestlers
+		2**Math.log2(num_wrestlers).ceil
+	end
+
+	def highest_bracket_round
+		bracket_matches_sorted_by_round_descending =  matches.select{|m| m.bracket_position == "Bracket"}.sort_by{|m| m.round}.reverse
+		if bracket_matches_sorted_by_round_descending.size > 0
+			return bracket_matches_sorted_by_round_descending.first.round
+		else
+			return nil
+		end
+	end
+
+	def highest_conso_round
+		conso_matches_sorted_by_round_descending =  matches.select{|m| m.bracket_position == "Conso"}.sort_by{|m| m.round}.reverse
+		if conso_matches_sorted_by_round_descending.size > 0
+			return conso_matches_sorted_by_round_descending.first.round
+		else
+			return nil
+		end
+	end
 end

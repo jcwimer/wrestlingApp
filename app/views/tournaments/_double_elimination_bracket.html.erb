@@ -1,5 +1,48 @@
-<% if @weight.wrestlers.size <= 16 and @weight.wrestlers.size >= 9 %>
-  <%= render 'sixteen_man_double_elimination_bracket' %>
-<% elsif @weight.wrestlers.size >= 4 and @weight.wrestlers.size <= 8 %>
-  <%= render 'eight_man_double_elimination_bracket' %>
- <% end %>
+<h4>Championship Bracket</h4>
+<div class="bracket">
+  <% if @weight.highest_bracket_round %>
+    <% (1..@weight.highest_bracket_round).each do |round| %>
+      <%  @round_matches = @matches.select{|m|m.bracket_position == "Bracket" and m.round == round} %>
+      <%= render 'bracket_round' %>
+    <% end %>
+  <% end %>
+  <% @round_matches = @matches.select{|m|m.bracket_position == "Quarter"} %>
+  <%= render 'bracket_round' %>
+  <% @round_matches = @matches.select{|m|m.bracket_position == "Semis"} %>
+  <%= render 'bracket_round' %>
+  <% @final_match = @matches.select{|m|m.bracket_position == "1/2"} %>
+  <% @winner_place = "1st" %>
+  <%= render 'bracket_final' %>
+</div>
+<h4>Consolation Bracket</h4>
+<div class="bracket">
+  <% if @weight.highest_conso_round %>
+    <% (1..@weight.highest_conso_round).each do |round| %>
+      <%  @round_matches = @matches.select{|m|m.bracket_position == "Conso" and m.round == round} %>
+      <%= render 'bracket_round' %>
+    <% end %>
+  <% end %>
+  <% @round_matches = @matches.select{|m|m.bracket_position == "Conso Quarter"} %>	
+  <%= render 'bracket_round' %>
+  <% @round_matches = @matches.select{|m|m.bracket_position == "Conso Semis"} %>	
+  <%= render 'bracket_round' %>
+  <% @final_match = @matches.select{|m|m.bracket_position == "3/4"} %>
+  <% @winner_place = "3rd" %>
+  <%= render 'bracket_final' %>
+</div>
+<h4>5/6 place match</h4>
+<div class="bracket">
+  <!--Round 1-->
+  <% @final_match = @matches.select{|m|m.bracket_position == "5/6"} %>
+  <% @winner_place = "5th" %>
+  <%= render 'bracket_final' %>
+</div>
+<% if @tournament.number_of_placers >= 8 %>
+  <h4>7/8 place match</h4>
+  <div class="bracket">
+    <!--Round 1-->
+    <% @final_match = @matches.select{|m|m.bracket_position == "7/8"} %>
+    <% @winner_place = "7th" %>
+    <%= render 'bracket_final' %>
+  </div>
+<% end %>
