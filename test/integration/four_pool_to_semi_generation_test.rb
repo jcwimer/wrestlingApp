@@ -79,5 +79,6 @@ class FourPoolToSemiGenerationTest < ActionDispatch::IntegrationTest
       match.winner_id = match.w1
       match.save
     end
+    assert @tournament.matches.select{|m| m.finished == 0}.size == 0
   end
 end

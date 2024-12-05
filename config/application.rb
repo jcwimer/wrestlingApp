@@ -37,7 +37,7 @@ module Wrestling
     config.autoload_paths << "#{config.root}/app/services/school_services"
     config.add_autoload_paths_to_load_path = false
 
-    config.active_support.cache_format_version = 7.1
-    config.load_defaults 7.1
+    config.active_support.cache_format_version = 7.2
+    config.load_defaults 7.2
   end  
 end

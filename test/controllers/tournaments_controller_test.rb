@@ -143,6 +143,7 @@ class TournamentsControllerTest < ActionController::TestCase
   test "logged in tournament owner can access post weigh_in_weight" do
     sign_in_owner
     post :weigh_in, params: { id: 1, weight: 1, wrestler: @wrestlers }
+    success
   end
 
   test "logged in non tournament owner cannot access post weigh_in_weight" do
@@ -514,6 +515,7 @@ class TournamentsControllerTest < ActionController::TestCase
   test "logged in tournament delegate can access post weigh_in_weight" do
     sign_in_delegate
     post :weigh_in, params: { id: 1, weight: 1, wrestler: @wrestlers }
+    success
   end
   
   test "logged in tournament delegate should post update tournament" do
