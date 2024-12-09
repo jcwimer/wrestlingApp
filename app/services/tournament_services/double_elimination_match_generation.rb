@@ -19,6 +19,12 @@ class DoubleEliminationMatchGeneration
       # consolation_rounds define [round_number, number_of_matches_in_round, bracket_position]
 
       case bracket_size
+      when 4 then
+        return BracketMatchups.new(
+          [[1, 4, "Semis"], [2, 3, "Semis"]],
+          [[2, 1, "1/2"]],
+          [[2, 1, "3/4"]]
+        )
       when 8 then
         return BracketMatchups.new(
           [[1, 8, "Quarter"], [4, 5, "Quarter"], [3, 6, "Quarter"], [2, 7, "Quarter"]],
@@ -75,8 +81,12 @@ class DoubleEliminationMatchGeneration
         matches_this_round.times do |bracket_position_number|
           create_matchup(nil, nil, bracket_position, bracket_position_number + 1, round, weight)
         end
-        create_matchup(nil, nil, "5/6", 1, round, weight) if @tournament.number_of_placers >= 6 && matches_this_round == 1
-        create_matchup(nil, nil, "7/8", 1, round, weight) if @tournament.number_of_placers >= 8 && matches_this_round == 1
+        if weight.wrestlers.size >=5
+          create_matchup(nil, nil, "5/6", 1, round, weight) if @tournament.number_of_placers >= 6 && matches_this_round == 1
+        end
+        if weight.wrestlers.size >= 7
+          create_matchup(nil, nil, "7/8", 1, round, weight) if @tournament.number_of_placers >= 8 && matches_this_round == 1
+        end
       end
     end
 

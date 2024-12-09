@@ -300,4 +300,109 @@ class WeightsControllerTest < ActionController::TestCase
     success
   end
 
+  test "tournament owner can update wrestler seeds" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_owner
+    
+    # Prepare updated seed data for wrestlers
+    updated_seeds = {
+      @wrestler.id.to_s => { original_seed: "5" },
+      @weight.wrestlers.second.id.to_s => { original_seed: "6" },
+      @weight.wrestlers.third.id.to_s => { original_seed: "7" }
+    }
+    
+    # Submit the form with the updated seeds
+    post :show, params: { id: @weight.id, wrestler: updated_seeds }
+  
+    # Check if response is successful
+    assert_redirected_to weight_path(@weight.id)
+  
+    # Reload wrestlers to verify changes
+    @wrestler.reload
+    @weight.wrestlers.second.reload
+    @weight.wrestlers.third.reload
+  
+    # Verify seeds are updated
+    assert_equal 5, @wrestler.original_seed
+    assert_equal 6, @weight.wrestlers.second.original_seed
+    assert_equal 7, @weight.wrestlers.third.original_seed
+  end
+
+  test "tournament delegate can update wrestler seeds" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_tournament_delegate
+  
+    # Prepare updated seed data for wrestlers
+    updated_seeds = {
+      @wrestler.id.to_s => { original_seed: "8" },
+      @weight.wrestlers.second.id.to_s => { original_seed: "9" },
+      @weight.wrestlers.third.id.to_s => { original_seed: "10" }
+    }
+  
+    # Submit the form with the updated seeds
+    post :show, params: { id: @weight.id, wrestler: updated_seeds }
+  
+    # Check if response is successful
+    assert_redirected_to weight_path(@weight.id)
+  
+    # Reload wrestlers to verify changes
+    @wrestler.reload
+    @weight.wrestlers.second.reload
+    @weight.wrestlers.third.reload
+  
+    # Verify seeds are updated
+    assert_equal 8, @wrestler.original_seed
+    assert_equal 9, @weight.wrestlers.second.original_seed
+    assert_equal 10, @weight.wrestlers.third.original_seed
+  end
+
+  test "unauthorized user cannot update wrestler seeds" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_non_owner
+  
+    # Prepare updated seed data for wrestlers
+    updated_seeds = {
+      @wrestler.id.to_s => { original_seed: "11" },
+      @weight.wrestlers.second.id.to_s => { original_seed: "12" }
+    }
+  
+    # Attempt to submit the form
+    post :show, params: { id: @weight.id, wrestler: updated_seeds }
+  
+    # Check if user is redirected due to lack of permissions
+    assert_redirected_to "/static_pages/not_allowed"
+  
+    # Verify seeds are not updated
+    @wrestler.reload
+    @weight.wrestlers.second.reload
+    assert_not_equal 11, @wrestler.original_seed
+    assert_not_equal 12, @weight.wrestlers.second.original_seed
+  end
+
+  test "non logged in user cannot update wrestler seeds" do
+    @tournament.is_public = true
+    @tournament.save
+    
+    # Prepare updated seed data for wrestlers
+    updated_seeds = {
+      @wrestler.id.to_s => { original_seed: "11" },
+      @weight.wrestlers.second.id.to_s => { original_seed: "12" }
+    }
+  
+    # Attempt to submit the form
+    post :show, params: { id: @weight.id, wrestler: updated_seeds }
+  
+    # Check if user is redirected due to lack of permissions
+    assert_redirected_to "/static_pages/not_allowed"
+  
+    # Verify seeds are not updated
+    @wrestler.reload
+    @weight.wrestlers.second.reload
+    assert_not_equal 11, @wrestler.original_seed
+    assert_not_equal 12, @weight.wrestlers.second.original_seed
+  end
+
 end

@@ -55,6 +55,10 @@ class TournamentsControllerTest < ActionController::TestCase
     assert_redirected_to '/static_pages/not_allowed'
   end
 
+  def redirect_tournament_error
+    assert_redirected_to "/tournaments/#{@tournament.id}/error"
+  end
+
   def destroy
     delete :destroy, params: { id: 1 }
   end
@@ -663,5 +667,84 @@ class TournamentsControllerTest < ActionController::TestCase
     patch :update, params: { id: new_tournament.id, tournament: { name: 'Updated Tournament', is_public: true } }
     updated_tournament = Tournament.find(new_tournament.id)
     assert_equal users(:one).id, updated_tournament.user_id, "The user_id should not change when the tournament is edited by a non-owner"
+  end
+
+  test "tournament generation error when a wrestler has an original seed higher than the amount of wrestlers in the weight" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+    wrestler = @tournament.weights.first.wrestlers.first
+    wrestler.original_seed = 15
+    wrestler.save
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
+  end
+
+  test "tournament generation error when a double elimination tournament has too many wrestlers" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight(16, "Regular Double Elimination 1-8")
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+    create_wrestlers_for_weight_for_double_elim(@tournament.weights.first, @tournament.schools.first, 1, 20)
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
+  end
+
+  test "tournament generation error when a double elimination tournament has too few wrestlers" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight(4, "Regular Double Elimination 1-8")
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+    @tournament.weights.first.wrestlers.first.destroy
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
+  end
+
+  test "tournament generation error when a Modified 16 Man Double Elimination tournament has too many wrestlers" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight(16, "Modified 16 Man Double Elimination 1-8")
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+    create_wrestlers_for_weight_for_double_elim(@tournament.weights.first, @tournament.schools.first, 1, 20)
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
+  end
+
+  test "tournament generation error when a Modified 16 Man Double Elimination tournament has too few wrestlers" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight(12, "Modified 16 Man Double Elimination 1-8")
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+    @tournament.weights.first.wrestlers.first.destroy
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
+  end
+
+  test "tournament generation error when a pool to bracket tournament has too many wrestlers" do
+    sign_in_owner
+    create_pool_tournament_single_weight(24)
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+    create_wrestlers_for_weight(@tournament.weights.first, @tournament.schools.first, 1, 20)
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
+  end
+
+  test "tournament generation error when a pool to bracket tournament has too few wrestlers" do
+    sign_in_owner
+    create_pool_tournament_single_weight(2)
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+    @tournament.weights.first.wrestlers.first.destroy
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
   end
 end

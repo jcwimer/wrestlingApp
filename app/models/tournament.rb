@@ -129,7 +129,7 @@ class Tournament < ApplicationRecord
 	    end
   	end
   	
-  	def pool_to_bracket_number_of_wrestlers
+  	def pool_to_bracket_number_of_wrestlers_error
   		error_string = ""
       if self.tournament_type.include? "Pool to bracket"
        	weights_with_too_many_wrestlers = weights.select{|w| w.wrestlers.size > 24}
@@ -144,7 +144,7 @@ class Tournament < ApplicationRecord
       return error_string
   	end
 
-  	def modified_sixteen_man_number_of_wrestlers
+  	def modified_sixteen_man_number_of_wrestlers_error
   		error_string = ""
         if self.tournament_type.include? "Modified 16 Man Double Elimination"
         	weights_with_too_many_wrestlers = weights.select{|w| w.wrestlers.size > 16}
@@ -159,7 +159,7 @@ class Tournament < ApplicationRecord
         return error_string
   	end
 
-  	def double_elim_number_of_wrestlers
+  	def double_elim_number_of_wrestlers_error
   		error_string = ""
         if self.tournament_type == "Double Elimination 1-6" or self.tournament_type == "Double Elimination 1-8"
         	weights_with_too_many_wrestlers = weights.select{|w| w.wrestlers.size > 16}
@@ -173,21 +173,35 @@ class Tournament < ApplicationRecord
         end
         return error_string
     end
+
+	def wrestlers_with_higher_seed_than_bracket_size_error
+		error_string = ""
+		weights.each do |weight|
+			weight.wrestlers.each do |wrestler|
+				if wrestler.original_seed != nil && wrestler.original_seed > weight.wrestlers.size
+					error_string += "Wrestler: #{wrestler.name} has a seed of #{wrestler.original_seed} which is greater than the amount of wrestlers (#{weight.wrestlers.size}) in the weight class #{weight.max}."
+				end
+			end
+		end
+		return error_string
+	end
   	
   	def match_generation_error
-  		error_string = "There is a tournament error."
-  		modified_sixteen_man_error = modified_sixteen_man_number_of_wrestlers
-      double_elim_error = double_elim_number_of_wrestlers
-      pool_to_bracket_error = pool_to_bracket_number_of_wrestlers
-  		if pool_to_bracket_error.length > 0
-  			return error_string + pool_to_bracket_error
-   		elsif modified_sixteen_man_error.length > 0
-  			return error_string + modified_sixteen_man_error
-  		elsif double_elim_error.length > 0
-  			return error_string + double_elim_error
-  		else
-  			nil
+  	    error_string = ""
+  		if pool_to_bracket_number_of_wrestlers_error.length > 0
+  			error_string += pool_to_bracket_number_of_wrestlers_error
+   		elsif modified_sixteen_man_number_of_wrestlers_error.length > 0
+  			error_string += modified_sixteen_man_number_of_wrestlers_error
+  		elsif double_elim_number_of_wrestlers_error.length > 0
+  			error_string += double_elim_number_of_wrestlers_error
+		elsif wrestlers_with_higher_seed_than_bracket_size_error.length > 0
+			error_string += wrestlers_with_higher_seed_than_bracket_size_error
   		end
+		if error_string.length > 0
+		  return "There is a tournament error. #{error_string}"
+		else
+		  return nil
+		end
   	end
 
 	def reset_and_fill_bout_board

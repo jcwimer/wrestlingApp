@@ -468,4 +468,22 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert Wrestler.find(translate_name_to_id("Test2")).pool_placement_tiebreaker == "Head to Head"
     assert Wrestler.find(translate_name_to_id("Test1")).pool_placement == 4
   end
+
+  test "Pool order with 2 wrestlers" do
+    # Setup
+    Wrestler.find(translate_name_to_id("Test3")).destroy
+    Wrestler.find(translate_name_to_id("Test4")).destroy
+    Wrestler.find(translate_name_to_id("Test5")).destroy
+    Wrestler.find(translate_name_to_id("Test6")).destroy
+    GenerateTournamentMatches.new(Wrestler.find(translate_name_to_id("Test1")).tournament).generate
+    weight = Wrestler.find(translate_name_to_id("Test1")).weight
+    
+    # Match results
+    # Test1 is the best wrestler but got injured after round 1 and forfeited out
+    end_match_custom(match_wrestler_vs("Test1","Test2"),"Tech Fall","0-16","Test2")
+    
+    
+    assert Wrestler.find(translate_name_to_id("Test2")).pool_placement == 1
+    assert Wrestler.find(translate_name_to_id("Test1")).pool_placement == 2
+  end
 end

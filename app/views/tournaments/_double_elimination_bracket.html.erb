@@ -32,7 +32,6 @@
 </div>
 <h4>5/6 place match</h4>
 <div class="bracket">
-  <!--Round 1-->
   <% @final_match = @matches.select{|m|m.bracket_position == "5/6"} %>
   <% @winner_place = "5th" %>
   <%= render 'bracket_final' %>
@@ -40,7 +39,6 @@
 <% if @tournament.number_of_placers >= 8 %>
   <h4>7/8 place match</h4>
   <div class="bracket">
-    <!--Round 1-->
     <% @final_match = @matches.select{|m|m.bracket_position == "7/8"} %>
     <% @winner_place = "7th" %>
     <%= render 'bracket_final' %>

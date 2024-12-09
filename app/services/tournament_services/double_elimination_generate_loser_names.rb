@@ -15,7 +15,12 @@ class DoubleEliminationGenerateLoserNames
       # cross_bracket is true or false. crossing should happen every other round.
       # both_wrestlers defines if you're filling out loser1_name and loser2_name or just loser1_name
       # don't need to define 3/4, 5/6, or 7/8 those happen in the assign_loser_names_for_weight method
+      # except for bracket_size of 4
       case bracket_size
+      when 4 then
+        return [
+          [@tournament.total_rounds, "3/4", 1, "Semis", false, true]
+        ]
       when 8 then
         return [
           [2, "Conso Quarter", 1, "Quarter", false, true],
@@ -24,8 +29,8 @@ class DoubleEliminationGenerateLoserNames
       when 16 then
         return [
           [2, "Conso", 1, "Bracket", false, true],
-          [3, "Conso", 2, "Quarter", true],
-          [5, "Conso Semis", 4, "Semis", false]
+          [3, "Conso", 2, "Quarter", true, false],
+          [5, "Conso Semis", 4, "Semis", false, false]
         ]
       else
         return nil
@@ -35,7 +40,7 @@ class DoubleEliminationGenerateLoserNames
     def assign_loser_names_for_weight(weight)
       number_of_placers = @tournament.number_of_placers
       bracket_size = weight.calculate_bracket_size
-      matches_by_weight = weight.matches
+      matches_by_weight = weight.matches.reload
 
       loser_name_championship_mappings = define_losername_championship_mappings(bracket_size)
 
@@ -68,14 +73,14 @@ class DoubleEliminationGenerateLoserNames
 
       conso_semi_matches = matches_by_weight.select{|match| match.bracket_position == "Conso Semis"}
       conso_quarter_matches = matches_by_weight.select{|match| match.bracket_position == "Conso Quarter"}
-      if number_of_placers >= 6
+      if number_of_placers >= 6 && weight.wrestlers.size >= 5
         five_six_match = matches_by_weight.select{|match| match.bracket_position == "5/6"}.first
         bout_number1 = conso_semi_matches.select{|match| match.bracket_position_number == 1}.first.bout_number
         bout_number2 = conso_semi_matches.select{|match| match.bracket_position_number == 2}.first.bout_number
         five_six_match.loser1_name = "Loser of #{bout_number1}"
         five_six_match.loser2_name = "Loser of #{bout_number2}"
       end
-      if number_of_placers >= 8
+      if number_of_placers >= 8 && weight.wrestlers.size >= 7
         seven_eight_match = matches_by_weight.select{|match| match.bracket_position == "7/8"}.first
         bout_number1 = conso_quarter_matches.select{|match| match.bracket_position_number == 1}.first.bout_number
         bout_number2 = conso_quarter_matches.select{|match| match.bracket_position_number == 2}.first.bout_number

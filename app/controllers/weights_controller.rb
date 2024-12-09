@@ -8,15 +8,21 @@ class WeightsController < ApplicationController
   # GET /weights/1.json
   def show
     if params[:wrestler]
+      check_access_manage
       respond_to do |format|
-        Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
+        # Sanitize the wrestler parameters
+        sanitized_wrestlers = params.require(:wrestler).to_unsafe_h.transform_values do |attributes|
+          ActionController::Parameters.new(attributes).permit(:original_seed)
+        end
+  
+        Wrestler.update(sanitized_wrestlers.keys, sanitized_wrestlers.values)
         format.html { redirect_to @weight, notice: 'Seeds were successfully updated.' }
       end
     end
     @wrestlers = @weight.wrestlers
     @tournament = @weight.tournament
     session[:return_path] = "/weights/#{@weight.id}"
-  end
+  end  
 
   # GET /weights/new
   def new

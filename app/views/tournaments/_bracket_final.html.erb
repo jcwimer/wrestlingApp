@@ -1,15 +1,9 @@
+<% @final_match.each do |match| %> 
   <div class="round">
-  	<% @final_match.each do |match| %>
 		<div class="game">
 		  <div class="game-top "><%= match.w1_bracket_name.html_safe %> <span></span></div>
 		  <div class="bout-number"><p><%= match.bout_number %> <%= match.bracket_score_string %></p><p><%= @winner_place %> Place Winner</p></div>
 		  <div class="game-bottom "><%= match.w2_bracket_name.html_safe %><span></span></div>
 		</div>
   </div>
-  <!-- <div class="round">
-		<div class="game">
-		  <div class="bracket-winner"> <%= match.bracket_winner_name %></div>
-		  <div class="bout_number"><%= @winner_place %> Place Winner</div>
-		</div>
-	<% end %>
-  </div> -->
+<% end %>

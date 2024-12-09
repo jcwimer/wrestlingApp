@@ -47,6 +47,8 @@
 		number_of_wrestlers = 12
 	  elsif index == 4
 		number_of_wrestlers = 24
+	  elsif index == 5
+		number_of_wrestlers = 2
 	  else
 		number_of_wrestlers = 16
 	  end
@@ -72,9 +74,15 @@
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
 	wrestler_name_number = 1
-	tournament.weights.each do |weight|
-	  create_wrestlers_for_weight(weight, tournament, 16, wrestler_name_number)
-	  wrestler_name_number += 16
+	tournament.weights.each_with_index do |weight, index|
+		if index == 0
+		  number_of_wrestlers = 12
+		else
+		  number_of_wrestlers = 16
+		end
+		
+		create_wrestlers_for_weight(weight, tournament, number_of_wrestlers, wrestler_name_number)
+		wrestler_name_number += number_of_wrestlers
 	end
 	
 	# Regular Double Elimination 1-6
