@@ -46,8 +46,9 @@
               <% end %>
               <li><strong>Time Savers</strong></li>
               <li><%= link_to "Create Boys High School Weights (106-285)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::HS_WEIGHT_CLASSES}",data: { confirm: 'Are you sure? This will delete all current weights.' } %></li>
-              <li><%= link_to "Create Girls High School Weights (101-235)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::HS_GIRLS_WEIGHT_CLASSES}",data: { confirm: 'Are you sure? This will delete all current weights.' } %></li>
+              <li><%= link_to "Create Girls High School Weights (100-235)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::HS_GIRLS_WEIGHT_CLASSES}",data: { confirm: 'Are you sure? This will delete all current weights.' } %></li>
               <li><%= link_to "Create Boys Middle School Weights (80-245)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::MS_WEIGHT_CLASSES}",data: { confirm: 'Are you sure? This will delete all current weights.' } %></li>
+              <li><%= link_to "Create Girls Middle School Weights (72-235)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::MS_GIRLS_WEIGHT_CLASSES}",data: { confirm: 'Are you sure? This will delete all current weights.' } %></li>
               <li><strong>Tournament Actions</strong></li>
               <li><%= link_to "Calculate Team Scores" , "/tournaments/#{@tournament.id}/calculate_team_scores", :method => :put %></li>
               <li><%= link_to "Generate Brackets" , "/tournaments/#{@tournament.id}/generate_matches", data: { confirm: 'Are you sure? This will delete all current matches.' } %></li>
