@@ -4,6 +4,8 @@ class PoolOrder
 	end
 
 	def getPoolOrder
+		# clear caching for weight for bracket page
+		@wrestlers.first.weight.touch
 	    setOriginalPoints
 	    while checkForTies(@wrestlers) == true
 	        getWrestlersOrderByPoolAdvancePoints.each do |wrestler|
