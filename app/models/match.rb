@@ -111,7 +111,7 @@ class Match < ApplicationRecord
 			sec = time.partition(':').last.to_i
 			return minutes_in_seconds + sec
 		else
-			nil
+			0
 		end
 	end
 

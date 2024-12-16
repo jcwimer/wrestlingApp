@@ -38,7 +38,7 @@ class Wrestler < ApplicationRecord
 	end
 
 	def total_pool_points_for_pool_order
-      CalculateWrestlerTeamScore.new(self).poolPoints + CalculateWrestlerTeamScore.new(self).bonusWinPoints
+      CalculateWrestlerTeamScore.new(self).poolPoints + CalculateWrestlerTeamScore.new(self).pool_bonus_points
 	end
 
 	def unfinished_pool_matches
@@ -260,6 +260,7 @@ class Wrestler < ApplicationRecord
 	def pin_time_pool
       time = 0
       pin_wins.select{|m| m.bracket_position == "Pool"}.each do | m |
+		puts m.pin_time_in_seconds
       	time = time + m.pin_time_in_seconds
       end
       time

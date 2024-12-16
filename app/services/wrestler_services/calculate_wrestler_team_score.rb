@@ -43,6 +43,14 @@ class CalculateWrestlerTeamScore
         end
     end
 
+    def pool_bonus_points
+        if @tournament.tournament_type == "Pool to bracket"
+            (@wrestler.pin_wins.select{|m| m.bracket_position == "Pool"}.size * 2) + (@wrestler.tech_wins.select{|m| m.bracket_position == "Pool"}.size * 1.5) + (@wrestler.major_wins.select{|m| m.bracket_position == "Pool"}.size * 1)
+        else
+            0
+        end
+    end
+
     def byePoints
         points = 0
         if @tournament.tournament_type == "Pool to bracket"
