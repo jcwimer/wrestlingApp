@@ -12,6 +12,7 @@ class GenerateTournamentMatches
     end
 
     def generate_weight_raw(weight)
+      @tournament.clear_errored_deferred_jobs
       WipeTournamentMatches.new(@tournament).wipeWeightMatches(weight)
       @tournament.curently_generating_matches = 1
       @tournament.save

@@ -179,40 +179,34 @@ class Match < ApplicationRecord
       	return_string_ending = return_string_ending + "</strong>"
       end
       if self.w1 != nil
-      	if self.round == 1 and (self.bracket_position == "Bracket" or self.bracket_position == "Quarter")
-          if self.wrestler1.original_seed
-          	return_string = return_string + "[#{wrestler1.original_seed}] "
-          end
-          return_string = return_string + "#{w1_name} - #{wrestler1.school.name} (#{wrestler1.season_win}-#{wrestler1.season_loss})"
+      	if self.round == 1
+          return_string = return_string + "#{wrestler1.long_bracket_name}"
       	else
-      	  return_string = return_string + "#{w1_name} (#{wrestler1.school.abbreviation})"
+      	  return_string = return_string + "#{wrestler1.short_bracket_name}"
       	end
       else
-      	return_string = return_string + "#{w1_name}"
+      	return_string = return_string + "#{self.loser1_name}"
       end
       return return_string + return_string_ending
 	end
 
 	def w2_bracket_name
-      return_string = ""
-	  return_string_ending = ""
-      if self.w2 and self.winner_id == self.w2
-      	return_string = return_string + "<strong>"
-      	return_string_ending = return_string_ending + "</strong>"
-      end
-      if self.w2 != nil
-      	if self.round == 1 and (self.bracket_position == "Bracket" or self.bracket_position == "Quarter")
-      	  if self.wrestler2.original_seed
-          	return_string = return_string + "#{wrestler2.original_seed} "
-          end
-          return_string = return_string + "#{w2_name} - #{wrestler2.school.name} (#{wrestler2.season_win}-#{wrestler2.season_loss})"
-      	else
-      	  return_string = return_string + "#{w2_name} (#{wrestler2.school.abbreviation})"
-      	end
-      else
-      	return_string = return_string + "#{w2_name}"
-      end
-      return return_string + return_string_ending
+		return_string = ""
+		return_string_ending = ""
+		if self.w2 and self.winner_id == self.w2
+			return_string = return_string + "<strong>"
+			return_string_ending = return_string_ending + "</strong>"
+		end
+		if self.w2 != nil
+			if self.round == 1
+			return_string = return_string + "#{wrestler2.long_bracket_name}"
+			else
+			  return_string = return_string + "#{wrestler2.short_bracket_name}"
+			end
+		else
+			return_string = return_string + "#{self.loser2_name}"
+		end
+		return return_string + return_string_ending
 	end
 
 	def winner_name

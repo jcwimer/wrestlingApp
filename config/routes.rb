@@ -62,7 +62,6 @@ Wrestling::Application.routes.draw do
   get "/tournaments/:id/brackets" => "tournaments#show"
   put "/tournaments/:id/calculate_team_scores", :to => "tournaments#calculate_team_scores"
 
-  post 'weights/:id/re_gen' => 'weights#re_gen', :as => :regen_weight
   post "/wrestlers/update_pool" => "wrestlers#update_pool"
 
   get "schools/:id/stats" => "schools#stats"

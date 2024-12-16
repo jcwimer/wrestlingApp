@@ -17,6 +17,12 @@ class Tournament < ApplicationRecord
         Delayed::Job.where(job_owner_id: self.id)
 	end
 
+	def clear_errored_deferred_jobs
+		Delayed::Job.where(job_owner_id: self.id, last_error: ! nil).each do |job|
+			job.destroy
+		end
+	end
+
 	def self.search_date_name(pattern)
 		if pattern.blank?  # blank? covers both nil and empty string
 			all

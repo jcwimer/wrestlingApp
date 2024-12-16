@@ -80,10 +80,6 @@ class WeightsController < ApplicationController
     end
   end
   
-  def re_gen
-    @tournament = @weight.tournament
-    GenerateTournamentMatches.new(@tournament).generateWeight(@weight)
-  end
 
   def pool_order
     pool = params[:pool_to_order].to_i

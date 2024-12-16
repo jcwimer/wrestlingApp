@@ -280,4 +280,19 @@ class Wrestler < ApplicationRecord
 		end
 	end
 
+	def long_bracket_name
+		return_string = ""
+		if self.original_seed
+			return_string = return_string + "[#{self.original_seed}] "
+		end
+		return_string = return_string + "#{self.name} - #{self.school.name}"
+		if self.season_win && self.season_loss
+			return_string = return_string + " (#{self.season_win}-#{self.season_loss})"
+		end
+		return return_string
+	end
+
+	def short_bracket_name
+		return "#{self.name} (#{self.school.abbreviation})"
+    end
 end

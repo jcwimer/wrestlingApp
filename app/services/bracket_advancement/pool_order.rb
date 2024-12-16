@@ -29,6 +29,7 @@ class PoolOrder
 	
 	def setOriginalPoints
 	   @wrestlers.each do |w|
+		   matches = w.matches.reload
 	   	   w.pool_placement_tiebreaker = nil
 	   	   w.pool_placement = nil
 	       w.poolAdvancePoints = w.pool_wins.size

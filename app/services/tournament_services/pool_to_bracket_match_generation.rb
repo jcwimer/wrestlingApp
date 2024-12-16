@@ -2,14 +2,6 @@ class PoolToBracketMatchGeneration
    def initialize( tournament )
       @tournament = tournament
     end
-    
-    def generatePoolToBracketMatchesWeight(weight)
-    	PoolGeneration.new(weight).generatePools()
-        last_match = @tournament.matches.where(weight: weight).order(round: :desc).limit(1).first
-        highest_round = last_match.round
-        PoolBracketGeneration.new(weight, highest_round).generateBracketMatches()
-        setOriginalSeedsToWrestleLastPoolRound(weight)
-    end
 	
 	def generatePoolToBracketMatches
         @tournament.weights.order(:max).each do |weight|
