@@ -260,7 +260,6 @@ class Wrestler < ApplicationRecord
 	def pin_time_pool
       time = 0
       pin_wins.select{|m| m.bracket_position == "Pool"}.each do | m |
-		puts m.pin_time_in_seconds
       	time = time + m.pin_time_in_seconds
       end
       time
