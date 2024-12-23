@@ -155,7 +155,7 @@ class Weight < ApplicationRecord
 		wrestlers.select{|w| w.pool == nil}
 	end
 
-	def calculate_bracket_size()
+	def calculate_bracket_size
 		num_wrestlers = wrestlers.reload.size
 		return nil if num_wrestlers <= 0 # Handle invalid input
 	  

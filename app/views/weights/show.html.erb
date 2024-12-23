@@ -35,7 +35,7 @@
           			<% end %></td>
       				<% if can? :manage, @tournament %> 
                 <td>
-      					<%= link_to '', wrestler, method: :delete, data: { confirm: "Are you sure you want to delete #{wrestler.name}?" } , :class=>"fas fa-trash-alt" %>     
+      					<%= link_to '', wrestler, method: :delete, data: { confirm: "Are you sure you want to delete #{wrestler.name}? THIS WILL DELETE ALL MATCHES." } , :class=>"fas fa-trash-alt" %>     
                 </td>
 	      			<% end %>
       			</tr>
@@ -43,7 +43,7 @@
     	<% end %>
   	</tbody>
 </table>
-<br><p>*All wrestlers without a seed (determined by tournament director) will be assigned a bracket line.</p>
+<br><p>*All wrestlers without a seed (determined by tournament director) will be assigned a random bracket line.</p>
 		<% if can? :manage, @tournament %>
 		<br>
 	      <%= submit_tag "Save Seeds", :class=>"btn btn-success"%>

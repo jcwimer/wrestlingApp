@@ -3,25 +3,6 @@ class GenerateTournamentMatches
       @tournament = tournament
     end
 
-    def generateWeight(weight)
-      if Rails.env.production?
-        self.delay(:job_owner_id => @tournament.id, :job_owner_type => "Generate matches for weights class #{weight.max}").generate_weight_raw(weight)
-      else
-        self.generate_weight_raw(weight)
-      end
-    end
-
-    def generate_weight_raw(weight)
-      @tournament.clear_errored_deferred_jobs
-      WipeTournamentMatches.new(@tournament).wipeWeightMatches(weight)
-      @tournament.curently_generating_matches = 1
-      @tournament.save
-      unAssignBouts
-      PoolToBracketMatchGeneration.new(@tournament).generatePoolToBracketMatchesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
-      postMatchCreationActions
-      PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNamesWeight(weight) if @tournament.tournament_type == "Pool to bracket"
-    end
-
     def generate
       if Rails.env.production?
         self.delay(:job_owner_id => @tournament.id, :job_owner_type => "Generate matches for all weights").generate_raw
@@ -45,7 +26,7 @@ class GenerateTournamentMatches
         @tournament.curently_generating_matches = 1
         @tournament.save
         WipeTournamentMatches.new(@tournament).setUpMatchGeneration
-        TournamentSeeding.new(@tournament).setSeeds
+        TournamentSeeding.new(@tournament).set_seeds
     end
 
     def postMatchCreationActions

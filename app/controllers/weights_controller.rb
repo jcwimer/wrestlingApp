@@ -79,7 +79,6 @@ class WeightsController < ApplicationController
         format.json { head :no_content }
     end
   end
-  
 
   def pool_order
     pool = params[:pool_to_order].to_i

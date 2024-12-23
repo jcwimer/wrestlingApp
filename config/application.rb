@@ -30,12 +30,9 @@ module Wrestling
       DeviseController.respond_to :html, :json
     end
     
-    config.autoload_paths << "#{config.root}/app/services/tournament_services"
-    config.autoload_paths << "#{config.root}/app/services/wrestler_services"
-    config.autoload_paths << "#{config.root}/app/services/weight_services"
-    config.autoload_paths << "#{config.root}/app/services/bracket_advancement"
-    config.autoload_paths << "#{config.root}/app/services/school_services"
-    config.add_autoload_paths_to_load_path = false
+    # Add all folders under app/services to the autoload paths
+    config.autoload_paths += Dir[Rails.root.join('app', 'services', '**', '*')]
+    # config.add_autoload_paths_to_load_path = false
 
     config.active_support.cache_format_version = 7.2
     config.load_defaults 7.2
