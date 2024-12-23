@@ -40,10 +40,10 @@ class DoubleEliminationSixteenManSixPlacesMatchGeneration < ActionDispatch::Inte
     assert match3.wrestler2.bracket_line == 12
 
     assert match4.wrestler1.bracket_line == 4
-    assert match4.wrestler2.bracket_line == 14
+    assert match4.wrestler2.bracket_line == 13
 
     assert match5.wrestler1.bracket_line == 3
-    assert match5.wrestler2.bracket_line == 13
+    assert match5.wrestler2.bracket_line == 14
 
     assert match6.wrestler1.bracket_line == 6
     assert match6.wrestler2.bracket_line == 11
