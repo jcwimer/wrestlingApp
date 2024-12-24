@@ -5,7 +5,13 @@ class Match < ApplicationRecord
 	has_many :wrestlers, :through => :weight
 	has_many :schools, :through => :wrestlers
 	validate :score_validation, :win_type_validation, :bracket_position_validation, :overtime_type_validation
-        after_update :after_finished_actions, :if => :saved_change_to_finished? or :saved_change_to_winner_id? or :saved_change_to_win_type? or :saved_change_to_score?
+	after_update :after_finished_actions, if: -> { 
+		saved_change_to_finished? || 
+		saved_change_to_winner_id? || 
+		saved_change_to_win_type? || 
+		saved_change_to_score? || 
+		saved_change_to_overtime_type?
+	}
 
 	def after_finished_actions
 	  if self.w1
@@ -14,7 +20,7 @@ class Match < ApplicationRecord
 	  if self.w2
 		wrestler2.touch
 	  end
-	  if self.finished == 1 && self.winner_id != nil
+	  if self.reload.finished == 1 && self.reload.winner_id != nil
 		if self.mat
 			self.mat.assign_next_match
 		end
