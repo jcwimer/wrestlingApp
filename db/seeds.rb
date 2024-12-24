@@ -87,17 +87,19 @@
 	
 	# Regular Double Elimination 1-6
 	tournament = Tournament.create(id: 203, name: 'Regular Double Elimination 1-6', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-6', user_id: 1, date: Date.today, is_public: true)
-	create_schools(tournament, 16)
+	create_schools(tournament, 32)
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
 	wrestler_name_number = 1
 	tournament.weights.each_with_index do |weight, index|
 		if index == 0
-		  number_of_wrestlers = 4
+			number_of_wrestlers = 4
 		elsif index == 1
-		  number_of_wrestlers = 8
+			number_of_wrestlers = 8
+		elsif index == 2
+			number_of_wrestlers = 32
 		else
-		  number_of_wrestlers = 16
+			number_of_wrestlers = 16
 		end
 		
 		create_wrestlers_for_weight(weight, tournament, number_of_wrestlers, wrestler_name_number)
@@ -106,7 +108,7 @@
 	
 	# Regular Double Elimination 1-8
 	tournament = Tournament.create(id: 204, name: 'Regular Double Elimination 1-8', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-8', user_id: 1, date: Date.today, is_public: true)
-	create_schools(tournament, 16)
+	create_schools(tournament, 32)
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
 	wrestler_name_number = 1
@@ -115,6 +117,8 @@
 		  number_of_wrestlers = 4
 		elsif index == 1
 		  number_of_wrestlers = 8
+		elsif index == 2
+			number_of_wrestlers = 32
 		else
 		  number_of_wrestlers = 16
 		end

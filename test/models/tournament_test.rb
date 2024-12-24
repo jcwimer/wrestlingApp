@@ -69,8 +69,8 @@ class TournamentTest < ActiveSupport::TestCase
       assert @tournament.match_generation_error != nil
     end
     
-    test "Tournament Double Elimination 1-8 match generation errors with more than 16 wrestlers" do
-      number_of_wrestlers=17
+    test "Tournament Double Elimination 1-8 match generation errors with more than 32 wrestlers" do
+      number_of_wrestlers=33
       create_a_tournament_with_single_weight("Double Elimination 1-8", number_of_wrestlers)
       assert @tournament.match_generation_error != nil
     end

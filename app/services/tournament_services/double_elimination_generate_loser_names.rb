@@ -15,60 +15,27 @@ class DoubleEliminationGenerateLoserNames
     case bracket_size
     when 4
       [
-        {
-          conso_round: @tournament.total_rounds,
-          conso_bracket_position: "3/4",
-          championship_round: 1,
-          championship_bracket_position: "Semis",
-          cross_bracket: false,
-          both_wrestlers: true
-        }
+        # have to use total rounds here because if other weights have bigger brackets, then the finals round 3/4 won't be round 2
+        { conso_round: @tournament.total_rounds, conso_bracket_position: "3/4", championship_round: 1, championship_bracket_position: "Semis", cross_bracket: false, both_wrestlers: true }
       ]
     when 8
       [
-        {
-          conso_round: 2,
-          conso_bracket_position: "Conso Quarter",
-          championship_round: 1,
-          championship_bracket_position: "Quarter",
-          cross_bracket: false,
-          both_wrestlers: true
-        },
-        {
-          conso_round: 3,
-          conso_bracket_position: "Conso Semis",
-          championship_round: 2,
-          championship_bracket_position: "Semis",
-          cross_bracket: true,
-          both_wrestlers: false
-        }
+        { conso_round: 2, conso_bracket_position: "Conso Quarter", championship_round: 1, championship_bracket_position: "Quarter", cross_bracket: false, both_wrestlers: true },
+        { conso_round: 3, conso_bracket_position: "Conso Semis", championship_round: 2, championship_bracket_position: "Semis", cross_bracket: true, both_wrestlers: false }
       ]
     when 16
       [
-        {
-          conso_round: 2,
-          conso_bracket_position: "Conso",
-          championship_round: 1,
-          championship_bracket_position: "Bracket",
-          cross_bracket: false,
-          both_wrestlers: true
-        },
-        {
-          conso_round: 3,
-          conso_bracket_position: "Conso",
-          championship_round: 2,
-          championship_bracket_position: "Quarter",
-          cross_bracket: true,
-          both_wrestlers: false
-        },
-        {
-          conso_round: 5,
-          conso_bracket_position: "Conso Semis",
-          championship_round: 4,
-          championship_bracket_position: "Semis",
-          cross_bracket: false,
-          both_wrestlers: false
-        }
+        { conso_round: 2, conso_bracket_position: "Conso", championship_round: 1, championship_bracket_position: "Bracket", cross_bracket: false, both_wrestlers: true },
+        { conso_round: 3, conso_bracket_position: "Conso", championship_round: 2, championship_bracket_position: "Quarter", cross_bracket: true, both_wrestlers: false },
+        { conso_round: 5, conso_bracket_position: "Conso Semis", championship_round: 4, championship_bracket_position: "Semis", cross_bracket: false, both_wrestlers: false }
+      ]
+    when 32
+      [
+        { conso_round: 2, conso_bracket_position: "Conso", championship_round: 1, championship_bracket_position: "Bracket", cross_bracket: false, both_wrestlers: true },
+        { conso_round: 3, conso_bracket_position: "Conso", championship_round: 2, championship_bracket_position: "Bracket", cross_bracket: true, both_wrestlers: false },
+        { conso_round: 5, conso_bracket_position: "Conso", championship_round: 4, championship_bracket_position: "Quarter", cross_bracket: false, both_wrestlers: false },
+        { conso_round: 7, conso_bracket_position: "Conso Semis", championship_round: 6, championship_bracket_position: "Semis", cross_bracket: true, both_wrestlers: false },
+
       ]
     else
       nil
