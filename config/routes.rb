@@ -11,6 +11,11 @@ Wrestling::Application.routes.draw do
     member do
       post :reset_bout_board
     end
+    resources :tournament_backups, only: [:index, :show, :destroy] do
+      post :create, on: :collection
+      post :restore, on: :member
+      post :import_manual, on: :collection
+    end
   end
 
   resources :schools
@@ -57,8 +62,6 @@ Wrestling::Application.routes.draw do
   delete 'tournaments/:id/:teampointadjust/remove_teampointadjust' => 'tournaments#remove_teampointadjust'
   get 'tournaments/:id/error' => 'tournaments#error'
   post "/tournaments/:id/swap" => "tournaments#swap", :as => :swap_wrestlers
-  get 'tournaments/:id/export' => "tournaments#export"
-  post "/tournaments/:id/import" => "tournaments#import", :as => :import  
   get "/tournaments/:id/brackets" => "tournaments#show"
   put "/tournaments/:id/calculate_team_scores", :to => "tournaments#calculate_team_scores"
 

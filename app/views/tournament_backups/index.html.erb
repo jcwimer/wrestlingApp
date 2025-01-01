@@ -1,0 +1,38 @@
+<h3>Tournament Backups</h3>
+<p>You can click on the timestamp to view the backup text. You can manually store this anywhere you'd like and then paste it into the manual import field below.
+Doing this is risky, if the text is formatted incorrectly (like Microsoft Word changing the quotation marks), it will not import properly
+and will also delete all of your current data. It's best to use the create backup function.</p>
+<br>
+<table class="table table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Backup Created At</th>
+      <th>Backup Reason</th>
+      <th><%= link_to ' Create New Backup', tournament_tournament_backups_path(@tournament), method: :post, class: 'fas fa-plus'%></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @tournament_backups.each do |backup| %>
+      <tr>
+        <td>
+          <%= link_to backup.created_at.strftime('%Y-%m-%d %H:%M:%S'), tournament_tournament_backup_path(@tournament, backup, print: true), target: '_blank', class: 'text-decoration-none' %>
+        </td>
+        <td><%= backup.backup_reason.presence || 'No reason provided' %></td>
+        <td>
+          <%= link_to '', restore_tournament_tournament_backup_path(@tournament, backup), method: :post, data: { confirm: "This will restore the backup from #{backup.created_at.strftime('%Y-%m-%d %H:%M:%S')}. It will delete all current data from the tournament in order to restore the backup." }, class: 'fas fa-undo-alt text-warning', title: 'Restore Backup' %>
+          <%= link_to '', tournament_tournament_backup_path(@tournament, backup), method: :delete, data: { confirm: 'Are you sure you want to delete this backup?' }, class: 'fas fa-trash-alt', title: 'Delete Backup' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<br><br>
+<h3>Import Manual Backup</h3>
+<p>Paste the backup text here. Note, if this is formatted wrong, you'll need to restore a backup from above to fix it and you'll see an error in your background jobs.</p>
+<%= form_for(:tournament, url: import_manual_tournament_tournament_backups_path(@tournament)) do |f| %>
+  <div class="field">
+    <%= f.label 'Import text' %><br>
+    <%= f.text_area :import_text, cols: "30", rows: "20" %>
+  </div>
+  <%= submit_tag "Import", class: "btn btn-success", data: { confirm: 'Are you sure? This will delete everything for the current tournament and restore it with the backup text pasted below.' } %>
+<% end %>

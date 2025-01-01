@@ -8,6 +8,7 @@ class Tournament < ApplicationRecord
 	has_many :matches, dependent: :destroy
 	has_many :delegates, class_name: "TournamentDelegate"
 	has_many :mat_assignment_rules, dependent: :destroy
+	has_many :tournament_backups, dependent: :destroy
 	
 	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
 
@@ -227,5 +228,9 @@ class Tournament < ApplicationRecord
 		  end
 		end
 	end
+
+	def create_backup()
+		TournamentBackupService.new(self, "Manual backup").create_backup
+	end	  
 	  
 end

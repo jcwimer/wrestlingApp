@@ -1,11 +1,11 @@
 class WrestlingdevImporter
 
-  ##### Note, the json contains id's for each row in the tables as well as it's associations
+  ##### Note, the json contains id's for each row in the tables as well as its associations
   ##### this ignores those ids and uses this tournament id and then looks up associations based on name
   ##### and this tournament id
-  def initialize(tournament, import_json)
+  def initialize(tournament, backup)
     @tournament = tournament
-    @import_data = JSON.parse(import_json)
+    @import_data = JSON.parse(Base64.decode64(backup.backup_data))
   end
 
   def import
@@ -26,6 +26,7 @@ class WrestlingdevImporter
   end
 
   def destroy_all
+    @tournament.mat_assignment_rules.destroy_all
     @tournament.mats.destroy_all
     @tournament.matches.destroy_all
     @tournament.schools.each do |school|
@@ -42,6 +43,7 @@ class WrestlingdevImporter
     parse_mats(@import_data["tournament"]["mats"])
     parse_wrestlers(@import_data["tournament"]["wrestlers"])
     parse_matches(@import_data["tournament"]["matches"])
+    parse_mat_assignment_rules(@import_data["tournament"]["mat_assignment_rules"])
   end
 
   def parse_tournament(attributes)
@@ -67,6 +69,13 @@ class WrestlingdevImporter
     mats.each do |mat_attributes|
       mat_attributes.except!("id")
       Mat.create(mat_attributes.merge(tournament_id: @tournament.id))
+    end
+  end
+
+  def parse_mat_assignment_rules(mat_assignment_rules)
+    mat_assignment_rules.each do |mat_assignment_rules_attributes|
+      mat_assignment_rules_attributes.except!("id")
+      MatAssignmentRule.create(mat_attributes.merge(tournament_id: @tournament.id))
     end
   end
 
