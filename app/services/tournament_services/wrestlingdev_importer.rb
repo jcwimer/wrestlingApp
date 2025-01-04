@@ -43,7 +43,6 @@ class WrestlingdevImporter
     parse_mats(@import_data["tournament"]["mats"])
     parse_wrestlers(@import_data["tournament"]["wrestlers"])
     parse_matches(@import_data["tournament"]["matches"])
-    puts "Parsing mat assignment rules"
     parse_mat_assignment_rules(@import_data["tournament"]["mat_assignment_rules"])
   end
 

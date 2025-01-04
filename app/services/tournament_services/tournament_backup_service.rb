@@ -28,7 +28,14 @@ class TournamentBackupService
   private
 
   def generate_json
-    {
+    @tournament.reload
+    @tournament.schools.reload
+    @tournament.weights.reload
+    @tournament.mats.reload
+    @tournament.mat_assignment_rules.reload
+    @tournament.wrestlers.reload
+    @tournament.matches.reload
+    data = {
       tournament: {
         attributes: @tournament.attributes,
         schools: @tournament.schools.map(&:attributes),
@@ -59,5 +66,7 @@ class TournamentBackupService
         end
       }
     }
+    # puts "Generated JSON for backup: #{data[:tournament][:mats]}"
+    data
   end
 end
