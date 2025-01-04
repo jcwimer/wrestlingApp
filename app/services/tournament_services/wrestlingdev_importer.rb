@@ -1,11 +1,11 @@
 class WrestlingdevImporter
 
-  ##### Note, the json contains id's for each row in the tables as well as it's associations
+  ##### Note, the json contains id's for each row in the tables as well as its associations
   ##### this ignores those ids and uses this tournament id and then looks up associations based on name
   ##### and this tournament id
-  def initialize(tournament, import_json)
+  def initialize(tournament, backup)
     @tournament = tournament
-    @import_data = JSON.parse(import_json)
+    @import_data = JSON.parse(Base64.decode64(backup.backup_data))
   end
 
   def import
@@ -26,6 +26,7 @@ class WrestlingdevImporter
   end
 
   def destroy_all
+    @tournament.mat_assignment_rules.destroy_all
     @tournament.mats.destroy_all
     @tournament.matches.destroy_all
     @tournament.schools.each do |school|
@@ -42,6 +43,8 @@ class WrestlingdevImporter
     parse_mats(@import_data["tournament"]["mats"])
     parse_wrestlers(@import_data["tournament"]["wrestlers"])
     parse_matches(@import_data["tournament"]["matches"])
+    puts "Parsing mat assignment rules"
+    parse_mat_assignment_rules(@import_data["tournament"]["mat_assignment_rules"])
   end
 
   def parse_tournament(attributes)
@@ -67,6 +70,34 @@ class WrestlingdevImporter
     mats.each do |mat_attributes|
       mat_attributes.except!("id")
       Mat.create(mat_attributes.merge(tournament_id: @tournament.id))
+    end
+  end
+
+  def parse_mat_assignment_rules(mat_assignment_rules)
+    mat_assignment_rules.each do |rule_attributes|
+      mat_name = rule_attributes.dig("mat", "name")
+      mat = Mat.find_by(name: mat_name, tournament_id: @tournament.id)
+
+      # Map max values of weight_classes to their new IDs
+      new_weight_classes = rule_attributes["weight_classes"].map do |max_value|
+        Weight.find_by(max: max_value, tournament_id: @tournament.id)&.id
+      end.compact
+
+      # Extract bracket_positions and rounds
+      bracket_positions = rule_attributes["bracket_positions"]
+      rounds = rule_attributes["rounds"]
+
+      rule_attributes.except!("id", "mat", "tournament_id", "weight_classes")
+      
+      MatAssignmentRule.create(
+        rule_attributes.merge(
+          tournament_id: @tournament.id,
+          mat_id: mat&.id,
+          weight_classes: new_weight_classes,
+          bracket_positions: bracket_positions,
+          rounds: rounds
+        )
+      )
     end
   end
 

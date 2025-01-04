@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_27_203209) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_24_132705) do
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
@@ -99,6 +99,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_27_203209) do
     t.index ["wrestler_id"], name: "index_teampointadjusts_on_wrestler_id"
   end
 
+  create_table "tournament_backups", force: :cascade do |t|
+    t.integer "tournament_id", null: false
+    t.text "backup_data", limit: 4294967295, null: false
+    t.string "backup_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tournament_delegates", force: :cascade do |t|
     t.integer "user_id"
     t.integer "tournament_id"
@@ -166,5 +174,4 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_27_203209) do
     t.index ["school_id"], name: "index_wrestlers_on_school_id"
     t.index ["weight_id"], name: "index_wrestlers_on_weight_id"
   end
-
 end

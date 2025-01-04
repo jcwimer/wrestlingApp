@@ -119,7 +119,7 @@
   </table>
 <% end %>
 <% if can? :manage, @tournament %>
-<br>
+<br><br>
 <h3>Background Jobs</h3>
 <p>This is a list of queued or running background jobs. Match generation, bracket advancement, team score calculation, etc.</p>
 <table class="table table-hover table-condensed">
@@ -148,9 +148,4 @@
   </tbody>
 </table>
 <% end %>
-<br>
-<br>
-<%= render 'import_form' %>
-
-
-
+<br><br>
