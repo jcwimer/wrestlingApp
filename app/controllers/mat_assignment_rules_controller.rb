@@ -68,7 +68,6 @@ class MatAssignmentRulesController < ApplicationController
     # Permit the parameters and convert specific fields to integer arrays
     params.require(:mat_assignment_rule).permit(:mat_id, weight_classes: [], bracket_positions: [], rounds: []).tap do |whitelisted|
       whitelisted[:weight_classes] = whitelisted[:weight_classes].map(&:to_i)
-      whitelisted[:bracket_positions] = whitelisted[:bracket_positions].map(&:to_i)
       whitelisted[:rounds] = whitelisted[:rounds].map(&:to_i)
     end
   end

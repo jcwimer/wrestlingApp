@@ -200,4 +200,19 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     end
     redirect
   end
+
+  test "logged in tournament owner should create a rule with bracket positions" do
+    sign_in_owner
+    assert_difference 'MatAssignmentRule.count', 1 do
+      post :create, params: { tournament_id: @tournament.id, mat_assignment_rule: { 
+        mat_id: @mat.id, weight_classes: [1, 2, 3], bracket_positions: ['A1', 'B2'], rounds: [1, 2] 
+      } }
+    end
+    assert_redirected_to tournament_mat_assignment_rules_path(@tournament)
+  
+    rule = MatAssignmentRule.last
+    assert_equal [1, 2, 3], rule.weight_classes
+    assert_equal ['A1', 'B2'], rule.bracket_positions
+    assert_equal [1, 2], rule.rounds
+  end  
 end
