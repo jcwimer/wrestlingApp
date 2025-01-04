@@ -13,7 +13,7 @@ class DoubleEliminationThirtyTwoManEightPlacesRunThrough < ActionDispatch::Integ
     match.save
   end
 
-  test "16 man double elimination place 1-8" do
+  test "32 man double elimination place 1-8" do
     create_double_elim_tournament_single_weight(30, "Regular Double Elimination 1-8")
     matches = @tournament.matches.reload
 
