@@ -27,9 +27,11 @@ class TournamentSeeding
 		wrestlers_without_bracket_lines = wrestlers.select{|w| w.bracket_line == nil }
 		# Iterrate over the list randomly
 		wrestlers_without_bracket_lines.shuffle.each do |wrestler|
-			random_available_bracket_line = available_bracket_lines.sample
-			wrestler.bracket_line = random_available_bracket_line
-			available_bracket_lines.delete(random_available_bracket_line)
+			# need to grab the available lines in order so we don't have double byes along with matches
+			# there should never be a double bye in the first round
+			first_available_bracket_line = available_bracket_lines.first
+			wrestler.bracket_line = first_available_bracket_line
+			available_bracket_lines.delete(first_available_bracket_line)
 		end
 		return wrestlers
 	end
