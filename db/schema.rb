@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_24_132705) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_05_001725) do
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
-    t.text "handler"
+    t.text "handler", limit: 4294967295
     t.text "last_error"
     t.datetime "run_at", precision: nil
     t.datetime "locked_at", precision: nil
