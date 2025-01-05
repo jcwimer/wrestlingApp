@@ -46,7 +46,17 @@ class Mat < ApplicationRecord
 
 	def next_eligible_match
 		# Start with all matches that are either unfinished (nil or 0), have a bout number, and are ordered by bout_number
-		filtered_matches = tournament.matches.where(finished: [nil, 0]).where(mat_id: nil).where.not(bout_number: nil).order(:bout_number)
+		filtered_matches = tournament.matches
+                      .where(finished: [nil, 0]) # finished is nil or 0
+                      .where(mat_id: nil)        # mat_id is nil
+                      .where.not(bout_number: nil) # bout_number is not nil
+                      .order(:bout_number)
+
+		# .where's are chained as ANDs
+		# cannot search for .where.not(loser1_name: "BYE") because it will not find any that are NULL
+		filtered_matches = filtered_matches
+					  .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
+					  .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
 
 		# Sequentially apply each rule, narrowing down the matches
 		mat_assignment_rules.each do |rule|

@@ -98,6 +98,8 @@
 			number_of_wrestlers = 8
 		elsif index == 2
 			number_of_wrestlers = 32
+		elsif index == 3
+			number_of_wrestlers = 17
 		else
 			number_of_wrestlers = 16
 		end
@@ -119,6 +121,8 @@
 		  number_of_wrestlers = 8
 		elsif index == 2
 			number_of_wrestlers = 32
+		elsif index == 3
+			number_of_wrestlers = 17
 		else
 		  number_of_wrestlers = 16
 		end

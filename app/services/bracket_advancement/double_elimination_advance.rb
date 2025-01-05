@@ -14,6 +14,7 @@ class DoubleEliminationAdvance
 	    loser_advance
    end
    advance_double_byes
+   set_bye_for_placement
  end
 
  def winner_advance
@@ -94,25 +95,38 @@ class DoubleEliminationAdvance
  end
 
  def loser_advance
-    bout = @last_match.bout_number
-    next_match = Match.where("(loser1_name = ? OR loser2_name = ?) AND weight_id = ?","Loser of #{bout}","Loser of #{bout}",@wrestler.weight_id)
-    if next_match.size > 0
-      next_match = next_match.first
-     	next_match.replace_loser_name_with_wrestler(@wrestler,"Loser of #{bout}")
-      if next_match.loser1_name == "BYE" or next_match.loser2_name == "BYE"
-        next_match.winner_id = @wrestler.id
-        next_match.win_type = "BYE"
-        next_match.finished = 1
-        next_match.save
-        next_match.advance_wrestlers
-      end
+  bout = @last_match.bout_number
+  next_match = Match.where("(loser1_name = ? OR loser2_name = ?) AND weight_id = ?", "Loser of #{bout}", "Loser of #{bout}", @wrestler.weight_id).first
+  
+  if next_match.present?
+    next_match.replace_loser_name_with_wrestler(@wrestler, "Loser of #{bout}")
+    next_match.reload
+
+    if next_match.loser1_name == "BYE" || next_match.loser2_name == "BYE"
+      next_match.winner_id = @wrestler.id
+      next_match.win_type = "BYE"
+      next_match.score = ""
+      next_match.finished = 1
+      # puts "Before save: winner_id=#{next_match.winner_id}"
+      
+      # if next_match.save
+      #   puts "Save successful: winner_id=#{next_match.reload.winner_id}"
+      # else
+      #   puts "Save failed: #{next_match.errors.full_messages}"
+      # end
+      next_match.save
+
+      next_match.advance_wrestlers
     end
+  end
  end
+
 
  def advance_double_byes
    weight = @wrestler.weight
    weight.matches.select{|m| m.loser1_name == "BYE" and m.loser2_name == "BYE" and m.finished != 1}.each do |match|
       match.finished = 1
+      match.score = ""
       match.win_type = "BYE"
       next_match_position_number = (match.bracket_position_number / 2.0).ceil
       after_matches = weight.matches.select{|m| m.round > match.round and m.is_consolation_match == match.is_consolation_match }.sort_by{|m| m.round}
@@ -134,5 +148,27 @@ class DoubleEliminationAdvance
       next_match.save
       match.save
    end
+ end
+
+ def set_bye_for_placement
+  weight = @wrestler.weight
+  fifth_finals = weight.matches.select{|match| match.bracket_position == '5/6'}.first
+  seventh_finals = weight.matches.select{|match| match.bracket_position == '7/8'}.first
+  if seventh_finals
+    conso_quarter = weight.matches.select{|match| match.bracket_position == 'Conso Quarter'}
+    conso_quarter.each do |match|
+      if match.loser1_name == "BYE" or match.loser2_name == "BYE"
+        seventh_finals.replace_loser_name_with_bye("Loser of #{match.bout_number}")
+      end
+    end
+  end
+  if fifth_finals
+    conso_semis = weight.matches.select{|match| match.bracket_position == 'Conso Semis'}
+    conso_semis.each do |match|
+      if match.loser1_name == "BYE" or match.loser2_name == "BYE"
+        fifth_finals.replace_loser_name_with_bye("Loser of #{match.bout_number}")
+      end
+    end
+  end
  end
 end
