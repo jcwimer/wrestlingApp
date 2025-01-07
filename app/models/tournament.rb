@@ -192,6 +192,18 @@ class Tournament < ApplicationRecord
 		end
 		return error_string
 	end
+
+	def wrestlers_with_duplicate_original_seed_error
+		error_string = ""
+		weights.each do |weight|
+			weight.wrestlers.select{|wr| wr.original_seed != nil}.each do |wrestler|
+				if weight.wrestlers.select{|wr| wr.original_seed == wrestler.original_seed}.size > 1
+					error_string += "More than 1 wrestler in the #{weight.max} weight class is seeded #{wrestler.original_seed}."
+				end
+			end
+		end
+		return error_string
+	end
   	
   	def match_generation_error
   	    error_string = ""
@@ -203,6 +215,8 @@ class Tournament < ApplicationRecord
   			error_string += double_elim_number_of_wrestlers_error
 		elsif wrestlers_with_higher_seed_than_bracket_size_error.length > 0
 			error_string += wrestlers_with_higher_seed_than_bracket_size_error
+		elsif wrestlers_with_duplicate_original_seed_error.length > 0
+			error_string += wrestlers_with_duplicate_original_seed_error
   		end
 		if error_string.length > 0
 		  return "There is a tournament error. #{error_string}"

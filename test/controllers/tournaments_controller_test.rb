@@ -747,4 +747,17 @@ class TournamentsControllerTest < ActionController::TestCase
     get :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
+
+  test "tournament generation error when two wrestlers in a weight class have the same original_seed" do
+    sign_in_owner
+    create_pool_tournament_single_weight(5)
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+    wrestler = @tournament.weights.first.wrestlers.second
+    wrestler.original_seed = 1
+    wrestler.save
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
+  end
 end
