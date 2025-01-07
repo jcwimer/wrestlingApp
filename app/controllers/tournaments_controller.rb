@@ -191,7 +191,11 @@ class TournamentsController < ApplicationController
 
 
   def up_matches
-    @matches = @tournament.matches.where("mat_id is NULL and (finished <> ? or finished is NULL)",1).order('bout_number ASC').limit(10).includes(:wrestlers)
+    @matches = @tournament.matches
+            .where("mat_id is NULL and (finished <> ? or finished is NULL)",1)
+            .where.not(loser1_name: "BYE").where.not(loser2_name: "BYE")
+            .order('bout_number ASC')
+            .limit(10).includes(:wrestlers)
     @mats = @tournament.mats.includes(:matches)
   end
 
