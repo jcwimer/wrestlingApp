@@ -13,4 +13,3 @@ class CreateTournamentBackups < ActiveRecord::Migration[7.0]
     drop_table :tournament_backups
   end
 end
-
