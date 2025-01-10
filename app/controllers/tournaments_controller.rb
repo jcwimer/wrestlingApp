@@ -191,9 +191,12 @@ class TournamentsController < ApplicationController
 
 
   def up_matches
+    # .where.not(loser1_name: 'BYE') won't return matches with NULL loser1_name
+    # so I was only getting back matches with Loser of BOUT_NUMBER
     @matches = @tournament.matches
-            .where("mat_id is NULL and (finished <> ? or finished is NULL)",1)
-            .where.not(loser1_name: "BYE").where.not(loser2_name: "BYE")
+            .where("mat_id is NULL and (finished != 1 or finished is NULL)")
+            .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
+					  .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
             .order('bout_number ASC')
             .limit(10).includes(:wrestlers)
     @mats = @tournament.mats.includes(:matches)

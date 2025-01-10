@@ -23,7 +23,8 @@ class Mat < ApplicationRecord
 
 	def assign_next_match
 		match = next_eligible_match
-		if match
+		self.matches.reload
+		if match and self.unfinished_matches.size < 4
 			match.mat_id = self.id
 			if match.save
 				# Invalidate any wrestler caches

@@ -5,6 +5,27 @@ namespace :tournament do
   
       @tournament = Tournament.find(204)
 
+      Mat.create(
+        name: "1",
+        tournament_id: @tournament.id
+      )
+      Mat.create(
+        name: "2",
+        tournament_id: @tournament.id
+      )
+      Mat.create(
+        name: "3",
+        tournament_id: @tournament.id
+      )
+      Mat.create(
+        name: "4",
+        tournament_id: @tournament.id
+      )
+      Mat.create(
+        name: "5",
+        tournament_id: @tournament.id
+      )
+
       GenerateTournamentMatches.new(@tournament).generate
       sleep(180)
   
@@ -45,7 +66,7 @@ namespace :tournament do
             match.save
     
             # Pause to simulate processing delay
-            sleep(30)
+            sleep(10)
         end
       end
     end
