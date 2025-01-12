@@ -59,22 +59,22 @@ class MatAssignmentRulesController < ApplicationController
   end
 
   def mat_assignment_rule_params
-    # Set defaults to empty arrays if no checkboxes are selected
-    # otherwise rails interprets this as "don't modify"
+    # Ensure defaults to empty arrays for checkboxes
     params[:mat_assignment_rule][:weight_classes] ||= []
     params[:mat_assignment_rule][:bracket_positions] ||= []
     params[:mat_assignment_rule][:rounds] ||= []
   
-    # Permit the parameters and convert specific fields to integer arrays
+    # Permit parameters and normalize types
     params.require(:mat_assignment_rule).permit(:mat_id, weight_classes: [], bracket_positions: [], rounds: []).tap do |whitelisted|
       whitelisted[:weight_classes] = whitelisted[:weight_classes].map(&:to_i)
       whitelisted[:rounds] = whitelisted[:rounds].map(&:to_i)
+      whitelisted[:bracket_positions] = whitelisted[:bracket_positions] # Assume these are strings
     end
   end
 
   # Load data needed for the form
   def load_form_data
-    @available_mats = Mat.all
+    @available_mats = @tournament.mats
     @unique_bracket_positions = @tournament.matches.select(:bracket_position).distinct.pluck(:bracket_position)
     @unique_rounds = @tournament.matches.select(:round).distinct.pluck(:round)
   end

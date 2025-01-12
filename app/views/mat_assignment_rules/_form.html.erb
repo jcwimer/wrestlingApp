@@ -15,7 +15,7 @@
     <% if @tournament.weights.any? %>
       <% @tournament.weights.each do |weight| %>
         <div>
-          <%= check_box_tag "mat_assignment_rule[weight_classes][]", weight.id, @mat_assignment_rule.weight_classes.include?(weight.id) %>
+          <%= check_box_tag "mat_assignment_rule[weight_classes][]", weight.id, @mat_assignment_rule.weight_classes.map(&:to_i).include?(weight.id) %>
           <%= label_tag "mat_assignment_rule_weight_classes_#{weight.id}", weight.max %>
         </div>
       <% end %>
@@ -45,7 +45,7 @@
     <% if @unique_rounds.present? %>
       <% @unique_rounds.each do |round| %>
         <div>
-          <%= check_box_tag "mat_assignment_rule[rounds][]", round, @mat_assignment_rule.rounds.include?(round) %>
+          <%= check_box_tag "mat_assignment_rule[rounds][]", round, @mat_assignment_rule.rounds.map(&:to_i).include?(round) %>
           <%= label_tag "mat_assignment_rule_rounds_#{round}", round %>
         </div>
       <% end %>
@@ -56,6 +56,6 @@
 
   <!-- Submit Button -->
   <div>
-    <%= form.submit 'Submit', :class=>"btn btn-success" %>
+    <%= form.submit 'Submit', class: "btn btn-success" %>
   </div>
 <% end %>
