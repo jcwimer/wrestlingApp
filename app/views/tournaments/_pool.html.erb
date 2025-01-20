@@ -1,6 +1,11 @@
 <% @round = 1 %>
 <% @pool = 1 %>
 <% until @wrestlers.select{|w| w.pool == @pool}.blank? %>
+	 <!-- Add another column for pools 5-8 on an 8 pool -->
+	<% if @pool == 5 %>
+		</td>
+		<td>
+	<% end %>
     <h5>Pool <%= @pool %></h5>
     <table class="table table-striped table-bordered table-condensed">
     	<thead>

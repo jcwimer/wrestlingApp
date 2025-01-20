@@ -1,43 +1,76 @@
 <style>
-    .pagebreak { 
+  @page {
+    size: 8.5in 11in;
+    margin: 0.5in;
+  }
+
+  .page {
+    width: 7.5in;
+    height: 10in;
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .page-landscape {
+    height: 7.5in;
+    width: 10in;
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bracket-container {
+    width: 100%;
+    height: auto;
+    transform-origin: top left;
+  }
+
+  @media print {
+    .page {
       page-break-after: always;
-      border: none;
-        margin: 0px;
-        padding: 0px;
-        width: 8in; /* width: 7in; */
-        height: 9.5in; /* or height: 9.5in; */
-        font-size: 8px;
-        position: relative;
-        left: 0in;
-        height: 1in;
     }
+    .page-landscape {
+      page-break-after: always;
+    }
+  }
 </style>
 
+<script>
+window.onload = function () {
+  document.querySelectorAll('.page').forEach(page => {
+    const container = page.querySelector('.bracket-container');
+    const isLandscape = page.classList.contains('landscape');
+    const availableWidth = isLandscape ? 10 * 96 : 7.5 * 96; // Convert inches to px
+    const availableHeight = isLandscape ? 7.5 * 96 : 10 * 96;
+
+    const scaleX = availableWidth / container.scrollWidth;
+    const scaleY = availableHeight / container.scrollHeight;
+    const scale = Math.min(scaleX, scaleY); // Choose the smaller scale to fit
+    container.style.transform = `scale(${scale})`;
+  });
+};
+</script>
+
 <% cache ["#{@tournament.id}_all_brackets", @tournament] do %> 
-  <div id="exportable" >   
-    <%= render :template => 'tournaments/team_scores' %>
+    <div class="page">
+      <div class="bracket-container">
+        <%= render :template => 'tournaments/team_scores' %>
+      </div>
+    </div>
     <% @weights.sort_by{|w| w.max}.each do |weight| %>
-        <table class='pagebreak'>
-        <tr>
           <% if @tournament.tournament_type == "Pool to bracket" %>
-            <td valign="top" style="padding: 10px;">
                 <!-- Need to define what the tournaments#bracket controller defines -->
                 <% @matches = @tournament.matches.select{|m| m.weight_id == weight.id} %>
                 <% @wrestlers = Wrestler.where(weight_id: weight.id) %>
                 <% @pools = weight.pool_rounds(@matches) %>
                 <% @weight = weight %>
                 <%= render 'bracket_partial' %>
-            </td>
           <% elsif @tournament.tournament_type.include? "Modified 16 Man Double Elimination" or @tournament.tournament_type.include? "Regular Double Elimination" %>
-          <td valign="top" style="padding: 10px;">
             <!-- Need to define what the tournaments#bracket controller defines -->
             <% @matches = weight.matches %>
             <% @weight = weight %>
             <%= render 'bracket_partial' %>
-          </td>
           <% end %>
-        </tr>
-        </table>
     <% end %>
-  </div>
 <% end %>
