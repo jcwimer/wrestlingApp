@@ -41,7 +41,7 @@
         <button id="w1-nf2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N2')">N2 </button>
         <button id="w1-nf3" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N3')">N3</button>
         <button id="w1-nf4" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N4')">N4</button>
-        <button id="w1-nf5" type="button" class="btn btn-success btn-sm" onclick="updateStats(w2,'N5')">N5</button>
+        <button id="w1-nf5" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N5')">N5</button>
         <button id="w1-penalty" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P1')">P1</button>
         <button id="w1-penalty2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P2')">P2</button></td>
         <td><%= @wrestler2_name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'T3')">T3</button>
@@ -71,7 +71,34 @@
         <button id="w2-caution" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'C')">Caution</button></td>
       </tr>
       <tr>
-        <td>Match Options <br><button type="button" class="btn btn-primary btn-sm" onclick="updateStats(w2,'|End Period|');updateStats(w1,'|End Period|')">End Period</button></td>
+        <td>Match Options <br><button type="button" class="btn btn-primary btn-sm" onclick="updateStats(w2,'|End Period|'); updateStats(w1,'|End Period|');">End Period</button></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <h5><%= @wrestler1_name %> Timer Controls</h5>
+          Injury Time (90 second max): <span id="w1-injury-time">0 sec</span>
+          <button type="button" onclick="startTimer(w1, 'injury')" class="btn btn-primary btn-sm">Start</button>
+          <button type="button" onclick="stopTimer(w1, 'injury')" class="btn btn-primary btn-sm">Stop</button>
+          <button type="button" onclick="resetTimer(w1, 'injury')" class="btn btn-primary btn-sm">Reset</button>
+          <br><br>
+          Blood Time (600 second max): <span id="w1-blood-time">0 sec</span>
+          <button type="button" onclick="startTimer(w1, 'blood')" class="btn btn-primary btn-sm">Start</button>
+          <button type="button" onclick="stopTimer(w1, 'blood')" class="btn btn-primary btn-sm">Stop</button>
+          <button type="button" onclick="resetTimer(w1, 'blood')" class="btn btn-primary btn-sm">Reset</button>
+        </td>
+        <td>
+          <h5><%= @wrestler2_name %> Timer Controls</h5>
+          Injury Time (90 second max): <span id="w2-injury-time">0 sec</span>
+          <button type="button" onclick="startTimer(w2, 'injury')" class="btn btn-primary btn-sm">Start</button>
+          <button type="button" onclick="stopTimer(w2, 'injury')" class="btn btn-primary btn-sm">Stop</button>
+          <button type="button" onclick="resetTimer(w2, 'injury')" class="btn btn-primary btn-sm">Reset</button>
+          <br><br>
+          Blood Time (600 second max): <span id="w2-blood-time">0 sec</span>
+          <button type="button" onclick="startTimer(w2, 'blood')" class="btn btn-primary btn-sm">Start</button>
+          <button type="button" onclick="stopTimer(w2, 'blood')" class="btn btn-primary btn-sm">Stop</button>
+          <button type="button" onclick="resetTimer(w2, 'blood')" class="btn btn-primary btn-sm">Reset</button>
+        </td>
       </tr>
     </tbody>
 </table>
@@ -92,13 +119,33 @@
   <br>
   <div class="field">
     <%= f.label "Winner" %> Please choose the winner<br>
-    <%= f.collection_select :winner_id, @wrestlers, :id, :name, include_blank: true %>
+    <%= f.collection_select :winner_id, @wrestlers, :id, :name_with_school, include_blank: true %>
   </div>
   <br>
-  <div class="field">
-    <%= f.label "Final Score" %> For decision, major, or tech fall put the score here in Number-Number format. If pin, put the accumulated pin time in the format MM:SS. If default, injury default, dq, bye, or forfeit, leave blank. Examples: 7-2, 17-2, 0:30, or 2:34.<br>
-    <%= f.text_field :score %>
-  </div>
+  <% if @match.finished && @match.finished == 1 %>
+    <div class="field">
+      <%= f.label "Final Score" %> For decision, major, or tech fall put the score here in Number-Number format. If pin, put the accumulated pin time in the format MM:SS. If default, injury default, dq, bye, or forfeit, leave blank. Examples: 7-2, 17-2, 0:30, or 2:34.<br>
+      <%= f.text_field :score %>
+    </div>
+  <% else %>
+    <div class="field">
+      <%= f.label "Final Score" %>
+      <br>
+      <span id="score-help-text">
+        The input will adjust based on the selected win type.
+      </span>
+      <br>
+      <div id="dynamic-score-input"></div>
+      <p id="pin-time-tip" class="text-muted mt-2" style="display: none;">
+        <strong>Tip:</strong> Pin time is an accumulation over the match, not how much time was left in the current period. 
+        <br>For example, if all 3 periods are 2 minutes and a pin happened with 1:27 left in the second period, 
+        the pin time would be <strong>2:33</strong> (2 minutes for the first period + 33 seconds elapsed in the second period).
+      </p>
+      <div id="validation-alerts" class="text-danger mt-2"></div>
+      <%= f.hidden_field :score, id: "final-score-field" %>
+    </div>
+    <%= render 'matches/matchstats_variable_score_input' %>
+  <% end %>
   <br>
 
   <%= f.hidden_field :finished, :value => 1 %>
@@ -106,173 +153,178 @@
 
 <br>
 
-  <div class="actions">
-    <%= f.submit onclick: "return confirm('Is the name of the winner ' + document.getElementById('match_winner_id').options[document.getElementById('match_winner_id').selectedIndex].text + '?')", :class=>"btn btn-success" %>
-     
-  </div>
+<div class="actions">
+<%= f.submit "Update Match", id: "update-match-btn", onclick: "return confirm('Is the name of the winner ' + document.getElementById('match_winner_id').options[document.getElementById('match_winner_id').selectedIndex].text + '?')", class: "btn btn-success" %>
+</div>
+
 <% end %>
 
+<%= render 'matches/matchstats_color_change' %>
+
 <script>
-  // Localstorage
-  // https://stackoverflow.com/questions/12806198/how-do-i-save-data-on-localstorage-in-ruby-on-rails-3-2-8
+// Get variables
+var tournament = <%= @match.tournament.id %>;
+var bout = <%= @match.bout_number %>;
+var match_finsihed = "<%= @match.finished %>";
 
-  //Create person object
-  function Person(stats){
-  	this.stats=stats;
-  }
+// ############### STATS
+// Create person object
+function Person(stats, name) {
+  this.name = name;
+  this.stats = stats;
+  this.updated_at = null; // Track last updated timestamp
+  this.timers = {
+    "injury": { time: 0, startTime: null, interval: null },
+    "blood": { time: 0, startTime: null, interval: null },
+  };
+}
 
-  //Declare variables
-  var w1=new Person("");
-  var w2=new Person("");
-  updatejsvalues();
+// Declare variables
+var w1 = new Person("", "w1");
+var w2 = new Person("", "w2");
+updateJsValues();
 
-  // Get variables
-  var tournament=<%= @match.tournament.id %>;
-  var bout=<%= @match.bout_number %>;
+// Generate unique localStorage key
+function generateKey(wrestler_name) {
+  return `${wrestler_name}-${tournament}-${bout}`;
+}
 
-  // if localstorage tournament id and bout number are the same and the html stat values are blank
-  // if the html stat values are not blank we want to honor what came from the db
-  if (localStorage.getItem('wrestler1') && localStorage.tournament == tournament && localStorage.bout == bout && document.getElementById("match_w1_stat").value == "" && document.getElementById("match_w2_stat").value == "") {
-    w1.stats = localStorage.getItem('wrestler1');
-    w2.stats = localStorage.getItem('wrestler2');
-    updatehtmlvalues();
-  } else {
-    updateLocalStorage();
-  }
+// Load values from localStorage
+function loadFromLocalStorage(wrestler_name) {
+  const key = generateKey(wrestler_name);
+  const data = localStorage.getItem(key);
+  return data ? JSON.parse(data) : null;
+}
 
+// Save values to localStorage
+function saveToLocalStorage(person) {
+  const key = generateKey(person.name);
+  const data = {
+    stats: person.stats,
+    updated_at: person.updated_at,
+    timers: person.timers, // Save all timers
+  };
+  localStorage.setItem(key, JSON.stringify(data));
+}
 
-  function updatehtmlvalues(){
-  	document.getElementById("match_w1_stat").value = w1.stats;
-  	document.getElementById("match_w2_stat").value = w2.stats;
+// Update HTML values
+function updateHtmlValues() {
+  document.getElementById("match_w1_stat").value = w1.stats;
+  document.getElementById("match_w2_stat").value = w2.stats;
+}
+
+// Update JS object values from HTML
+function updateJsValues() {
+  w1.stats = document.getElementById("match_w1_stat").value;
+  w2.stats = document.getElementById("match_w2_stat").value;
+}
+
+// Update stats and persist to localStorage
+function updateStats(wrestler, text) {
+  updateJsValues();
+  wrestler.stats += text + " ";
+  wrestler.updated_at = new Date().toISOString(); // Update timestamp
+  updateHtmlValues();
+
+  // Save to localStorage
+  if (wrestler === w1) {
+    saveToLocalStorage(w1);
+  } else if (wrestler === w2) {
+    saveToLocalStorage(w2);
   }
-  
-  function updatejsvalues(){
-  	w1.stats=document.getElementById("match_w1_stat").value;
-  	w2.stats=document.getElementById("match_w2_stat").value;
-  }
-  
-  function takedown(wrestler){
-  	updateStats(wrestler,"T3")
-  }
-  
-  function updateStats(wrestler,text){
-    updatejsvalues();
-  	wrestler.stats = wrestler.stats + text + " ";
-  	updatehtmlvalues();
-  	updateLocalStorage();
-  }
-  
-  function updateLocalStorage(){
-    localStorage.setItem("wrestler1",w1.stats);
-    localStorage.setItem("wrestler2",w2.stats);
-    localStorage.setItem("bout", bout);
-    localStorage.setItem("tournament", tournament);
-  }
-  
-  //For Changing button colors
-  function changeW1Color(color){
-    if (color.value == "red") {
-        w1Red();
-        w2Green();
-        document.getElementById("w2-color").value = "green";
+}
+
+// Initialize data on page load
+function initializeTimers(wrestler) {
+  // Iterate over each timer in the wrestler object
+  Object.keys(wrestler.timers).forEach((timerKey) => {
+    const savedData = loadFromLocalStorage(wrestler.name);
+    if (savedData && savedData.timers && savedData.timers[timerKey]) {
+      wrestler.timers[timerKey].time = savedData.timers[timerKey].time || 0;
+      updateTimerDisplay(wrestler, timerKey, wrestler.timers[timerKey].time);
     }
-    if (color.value == "green") {
-        w1Green();
-        w2Red();
-        document.getElementById("w2-color").value = "red";
-    }
+  });
+}
+
+function initialize() {
+  const localW1 = loadFromLocalStorage("w1");
+  const localW2 = loadFromLocalStorage("w2");
+
+  if (localW1) {
+    w1.stats = localW1.stats || "";
+    w1.updated_at = localW1.updated_at || null;
+    w1.timers = localW1.timers || w1.timers; // Load timer data
+    // set localStorage values to html
+    updateHtmlValues();
   }
-  
-  function changeW2Color(color){
-    if (color.value == "red") {
-        w2Red();
-        w1Green();
-        document.getElementById("w1-color").value = "green";
-    }
-    if (color.value == "green") {
-        w2Green();
-        w1Red();
-        document.getElementById("w1-color").value = "red";
-    }
+  if (localW2) {
+    w2.stats = localW2.stats || "";
+    w2.updated_at = localW2.updated_at || null;
+    w2.timers = localW2.timers || w2.timers; // Load timer data
+    // set localStorage values to html
+    updateHtmlValues();
   }
-  
-  function redColor(id){
-    document.getElementById(id).className = "btn btn-danger btn-sm";
+
+  initializeTimers(w1);
+  initializeTimers(w2);
+  updateJsValues()
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  initialize();
+});
+
+// ############### Blood and Injury time timers
+// Timer storage and interval references
+// Start a timer for a wrestler
+function startTimer(wrestler, timerKey) {
+  const timer = wrestler.timers[timerKey];
+  if (timer.interval) return; // Prevent multiple intervals
+  timer.startTime = Date.now(); // Record the start time
+  timer.interval = setInterval(() => {
+    const elapsedSeconds = Math.floor((Date.now() - timer.startTime) / 1000);
+    updateTimerDisplay(wrestler, timerKey, timer.time + elapsedSeconds); // Show total time
+  }, 1000);
+}
+
+// Stop a timer for a wrestler
+function stopTimer(wrestler, timerKey) {
+  const timer = wrestler.timers[timerKey];
+  if (!timer.interval || !timer.startTime) return; // Timer not running
+  clearInterval(timer.interval);
+
+  const elapsedSeconds = Math.floor((Date.now() - timer.startTime) / 1000); // Calculate elapsed time
+  timer.time += elapsedSeconds; // Add elapsed time to total
+  timer.interval = null;
+  timer.startTime = null;
+
+  saveToLocalStorage(wrestler); // Save wrestler data
+  updateTimerDisplay(wrestler, timerKey, timer.time); // Update final display
+  updateStatsBox(wrestler, timerKey, elapsedSeconds); // Update wrestler stats
+}
+
+// Reset a timer for a wrestler
+function resetTimer(wrestler, timerKey) {
+  const timer = wrestler.timers[timerKey];
+  stopTimer(wrestler, timerKey); // Stop if running
+  timer.time = 0; // Reset time
+  updateTimerDisplay(wrestler, timerKey, 0); // Update display
+  saveToLocalStorage(wrestler); // Save wrestler data
+}
+
+// Update the timer display
+function updateTimerDisplay(wrestler, timerKey, totalTime) {
+  const elementId = `${wrestler.name}-${timerKey}-time`; // Construct element ID
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.innerText = `${Math.floor(totalTime / 60)}m ${totalTime % 60}s`;
   }
-  
-  function greenColor(id){
-    document.getElementById(id).className = "btn btn-success btn-sm";
-  }
-  
-  function w1Red(){
-    redColor("w1-takedown");
-    redColor("w1-escape");
-    redColor("w1-reversal");
-    redColor("w1-penalty");
-    redColor("w1-penalty2");
-    redColor("w1-nf5");
-    redColor("w1-nf4");
-    redColor("w1-nf3");
-    redColor("w1-nf2");
-    redColor("w1-top");
-    redColor("w1-bottom");
-    redColor("w1-neutral");
-    redColor("w1-defer");
-    redColor("w1-stalling");
-    redColor("w1-caution");
-  }
-  
-  function w1Green(){
-    greenColor("w1-takedown");
-    greenColor("w1-escape");
-    greenColor("w1-reversal");
-    greenColor("w1-penalty");
-    greenColor("w1-penalty2");
-    greenColor("w1-nf5");
-    greenColor("w1-nf4");
-    greenColor("w1-nf3");
-    greenColor("w1-nf2");
-    greenColor("w1-top");
-    greenColor("w1-bottom");
-    greenColor("w1-neutral");
-    greenColor("w1-defer");
-    greenColor("w1-stalling");
-    greenColor("w1-caution");
-  }
-  
-  function w2Red(){
-    redColor("w2-takedown");
-    redColor("w2-escape");
-    redColor("w2-reversal");
-    redColor("w2-penalty");
-    redColor("w2-penalty2");
-    redColor("w2-nf5");
-    redColor("w2-nf4");
-    redColor("w2-nf3");
-    redColor("w2-nf2");
-    redColor("w2-top");
-    redColor("w2-bottom");
-    redColor("w2-neutral");
-    redColor("w2-defer");
-    redColor("w2-stalling");
-    redColor("w2-caution");
-  }
-  
-  function w2Green(){
-    greenColor("w2-takedown");
-    greenColor("w2-escape");
-    greenColor("w2-reversal");
-    greenColor("w2-penalty");
-    greenColor("w2-penalty2");
-    greenColor("w2-nf5");
-    greenColor("w2-nf4");
-    greenColor("w2-nf3");
-    greenColor("w2-nf2");
-    greenColor("w2-top");
-    greenColor("w2-bottom");
-    greenColor("w2-neutral");
-    greenColor("w2-defer");
-    greenColor("w2-stalling");
-    greenColor("w2-caution");
-  }
+}
+
+// Update wrestler stats box with elapsed timer information
+function updateStatsBox(wrestler, timerKey, elapsedSeconds) {
+  const timerType = timerKey.includes("injury") ? "Injury Time" : "Blood Time";
+  const formattedTime = `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s`;
+  updateStats(wrestler, `${timerType}: ${formattedTime}`);
+}
 </script>

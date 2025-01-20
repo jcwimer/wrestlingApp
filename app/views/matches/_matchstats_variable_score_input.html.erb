@@ -1,0 +1,216 @@
+<script>
+// ############### Score field changer and form validation
+document.addEventListener("DOMContentLoaded", () => {
+  const winTypeSelect = document.getElementById("match_win_type");
+  const winnerSelect = document.getElementById("match_winner_id");
+  const submitButton = document.getElementById("update-match-btn");
+  const dynamicScoreInput = document.getElementById("dynamic-score-input");
+  const finalScoreField = document.getElementById("final-score-field");
+  const validationAlerts = document.getElementById("validation-alerts");
+  const pinTimeTip = document.getElementById("pin-time-tip");
+
+  // Variables to persist scores across win type changes
+  let storedScores = {
+    winnerScore: "0",
+    loserScore: "0",
+  };
+
+  function updateScoreInput() {
+    const winType = winTypeSelect.value;
+
+    if (winType === "Pin") {
+      if (
+        dynamicScoreInput.querySelector("#minutes") &&
+        dynamicScoreInput.querySelector("#seconds")
+      ) {
+        validateForm(); // Trigger validation
+        return;
+      }
+
+      // Clear existing form and create Pin inputs
+      dynamicScoreInput.innerHTML = "";
+      pinTimeTip.style.display = "block";
+
+      const minuteInput = createTextInput("minutes", "Minutes (MM)", "Pin Time Minutes");
+      const secondInput = createTextInput("seconds", "Seconds (SS)", "Pin Time Seconds");
+
+      dynamicScoreInput.appendChild(minuteInput);
+      dynamicScoreInput.appendChild(secondInput);
+
+      const updateFinalScore = () => {
+        const minutes = minuteInput.value.padStart(2, "0");
+        const seconds = secondInput.value.padStart(2, "0");
+        finalScoreField.value = `${minutes}:${seconds}`;
+        validateForm();
+      };
+
+      [minuteInput, secondInput].forEach((input) => {
+        input.addEventListener("input", updateFinalScore);
+      });
+
+      updateFinalScore(); // Set initial value
+      validateForm(); // Trigger validation
+      return;
+    }
+
+    if (
+      winType === "Decision" ||
+      winType === "Major" ||
+      winType === "Tech Fall"
+    ) {
+      if (
+        dynamicScoreInput.querySelector("#winner-score") &&
+        dynamicScoreInput.querySelector("#loser-score")
+      ) {
+        validateForm(); // Trigger validation
+        return;
+      }
+
+      // Clear existing form and create Score inputs
+      dynamicScoreInput.innerHTML = "";
+      pinTimeTip.style.display = "none";
+
+      const winnerScoreInput = createTextInput(
+        "winner-score",
+        "Winner's Score",
+        "Enter the winner's score"
+      );
+      const loserScoreInput = createTextInput(
+        "loser-score",
+        "Loser's Score",
+        "Enter the loser's score"
+      );
+
+      dynamicScoreInput.appendChild(winnerScoreInput);
+      dynamicScoreInput.appendChild(loserScoreInput);
+
+      // Restore stored values
+      winnerScoreInput.value = storedScores.winnerScore;
+      loserScoreInput.value = storedScores.loserScore;
+
+      const updateFinalScore = () => {
+        const winnerScore = winnerScoreInput.value || "0";
+        const loserScore = loserScoreInput.value || "0";
+        finalScoreField.value = `${winnerScore}-${loserScore}`;
+        validateForm();
+      };
+
+      [winnerScoreInput, loserScoreInput].forEach((input) => {
+        input.addEventListener("input", (event) => {
+          storedScores[event.target.id === "winner-score" ? "winnerScore" : "loserScore"] =
+            event.target.value || "0";
+          updateFinalScore();
+        });
+      });
+
+      updateFinalScore(); // Set initial value
+      validateForm(); // Trigger validation
+      return;
+    }
+
+    // For other types, clear everything
+    dynamicScoreInput.innerHTML = "";
+    pinTimeTip.style.display = "none";
+    finalScoreField.value = ""; // Clear the final score for other win types
+    validateForm(); // Trigger validation
+  }
+
+  function validateForm() {
+    const winType = winTypeSelect.value;
+    const winner = winnerSelect.value;
+    let isValid = true;
+    let alertMessage = "";
+
+    let winTypeShouldBe = "Decision";
+
+    if (winType === "Decision" || winType === "Major" || winType === "Tech Fall") {
+      const winnerScoreInput = document.getElementById("winner-score");
+      const loserScoreInput = document.getElementById("loser-score");
+
+      if (!winnerScoreInput || !loserScoreInput) return;
+
+      const winnerScore = parseInt(winnerScoreInput.value || "0", 10);
+      const loserScore = parseInt(loserScoreInput.value || "0", 10);
+      const scoreDifference = winnerScore - loserScore;
+
+      if (winnerScore <= loserScore) {
+        isValid = false;
+        alertMessage += "Winner's score must be higher than loser's score.<br>";
+      }
+
+      if (scoreDifference < 8) {
+        winTypeShouldBe = "Decision";
+      } else if (scoreDifference >= 8 && scoreDifference < 15) {
+        winTypeShouldBe = "Major";
+      } else if (scoreDifference >= 15) {
+        winTypeShouldBe = "Tech Fall";
+      }
+
+      if (winTypeShouldBe !== winType) {
+        isValid = false;
+        alertMessage += `
+          Win type should be <strong>${winTypeShouldBe}</strong>.
+          Decisions are wins with a score difference less than 8.
+          Majors are wins with a score difference between 8 and 14.
+          Tech Falls are wins with a score difference of 15 or more.<br>
+        `;
+      }
+    }
+
+    if (!winner) {
+      isValid = false;
+      alertMessage += "Please select a winner.<br>";
+    }
+
+    if (!isValid) {
+      validationAlerts.innerHTML = alertMessage;
+      validationAlerts.style.display = "block";
+    } else {
+      validationAlerts.innerHTML = ""; // Clear alerts
+      validationAlerts.style.display = "none";
+    }
+
+    submitButton.disabled = !isValid;
+  }
+
+  document.querySelector("form").addEventListener("submit", (event) => {
+    const winType = winTypeSelect.value;
+
+    if (winType === "Pin") {
+      const minuteInput = document.getElementById("minutes");
+      const secondInput = document.getElementById("seconds");
+
+      if (minuteInput && secondInput) {
+        const minutes = minuteInput.value.padStart(2, "0");
+        const seconds = secondInput.value.padStart(2, "0");
+        finalScoreField.value = `${minutes}:${seconds}`;
+      }
+    }
+  });
+
+  winTypeSelect.addEventListener("change", updateScoreInput);
+  winnerSelect.addEventListener("change", validateForm);
+
+  updateScoreInput();
+  validateForm();
+});
+
+// Helper function to create text inputs
+function createTextInput(id, placeholder, label) {
+  const container = document.createElement("div");
+  container.classList.add("form-group");
+
+  const inputLabel = document.createElement("label");
+  inputLabel.innerText = label;
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.id = id;
+  input.placeholder = placeholder;
+  input.classList.add("form-control", "form-control-sm");
+
+  container.appendChild(inputLabel);
+  container.appendChild(input);
+  return container;
+}
+</script>

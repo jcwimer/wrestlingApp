@@ -1,0 +1,108 @@
+<script>
+// ############### Button color change red/green
+function changeW1Color(color){
+  if (color.value == "red") {
+      w1Red();
+      w2Green();
+      document.getElementById("w2-color").value = "green";
+  }
+  if (color.value == "green") {
+      w1Green();
+      w2Red();
+      document.getElementById("w2-color").value = "red";
+  }
+}
+
+function changeW2Color(color){
+  if (color.value == "red") {
+      w2Red();
+      w1Green();
+      document.getElementById("w1-color").value = "green";
+  }
+  if (color.value == "green") {
+      w2Green();
+      w1Red();
+      document.getElementById("w1-color").value = "red";
+  }
+}
+
+function redColor(id){
+  document.getElementById(id).className = "btn btn-danger btn-sm";
+}
+
+function greenColor(id){
+  document.getElementById(id).className = "btn btn-success btn-sm";
+}
+
+function w1Red(){
+  redColor("w1-takedown");
+  redColor("w1-escape");
+  redColor("w1-reversal");
+  redColor("w1-penalty");
+  redColor("w1-penalty2");
+  redColor("w1-nf5");
+  redColor("w1-nf4");
+  redColor("w1-nf3");
+  redColor("w1-nf2");
+  redColor("w1-top");
+  redColor("w1-bottom");
+  redColor("w1-neutral");
+  redColor("w1-defer");
+  redColor("w1-stalling");
+  redColor("w1-caution");
+}
+
+function w1Green(){
+  greenColor("w1-takedown");
+  greenColor("w1-escape");
+  greenColor("w1-reversal");
+  greenColor("w1-penalty");
+  greenColor("w1-penalty2");
+  greenColor("w1-nf5");
+  greenColor("w1-nf4");
+  greenColor("w1-nf3");
+  greenColor("w1-nf2");
+  greenColor("w1-top");
+  greenColor("w1-bottom");
+  greenColor("w1-neutral");
+  greenColor("w1-defer");
+  greenColor("w1-stalling");
+  greenColor("w1-caution");
+}
+
+function w2Red(){
+  redColor("w2-takedown");
+  redColor("w2-escape");
+  redColor("w2-reversal");
+  redColor("w2-penalty");
+  redColor("w2-penalty2");
+  redColor("w2-nf5");
+  redColor("w2-nf4");
+  redColor("w2-nf3");
+  redColor("w2-nf2");
+  redColor("w2-top");
+  redColor("w2-bottom");
+  redColor("w2-neutral");
+  redColor("w2-defer");
+  redColor("w2-stalling");
+  redColor("w2-caution");
+}
+
+function w2Green(){
+  greenColor("w2-takedown");
+  greenColor("w2-escape");
+  greenColor("w2-reversal");
+  greenColor("w2-penalty");
+  greenColor("w2-penalty2");
+  greenColor("w2-nf5");
+  greenColor("w2-nf4");
+  greenColor("w2-nf3");
+  greenColor("w2-nf2");
+  greenColor("w2-top");
+  greenColor("w2-bottom");
+  greenColor("w2-neutral");
+  greenColor("w2-defer");
+  greenColor("w2-stalling");
+  greenColor("w2-caution");
+}
+</script>

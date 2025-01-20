@@ -295,4 +295,8 @@ class Wrestler < ApplicationRecord
 	def short_bracket_name
 		return "#{self.name} (#{self.school.abbreviation})"
     end
+
+	def name_with_school
+		return "#{self.name} - #{self.school.name}"
+	end
 end
