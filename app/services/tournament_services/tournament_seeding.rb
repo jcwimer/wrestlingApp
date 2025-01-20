@@ -16,22 +16,39 @@ class TournamentSeeding
     end
     
     def random_seeding(wrestlers, bracket_size)
+		half_of_bracket = bracket_size / 2
 		available_bracket_lines = (1..bracket_size).to_a
+		first_half_available_bracket_lines = (1..half_of_bracket).to_a
 
 		# remove bracket lines that are taken from available_bracket_lines
 		wrestlers_with_bracket_lines = wrestlers.select{|w| w.bracket_line != nil }
 		wrestlers_with_bracket_lines.each do |wrestler|
 			available_bracket_lines.delete(wrestler.bracket_line)
+			first_half_available_bracket_lines.delete(wrestler.bracket_line)
 		end
 
 		wrestlers_without_bracket_lines = wrestlers.select{|w| w.bracket_line == nil }
-		# Iterrate over the list randomly
-		wrestlers_without_bracket_lines.shuffle.each do |wrestler|
-			# need to grab the available lines in order so we don't have double byes along with matches
-			# there should never be a double bye in the first round
-			first_available_bracket_line = available_bracket_lines.first
-			wrestler.bracket_line = first_available_bracket_line
-			available_bracket_lines.delete(first_available_bracket_line)
+		if @tournament.tournament_type == "Pool to bracket"
+			wrestlers_without_bracket_lines.shuffle.each do |wrestler|
+				# pool brackets just grab the first available seed
+				first_available_bracket_line = available_bracket_lines.first
+				wrestler.bracket_line = first_available_bracket_line
+				available_bracket_lines.delete(first_available_bracket_line)
+			end
+		else
+			# Iterrate over the list randomly
+			wrestlers_without_bracket_lines.shuffle.each do |wrestler|
+				if first_half_available_bracket_lines.size > 0
+					random_available_bracket_line = first_half_available_bracket_lines.sample
+					wrestler.bracket_line = random_available_bracket_line
+					available_bracket_lines.delete(random_available_bracket_line)
+					first_half_available_bracket_lines.delete(random_available_bracket_line)
+				else
+					random_available_bracket_line = available_bracket_lines.sample
+					wrestler.bracket_line = random_available_bracket_line
+					available_bracket_lines.delete(random_available_bracket_line)
+				end
+			end
 		end
 		return wrestlers
 	end
