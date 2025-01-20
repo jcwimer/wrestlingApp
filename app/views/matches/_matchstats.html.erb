@@ -11,6 +11,9 @@
     </div>
   <% end %>
   <h4>Bout <strong><%= @match.bout_number %></strong></h4>
+  <% if @show_next_bout_button && @next_match %>
+    <%= link_to "Skip to Next Match for Mat #{@mat.name}", mat_path(@mat, bout_number: @next_match.bout_number), class: "btn btn-primary" %>
+  <% end %>
   <h4>Bracket Position: <strong><%= @match.bracket_position %></strong></h4>
 <table class="table">
   <thead>

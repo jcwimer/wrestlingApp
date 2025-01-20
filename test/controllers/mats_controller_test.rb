@@ -221,6 +221,50 @@ class MatsControllerTest < ActionController::TestCase
     post_match_update_from_mat_show
     assert_redirected_to "/mats/#{@mat.id}"
   end
+
+  test "logged in tournament owner can show mat with bout_number param" do
+    sign_in_owner
+  
+    # Set a specific bout number to test
+    bout_number = @match.bout_number
+  
+    # Call the show action with the bout_number param
+    get :show, params: { id: @mat.id, bout_number: bout_number }
+  
+    # Assert the response is successful
+    assert_response :success
+  
+    # Check if the bout_number is rendered on the page
+    assert_match /#{bout_number}/, response.body, "The bout_number should be rendered on the page"
+  end
+
+  test "logged in tournament owner should redirect back to the first unfinished bout on a mat after submitting a match with a bout number param" do
+    sign_in_owner
+  
+    first_bout_number = @mat.unfinished_matches.first.bout_number
+  
+    # Set a specific bout number to test
+    bout_number = @match.bout_number
+  
+    # Call the show action with the bout_number param
+    get :show, params: { id: @mat.id, bout_number: bout_number }
+  
+    # Submit the match
+    old_controller = @controller
+    @controller = MatchesController.new
+    patch :update, params: { id: @match.id, match: { tournament_id: 1, mat_id: @mat.id } }
+    @controller = old_controller
+  
+    # Assert the redirect
+    assert_redirected_to mat_path(@mat) # Verify redirection to /mats/1
+  
+    # Explicitly follow the redirect with the named route
+    get :show, params: { id: @mat.id }
+  
+    # Check if the first_bout_number is rendered on the page
+    assert_match /#{first_bout_number}/, response.body, "The first unfinished bout_number should be rendered on the page"
+  end  
+  
 #TESTS THAT NEED MATCHES PUT ABOVE THIS
   test "redirect show if no matches" do
     sign_in_owner

@@ -6,7 +6,18 @@ class MatsController < ApplicationController
   # GET /mats/1
   # GET /mats/1.json
   def show
-    @match = @mat.unfinished_matches.first
+    bout_number_param = params[:bout_number] # Read the bout_number from the URL params
+  
+    if bout_number_param
+      @show_next_bout_button = false
+      @match = @mat.unfinished_matches.find { |m| m.bout_number == bout_number_param.to_i }
+    else
+      @show_next_bout_button = true
+      @match = @mat.unfinished_matches.first
+    end
+  
+    @next_match = @mat.unfinished_matches.second # Second unfinished match on the mat
+  
     @wrestlers = []
     if @match
       if @match.w1
@@ -19,6 +30,7 @@ class MatsController < ApplicationController
         @wrestler1_school_name = "N/A"
         @wrestler1_last_match = nil
       end
+  
       if @match.w2
         @wrestler2_name = @match.wrestler2.name
         @wrestler2_school_name = @match.wrestler2.school.name
@@ -29,11 +41,13 @@ class MatsController < ApplicationController
         @wrestler2_school_name = "N/A"
         @wrestler2_last_match = nil
       end
+  
       @tournament = @match.tournament
     end
+  
     session[:return_path] = request.original_fullpath
     session[:error_return_path] = request.original_fullpath
-  end
+  end  
 
   # GET /mats/new
   def new

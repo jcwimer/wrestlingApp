@@ -22,6 +22,7 @@ class MatchesController < ApplicationController
   end
 
    def stat
+    # @show_next_bout_button = false
     if params[:match]
       @match = Match.where(:id => params[:match]).includes(:wrestlers).first
     end
@@ -60,7 +61,9 @@ class MatchesController < ApplicationController
     respond_to do |format|
       if @match.update(match_params)
         if session[:return_path]
-          format.html { redirect_to session.delete(:return_path), notice: 'Match was successfully updated.' }
+          sanitized_return_path = sanitize_return_path(session[:return_path])
+          format.html { redirect_to sanitized_return_path, notice: 'Match was successfully updated.' }
+          session.delete(:return_path) # Remove the session variable
         else
           format.html { redirect_to "/tournaments/#{@match.tournament.id}", notice: 'Match was successfully updated.' }
         end
@@ -75,7 +78,7 @@ class MatchesController < ApplicationController
         end
       end
     end
-  end
+  end  
 
 
   private
@@ -92,4 +95,12 @@ class MatchesController < ApplicationController
     def check_access
       authorize! :manage, @match.tournament
     end
+
+    def sanitize_return_path(path)
+      uri = URI.parse(path)
+      params = Rack::Utils.parse_nested_query(uri.query)
+      params.delete("bout_number") # Remove the bout_number param
+      uri.query = params.to_query.presence # Rebuild the query string or set it to nil if empty
+      uri.to_s # Return the full path as a string
+    end    
 end
