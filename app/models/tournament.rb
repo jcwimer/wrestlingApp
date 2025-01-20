@@ -205,25 +205,38 @@ class Tournament < ApplicationRecord
 		return error_string
 	end
   	
-  	def match_generation_error
-  	    error_string = ""
-  		if pool_to_bracket_number_of_wrestlers_error.length > 0
-  			error_string += pool_to_bracket_number_of_wrestlers_error
-   		elsif modified_sixteen_man_number_of_wrestlers_error.length > 0
-  			error_string += modified_sixteen_man_number_of_wrestlers_error
-  		elsif double_elim_number_of_wrestlers_error.length > 0
-  			error_string += double_elim_number_of_wrestlers_error
+	def wrestlers_with_out_of_order_seed_error
+		error_string = ""
+		weights.each do |weight|
+		  original_seeds = weight.wrestlers.map(&:original_seed).compact.sort
+		  if original_seeds.any? && original_seeds != (original_seeds.first..original_seeds.last).to_a
+			error_string += "The weight class #{weight.max} has wrestlers with out-of-order seeds: #{original_seeds}. There is a gap in the sequence."
+		  end
+		end
+		return error_string
+	end
+	  
+	def match_generation_error
+		error_string = ""
+		if pool_to_bracket_number_of_wrestlers_error.length > 0
+		  error_string += pool_to_bracket_number_of_wrestlers_error
+		elsif modified_sixteen_man_number_of_wrestlers_error.length > 0
+		  error_string += modified_sixteen_man_number_of_wrestlers_error
+		elsif double_elim_number_of_wrestlers_error.length > 0
+		  error_string += double_elim_number_of_wrestlers_error
 		elsif wrestlers_with_higher_seed_than_bracket_size_error.length > 0
-			error_string += wrestlers_with_higher_seed_than_bracket_size_error
+		  error_string += wrestlers_with_higher_seed_than_bracket_size_error
 		elsif wrestlers_with_duplicate_original_seed_error.length > 0
-			error_string += wrestlers_with_duplicate_original_seed_error
-  		end
+		  error_string += wrestlers_with_duplicate_original_seed_error
+		elsif wrestlers_with_out_of_order_seed_error.length > 0
+		  error_string += wrestlers_with_out_of_order_seed_error
+		end
 		if error_string.length > 0
 		  return "There is a tournament error. #{error_string}"
 		else
 		  return nil
 		end
-  	end
+	end	  
 
 	def reset_and_fill_bout_board
 		reset_mats

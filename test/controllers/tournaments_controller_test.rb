@@ -760,4 +760,44 @@ class TournamentsControllerTest < ActionController::TestCase
     get :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
+
+  test "tournament generation error when a weight class has wrestlers with out-of-order original seeds" do
+    sign_in_owner
+    create_pool_tournament_single_weight(5) # Create a weight class with 5 wrestlers
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+  
+    # Set seeds to have a gap: [1, 2, 3, 5, nil]
+    wrestlers = @tournament.weights.first.wrestlers
+    wrestlers[0].original_seed = 1
+    wrestlers[1].original_seed = 2
+    wrestlers[2].original_seed = 3
+    wrestlers[3].original_seed = 5
+    wrestlers[4].original_seed = nil # Unseeded wrestler
+    wrestlers.each(&:save)
+  
+    get :generate_matches, params: { id: @tournament.id }
+    redirect_tournament_error
+  end
+
+  test "logged in tournament owner can generate matches with the correct seed order" do
+    sign_in_owner
+    create_pool_tournament_single_weight(5) # Create a weight class with 5 wrestlers
+    @tournament.destroy_all_matches
+    @tournament.user_id = 1
+    @tournament.save
+  
+    # Set seeds to have a gap: [1, 2, 3, 5, nil]
+    wrestlers = @tournament.weights.first.wrestlers
+    wrestlers[0].original_seed = 1
+    wrestlers[1].original_seed = 2
+    wrestlers[2].original_seed = 3
+    wrestlers[3].original_seed = 4
+    wrestlers[4].original_seed = nil # Unseeded wrestler
+    wrestlers.each(&:save)
+  
+    get :generate_matches, params: { id: @tournament.id }
+    success
+  end
 end
