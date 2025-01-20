@@ -35,24 +35,24 @@
         <td><%= @wrestler2_name %> Stats: <br><%= f.text_area :w2_stat, cols: "30", rows: "10"  %></td>
       </tr>
       <tr>
-        <td><%= @wrestler1_name %> Scoring <br><button id="w1-takedown" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'T3')">T3</button>
-        <button id="w1-escape" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'E1')">E1</button>
-        <button id="w1-reversal" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'R2')">R2</button>
-        <button id="w1-nf2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N2')">N2 </button>
-        <button id="w1-nf3" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N3')">N3</button>
-        <button id="w1-nf4" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N4')">N4</button>
-        <button id="w1-nf5" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N5')">N5</button>
-        <button id="w1-penalty" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P1')">P1</button>
-        <button id="w1-penalty2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P2')">P2</button></td>
-        <td><%= @wrestler2_name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'T3')">T3</button>
-        <button id="w2-escape" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'E1')">E1</button>
-        <button id="w2-reversal" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'R2')">R2</button>
-        <button id="w2-nf2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N2')">N2</button>
-        <button id="w2-nf3" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N3')">N3</button>
-        <button id="w2-nf4" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N4')">N4</button>
-        <button id="w2-nf5" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N5')">N5</button>
-        <button id="w2-penalty" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P1')">P1</button>
-        <button id="w2-penalty2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P2')">P2</button></td>
+        <td><%= @wrestler1_name %> Scoring <br><button id="w1-takedown" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'T3');updateStats(w2,'__');">T3</button>
+        <button id="w1-escape" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'E1');updateStats(w2,'__');">E1</button>
+        <button id="w1-reversal" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'R2');updateStats(w2,'__');">R2</button>
+        <button id="w1-nf2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N2');updateStats(w2,'__');">N2 </button>
+        <button id="w1-nf3" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N3');updateStats(w2,'__');">N3</button>
+        <button id="w1-nf4" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N4');updateStats(w2,'__');">N4</button>
+        <button id="w1-nf5" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N5');updateStats(w2,'__');">N5</button>
+        <button id="w1-penalty" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P1');updateStats(w2,'__');">P1</button>
+        <button id="w1-penalty2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P2');updateStats(w2,'__');">P2</button></td>
+        <td><%= @wrestler2_name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'T3');updateStats(w1,'__');">T3</button>
+        <button id="w2-escape" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'E1');updateStats(w1,'__');">E1</button>
+        <button id="w2-reversal" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'R2');updateStats(w1,'__');">R2</button>
+        <button id="w2-nf2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N2');updateStats(w1,'__');">N2</button>
+        <button id="w2-nf3" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N3');updateStats(w1,'__');">N3</button>
+        <button id="w2-nf4" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N4');updateStats(w1,'__');">N4</button>
+        <button id="w2-nf5" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N5');updateStats(w1,'__');">N5</button>
+        <button id="w2-penalty" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P1');updateStats(w1,'__');">P1</button>
+        <button id="w2-penalty2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P2');updateStats(w1,'__');">P2</button></td>
       </tr>
       <tr>
         <td><%= @wrestler1_name %> Choice <br><button id="w1-top" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Top|')">Chose Top</button>
@@ -65,10 +65,10 @@
         <button id="w2-defer" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Deferred|')">Deferred</button></td>
       </tr>
       <tr>
-        <td><%= @wrestler1_name %> Warnings <br><button id="w1-stalling" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'S')">Stalling</button>
-        <button id="w1-caution" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'C')">Caution</button></td>
-        <td><%= @wrestler2_name %> Warnings <br><button id="w2-stalling" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'S')">Stalling</button>
-        <button id="w2-caution" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'C')">Caution</button></td>
+        <td><%= @wrestler1_name %> Warnings <br><button id="w1-stalling" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'S');updateStats(w2,'_');">Stalling</button>
+        <button id="w1-caution" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'C');updateStats(w2,'_');">Caution</button></td>
+        <td><%= @wrestler2_name %> Warnings <br><button id="w2-stalling" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'S');updateStats(w1,'_');">Stalling</button>
+        <button id="w2-caution" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'C');updateStats(w1,'_');">Caution</button></td>
       </tr>
       <tr>
         <td>Match Options <br><button type="button" class="btn btn-primary btn-sm" onclick="updateStats(w2,'|End Period|'); updateStats(w1,'|End Period|');">End Period</button></td>
