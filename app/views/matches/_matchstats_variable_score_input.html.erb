@@ -184,7 +184,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const minutes = minuteInput.value.padStart(2, "0");
         const seconds = secondInput.value.padStart(2, "0");
         finalScoreField.value = `${minutes}:${seconds}`;
+      } else {
+        finalScoreField.value = ""; // Clear if no inputs
       }
+    } else if (
+      winType === "Decision" ||
+      winType === "Major" ||
+      winType === "Tech Fall"
+    ) {
+      const winnerScoreInput = document.getElementById("winner-score");
+      const loserScoreInput = document.getElementById("loser-score");
+
+      if (winnerScoreInput && loserScoreInput) {
+        const winnerScore = winnerScoreInput.value || "0";
+        const loserScore = loserScoreInput.value || "0";
+        finalScoreField.value = `${winnerScore}-${loserScore}`;
+      } else {
+        finalScoreField.value = ""; // Clear if no inputs
+      }
+    } else {
+      finalScoreField.value = ""; // Reset for other win types
     }
   });
 
