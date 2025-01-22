@@ -1,7 +1,8 @@
 require 'test_helper'
 
 class MatchesControllerTest < ActionController::TestCase
-  include Devise::Test::ControllerHelpers
+  include Devise::Test::ControllerHelpers # Needed to sign in
+  include ActionView::Helpers::DateHelper # Needed for time ago in words
 
   setup do
      @tournament = Tournament.find(1)
@@ -138,5 +139,38 @@ class MatchesControllerTest < ActionController::TestCase
     sign_in_owner
     post_update_from_match_stat
     assert_redirected_to "/tournaments/#{@tournament.id}/matches" 
+  end
+
+  test "stats page should load if a match does not have finished_at" do
+    create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
+    user = users(:one)
+    @tournament.user_id = user.id
+    @tournament.save
+    matches = @tournament.matches.reload
+    match = matches.first
+    sign_in_owner
+    get :stat, params: { id: match.id }
+    assert_response :success
+  end
+
+  test "stat page loads with the finished_at time ago in words when a match is already finished" do
+    create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
+    user = users(:one)
+    @tournament.user_id = user.id
+    @tournament.save
+    matches = @tournament.matches.reload
+    match = matches.first
+    match.winner_id = match.w1
+    match.finished = 1
+    match.win_type = "Pin"
+    match.score = "2:03"
+    match.save
+
+    finished_at = match.reload.finished_at
+    sign_in_owner
+    get :stat, params: { id: match.id }
+    # Check that the finished_at value is displayed on the page
+    assert_response :success
+    assert_includes @response.body, time_ago_in_words(finished_at), "time_ago_in_words(finished_at) should be displayed on the page"
   end
 end

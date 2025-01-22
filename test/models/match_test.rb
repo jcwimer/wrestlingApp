@@ -150,4 +150,40 @@ class MatchTest < ActiveSupport::TestCase
     match.save
     assert_equal 123, match.reload.pin_time_in_seconds
   end
+
+  test "Match gets a finished_at value when finished changes and is 1" do
+    create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
+    matches = @tournament.matches.reload
+    match = matches.first
+    match.winner_id = match.w1
+    match.finished = 1
+    match.win_type = "Pin"
+    match.score = "2:03"
+    match.save
+    # Assert finished_at is not nil
+    assert_not_nil match.reload.finished_at, "finished_at should not be nil when finished is set to 1"
+  end
+
+  test "Match gets a finished_at value when finished changes and is 1 and finished_at does not change when winner id is changed" do
+    create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
+    matches = @tournament.matches.reload
+    match = matches.first
+    match.winner_id = match.w1
+    match.finished = 1
+    match.win_type = "Pin"
+    match.score = "2:03"
+    match.save
+
+    finished_at = match.reload.finished_at
+
+    # Assert finished_at is not nil
+    assert_not_nil finished_at, "finished_at should not be nil when finished is set to 1"
+
+    match.winner_id = match.w2
+    match.save
+
+    # Assert finished_at did not change
+    assert_equal match.reload.finished_at, finished_at
+
+  end
 end

@@ -18,7 +18,7 @@ class Wrestler < ApplicationRecord
 		
 
 	def last_finished_match
-		all_matches.select{|m| m.finished == 1}.sort_by{|m| m.bout_number}.last
+		all_matches.select{|m| m.finished == 1}.sort_by{|m| m.finished_at}.last
 	end
 
 	def total_team_points

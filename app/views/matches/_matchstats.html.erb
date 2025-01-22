@@ -23,13 +23,13 @@
             <option value="red">Red</option>
         </select>
         <br>School: <%= @wrestler1_school_name %>
-        <br>Last Match: <%= @wrestler1_last_match ? time_ago_in_words(@wrestler1_last_match.updated_at) : "N/A" %></th>
+        <br>Last Match: <%= @wrestler1_last_match && @wrestler1_last_match.finished_at ? time_ago_in_words(@wrestler1_last_match.finished_at) : "N/A" %></th>
         <th>Name: <%= @wrestler2_name %> <select id="w2-color" onchange="changeW2Color(this)">
             <option value="red">Red</option>
             <option value="green">Green</option>
         </select>
         <br>School: <%= @wrestler2_school_name %>
-        <br>Last Match: <%= @wrestler2_last_match ? time_ago_in_words(@wrestler2_last_match.updated_at) : "N/A" %></th>
+        <br>Last Match: <%= @wrestler2_last_match && @wrestler2_last_match.finished_at ? time_ago_in_words(@wrestler2_last_match.finished_at) : "N/A" %></th>
       </tr>
     </thead>
     <tbody>
