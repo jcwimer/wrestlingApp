@@ -19,39 +19,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const winType = winTypeSelect.value;
 
     if (winType === "Pin") {
-      if (
-        dynamicScoreInput.querySelector("#minutes") &&
-        dynamicScoreInput.querySelector("#seconds")
-      ) {
+        // Clear existing validation state and stored scores
+        dynamicScoreInput.innerHTML = "";
+        pinTimeTip.style.display = "block";
+      
+        const minuteInput = createTextInput("minutes", "Minutes (MM)", "Pin Time Minutes");
+        const secondInput = createTextInput("seconds", "Seconds (SS)", "Pin Time Seconds");
+      
+        dynamicScoreInput.appendChild(minuteInput);
+        dynamicScoreInput.appendChild(secondInput);
+      
+        const updateFinalScore = () => {
+          // Ensure inputs are defined and have valid values
+          const minutes = (minuteInput.value || "0").padStart(2, "0");
+          const seconds = (secondInput.value || "0").padStart(2, "0");
+          finalScoreField.value = `${minutes}:${seconds}`;
+          validateForm();
+        };
+      
+        [minuteInput, secondInput].forEach((input) => {
+          input.addEventListener("input", updateFinalScore);
+        });
+      
+        // Safely initialize the final score
+        updateFinalScore(); // Set initial value
         validateForm(); // Trigger validation
         return;
-      }
-
-      // Clear existing form and create Pin inputs
-      dynamicScoreInput.innerHTML = "";
-      pinTimeTip.style.display = "block";
-
-      const minuteInput = createTextInput("minutes", "Minutes (MM)", "Pin Time Minutes");
-      const secondInput = createTextInput("seconds", "Seconds (SS)", "Pin Time Seconds");
-
-      dynamicScoreInput.appendChild(minuteInput);
-      dynamicScoreInput.appendChild(secondInput);
-
-      const updateFinalScore = () => {
-        const minutes = minuteInput.value.padStart(2, "0");
-        const seconds = secondInput.value.padStart(2, "0");
-        finalScoreField.value = `${minutes}:${seconds}`;
-        validateForm();
-      };
-
-      [minuteInput, secondInput].forEach((input) => {
-        input.addEventListener("input", updateFinalScore);
-      });
-
-      updateFinalScore(); // Set initial value
-      validateForm(); // Trigger validation
-      return;
-    }
+    }      
 
     if (
       winType === "Decision" ||
