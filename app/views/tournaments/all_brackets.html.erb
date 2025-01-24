@@ -1,20 +1,20 @@
 <style>
+  /* General styles for pages */
   @page {
-    size: 8.5in 11in;
-    margin: 0.5in;
+    margin: 0.5in; /* Universal margin for all pages */
   }
 
   .page {
-    width: 7.5in;
-    height: 10in;
+    width: 7.5in; /* Portrait width (8.5in - margins) */
+    height: 10in; /* Portrait height (11in - margins) */
     margin: auto;
     overflow: hidden;
     position: relative;
   }
 
   .page-landscape {
-    height: 7.5in;
-    width: 10in;
+    width: 10in; /* Landscape width (11in - margins) */
+    height: 7.5in; /* Landscape height (8.5in - margins) */
     margin: auto;
     overflow: hidden;
     position: relative;
@@ -26,30 +26,88 @@
     transform-origin: top left;
   }
 
+  /* Print-specific styles */
   @media print {
+    /* Set orientation for portrait pages */
     .page {
-      page-break-after: always;
+      size: 8.5in 11in; /* Portrait */
+      page-break-after: always; /* Force new page */
     }
+
+    /* Set orientation for landscape pages */
     .page-landscape {
-      page-break-after: always;
+      size: 11in 8.5in; /* Landscape */
+      page-break-after: always; /* Force new page */
+    }
+
+    /* Reset body margins for print */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Ensure correct scaling during print */
+    .bracket-container {
+      transform-origin: top left;
+    }
+
+    /* Optional: Hide elements not needed in print */
+    .no-print {
+      display: none;
     }
   }
 </style>
 
 <script>
-window.onload = function () {
-  document.querySelectorAll('.page').forEach(page => {
-    const container = page.querySelector('.bracket-container');
-    const isLandscape = page.classList.contains('landscape');
-    const availableWidth = isLandscape ? 10 * 96 : 7.5 * 96; // Convert inches to px
-    const availableHeight = isLandscape ? 7.5 * 96 : 10 * 96;
+  function scaleContent() {
+    document.querySelectorAll('.page, .page-landscape').forEach(page => {
+      const container = page.querySelector('.bracket-container');
+      const isLandscape = page.classList.contains('page-landscape');
 
-    const scaleX = availableWidth / container.scrollWidth;
-    const scaleY = availableHeight / container.scrollHeight;
-    const scale = Math.min(scaleX, scaleY); // Choose the smaller scale to fit
-    container.style.transform = `scale(${scale})`;
-  });
-};
+      // Page dimensions (1 inch = 96px)
+      const pageWidth = isLandscape ? 10 * 96 : 7.5 * 96;
+      const pageHeight = isLandscape ? 7.5 * 96 : 10 * 96;
+
+      // Subtract margins (0.5 inch margin)
+      const availableWidth = pageWidth - (0.5 * 96 * 2);
+      const availableHeight = pageHeight - (0.5 * 96 * 2);
+
+      // Measure content dimensions
+      const contentWidth = container.scrollWidth;
+      const contentHeight = container.scrollHeight;
+
+      // Calculate scale factors
+      const scaleX = availableWidth / contentWidth;
+      const scaleY = availableHeight / contentHeight;
+
+      // Use a slightly relaxed scaling to avoid over-aggressive shrinking
+      const scale = Math.min(scaleX, scaleY, 1); // Ensure scale does not exceed 100% (1)
+
+      // Apply the scale
+      container.style.transform = `scale(${scale})`;
+      container.style.transformOrigin = 'top left';
+
+      // Calculate the scaled dimensions
+      const scaledWidth = contentWidth * scale;
+      const scaledHeight = contentHeight * scale;
+
+      // Center the content within the page
+      const horizontalPadding = (pageWidth - scaledWidth) / 2;
+      const verticalPadding = (pageHeight - scaledHeight) / 2;
+
+      // Apply margin adjustments
+      container.style.marginLeft = `${Math.max(0, horizontalPadding)}px`;
+      container.style.marginTop = `${Math.max(0, verticalPadding)}px`;
+
+      // Ensure container maintains consistent dimensions
+      container.style.width = `${contentWidth}px`;
+      container.style.height = `${contentHeight}px`;
+    });
+  }
+
+  window.onload = scaleContent; // Ensure scaling on load
+  window.onresize = scaleContent; // Recalculate on resize
+  window.addEventListener('beforeprint', scaleContent); // Scale before printing
 </script>
 
 <% cache ["#{@tournament.id}_all_brackets", @tournament] do %> 
