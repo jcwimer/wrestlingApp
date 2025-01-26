@@ -17,10 +17,13 @@
       <% @winner_place = "1st" %>
       <%= render 'bracket_final' %>
     </div>
+<% if @weight.wrestlers.size > 16 %>
   </div>
 </div>
-<div class="page-landscape">
+<!-- <div class="page-landscape"> -->
+<div class="page">
   <div class="bracket-container">
+<% end %>
     <h4><%= @tournament.name %> - <%= @weight.max %> Bracket</h4>
     <h4>Consolation Bracket</h4>
     <div class="bracket">
