@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_22_142911) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_26_004721) do
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
@@ -31,9 +31,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_22_142911) do
   create_table "mat_assignment_rules", force: :cascade do |t|
     t.integer "tournament_id", null: false
     t.integer "mat_id", null: false
-    t.json "weight_classes"
-    t.json "bracket_positions"
-    t.json "rounds"
+    t.string "weight_classes"
+    t.string "bracket_positions"
+    t.string "rounds"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["mat_id"], name: "index_mat_assignment_rules_on_mat_id", unique: true

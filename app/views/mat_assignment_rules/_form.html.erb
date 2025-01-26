@@ -13,9 +13,9 @@
   <div>
     <%= form.label :weight_classes, "Allowed Weight Classes" %><br>
     <% if @tournament.weights.any? %>
-      <% @tournament.weights.each do |weight| %>
+      <% @tournament.weights.sort_by{|w| w.max}.each do |weight| %>
         <div>
-          <%= check_box_tag "mat_assignment_rule[weight_classes][]", weight.id, @mat_assignment_rule.weight_classes.map(&:to_i).include?(weight.id) %>
+          <%= check_box_tag "mat_assignment_rule[weight_classes][]", weight.id, Array(@mat_assignment_rule.weight_classes).map(&:to_i).include?(weight.id) %>
           <%= label_tag "mat_assignment_rule_weight_classes_#{weight.id}", weight.max %>
         </div>
       <% end %>
@@ -30,7 +30,7 @@
     <% if @unique_bracket_positions.present? %>
       <% @unique_bracket_positions.each do |position| %>
         <div>
-          <%= check_box_tag "mat_assignment_rule[bracket_positions][]", position, @mat_assignment_rule.bracket_positions.include?(position) %>
+          <%= check_box_tag "mat_assignment_rule[bracket_positions][]", position, Array(@mat_assignment_rule.bracket_positions).include?(position) %>
           <%= label_tag "mat_assignment_rule_bracket_positions_#{position}", position %>
         </div>
       <% end %>
@@ -45,7 +45,7 @@
     <% if @unique_rounds.present? %>
       <% @unique_rounds.each do |round| %>
         <div>
-          <%= check_box_tag "mat_assignment_rule[rounds][]", round, @mat_assignment_rule.rounds.map(&:to_i).include?(round) %>
+          <%= check_box_tag "mat_assignment_rule[rounds][]", round, Array(@mat_assignment_rule.rounds).map(&:to_i).include?(round) %>
           <%= label_tag "mat_assignment_rule_rounds_#{round}", round %>
         </div>
       <% end %>

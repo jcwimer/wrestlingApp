@@ -48,36 +48,37 @@ class Mat < ApplicationRecord
 	def next_eligible_match
 		# Start with all matches that are either unfinished (nil or 0), have a bout number, and are ordered by bout_number
 		filtered_matches = tournament.matches
-                      .where(finished: [nil, 0]) # finished is nil or 0
-                      .where(mat_id: nil)        # mat_id is nil
-                      .where.not(bout_number: nil) # bout_number is not nil
-                      .order(:bout_number)
-
-		# .where's are chained as ANDs
-		# cannot search for .where.not(loser1_name: "BYE") because it will not find any that are NULL
+									  .where(finished: [nil, 0])  # finished is nil or 0
+									  .where(mat_id: nil)         # mat_id is nil
+									  .where.not(bout_number: nil) # bout_number is not nil
+									  .order(:bout_number)
+	  
+		# Filter out BYE matches
 		filtered_matches = filtered_matches
-					  .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
-					  .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
-
-		# Sequentially apply each rule, narrowing down the matches
+							.where("loser1_name != ? OR loser1_name IS NULL", "BYE")
+							.where("loser2_name != ? OR loser2_name IS NULL", "BYE")
+	  
+		# Apply mat assignment rules
 		mat_assignment_rules.each do |rule|
 		  if rule.weight_classes.any?
-			filtered_matches = filtered_matches.where(weight_id: rule.weight_classes)
+			# Ensure weight_classes is treated as an array
+			filtered_matches = filtered_matches.where(weight_id: Array(rule.weight_classes).map(&:to_i))
 		  end
 	  
 		  if rule.bracket_positions.any?
-			filtered_matches = filtered_matches.where(bracket_position: rule.bracket_positions)
+			# Ensure bracket_positions is treated as an array
+			filtered_matches = filtered_matches.where(bracket_position: Array(rule.bracket_positions).map(&:to_s))
 		  end
 	  
 		  if rule.rounds.any?
-			filtered_matches = filtered_matches.where(round: rule.rounds)
+			# Ensure rounds is treated as an array
+			filtered_matches = filtered_matches.where(round: Array(rule.rounds).map(&:to_i))
 		  end
 		end
 	  
 		# Return the first match in filtered results, or nil if none are left
-		result = filtered_matches.first
-		result
-	end
+		filtered_matches.first
+	end			
 	  
 
 	def unfinished_matches

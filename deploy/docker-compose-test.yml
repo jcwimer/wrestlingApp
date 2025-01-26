@@ -41,7 +41,7 @@ services:
       test: curl http://127.0.0.1/
 
   db:
-    image: mysql:5.7
+    image: mariadb:10.10
     ports:
       - "3306:3306"
     volumes:

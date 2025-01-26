@@ -5,18 +5,12 @@ class MatAssignmentRulesController < ApplicationController
 
   def index
     @mat_assignment_rules = @tournament.mat_assignment_rules
-    # Create a hash mapping each Weight ID to its Weight object for quick lookups
-    @weights_by_id = @tournament.weights.index_by(&:id)
+    @weights_by_id = @tournament.weights.index_by(&:id) # For quick lookup
   end
 
   def new
     @mat_assignment_rule = @tournament.mat_assignment_rules.build
     load_form_data
-  end
-
-  def destroy
-    @mat_assignment_rule.destroy
-    redirect_to tournament_mat_assignment_rules_path(@tournament), notice: 'Mat assignment rule was successfully deleted.'
   end
 
   def create
@@ -44,6 +38,11 @@ class MatAssignmentRulesController < ApplicationController
     end
   end
 
+  def destroy
+    @mat_assignment_rule.destroy
+    redirect_to tournament_mat_assignment_rules_path(@tournament), notice: 'Mat assignment rule was successfully deleted.'
+  end
+
   private
 
   def set_tournament
@@ -59,20 +58,17 @@ class MatAssignmentRulesController < ApplicationController
   end
 
   def mat_assignment_rule_params
-    # Ensure defaults to empty arrays for checkboxes
     params[:mat_assignment_rule][:weight_classes] ||= []
     params[:mat_assignment_rule][:bracket_positions] ||= []
     params[:mat_assignment_rule][:rounds] ||= []
-  
-    # Permit parameters and normalize types
+
     params.require(:mat_assignment_rule).permit(:mat_id, weight_classes: [], bracket_positions: [], rounds: []).tap do |whitelisted|
-      whitelisted[:weight_classes] = whitelisted[:weight_classes].map(&:to_i)
-      whitelisted[:rounds] = whitelisted[:rounds].map(&:to_i)
-      whitelisted[:bracket_positions] = whitelisted[:bracket_positions] # Assume these are strings
+      whitelisted[:weight_classes] = Array(whitelisted[:weight_classes]).map(&:to_i)
+      whitelisted[:rounds] = Array(whitelisted[:rounds]).map(&:to_i)
+      whitelisted[:bracket_positions] = Array(whitelisted[:bracket_positions])
     end
   end
 
-  # Load data needed for the form
   def load_form_data
     @available_mats = @tournament.mats
     @unique_bracket_positions = @tournament.matches.select(:bracket_position).distinct.pluck(:bracket_position)
