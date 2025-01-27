@@ -20,17 +20,14 @@ This application is being created to run a wrestling tournament.
 * Delayed Jobs
 
 # Development
+
+## Develop with docker
 All dependencies are wrapped in docker. Tests can be run with `bash bin/run-tests-with-docker.sh`. That is the same command used in CI.
 
 If you want to run a full rails environment shell in docker run: `bash bin/rails-dev-run.sh wrestlingapp-dev`
-
 From here, you can run the normal rails commands.
-* `rake db:seed` Development login email from seed data: `test@test.com` password: `password`
-* `rake test`
-* `rails generate blah blah blah`
-* ` rails s -b 0.0.0.0` port 3000 is exposed. You can open [http://localhost:3000](http://localhost:3000) after running that command
-* etc.
-* `rake finish_seed_tournaments` will complete all matches from the seed data. This command takes about 5 minutes to execute
+
+Special rake tasks:
 * `docker-compose -f deploy/docker-compose-test.yml exec -T app rails tournament:assign_random_wins` will complete all matches for tournament 204 from seed data. This task takes a while since it waits for the worker to complete tasks. In my testing, it takes about 3.5 hours to complete.
 
 To deploy a a full local version of the app `bash deploy/deploy-test.sh` (this requires docker-compose to be installed). This deploys a full version of the app. App, delayed job, memcached, and mariadb. Now, you can open [http://localhost](http://localhost). Delayed jobs are turned off in dev and everything that is a delayed job in prod just runs in browser.
@@ -42,6 +39,21 @@ To run a single test file:
 To run a single test inside a file:
 1. Get a shell with ruby and rails: `bash bin/rails-dev-run.sh wrestlingdev-development`
 2. `rake test TEST=test/models/match_test.rb TESTOPTS="--name='/test_Match_should_not_be_valid_if_an_incorrect_win_type_is_given/'"`
+
+## Develop with rvm
+With rvm installed, run `rvm install `
+Then, `cd ../; cd wrestlingApp`. This will load the gemset file in this repo.
+
+## Rails commands
+Whether you have a shell from docker or are using rvm you can now run normal rails commands:
+* `bundle config set --local without 'production'`
+* `bundle install`
+* `rake db:seed` Development login email from seed data: `test@test.com` password: `password`
+* `rake test`
+* `rails generate blah blah blah`
+* ` rails s -b 0.0.0.0` port 3000 is exposed. You can open [http://localhost:3000](http://localhost:3000) after running that command
+* etc.
+* `rake finish_seed_tournaments` will complete all matches from the seed data. This command takes about 5 minutes to execute
 
 ## Update gems
 
