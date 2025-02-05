@@ -10,14 +10,18 @@ class ApplicationController < ActionController::Base
   end
   
   rescue_from CanCan::AccessDenied do |exception|
-    # flash[:error] = "Access denied!"
     redirect_to '/static_pages/not_allowed'
   end
-  
+
   protected
 
   # In Rails 4.2 and above
   def verified_request?
     super || valid_authenticity_token?(session, request.headers['X-XSRF-TOKEN'])
+  end
+
+  # Override current_ability to pass school_permission_key
+  def current_ability
+    @current_ability ||= Ability.new(current_user, params[:school_permission_key])
   end
 end

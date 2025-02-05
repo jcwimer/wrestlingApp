@@ -1,13 +1,11 @@
-
 <%= form_for(@wrestler) do |f| %>
   <% if @wrestler.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@wrestler.errors.count, "error") %> prohibited this wrestler from being saved:</h2>
-
       <ul>
-      <% @wrestler.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
+        <% @wrestler.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
       </ul>
     </div>
   <% end %>
@@ -16,43 +14,37 @@
     <%= f.label :name %><br>
     <%= f.text_field :name %>
   </div>
-  <% if can? :manage, @wrestler.tournament %> 
-        <div class="field">
-          <%= f.label 'School' %><br>
-          <%= f.collection_select :school_id, @school.tournament.schools, :id, :name %>
-        </div>
+
+  <% if can? :manage, @wrestler.tournament %>
+    <div class="field">
+      <%= f.label 'School' %><br>
+      <%= f.collection_select :school_id, @school.tournament.schools, :id, :name %>
+    </div>
   <% else %>
-    <%= f.hidden_field :school_id, :value => @school.id %>
+    <%= f.hidden_field :school_id, value: @school.id %>
   <% end %>
+
   <div class="field">
     <%= f.label 'Weight Class' %><br>
     <%= f.collection_select :weight_id, @weights, :id, :max %>
-
   </div>
+
   <div class="field">
     <%= f.label "Season Wins" %><br>
     <%= f.number_field :season_win %>
   </div>
+
   <div class="field">
     <%= f.label "Season Losses" %><br>
     <%= f.number_field :season_loss %>
   </div>
 
-  <div class="field">
-    <%= f.label "Seed Criteria" %><br>
-    <%= f.text_field :criteria %>
-  </div>
-  <div class="field">
-    <%= f.label "Check box if extra" %> <%= f.check_box :extra %>
-  </div>
-</br>
-</br>
+  <!-- Render the hidden field if a permission key is present -->
+  <% if @school_permission_key.present? %>
+    <%= f.hidden_field :school_permission_key, value: @school_permission_key %>
+  <% end %>
+
   <div class="actions">
-    <%= f.submit :class=>"btn btn-success"%>
+    <%= f.submit class: "btn btn-success" %>
   </div>
 <% end %>
-
-
-
-
-

@@ -1,6 +1,6 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:reset_bout_board,:calculate_team_scores,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_action :check_access_manage, only: [:reset_bout_board,:calculate_team_scores,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
+  before_action :set_tournament, only: [:generate_school_keys,:reset_bout_board,:calculate_team_scores,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_action :check_access_manage, only: [:generate_school_keys,:reset_bout_board,:calculate_team_scores,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
   before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
   before_action :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
@@ -280,6 +280,13 @@ class TournamentsController < ApplicationController
     @tournament.reset_and_fill_bout_board
     redirect_to tournament_path(@tournament), notice: "Successfully reset the bout board."
   end
+
+  def generate_school_keys
+    @tournament.schools.each do |school|
+      school.update(permission_key: SecureRandom.uuid)
+    end
+    redirect_to school_delegate_tournament_path(@tournament), notice: "School permission keys generated successfully."
+  end  
 
   private
     # Use callbacks to share common setup or constraints between actions.

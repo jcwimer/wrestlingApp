@@ -21,6 +21,10 @@
   <% end %>
 <br>
 
+<% if params[:school_permission_key].present? %>
+  <%= f.hidden_field :school_permission_key, value: params[:school_permission_key] %>
+<% end %>
+
   <div class="actions">
     <%= f.submit 'Submit', :class=>"btn btn-success" %>
   </div>

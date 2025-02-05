@@ -54,3 +54,30 @@
           	</tbody>
         </table>
 <% end %>
+
+<br><br>
+<%= button_to "Generate School Permission Keys", generate_school_keys_tournament_path(@tournament), method: :post, class: "btn btn-warning" %>
+<br><br>
+
+<% if @tournament.schools.where.not(permission_key: nil).exists? %>
+  <h2>Schools with Permission Keys</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>School Name</th>
+        <th>Permission Link</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @tournament.schools.where.not(permission_key: nil).each do |school| %>
+        <tr>
+          <td><%= school.name %></td>
+          <td>
+            <% full_url = "#{request.base_url}/schools/#{school.id}?school_permission_key=#{school.permission_key}" %>
+            <a href="<%= full_url %>"><%= full_url %></a>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

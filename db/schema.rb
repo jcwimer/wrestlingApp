@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_26_004721) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_30_172404) do
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
@@ -88,6 +88,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_26_004721) do
     t.datetime "updated_at", precision: nil
     t.integer "tournament_id"
     t.decimal "score", precision: 15, scale: 1
+    t.string "permission_key"
+    t.index ["permission_key"], name: "index_schools_on_permission_key", unique: true
     t.index ["tournament_id"], name: "index_schools_on_tournament_id"
   end
 

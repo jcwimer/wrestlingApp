@@ -4,9 +4,11 @@ class SchoolsControllerTest < ActionController::TestCase
   include Devise::Test::ControllerHelpers
 
   setup do
-     @tournament = Tournament.find(1)
+    @tournament = Tournament.find(1)
     # @tournament.generateMatchups
-     @school = @tournament.schools.first
+    @school = @tournament.schools.first
+    @school.update(permission_key: SecureRandom.uuid) # Generate a valid school_permission_key
+    @school_permission_key = @school.permission_key
   end
  
   def create
@@ -17,20 +19,20 @@ class SchoolsControllerTest < ActionController::TestCase
     get :new, params: { tournament: @tournament.id }
   end
 
-  def get_show
-    get :show, params: { id: @school.id }
+  def get_show(extra_params = {})
+    get :show, params: { id: @school.id }.merge(extra_params)
   end
 
-  def post_update
-    patch :update, params: { id: @school.id, school: {name: @school.name, tournament_id: @school.tournament_id} }
+  def post_update(extra_params = {})
+    patch :update, params: { id: @school.id, school: { name: @school.name, tournament_id: @school.tournament_id } }.merge(extra_params)
   end
 
-  def destroy
-    delete :destroy, params: { id: @school.id }
+  def destroy(extra_params = {})
+    delete :destroy, params: { id: @school.id }.merge(extra_params)
   end
 
-  def get_edit
-    get :edit, params: { id: @school.id }
+  def get_edit(extra_params = {})
+    get :edit, params: { id: @school.id }.merge(extra_params)
   end
   
   def sign_in_owner
@@ -288,6 +290,79 @@ Some Guy
     get_show
     success 
   end
+
+  test "wrestler links do not contain school_permission_key when not used" do
+    @tournament.update(is_public: false)
+    sign_in_owner
+    get_show
+  
+    assert_select "a[href=?]", new_wrestler_path(school: @school.id), text: "New Wrestler"
+  
+    @school.wrestlers.each do |wrestler|
+      # Check only for the DELETE link, specifying 'data-method="delete"' to exclude profile links
+      assert_select "a[href=?][data-method=delete]", wrestler_path(wrestler), count: 1
+  
+      # Check edit link
+      assert_select "a[href=?]", edit_wrestler_path(wrestler), count: 1
+    end
+  end  
   # END SHOW PAGE PERMISSIONS
 
+  # School permission key tests
+
+  test "non logged in user can get show page when using valid school_permission_key" do
+    @tournament.update(is_public: false)
+    get_show(school_permission_key: @school_permission_key)
+    success
+  end
+
+  test "non logged in user cannot get show page when using invalid school_permission_key" do
+    @tournament.update(is_public: false)
+    get_show(school_permission_key: "invalid-key")
+    redirect
+  end
+
+  test "non logged in user can edit school with valid school_permission_key" do
+    @tournament.update(is_public: false)
+    get_edit(school_permission_key: @school_permission_key)
+    success
+  end
+
+  test "non logged in user cannot edit school with invalid school_permission_key" do
+    @tournament.update(is_public: false)
+    get_edit(school_permission_key: "invalid-key")
+    redirect
+  end
+
+  test "non logged in user can update school with valid school_permission_key" do
+    @tournament.update(is_public: false)
+    post_update(school_permission_key: @school_permission_key)
+    assert_redirected_to tournament_path(@school.tournament_id)
+  end
+
+  test "non logged in user cannot update school with invalid school_permission_key" do
+    @tournament.update(is_public: false)
+    post_update(school_permission_key: "invalid-key")
+    redirect
+  end
+
+  test "non logged in user cannot delete school with invalid school_permission_key" do
+    @tournament.update(is_public: false)
+    destroy(school_permission_key: "invalid-key")
+    redirect
+  end
+
+  # Ensure school_permission_key is used in wrestler links
+  test "wrestler links contain school_permission_key when used" do
+    @tournament.update(is_public: false)
+    get_show(school_permission_key: @school_permission_key)
+
+    assert_select "a[href=?]", new_wrestler_path(school: @school.id, school_permission_key: @school_permission_key), text: "New Wrestler"
+    
+    @school.wrestlers.each do |wrestler|
+      assert_select "a[href=?]", edit_wrestler_path(wrestler, school_permission_key: @school_permission_key)
+      assert_select "a[href=?]", wrestler_path(wrestler, school_permission_key: @school_permission_key), method: :delete
+    end
+  end
+  # End school permission key tests
 end
