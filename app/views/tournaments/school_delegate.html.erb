@@ -1,4 +1,35 @@
-    <h1>Search results</h1> <%= form_tag(school_delegate_path, :method => "get", id: "search-form") do %>
+<h1>School Lineup Permission Links</h1>
+<p>Instead of forcing coaches to log into the app, you can generate links for their school that you can email them to submit their lineups. Be sure to delete these after the deadline for lineup submissions.</p>
+<%= button_to "Generate School Permission Key Links", generate_school_keys_tournament_path(@tournament), method: :post, class: "btn btn-success" %>
+<%= button_to "Delete School Permission Key Links", delete_school_keys_tournament_path(@tournament), method: :post, class: "btn btn-danger" %>
+<br><br>
+
+<% if @tournament.schools.where.not(permission_key: nil).exists? %>
+  <h2>Links for Schools with Permission Keys</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>School Name</th>
+        <th>Permission Link</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @tournament.schools.where.not(permission_key: nil).each do |school| %>
+        <tr>
+          <td><%= school.name %></td>
+          <td>
+            <% full_url = "#{request.base_url}/schools/#{school.id}?school_permission_key=#{school.permission_key}" %>
+            <a href="<%= full_url %>"><%= full_url %></a>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+<br><br>
+<h1>School Delegation for User Accounts</h1>
+<p>If you'd like coaches to have to log into the app, you can have them create an account first then search for that account here and assign their account to a school for lineup submission. Be sure to delete these after the deadline for lineup submissions.</p>
+<h2>Search results</h2> <%= form_tag(school_delegate_path, :method => "get", id: "search-form") do %>
                                     <%= text_field_tag :search, params[:search], placeholder: "Search users" %>
                                     <%= submit_tag "Search" %>
                                   <% end %>
@@ -33,7 +64,7 @@
 <% end %>
 
 <% if @users_delegates %>
-    <h1>Delegated users schools</h1> 
+    <h2>Delegated users schools</h2> 
     <table class="table table-striped table-bordered table-condensed">
         	<thead>
         		<tr>

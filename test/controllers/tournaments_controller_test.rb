@@ -800,4 +800,57 @@ class TournamentsControllerTest < ActionController::TestCase
     get :generate_matches, params: { id: @tournament.id }
     success
   end
+
+  test "tournament owner can create school keys" do
+    sign_in_owner
+    post :generate_school_keys, params: { id: @tournament.id }
+    assert_redirected_to school_delegate_path(@tournament)
+    assert_equal "School permission keys generated successfully.", flash[:notice]
+  end
+  
+  test "tournament owner can delete school keys" do
+    sign_in_owner
+    post :delete_school_keys, params: { id: @tournament.id }
+    # Update this path/notices if your controller redirects differently
+    assert_redirected_to school_delegate_path(@tournament)
+    assert_equal "All school permission keys have been deleted.", flash[:notice]
+  end
+  
+  test "tournament delegate can create school keys" do
+    sign_in_delegate
+    post :generate_school_keys, params: { id: @tournament.id }
+    assert_redirected_to school_delegate_path(@tournament)
+    assert_equal "School permission keys generated successfully.", flash[:notice]
+  end
+  
+  test "tournament delegate can delete school keys" do
+    sign_in_delegate
+    post :delete_school_keys, params: { id: @tournament.id }
+    assert_redirected_to school_delegate_path(@tournament)
+    assert_equal "All school permission keys have been deleted.", flash[:notice]
+  end
+  
+  test "logged in non-owner cannot create school keys" do
+    sign_in_non_owner
+    post :generate_school_keys, params: { id: @tournament.id }
+    redirect
+  end
+  
+  test "logged in non-owner cannot delete school keys" do
+    sign_in_non_owner
+    post :delete_school_keys, params: { id: @tournament.id }
+    redirect
+  end
+  
+  test "non logged in user cannot create school keys" do
+    # no sign_in
+    post :generate_school_keys, params: { id: @tournament.id }
+    redirect
+  end
+  
+  test "non logged in user cannot delete school keys" do
+    # no sign_in
+    post :delete_school_keys, params: { id: @tournament.id }
+    redirect
+  end
 end

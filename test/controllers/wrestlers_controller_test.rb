@@ -5,8 +5,9 @@ class WrestlersControllerTest < ActionController::TestCase
 
   setup do
      @tournament = Tournament.find(1)
-    # @tournament.generateMatchups
+     @tournament.update(is_public: true)
      @school = @tournament.schools.first
+     @school.update(permission_key: SecureRandom.uuid)
      @wrestler = @school.wrestlers.first
   end
  
@@ -168,10 +169,139 @@ class WrestlersControllerTest < ActionController::TestCase
     redirect
   end
 
-  test "view wrestler" do
+  # View wrestler based on tournament.is_public
+
+  test "a non logged in user can view wrestler when tournament is_public is true" do
     get :show, params: { id: @wrestler.id }
     success
   end
 
+  test "a non logged in user cannot view wrestler when tournament is_public is false" do
+    @tournament.update(is_public: false)
+    get :show, params: { id: @wrestler.id }
+    redirect
+  end
 
+  test "a logged in user non tournament owner cannot view wrestler when tournament is_public is false" do
+    @tournament.update(is_public: false)
+    sign_in_non_owner
+    get :show, params: { id: @wrestler.id }
+    redirect
+  end
+
+  test "a logged in user tournament owner can view wrestler when tournament is_public is false" do
+    @tournament.update(is_public: false)
+    sign_in_owner
+    get :show, params: { id: @wrestler.id }
+    success
+  end
+
+  test "a logged in user school delgate can view wrestler when tournament is_public is false" do
+    @tournament.update(is_public: false)
+    sign_in_school_delegate
+    get :show, params: { id: @wrestler.id }
+    success
+  end
+
+  test "a logged in user tournament delgate can view wrestler when tournament is_public is false" do
+    @tournament.update(is_public: false)
+    sign_in_tournament_delegate
+    get :show, params: { id: @wrestler.id }
+    success
+  end
+
+  # school permission key tests
+
+  test "a non logged in user with VALID school permission key can view wrestler when tournament is_public is false" do
+    valid_key = @school.permission_key
+    @tournament.update(is_public: false)
+    get :show, params: { id: @wrestler.id, school_permission_key: valid_key }
+    success
+  end
+
+  test "a non logged in user with INVALID school permission key cannot view wrestler when tournament is_public is false" do
+    @tournament.update(is_public: false)
+    get :show, params: { id: @wrestler.id, school_permission_key: "INVALID-KEY" }
+    redirect
+  end
+
+  test "non logged in user with VALID key can get edit wrestler page" do
+    valid_key = @school.permission_key
+    get :edit, params: { id: @wrestler.id, school_permission_key: valid_key }
+    success
+  end
+
+  test "non logged in user with INVALID key cannot get edit wrestler page" do
+    get :edit, params: { id: @wrestler.id, school_permission_key: "INVALID-KEY" }
+    redirect
+  end
+
+  test "non logged in user with VALID key can post update wrestler" do
+    valid_key = @school.permission_key
+    # The form includes school_permission_key as part of wrestler_params
+    patch :update, params: { id: @wrestler.id, wrestler: { name: "New Name", school_id: @school.id, school_permission_key: valid_key } }
+    assert_redirected_to school_path(@school.id, school_permission_key: valid_key)
+  end
+
+  test "non logged in user with INVALID key cannot post update wrestler" do
+    patch :update, params: { id: @wrestler.id, wrestler: { name: "New Name", school_id: @school.id }, school_permission_key: "INVALID-KEY" }
+    redirect
+  end
+
+  test "non logged in user with VALID key can create a new wrestler" do
+    valid_key = @school.permission_key
+
+    get :new, params: { school: @school.id, school_permission_key: valid_key }
+    success
+    # The form includes school_permission_key as part of wrestler_params
+    post :create, params: { wrestler: { name: "Test from Key", weight_id: 1, school_id: @school.id, school_permission_key: valid_key }}
+    assert_redirected_to school_path(@school.id, school_permission_key: valid_key)
+  end
+
+  test "non logged in user with INVALID key cannot create a new wrestler" do
+    get :new, params: { school: @school.id, school_permission_key: "INVALID-KEY" }
+    redirect
+    post :create, params: { wrestler: { name: "Test from Key", weight_id: 1, school_id: @school.id }, school_permission_key: "INVALID-KEY" }
+    redirect
+  end
+
+  test "non logged in user with VALID key can destroy a wrestler" do
+    valid_key = @school.permission_key
+    delete :destroy, params: { id: @wrestler.id, school_permission_key: valid_key }
+    assert_redirected_to school_path(@school.id, school_permission_key: valid_key)
+  end
+
+  test "non logged in user with INVALID key cannot destroy a wrestler" do
+    delete :destroy, params: { id: @wrestler.id, school_permission_key: "INVALID-KEY" }
+    redirect
+  end
+
+  test "non logged in user with VALID key can view a wrestler" do
+    valid_key = @school.permission_key
+    get :show, params: { id: @wrestler.id, school_permission_key: valid_key }
+    success
+  end
+
+  test "non logged in user with INVALID key cannot view a wrestler" do
+    @tournament.update(is_public: false)
+    get :show, params: { id: @wrestler.id, school_permission_key: "INVALID-KEY" }
+    redirect
+  end
+
+  test "show page with valid school_permission_key includes it in 'Back to School' link" do
+    valid_key = @school.permission_key
+    get :show, params: { id: @wrestler.id, school_permission_key: valid_key }
+    success
+
+    # The link is typically: /schools/:id?school_permission_key=valid_key
+    # 'Back to Central Crossing' or similar text
+    assert_select "a[href=?]", school_path(@school, school_permission_key: valid_key), text: /Back to/
+  end
+
+  test "show page with NO key does not include it in 'Back to School' link" do
+    get :show, params: { id: @wrestler.id }
+    success
+
+    assert_select "a[href=?]", school_path(@school), text: /Back to/
+  end
 end

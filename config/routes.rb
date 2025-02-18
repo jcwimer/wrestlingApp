@@ -81,6 +81,13 @@ Wrestling::Application.routes.draw do
 
   get "/matches/:id/stat" => "matches#stat", :as => :stat_match_path
 
+  resources :tournaments do
+    member do
+      post :generate_school_keys
+      post :delete_school_keys
+    end
+  end
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

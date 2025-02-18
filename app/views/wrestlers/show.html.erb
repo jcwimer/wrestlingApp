@@ -1,4 +1,7 @@
-<%= link_to "Back to #{@school.name}", "/schools/#{@school.id}", :class=>"btn btn-sm btn-default" %>
+<% back_to_school_path = school_path(@wrestler.school) %>
+<% back_to_school_path += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
+
+<%= link_to "Back to #{@wrestler.school.name}", back_to_school_path, class: "btn btn-default" %>
   <br>
   <br>
   <p>

@@ -2,7 +2,7 @@ class SchoolsController < ApplicationController
   before_action :set_school, only: [:import_baumspage_roster, :show, :edit, :update, :destroy, :stats]
   before_action :check_access_director, only: [:new,:create,:destroy]
   before_action :check_access_delegate, only: [:import_baumspage_roster, :update,:edit]
-  before_action :check_read_access, only: [:show]
+  before_action :check_read_access, only: [:show, :stats]
 
   def stats
     @tournament = @school.tournament
@@ -93,24 +93,37 @@ class SchoolsController < ApplicationController
     end
 
     def check_access_director
-    	if params[:tournament]
+    	if params[:tournament].present?
     	   @tournament = Tournament.find(params[:tournament])
-    	elsif params[:school]
+    	elsif params[:school].present?
     	   @tournament = Tournament.find(params[:school]["tournament_id"])
     	elsif @school
     	   @tournament = @school.tournament
-    	elsif school_params
-    	   @tournament = Tournament.find(school_params[:tournament_id])
     	end
+
     	authorize! :manage, @tournament
     end
 
     def check_access_delegate
+      if params[:school].present?
+        if school_params[:school_permission_key].present?
+          @school_permission_key = params[:school_permission_key]
+        end
+      end
+
+      if params[:school_permission_key].present?
+        @school_permission_key = params[:school_permission_key]
+      end
+
     	authorize! :manage, @school
     end
     
     def check_read_access
+      # set @school_permission_key for use in ability
+      if params[:school_permission_key].present?
+        @school_permission_key = params[:school_permission_key]
+      end
+
       authorize! :read, @school
     end
-
 end

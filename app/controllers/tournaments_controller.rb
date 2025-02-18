@@ -1,6 +1,6 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:reset_bout_board,:calculate_team_scores,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
-  before_action :check_access_manage, only: [:reset_bout_board,:calculate_team_scores,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
+  before_action :set_tournament, only: [:delete_school_keys, :generate_school_keys,:reset_bout_board,:calculate_team_scores,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_action :check_access_manage, only: [:delete_school_keys, :generate_school_keys,:reset_bout_board,:calculate_team_scores,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
   before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
   before_action :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
@@ -279,6 +279,18 @@ class TournamentsController < ApplicationController
   def reset_bout_board
     @tournament.reset_and_fill_bout_board
     redirect_to tournament_path(@tournament), notice: "Successfully reset the bout board."
+  end
+
+  def generate_school_keys
+    @tournament.schools.each do |school|
+      school.update(permission_key: SecureRandom.uuid)
+    end
+    redirect_to school_delegate_path(@tournament), notice: "School permission keys generated successfully."
+  end
+
+  def delete_school_keys
+    @tournament.schools.update_all(permission_key: nil)
+    redirect_to school_delegate_path(@tournament), notice: "All school permission keys have been deleted."
   end
 
   private
