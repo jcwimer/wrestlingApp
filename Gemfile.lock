@@ -182,9 +182,9 @@ GEM
     parser (3.3.6.0)
       ast (~> 2.4.1)
       racc
-    passenger (6.0.23)
+    passenger (6.0.26)
       rack (>= 1.6.13)
-      rackup
+      rackup (>= 2.0.0)
       rake (>= 12.3.3)
     psych (5.2.1)
       date
@@ -192,7 +192,7 @@ GEM
     puma (6.5.0)
       nio4r (~> 2.0)
     racc (1.8.1)
-    rack (3.1.8)
+    rack (3.1.10)
     rack-protection (4.1.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
