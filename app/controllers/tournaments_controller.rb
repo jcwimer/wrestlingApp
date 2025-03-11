@@ -1,10 +1,10 @@
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:delete_school_keys, :generate_school_keys,:reset_bout_board,:calculate_team_scores,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
+  before_action :set_tournament, only: [:all_results, :delete_school_keys, :generate_school_keys,:reset_bout_board,:calculate_team_scores,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:brackets,:generate_matches,:bracket,:all_brackets]
   before_action :check_access_manage, only: [:delete_school_keys, :generate_school_keys,:reset_bout_board,:calculate_team_scores,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches]
   before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
-  before_action :check_for_matches, only: [:up_matches,:bracket,:all_brackets]
-  before_action :check_access_read, only: [:up_matches,:bracket,:all_brackets]
+  before_action :check_for_matches, only: [:all_results,:up_matches,:bracket,:all_brackets]
+  before_action :check_access_read, only: [:all_results,:up_matches,:bracket,:all_brackets]
 
   def weigh_in_sheet
 
@@ -173,6 +173,12 @@ class TournamentsController < ApplicationController
           @bracketType = @weight.pool_bracket_type
         end
       end
+  end
+
+  def all_results
+    @matches = @tournament.matches.includes(:schools,:wrestlers,:weight)
+    @round = nil
+    @bracket_position = nil
   end
 
   def generate_matches

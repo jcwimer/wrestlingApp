@@ -28,7 +28,9 @@ If you want to run a full rails environment shell in docker run: `bash bin/rails
 From here, you can run the normal rails commands.
 
 Special rake tasks:
-* `docker-compose -f deploy/docker-compose-test.yml exec -T app rails tournament:assign_random_wins` will complete all matches for tournament 204 from seed data. This task takes a while since it waits for the worker to complete tasks. In my testing, it takes about 3.5 hours to complete.
+* `tournament:assign_random_wins` will complete all matches for tournament 204 from seed data. This task takes a while since it waits for the worker to complete tasks. In my testing, it takes about 3.5 hours to complete.
+  * `rake tournament:assign_random_wins` to run locally
+  * `docker-compose -f deploy/docker-compose-test.yml exec -T app rails tournament:assign_random_wins` to run on the dev server
 
 To deploy a a full local version of the app `bash deploy/deploy-test.sh` (this requires docker-compose to be installed). This deploys a full version of the app. App, delayed job, memcached, and mariadb. Now, you can open [http://localhost](http://localhost). Delayed jobs are turned off in dev and everything that is a delayed job in prod just runs in browser.
 

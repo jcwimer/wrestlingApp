@@ -1,0 +1,8 @@
+<% @matches.select{|m| m.finished == 1 && m.w1 && m.w2}.sort_by{|m| [ m.bout_number, m.bracket_position, m.weight.max ]}.each do |match| %>
+    <% if @round != match.round || @bracket_position != match.bracket_position %>
+        <p><strong><%= match.bracket_position %> Round: <%= match.round %></strong></p>
+    <% end %>
+    <p><%= match.all_results_text %></p>
+    <% @round = match.round %>
+    <% @bracket_position = match.bracket_position %>
+<% end %>

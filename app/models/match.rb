@@ -232,6 +232,21 @@ class Match < ApplicationRecord
 		end
 	end
 
+	def all_results_text
+		if self.finished != 1
+			return ""
+		end
+		if self.winner_id == self.w1
+			winning_wrestler = self.wrestler1
+			losing_wrestler = self.wrestler2
+		end
+		if self.winner_id == self.w2
+			winning_wrestler = self.wrestler2
+			losing_wrestler = self.wrestler1
+		end
+		return "#{self.weight.max} lbs - #{winning_wrestler.name} (#{winning_wrestler.school.name}) #{self.win_type} #{losing_wrestler.name} (#{losing_wrestler.school.name}) #{self.score}"
+	end
+
     def bracket_winner_name
       if winner_name != ""
       	return "#{winner_name} (#{Wrestler.find(winner_id).school.abbreviation})"
