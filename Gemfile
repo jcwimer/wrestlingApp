@@ -65,7 +65,7 @@ gem 'daemons'
 gem 'delayed_job_web'
 
 group :development do
- gem 'rubocop'
+#  gem 'rubocop'
  gem 'bullet'
  gem 'brakeman'
  gem 'bundler-audit'
