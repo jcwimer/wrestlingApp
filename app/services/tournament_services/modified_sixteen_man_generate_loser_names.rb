@@ -19,25 +19,25 @@ class ModifiedSixteenManGenerateLoserNames
    end
 
    def conso_round_2(matches)
-     matches.select{|m| m.round == 2 and m.bracket_position == "Conso"}.sort_by{|m| m.bracket_position_number}.each do |match|
+     matches.select{|m| m.bracket_position == "Conso Round of 8"}.sort_by{|m| m.bracket_position_number}.each do |match|
         if match.bracket_position_number == 1
-          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 1 and m.round == 1 and m.bracket_position == "Bracket"}.first.bout_number}"
-          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 2 and m.round == 1 and m.bracket_position == "Bracket"}.first.bout_number}"
+          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 1 and m.bracket_position == "Bracket Round of 16"}.first.bout_number}"
+          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 2 and m.bracket_position == "Bracket Round of 16"}.first.bout_number}"
         elsif match.bracket_position_number == 2
-          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 3 and m.round == 1 and m.bracket_position == "Bracket"}.first.bout_number}"
-          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 4 and m.round == 1 and m.bracket_position == "Bracket"}.first.bout_number}"
+          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 3 and m.bracket_position == "Bracket Round of 16"}.first.bout_number}"
+          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 4 and m.bracket_position == "Bracket Round of 16"}.first.bout_number}"
         elsif match.bracket_position_number == 3
-          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 5 and m.round == 1 and m.bracket_position == "Bracket"}.first.bout_number}"
-          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 6 and m.round == 1 and m.bracket_position == "Bracket"}.first.bout_number}"
+          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 5 and m.bracket_position == "Bracket Round of 16"}.first.bout_number}"
+          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 6 and m.bracket_position == "Bracket Round of 16"}.first.bout_number}"
         elsif match.bracket_position_number == 4
-          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 7 and m.round == 1 and m.bracket_position == "Bracket"}.first.bout_number}"
-          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 8 and m.round == 1 and m.bracket_position == "Bracket"}.first.bout_number}"
+          match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 7 and m.bracket_position == "Bracket Round of 16"}.first.bout_number}"
+          match.loser2_name = "Loser of #{matches.select{|m| m.bracket_position_number == 8 and m.bracket_position == "Bracket Round of 16"}.first.bout_number}"
         end
       end
    end
 
    def conso_round_3(matches)
-     matches.select{|m| m.round == 3 and m.bracket_position == "Conso Quarter"}.sort_by{|m| m.bracket_position_number}.each do |match|
+     matches.select{|m| m.bracket_position == "Conso Quarter"}.sort_by{|m| m.bracket_position_number}.each do |match|
         if match.bracket_position_number == 1
           match.loser1_name = "Loser of #{matches.select{|m| m.bracket_position_number == 4 and m.bracket_position == "Quarter"}.first.bout_number}"
         elsif match.bracket_position_number == 2
@@ -65,7 +65,7 @@ class ModifiedSixteenManGenerateLoserNames
    end
 
    def advance_bye_matches_championship(matches)
-      matches.select{|m| m.round == 1 and m.bracket_position == "Bracket"}.sort_by{|m| m.bracket_position_number}.each do |match|
+      matches.select{|m| m.bracket_position == "Bracket Round of 16"}.sort_by{|m| m.bracket_position_number}.each do |match|
         if match.w1 == nil or match.w2 == nil
           match.finished = 1
           match.win_type = "BYE"

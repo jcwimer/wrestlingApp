@@ -4,68 +4,202 @@ class DoubleEliminationMatchGeneration
   end
 
   def generate_matches
+    #
+    # PHASE 1: Generate matches (with local round definitions).
+    #
     @tournament.weights.each do |weight|
       generate_matches_for_weight(weight)
     end
+
+    #
+    # PHASE 2: Align all rounds to match the largest bracket’s definitions.
+    #
+    align_all_rounds_to_largest_bracket
   end
 
+  ###########################################################################
+  # PHASE 1: Generate all matches for each bracket, using a single definition.
+  ###########################################################################
+  def generate_matches_for_weight(weight)
+    bracket_size = weight.calculate_bracket_size
+    bracket_info = define_bracket_matches(bracket_size)
+    return unless bracket_info
+
+    # 1) Round one matchups
+    bracket_info[:round_one_matchups].each_with_index do |matchup, idx|
+      seed1, seed2         = matchup[:seeds]
+      bracket_position     = matchup[:bracket_position]
+      bracket_pos_number   = idx + 1
+      round_number         = matchup[:round]  # Use the round from our definition
+
+      create_matchup_from_seed(
+        seed1,
+        seed2,
+        bracket_position,
+        bracket_pos_number,
+        round_number,
+        weight
+      )
+    end
+
+    # 2) Championship rounds
+    bracket_info[:championship_rounds].each do |round_info|
+      bracket_position   = round_info[:bracket_position]
+      matches_this_round = round_info[:number_of_matches]
+      round_number       = round_info[:round]
+
+      matches_this_round.times do |i|
+        create_matchup(
+          nil,
+          nil,
+          bracket_position,
+          i + 1,
+          round_number,
+          weight
+        )
+      end
+    end
+
+    # 3) Consolation rounds
+    bracket_info[:consolation_rounds].each do |round_info|
+      bracket_position   = round_info[:bracket_position]
+      matches_this_round = round_info[:number_of_matches]
+      round_number       = round_info[:round]
+
+      matches_this_round.times do |i|
+        create_matchup(
+          nil,
+          nil,
+          bracket_position,
+          i + 1,
+          round_number,
+          weight
+        )
+      end
+
+      #
+      # 5/6, 7/8 placing logic
+      #
+      if weight.wrestlers.size >= 5
+        if @tournament.number_of_placers >= 6 && matches_this_round == 1
+          create_matchup(nil, nil, "5/6", 1, round_number, weight)
+        end
+      end
+      if weight.wrestlers.size >= 7
+        if @tournament.number_of_placers >= 8 && matches_this_round == 1
+          create_matchup(nil, nil, "7/8", 1, round_number, weight)
+        end
+      end
+    end
+  end
+
+  #
+  # Single bracket definition that includes both bracket_position and round.
+  # If you later decide to tweak round numbering, you do it in ONE place.
+  #
   def define_bracket_matches(bracket_size)
-    # Use detailed hashes for rounds, number of matches, and bracket positions
     case bracket_size
     when 4
       {
         round_one_matchups: [
-          { seeds: [1, 4], bracket_position: "Semis" }, { seeds: [2, 3], bracket_position: "Semis" }
+          # First round is Semis => round=1
+          { seeds: [1, 4], bracket_position: "Semis", round: 1 },
+          { seeds: [2, 3], bracket_position: "Semis", round: 1 }
         ],
         championship_rounds: [
-          { round: 2, number_of_matches: 1, bracket_position: "1/2" }
+          # Final => round=2
+          { bracket_position: "1/2", number_of_matches: 1, round: 2 }
         ],
         consolation_rounds: [
-          { round: 2, number_of_matches: 1, bracket_position: "3/4" }
+          # 3rd place => round=2
+          { bracket_position: "3/4", number_of_matches: 1, round: 2 }
         ]
       }
+
     when 8
       {
         round_one_matchups: [
-          { seeds: [1, 8], bracket_position: "Quarter" }, { seeds: [4, 5], bracket_position: "Quarter" },
-          { seeds: [3, 6], bracket_position: "Quarter" }, { seeds: [2, 7], bracket_position: "Quarter" }
+          # Quarter => round=1
+          { seeds: [1, 8], bracket_position: "Quarter", round: 1 },
+          { seeds: [4, 5], bracket_position: "Quarter", round: 1 },
+          { seeds: [3, 6], bracket_position: "Quarter", round: 1 },
+          { seeds: [2, 7], bracket_position: "Quarter", round: 1 }
         ],
         championship_rounds: [
-          { round: 2, number_of_matches: 2, bracket_position: "Semis" }, { round: 4, number_of_matches: 1, bracket_position: "1/2" }
+          # Semis => round=2, Final => round=4
+          { bracket_position: "Semis", number_of_matches: 2, round: 2 },
+          { bracket_position: "1/2",   number_of_matches: 1, round: 4 }
         ],
         consolation_rounds: [
-          { round: 2, number_of_matches: 2, bracket_position: "Conso Quarter" }, { round: 3, number_of_matches: 2, bracket_position: "Conso Semis" }, { round: 4, number_of_matches: 1, bracket_position: "3/4" }
+          # Conso Quarter => round=2, Conso Semis => round=3, 3/4 => round=4
+          { bracket_position: "Conso Quarter", number_of_matches: 2, round: 2 },
+          { bracket_position: "Conso Semis",   number_of_matches: 2, round: 3 },
+          { bracket_position: "3/4",           number_of_matches: 1, round: 4 }
         ]
       }
+
     when 16
       {
         round_one_matchups: [
-          { seeds: [1, 16], bracket_position: "Bracket" }, { seeds: [8, 9], bracket_position: "Bracket" }, { seeds: [5, 12], bracket_position: "Bracket" }, { seeds: [4, 13], bracket_position: "Bracket" },
-          { seeds: [3, 14], bracket_position: "Bracket" }, { seeds: [6, 11], bracket_position: "Bracket" },{ seeds: [7, 10], bracket_position: "Bracket" }, { seeds: [2, 15], bracket_position: "Bracket" }
+          { seeds: [1,16], bracket_position: "Bracket Round of 16", round: 1 },
+          { seeds: [8,9],  bracket_position: "Bracket Round of 16", round: 1 },
+          { seeds: [5,12], bracket_position: "Bracket Round of 16", round: 1 },
+          { seeds: [4,13], bracket_position: "Bracket Round of 16", round: 1 },
+          { seeds: [3,14], bracket_position: "Bracket Round of 16", round: 1 },
+          { seeds: [6,11], bracket_position: "Bracket Round of 16", round: 1 },
+          { seeds: [7,10], bracket_position: "Bracket Round of 16", round: 1 },
+          { seeds: [2,15], bracket_position: "Bracket Round of 16", round: 1 }
         ],
         championship_rounds: [
-          { round: 2, number_of_matches: 4, bracket_position: "Quarter" }, { round: 4, number_of_matches: 2, bracket_position: "Semis" }, { round: 6, number_of_matches: 1, bracket_position: "1/2" }
+          # Quarter => round=2, Semis => round=4, Final => round=6
+          { bracket_position: "Quarter", number_of_matches: 4, round: 2 },
+          { bracket_position: "Semis",   number_of_matches: 2, round: 4 },
+          { bracket_position: "1/2",     number_of_matches: 1, round: 6 }
         ],
         consolation_rounds: [
-          { round: 2, number_of_matches: 4, bracket_position: "Conso" }, { round: 3, number_of_matches: 4, bracket_position: "Conso" }, { round: 4, number_of_matches: 2, bracket_position: "Conso Quarter" },
-          { round: 5, number_of_matches: 2, bracket_position: "Conso Semis" }, { round: 6, number_of_matches: 1, bracket_position: "3/4" }
+          # Just carry over your standard numbering
+          { bracket_position: "Conso Round of 8.1", number_of_matches: 4, round: 2 },
+          { bracket_position: "Conso Round of 8.2", number_of_matches: 4, round: 3 },
+          { bracket_position: "Conso Quarter",      number_of_matches: 2, round: 4 },
+          { bracket_position: "Conso Semis",        number_of_matches: 2, round: 5 },
+          { bracket_position: "3/4",                number_of_matches: 1, round: 6 }
         ]
       }
+
     when 32
       {
         round_one_matchups: [
-          { seeds: [1, 32], bracket_position: "Bracket" }, { seeds: [16, 17], bracket_position: "Bracket" }, { seeds: [9, 24], bracket_position: "Bracket" }, { seeds: [8, 25], bracket_position: "Bracket" },
-          { seeds: [5, 28], bracket_position: "Bracket" }, { seeds: [12, 21], bracket_position: "Bracket" }, { seeds: [13, 20], bracket_position: "Bracket" }, { seeds: [4, 29], bracket_position: "Bracket" },
-          { seeds: [3, 30], bracket_position: "Bracket" }, { seeds: [14, 19], bracket_position: "Bracket" }, { seeds: [11, 22], bracket_position: "Bracket" }, { seeds: [6, 27], bracket_position: "Bracket" },
-          { seeds: [7, 26], bracket_position: "Bracket" }, { seeds: [10, 23], bracket_position: "Bracket" }, { seeds: [15, 18], bracket_position: "Bracket" }, { seeds: [2, 31], bracket_position: "Bracket" }
+          { seeds: [1,32],   bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [16,17],  bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [9,24],   bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [8,25],   bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [5,28],   bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [12,21],  bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [13,20],  bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [4,29],   bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [3,30],   bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [14,19],  bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [11,22],  bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [6,27],   bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [7,26],   bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [10,23],  bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [15,18],  bracket_position: "Bracket Round of 32", round: 1 },
+          { seeds: [2,31],   bracket_position: "Bracket Round of 32", round: 1 }
         ],
         championship_rounds: [
-          { round: 2, number_of_matches: 8, bracket_position: "Bracket" }, { round: 4, number_of_matches: 4, bracket_position: "Quarter" },
-          { round: 6, number_of_matches: 2, bracket_position: "Semis" }, { round: 8, number_of_matches: 1, bracket_position: "1/2" }
+          { bracket_position: "Bracket Round of 16", number_of_matches: 8, round: 2 },
+          { bracket_position: "Quarter",             number_of_matches: 4, round: 4 },
+          { bracket_position: "Semis",               number_of_matches: 2, round: 6 },
+          { bracket_position: "1/2",                 number_of_matches: 1, round: 8 }
         ],
         consolation_rounds: [
-          { round: 2, number_of_matches: 8, bracket_position: "Conso" }, { round: 3, number_of_matches: 8, bracket_position: "Conso" }, { round: 4, number_of_matches: 4, bracket_position: "Conso" }, { round: 5, number_of_matches: 4, bracket_position: "Conso" },
-          { round: 6, number_of_matches: 2, bracket_position: "Conso Quarter" }, { round: 7, number_of_matches: 2, bracket_position: "Conso Semis" }, { round: 8, number_of_matches: 1, bracket_position: "3/4" }
+          { bracket_position: "Conso Round of 16.1", number_of_matches: 8, round: 2 },
+          { bracket_position: "Conso Round of 16.2", number_of_matches: 8, round: 3 },
+          { bracket_position: "Conso Round of 8.1",  number_of_matches: 4, round: 4 },
+          { bracket_position: "Conso Round of 8.2",  number_of_matches: 4, round: 5 },
+          { bracket_position: "Conso Quarter",       number_of_matches: 2, round: 6 },
+          { bracket_position: "Conso Semis",         number_of_matches: 2, round: 7 },
+          { bracket_position: "3/4",                 number_of_matches: 1, round: 8 }
         ]
       }
     else
@@ -73,56 +207,48 @@ class DoubleEliminationMatchGeneration
     end
   end
 
-  def generate_matches_for_weight(weight)
-    number_of_placers = @tournament.number_of_placers
-    bracket_size = weight.calculate_bracket_size
-    bracket_matches = define_bracket_matches(bracket_size)
-  
-    # Generate round 1 matches
-    bracket_matches[:round_one_matchups].each_with_index do |matchup, index|
-      seed_1 = matchup[:seeds][0]
-      seed_2 = matchup[:seeds][1]
-      bracket_position = matchup[:bracket_position]
-      round = 1
-      bracket_position_number = index + 1
-  
-      create_matchup_from_seed(seed_1, seed_2, bracket_position, bracket_position_number, round, weight)
+  ###########################################################################
+  # PHASE 2: Overwrite rounds in all smaller brackets to match the largest one.
+  ###########################################################################
+  def align_all_rounds_to_largest_bracket
+    #
+    # 1) Find the bracket size that is largest
+    #
+    largest_weight = @tournament.weights.max_by { |w| w.calculate_bracket_size }
+    return unless largest_weight
+
+    #
+    # 2) Gather all matches for that bracket. Build a map from bracket_position => round
+    #
+    #    We assume "largest bracket" is the single weight with the largest bracket_size.
+    #
+    largest_bracket_size = largest_weight.calculate_bracket_size
+    largest_matches = largest_weight.tournament.matches.where(weight_id: largest_weight.id)
+
+    position_to_round = {}
+    largest_matches.each do |m|
+      # In case multiple matches have the same bracket_position but different rounds
+      # (like "3/4" might appear more than once), you can pick the first or max. 
+      position_to_round[m.bracket_position] ||= m.round  
     end
-  
-    # Generate remaining championship rounds
-    bracket_matches[:championship_rounds].each do |round_info|
-      round = round_info[:round]
-      matches_this_round = round_info[:number_of_matches]
-      bracket_position = round_info[:bracket_position]
-  
-      matches_this_round.times do |bracket_position_number|
-        create_matchup(nil, nil, bracket_position, bracket_position_number + 1, round, weight)
-      end
-    end
-  
-    # Generate consolation matches
-    bracket_matches[:consolation_rounds].each do |round_info|
-      round = round_info[:round]
-      matches_this_round = round_info[:number_of_matches]
-      bracket_position = round_info[:bracket_position]
-  
-      matches_this_round.times do |bracket_position_number|
-        create_matchup(nil, nil, bracket_position, bracket_position_number + 1, round, weight)
-      end
-  
-      if weight.wrestlers.size >= 5
-        create_matchup(nil, nil, "5/6", 1, round, weight) if @tournament.number_of_placers >= 6 && matches_this_round == 1
-      end
-  
-      if weight.wrestlers.size >= 7
-        create_matchup(nil, nil, "7/8", 1, round, weight) if @tournament.number_of_placers >= 8 && matches_this_round == 1
+
+    #
+    # 3) For every other match in the entire tournament (including possibly the largest bracket, if you want),
+    #    overwrite the round to match this map.
+    #
+    @tournament.matches.find_each do |match|
+      # If there's a known round for this bracket_position, use it
+      if position_to_round.key?(match.bracket_position)
+        match.update(round: position_to_round[match.bracket_position])
       end
     end
   end
 
+  ###########################################################################
+  # Helper methods
+  ###########################################################################
   def wrestler_with_seed(seed, weight)
-    wrestler = Wrestler.where("weight_id = ? and bracket_line = ?", weight.id, seed).first
-    wrestler&.id
+    Wrestler.where("weight_id = ? AND bracket_line = ?", weight.id, seed).first&.id
   end
 
   def create_matchup_from_seed(w1_seed, w2_seed, bracket_position, bracket_position_number, round, weight)
@@ -137,7 +263,7 @@ class DoubleEliminationMatchGeneration
   end
 
   def create_matchup(w1, w2, bracket_position, bracket_position_number, round, weight)
-    weight.tournament.matches.create(
+    weight.tournament.matches.create!(
       w1: w1,
       w2: w2,
       weight_id: weight.id,
@@ -146,26 +272,4 @@ class DoubleEliminationMatchGeneration
       bracket_position_number: bracket_position_number
     )
   end
-
-    #### Logic below works but not used. Could not find a way to reliably determine a couple things.
-    # For example, properly forcing the semis to be after round 2 of consolations in a 16 man bracket.
-    # and properly calculating the number of matches in a round for the consolation rounds.
-
-  def calculate_championship_rounds(bracket_size)
-    return nil if bracket_size <= 0 # Handle invalid input
-
-    Math.log2(bracket_size).to_i
-  end
-
-  def calculate_consolation_rounds(bracket_size)
-    return nil if bracket_size <= 0 || !bracket_size.is_a?(Integer)
-
-    championship_rounds = calculate_championship_rounds(bracket_size)
-    return 1 if championship_rounds == 2
-    return 0 if championship_rounds == 1
-
-    extra_powers_of_two = championship_rounds - 3
-    championship_rounds + extra_powers_of_two
-  end
 end
-    

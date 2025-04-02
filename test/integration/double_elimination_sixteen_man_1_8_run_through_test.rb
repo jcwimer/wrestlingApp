@@ -35,20 +35,20 @@ class DoubleEliminationSixteenManEightPlacesRunThrough < ActionDispatch::Integra
     assert quarter.fourth.reload.wrestler1.name == "Test10"
     assert quarter.fourth.reload.wrestler2.name == "Test2"
 
-    conso_round2 = matches.select{|m| m.bracket_position == "Conso" and m.round == 2}.sort_by{|m| m.bracket_position_number}
-    assert conso_round2.first.reload.wrestler2.name == "Test8"
-    assert conso_round2.second.reload.wrestler1.name == "Test12"
-    assert conso_round2.second.reload.wrestler2.name == "Test13"
-    assert conso_round2.third.reload.wrestler1.name == "Test3"
-    assert conso_round2.third.reload.wrestler2.name == "Test11"
-    assert conso_round2.fourth.reload.wrestler1.name == "Test7"
+    conso_r8_1 = matches.select{|m| m.bracket_position == "Conso Round of 8.1"}.sort_by{|m| m.bracket_position_number}
+    assert conso_r8_1.first.reload.wrestler2.name == "Test8"
+    assert conso_r8_1.second.reload.wrestler1.name == "Test12"
+    assert conso_r8_1.second.reload.wrestler2.name == "Test13"
+    assert conso_r8_1.third.reload.wrestler1.name == "Test3"
+    assert conso_r8_1.third.reload.wrestler2.name == "Test11"
+    assert conso_r8_1.fourth.reload.wrestler1.name == "Test7"
 
     winner_by_name("Test1", quarter.first)
     winner_by_name("Test5", quarter.second)
     winner_by_name("Test14", quarter.third)
     winner_by_name("Test10", quarter.fourth)
-    winner_by_name("Test12", conso_round2.second)
-    winner_by_name("Test3", conso_round2.third)
+    winner_by_name("Test12", conso_r8_1.second)
+    winner_by_name("Test3", conso_r8_1.third)
 
     semis = matches.select{|m| m.bracket_position == "Semis"}.sort_by{|m| m.bracket_position_number}
     assert semis.first.reload.wrestler1.name == "Test1"
@@ -56,20 +56,20 @@ class DoubleEliminationSixteenManEightPlacesRunThrough < ActionDispatch::Integra
     assert semis.second.reload.wrestler1.name == "Test14"
     assert semis.second.reload.wrestler2.name == "Test10"
 
-    conso_round3 = matches.select{|m| m.bracket_position == "Conso" and m.round == 3}.sort_by{|m| m.bracket_position_number}
-    assert conso_round3.first.reload.wrestler1.name == "Test2"
-    assert conso_round3.first.reload.wrestler2.name == "Test8"
-    assert conso_round3.second.reload.wrestler1.name == "Test6"
-    assert conso_round3.second.reload.wrestler2.name == "Test12"
-    assert conso_round3.third.reload.wrestler1.name == "Test4"
-    assert conso_round3.third.reload.wrestler2.name == "Test3"
-    assert conso_round3.fourth.reload.wrestler1.name == "Test9"
-    assert conso_round3.fourth.reload.wrestler2.name == "Test7"
+    conso_r8_2 = matches.select{|m| m.bracket_position == "Conso Round of 8.2"}.sort_by{|m| m.bracket_position_number}
+    assert conso_r8_2.first.reload.wrestler1.name == "Test2"
+    assert conso_r8_2.first.reload.wrestler2.name == "Test8"
+    assert conso_r8_2.second.reload.wrestler1.name == "Test6"
+    assert conso_r8_2.second.reload.wrestler2.name == "Test12"
+    assert conso_r8_2.third.reload.wrestler1.name == "Test4"
+    assert conso_r8_2.third.reload.wrestler2.name == "Test3"
+    assert conso_r8_2.fourth.reload.wrestler1.name == "Test9"
+    assert conso_r8_2.fourth.reload.wrestler2.name == "Test7"
 
-    winner_by_name("Test2", conso_round3.first)
-    winner_by_name("Test6", conso_round3.second)
-    winner_by_name("Test3", conso_round3.third)
-    winner_by_name("Test9", conso_round3.fourth)
+    winner_by_name("Test2", conso_r8_2.first)
+    winner_by_name("Test6", conso_r8_2.second)
+    winner_by_name("Test3", conso_r8_2.third)
+    winner_by_name("Test9", conso_r8_2.fourth)
 
     conso_quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.sort_by{|m| m.bracket_position_number}
     assert conso_quarter.first.reload.wrestler1.name == "Test2"

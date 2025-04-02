@@ -44,7 +44,7 @@ class ModifiedDoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
   
   test "Wrestlers get points for byes in the consolation rounds" do
     matches = @tournament.matches.reload
-    round2 = matches.select{|m| m.round == 2 and m.bracket_position == "Conso"}.first
+    round2 = matches.select{|m| m.bracket_position == "Conso Round of 8"}.first
     quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.first
     semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
     winner_by_name_by_bye("Test1", round2)
@@ -70,7 +70,7 @@ class ModifiedDoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
   
   test "Wrestlers do not get bye points if they get byes to 5th/6th and win by bye" do
     matches = @tournament.matches.reload
-    round2 = matches.select{|m| m.round == 2 and m.bracket_position == "Conso"}.first
+    round2 = matches.select{|m| m.bracket_position == "Conso Round of 8"}.first
     quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.first
     semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
     final = matches.select{|m| m.bracket_position == "5/6"}.first
@@ -98,7 +98,7 @@ class ModifiedDoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
   
   test "Wrestlers do not get bye points if they get byes to 5th/6th and win by decision" do
     matches = @tournament.matches.reload
-    round2 = matches.select{|m| m.round == 2 and m.bracket_position == "Conso"}.first
+    round2 = matches.select{|m| m.bracket_position == "Conso Round of 8"}.first
     quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.first
     semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
     final = matches.select{|m| m.bracket_position == "5/6"}.first

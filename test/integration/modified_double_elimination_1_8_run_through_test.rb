@@ -17,7 +17,7 @@ class ModifiedDoubleEliminationEightPlacesRunThrough < ActionDispatch::Integrati
     @tournament = create_double_elim_tournament_single_weight(14, "Modified 16 Man Double Elimination 1-8")
     matches = @tournament.matches.reload
 
-    round1 = matches.select{|m| m.round == 1}
+    round1 = matches.select{|m| m.bracket_position  == "Bracket Round of 16"}
     winner_by_name("Test9", round1.select{|m| m.bracket_position_number == 2}.first)
     winner_by_name("Test5", round1.select{|m| m.bracket_position_number == 3}.first)
     winner_by_name("Test4", round1.select{|m| m.bracket_position_number == 4}.first)
@@ -35,7 +35,7 @@ class ModifiedDoubleEliminationEightPlacesRunThrough < ActionDispatch::Integrati
     assert quarter.fourth.reload.wrestler1.name == "Test10"
     assert quarter.fourth.reload.wrestler2.name == "Test2"
 
-    conso_round2 = matches.select{|m| m.bracket_position == "Conso" and m.round == 2}.sort_by{|m| m.bracket_position_number}
+    conso_round2 = matches.select{|m| m.bracket_position == "Conso Round of 8"}.sort_by{|m| m.bracket_position_number}
     assert conso_round2.first.reload.wrestler2.name == "Test8"
     assert conso_round2.second.reload.wrestler1.name == "Test12"
     assert conso_round2.second.reload.wrestler2.name == "Test14"

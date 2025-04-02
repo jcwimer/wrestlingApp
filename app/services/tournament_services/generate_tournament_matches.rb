@@ -30,7 +30,7 @@ class GenerateTournamentMatches
     end
 
     def postMatchCreationActions
-        moveFinalsMatchesToLastRound
+        moveFinalsMatchesToLastRound if ! @tournament.tournament_type.include? "Regular Double Elimination"
         assignBouts
         @tournament.reset_and_fill_bout_board
         @tournament.curently_generating_matches = nil

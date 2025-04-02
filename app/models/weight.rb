@@ -164,7 +164,7 @@ class Weight < ApplicationRecord
 	end
 
 	def highest_bracket_round
-		bracket_matches_sorted_by_round_descending =  matches.select{|m| m.bracket_position == "Bracket"}.sort_by{|m| m.round}.reverse
+		bracket_matches_sorted_by_round_descending =  matches.select{|m| m.bracket_position.include? "Bracket"}.sort_by{|m| m.round}.reverse
 		if bracket_matches_sorted_by_round_descending.size > 0
 			return bracket_matches_sorted_by_round_descending.first.round
 		else
@@ -172,10 +172,28 @@ class Weight < ApplicationRecord
 		end
 	end
 
+	def lowest_bracket_round
+		bracket_matches_sorted_by_round_ascending =  matches.select{|m| m.bracket_position.include? "Bracket"}.sort_by{|m| m.round}
+		if bracket_matches_sorted_by_round_ascending.size > 0
+			return bracket_matches_sorted_by_round_ascending.first.round
+		else
+			return nil
+		end
+	end
+
 	def highest_conso_round
-		conso_matches_sorted_by_round_descending =  matches.select{|m| m.bracket_position == "Conso"}.sort_by{|m| m.round}.reverse
+		conso_matches_sorted_by_round_descending =  matches.select{|m| m.bracket_position.include? "Conso"}.sort_by{|m| m.round}.reverse
 		if conso_matches_sorted_by_round_descending.size > 0
 			return conso_matches_sorted_by_round_descending.first.round
+		else
+			return nil
+		end
+	end
+
+	def lowest_conso_round
+		conso_matches_sorted_by_round_ascending =  matches.select{|m| m.bracket_position.include? "Conso"}.sort_by{|m| m.round}
+		if conso_matches_sorted_by_round_ascending.size > 0
+			return conso_matches_sorted_by_round_ascending.first.round
 		else
 			return nil
 		end

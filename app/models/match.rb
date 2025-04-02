@@ -71,13 +71,19 @@ class Match < ApplicationRecord
 	end
 	
 	def bracket_position_validation
-	  if ! BRACKET_POSITIONS.include? bracket_position
-	  	errors.add(:bracket_position, "can only be one of the following #{BRACKET_POSITIONS.to_s}")
-	  end
+		# Allow "Bracket Round of 16", "Bracket Round of 16.1", 
+		# "Conso Round of 8", "Conso Round of 8.2", etc.
+		bracket_round_regex = /\A(Bracket|Conso) Round of \d+(\.\d+)?\z/
+	
+		unless BRACKET_POSITIONS.include?(bracket_position) || bracket_position.match?(bracket_round_regex)
+		  errors.add(:bracket_position, 
+			"must be one of #{BRACKET_POSITIONS.to_s} " \
+			"or match the pattern 'Bracket Round of X'/'Conso Round of X'")
+		end
 	end
 
 	def is_consolation_match
-        if self.bracket_position == "Conso" or self.bracket_position == "Conso Quarter" or self.bracket_position == "Conso Semis" or self.bracket_position == "3/4" or self.bracket_position == "5/6" or self.bracket_position == "7/8"
+        if self.bracket_position.include? "Conso" or self.bracket_position == "3/4" or self.bracket_position == "5/6" or self.bracket_position == "7/8"
         	return true
         else
         	return false
@@ -85,7 +91,7 @@ class Match < ApplicationRecord
 	end
 
 	def is_championship_match
-        if self.bracket_position == "Pool" or self.bracket_position == "Quarter" or self.bracket_position == "Semis" or self.bracket_position == "Bracket" or self.bracket_position == "1/2"
+        if self.bracket_position == "Pool" or self.bracket_position == "Quarter" or self.bracket_position == "Semis" or self.bracket_position.include? "Bracket" or self.bracket_position == "1/2"
         	return true
         else
         	return false

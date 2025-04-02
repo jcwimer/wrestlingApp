@@ -15,26 +15,25 @@ class DoubleEliminationGenerateLoserNames
     case bracket_size
     when 4
       [
-        # have to use total rounds here because if other weights have bigger brackets, then the finals round 3/4 won't be round 2
-        { conso_round: @tournament.total_rounds, conso_bracket_position: "3/4", championship_round: 1, championship_bracket_position: "Semis", cross_bracket: false, both_wrestlers: true }
+        { conso_bracket_position: "3/4", championship_bracket_position: "Semis", cross_bracket: false, both_wrestlers: true }
       ]
     when 8
       [
-        { conso_round: 2, conso_bracket_position: "Conso Quarter", championship_round: 1, championship_bracket_position: "Quarter", cross_bracket: false, both_wrestlers: true },
-        { conso_round: 3, conso_bracket_position: "Conso Semis", championship_round: 2, championship_bracket_position: "Semis", cross_bracket: true, both_wrestlers: false }
+        { conso_bracket_position: "Conso Quarter", championship_bracket_position: "Quarter", cross_bracket: false, both_wrestlers: true },
+        { conso_bracket_position: "Conso Semis", championship_bracket_position: "Semis", cross_bracket: true, both_wrestlers: false }
       ]
     when 16
       [
-        { conso_round: 2, conso_bracket_position: "Conso", championship_round: 1, championship_bracket_position: "Bracket", cross_bracket: false, both_wrestlers: true },
-        { conso_round: 3, conso_bracket_position: "Conso", championship_round: 2, championship_bracket_position: "Quarter", cross_bracket: true, both_wrestlers: false },
-        { conso_round: 5, conso_bracket_position: "Conso Semis", championship_round: 4, championship_bracket_position: "Semis", cross_bracket: false, both_wrestlers: false }
+        { conso_bracket_position: "Conso Round of 8.1", championship_bracket_position: "Bracket Round of 16", cross_bracket: false, both_wrestlers: true },
+        { conso_bracket_position: "Conso Round of 8.2", championship_bracket_position: "Quarter", cross_bracket: true, both_wrestlers: false },
+        { conso_bracket_position: "Conso Semis", championship_bracket_position: "Semis", cross_bracket: false, both_wrestlers: false }
       ]
     when 32
       [
-        { conso_round: 2, conso_bracket_position: "Conso", championship_round: 1, championship_bracket_position: "Bracket", cross_bracket: false, both_wrestlers: true },
-        { conso_round: 3, conso_bracket_position: "Conso", championship_round: 2, championship_bracket_position: "Bracket", cross_bracket: true, both_wrestlers: false },
-        { conso_round: 5, conso_bracket_position: "Conso", championship_round: 4, championship_bracket_position: "Quarter", cross_bracket: false, both_wrestlers: false },
-        { conso_round: 7, conso_bracket_position: "Conso Semis", championship_round: 6, championship_bracket_position: "Semis", cross_bracket: true, both_wrestlers: false },
+        { conso_bracket_position: "Conso Round of 16.1", championship_bracket_position: "Bracket Round of 32", cross_bracket: false, both_wrestlers: true },
+        { conso_bracket_position: "Conso Round of 16.2", championship_bracket_position: "Bracket Round of 16", cross_bracket: true, both_wrestlers: false },
+        { conso_bracket_position: "Conso Round of 8.2", championship_bracket_position: "Quarter", cross_bracket: false, both_wrestlers: false },
+        { conso_bracket_position: "Conso Semis", championship_bracket_position: "Semis", cross_bracket: true, both_wrestlers: false },
 
       ]
     else
@@ -50,19 +49,17 @@ class DoubleEliminationGenerateLoserNames
     loser_name_championship_mappings = define_losername_championship_mappings(bracket_size)
 
     loser_name_championship_mappings.each do |mapping|
-      conso_round = mapping[:conso_round]
       conso_bracket_position = mapping[:conso_bracket_position]
-      championship_round = mapping[:championship_round]
       championship_bracket_position = mapping[:championship_bracket_position]
       cross_bracket = mapping[:cross_bracket]
       both_wrestlers = mapping[:both_wrestlers]
 
       conso_matches = matches_by_weight.select do |match|
-        match.round == conso_round && match.bracket_position == conso_bracket_position
+        match.bracket_position == conso_bracket_position && match.bracket_position == conso_bracket_position
       end.sort_by(&:bracket_position_number)
 
       championship_matches = matches_by_weight.select do |match|
-        match.round == championship_round && match.bracket_position == championship_bracket_position
+        match.bracket_position == championship_bracket_position && match.bracket_position == championship_bracket_position
       end.sort_by(&:bracket_position_number)
 
       conso_matches.reverse! if cross_bracket
@@ -112,8 +109,9 @@ class DoubleEliminationGenerateLoserNames
   end
 
   def advance_bye_matches_championship(matches)
+    first_round = matches.sort_by{|m| m.round}.first.round
     matches.select do |m|
-      m.round == 1 && %w[Bracket Quarter].include?(m.bracket_position)
+      m.round == first_round
     end.sort_by(&:bracket_position_number).each do |match|
       next unless match.w1.nil? || match.w2.nil?
 

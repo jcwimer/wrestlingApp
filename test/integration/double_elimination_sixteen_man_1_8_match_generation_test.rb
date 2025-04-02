@@ -11,11 +11,11 @@ class DoubleEliminationSixteenManEightPlacesMatchGeneration < ActionDispatch::In
     assert @tournament.matches.select{|m| m.bracket_position == "3/4"}.count == 1
     assert @tournament.matches.select{|m| m.bracket_position == "5/6"}.count == 1
     assert @tournament.matches.select{|m| m.bracket_position == "7/8"}.count == 1
-    assert @tournament.matches.select{|m| m.bracket_position == "Bracket" and m.round == 1}.count == 8
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2}.count == 4
+    assert @tournament.matches.select{|m| m.bracket_position == "Bracket Round of 16"}.count == 8
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1"}.count == 4
     assert @tournament.matches.select{|m| m.bracket_position == "Quarter"}.count == 4
     assert @tournament.matches.select{|m| m.bracket_position == "Semis"}.count == 2
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 3}.count == 4
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.2"}.count == 4
     assert @tournament.matches.select{|m| m.bracket_position == "Conso Quarter"}.count == 2
     assert @tournament.matches.select{|m| m.bracket_position == "Conso Semis"}.count == 2
   end
@@ -76,28 +76,28 @@ class DoubleEliminationSixteenManEightPlacesMatchGeneration < ActionDispatch::In
     match7 = @tournament.matches.select{|match| match.round == 1 and match.bracket_position_number == 7}.first
     match8 = @tournament.matches.select{|match| match.round == 1 and match.bracket_position_number == 8}.first
 
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2 && m.bracket_position_number == 1}.first.loser1_name == "BYE"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2 && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{match2.bout_number}"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2 && m.bracket_position_number == 2}.first.loser1_name == "Loser of #{match3.bout_number}"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2 && m.bracket_position_number == 2}.first.loser2_name == "Loser of #{match4.bout_number}"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2 && m.bracket_position_number == 3}.first.loser1_name == "Loser of #{match5.bout_number}"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2 && m.bracket_position_number == 3}.first.loser2_name == "Loser of #{match6.bout_number}"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2 && m.bracket_position_number == 4}.first.loser1_name == "Loser of #{match7.bout_number}"
-    assert @tournament.matches.select{|m| m.bracket_position == "Conso" and m.round == 2 && m.bracket_position_number == 4}.first.loser2_name == "BYE"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1" && m.bracket_position_number == 1}.first.loser1_name == "BYE"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1" && m.bracket_position_number == 1}.first.loser2_name == "Loser of #{match2.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1" && m.bracket_position_number == 2}.first.loser1_name == "Loser of #{match3.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1" && m.bracket_position_number == 2}.first.loser2_name == "Loser of #{match4.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1" && m.bracket_position_number == 3}.first.loser1_name == "Loser of #{match5.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1" && m.bracket_position_number == 3}.first.loser2_name == "Loser of #{match6.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1" && m.bracket_position_number == 4}.first.loser1_name == "Loser of #{match7.bout_number}"
+    assert @tournament.matches.select{|m| m.bracket_position == "Conso Round of 8.1" && m.bracket_position_number == 4}.first.loser2_name == "BYE"
 
     quarter1 = @tournament.matches.select{|match| match.bracket_position == "Quarter" and match.bracket_position_number == 1}.first
     quarter2 = @tournament.matches.select{|match| match.bracket_position == "Quarter" and match.bracket_position_number == 2}.first
     quarter3 = @tournament.matches.select{|match| match.bracket_position == "Quarter" and match.bracket_position_number == 3}.first
     quarter4 = @tournament.matches.select{|match| match.bracket_position == "Quarter" and match.bracket_position_number == 4}.first
-    consoround2match1 = @tournament.matches.select{|match| match.bracket_position == "Conso" and match.round == 3 && match.bracket_position_number == 1}.first
-    consoround2match2 = @tournament.matches.select{|match| match.bracket_position == "Conso" and match.round == 3 && match.bracket_position_number == 2}.first
-    consoround2match3 = @tournament.matches.select{|match| match.bracket_position == "Conso" and match.round == 3 && match.bracket_position_number == 3}.first
-    consoround2match4 = @tournament.matches.select{|match| match.bracket_position == "Conso" and match.round == 3 && match.bracket_position_number == 4}.first
+    conso_r8_1_match1 = @tournament.matches.select{|match| match.bracket_position == "Conso Round of 8.2" && match.bracket_position_number == 1}.first
+    conso_r8_1_match2 = @tournament.matches.select{|match| match.bracket_position == "Conso Round of 8.2" && match.bracket_position_number == 2}.first
+    conso_r8_1_match3 = @tournament.matches.select{|match| match.bracket_position == "Conso Round of 8.2" && match.bracket_position_number == 3}.first
+    conso_r8_1_match4 = @tournament.matches.select{|match| match.bracket_position == "Conso Round of 8.2" && match.bracket_position_number == 4}.first
 
-    assert consoround2match1.loser1_name == "Loser of #{quarter4.bout_number}"
-    assert consoround2match2.loser1_name == "Loser of #{quarter3.bout_number}"
-    assert consoround2match3.loser1_name == "Loser of #{quarter2.bout_number}"
-    assert consoround2match4.loser1_name == "Loser of #{quarter1.bout_number}"
+    assert conso_r8_1_match1.loser1_name == "Loser of #{quarter4.bout_number}"
+    assert conso_r8_1_match2.loser1_name == "Loser of #{quarter3.bout_number}"
+    assert conso_r8_1_match3.loser1_name == "Loser of #{quarter2.bout_number}"
+    assert conso_r8_1_match4.loser1_name == "Loser of #{quarter1.bout_number}"
 
     semis1 = @tournament.matches.select{|match| match.bracket_position == "Semis" and match.bracket_position_number == 1}.first
     semis2 = @tournament.matches.select{|match| match.bracket_position == "Semis" and match.bracket_position_number == 2}.first

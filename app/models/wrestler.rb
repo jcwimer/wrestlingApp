@@ -160,19 +160,19 @@ class Wrestler < ApplicationRecord
 	end
 	
 	def championship_advancement_wins
-		matches_won.select{|m| (m.bracket_position == "Quarter" or m.bracket_position == "Semis" or m.bracket_position == "Bracket") and m.win_type != "BYE"}
+		matches_won.select{|m| (m.bracket_position == "Quarter" or m.bracket_position == "Semis" or m.bracket_position.include? "Bracket") and m.win_type != "BYE"}
 	end
 	
 	def consolation_advancement_wins
-		matches_won.select{|m| (m.bracket_position == "Conso Semis" or m.bracket_position == "Conso" or m.bracket_position == "Conso Quarter") and m.win_type != "BYE"}
+		matches_won.select{|m| (m.bracket_position.include? "Conso") and m.win_type != "BYE"}
 	end
 	
 	def championship_byes
-		matches_won.select{|m| (m.bracket_position == "Quarter" or m.bracket_position == "Semis" or m.bracket_position == "Bracket") and m.win_type == "BYE"}
+		matches_won.select{|m| (m.bracket_position == "Quarter" or m.bracket_position == "Semis" or m.bracket_position.include? "Bracket") and m.win_type == "BYE"}
 	end
 	
 	def consolation_byes
-		matches_won.select{|m| (m.bracket_position == "Conso Semis" or m.bracket_position == "Conso" or m.bracket_position == "Conso Quarter") and m.win_type == "BYE"}
+		matches_won.select{|m| (m.bracket_position.include? "Conso") and m.win_type == "BYE"}
 	end
 	
 	def finished_matches

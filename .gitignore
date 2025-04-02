@@ -21,3 +21,4 @@ tmp
 .rvmrc
 deploy/prod.env
 frontend/node_modules
+.aider*

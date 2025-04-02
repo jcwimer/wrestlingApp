@@ -17,8 +17,8 @@ class AdvanceWrestler
       @tournament.clear_errored_deferred_jobs
       if @last_match && @last_match.finished?
         pool_to_bracket_advancement if @tournament.tournament_type == "Pool to bracket"
-        DoubleEliminationAdvance.new(@wrestler, @last_match).bracket_advancement if @tournament.tournament_type.include? "Modified 16 Man Double Elimination" or
-        @tournament.tournament_type.include? "Regular Double Elimination"
+        ModifiedDoubleEliminationAdvance.new(@wrestler, @last_match).bracket_advancement if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
+        DoubleEliminationAdvance.new(@wrestler, @last_match).bracket_advancement if @tournament.tournament_type.include? "Regular Double Elimination"
       end
     end
     

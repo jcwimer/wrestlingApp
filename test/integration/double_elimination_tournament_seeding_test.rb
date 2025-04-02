@@ -16,7 +16,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
   test "Wrestlers with seeds should go on certain lines and it should be random for everyone else" do
     matches = @tournament.reload.matches
 
-    matches.select{|m| m.round == 1}.each do | match |
+    matches.select{|m| m.bracket_position == "Quarter"}.each do | match |
       assert(match.wrestler1.original_seed != nil)
       assert(match.wrestler2.original_seed == nil)
     end
@@ -56,7 +56,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
   end
 
   test "Deleting a wrestler and generating produces a BYE for the person who lost their opponent" do
-    wrestler_three_first_round = @tournament.reload.matches.select{|m| m.round == 1 && m.wrestler1.name == "Test3"}.first
+    wrestler_three_first_round = @tournament.reload.matches.select{|m| m.bracket_position == "Quarter" && m.wrestler1.name == "Test3"}.first
     wrestler_three_first_round.wrestler2.destroy
     GenerateTournamentMatches.new(@tournament.reload).generate
     matches = @tournament.reload.matches
@@ -66,8 +66,8 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
   end
 
   test "Deleting a seeded wrestler reseeding and generating produces a BYE for the non seeded opponent who lost their match" do
-    wrestler_two_first_round = @tournament.reload.matches.select{|m| m.round == 1 && m.wrestler1.name == "Test2"}.first
-    wrestler_four_first_round = @tournament.matches.select{|m| m.round == 1 && m.wrestler1.name == "Test4"}.first
+    wrestler_two_first_round = @tournament.reload.matches.select{|m| m.bracket_position == "Quarter" && m.wrestler1.name == "Test2"}.first
+    wrestler_four_first_round = @tournament.matches.select{|m| m.bracket_position == "Quarter" && m.wrestler1.name == "Test4"}.first
     wrestler_four_first_round_opponent = wrestler_four_first_round.wrestler2.id
     wrestler_two_first_round.wrestler1.destroy
 
@@ -81,7 +81,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     GenerateTournamentMatches.new(@tournament.reload).generate
     matches = @tournament.reload.matches
 
-    assert(matches.select{|m| m.round == 1 && m.w2 == wrestler_four_first_round_opponent}.first.loser1_name == "BYE")
+    assert(matches.select{|m| m.bracket_position == "Quarter" && m.w2 == wrestler_four_first_round_opponent}.first.loser1_name == "BYE")
   end
 
   test "Swapping seeds should change just the bracket line of the two wrestlers swapped" do
@@ -127,7 +127,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
   end
 
   test "Changing a wrestler from not seeded to seeded should only change his line and the person who had the line they now get" do
-    matches_original = @tournament.matches.select{|m| m.round == 1}
+    matches_original = @tournament.matches.select{|m| m.bracket_position == "Quarter"}
     original_wrestler4_opponent_name = matches_original.select{|m| m.wrestler1.name == "Test4"}.first.wrestler2.name
  
     wrestler_seven = @tournament.wrestlers.select{|w| w.name == "Test7"}.first
@@ -136,7 +136,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
 
     GenerateTournamentMatches.new(@tournament.reload).generate
 
-    matches_second = @tournament.reload.matches.select{|m| m.round == 1}
+    matches_second = @tournament.reload.matches.select{|m| m.bracket_position == "Quarter"}
     # everyone else should have the same opponent
     matches_original.each do |match|
       match_wrestler1_name = @tournament.wrestlers.select{|w| w.id == match.w1}.first.name

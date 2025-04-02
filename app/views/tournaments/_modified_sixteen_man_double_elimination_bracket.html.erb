@@ -1,7 +1,7 @@
 <h4>Championship Bracket</h4>
 <div class="bracket">
   <!--Round 1-->
-  <%  @round_matches = @matches.select{|m|m.bracket_position == "Bracket" and m.round == 1} %>
+  <%  @round_matches = @matches.select{|m|m.bracket_position == "Bracket Round of 16"} %>
   <%= render 'bracket_round' %>
   <!--Round 2-->
   <% @round_matches = @matches.select{|m|m.bracket_position == "Quarter"} %>
@@ -24,7 +24,7 @@
 <h4>Consolation Bracket</h4>
 <div class="bracket">
   <!--Round 1-->
-  <% @round_matches = @matches.select{|m|m.bracket_position == "Conso" and m.round == 2} %>		
+  <% @round_matches = @matches.select{|m|m.bracket_position == "Conso Round of 8"} %>		
   <%= render 'bracket_round' %>
   <!--Round 2-->
   <% @round_matches = @matches.select{|m|m.bracket_position == "Conso Quarter"} %>	

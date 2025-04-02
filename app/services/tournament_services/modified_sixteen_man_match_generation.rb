@@ -19,14 +19,14 @@ class ModifiedSixteenManMatchGeneration
     end
 
     def round_one(weight)
-      create_matchup_from_seed(1,16, "Bracket", 1, 1,weight)
-      create_matchup_from_seed(8,9, "Bracket", 2, 1,weight)
-      create_matchup_from_seed(5,12, "Bracket", 3, 1,weight)
-      create_matchup_from_seed(4,14, "Bracket", 4, 1,weight)
-      create_matchup_from_seed(3,13, "Bracket", 5, 1,weight)
-      create_matchup_from_seed(6,11, "Bracket", 6, 1,weight)
-      create_matchup_from_seed(7,10, "Bracket", 7, 1,weight)
-      create_matchup_from_seed(2,15, "Bracket", 8, 1,weight)
+      create_matchup_from_seed(1,16, "Bracket Round of 16", 1, 1,weight)
+      create_matchup_from_seed(8,9, "Bracket Round of 16", 2, 1,weight)
+      create_matchup_from_seed(5,12, "Bracket Round of 16", 3, 1,weight)
+      create_matchup_from_seed(4,14, "Bracket Round of 16", 4, 1,weight)
+      create_matchup_from_seed(3,13, "Bracket Round of 16", 5, 1,weight)
+      create_matchup_from_seed(6,11, "Bracket Round of 16", 6, 1,weight)
+      create_matchup_from_seed(7,10, "Bracket Round of 16", 7, 1,weight)
+      create_matchup_from_seed(2,15, "Bracket Round of 16", 8, 1,weight)
     end
 
     def round_two(weight)
@@ -34,10 +34,10 @@ class ModifiedSixteenManMatchGeneration
       create_matchup(nil,nil,"Quarter",2,2,weight)
       create_matchup(nil,nil,"Quarter",3,2,weight)
       create_matchup(nil,nil,"Quarter",4,2,weight)
-      create_matchup(nil,nil,"Conso",1,2,weight)
-      create_matchup(nil,nil,"Conso",2,2,weight)
-      create_matchup(nil,nil,"Conso",3,2,weight)
-      create_matchup(nil,nil,"Conso",4,2,weight)
+      create_matchup(nil,nil,"Conso Round of 8",1,2,weight)
+      create_matchup(nil,nil,"Conso Round of 8",2,2,weight)
+      create_matchup(nil,nil,"Conso Round of 8",3,2,weight)
+      create_matchup(nil,nil,"Conso Round of 8",4,2,weight)
     end
 
     def round_three(weight)
