@@ -1,6 +1,14 @@
 <h3>
   Info
 </h3>
+
+<% if (can? :manage, @tournament) && @tournament.curently_generating_matches == 1 %>
+  <div class="alert alert-info">
+    <strong>Match Generation In Progress</strong>
+    <p>Tournament bracket generation is currently running. Please refresh the page to check progress.</p>
+  </div>
+<% end %>
+
 <p>
   <strong>Address:</strong>
   <%= @tournament.address %>
@@ -117,35 +125,5 @@
       <% end %>
     </tbody>
   </table>
-<% end %>
-<% if can? :manage, @tournament %>
-<br><br>
-<h3>Background Jobs</h3>
-<p>This is a list of queued or running background jobs. Match generation, bracket advancement, team score calculation, etc.</p>
-<table class="table table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Name of Job</th>
-      <th>Job Status</th>
-    </tr>
-  </thead>
-  
-  <tbody>
-    <% @tournament.deferred_jobs.each do |job| %>
-      <tr>
-        <td><%= job.job_owner_type %></td>
-          <td>
-           <% if job.locked_at %>
-             Running
-           <% elsif job.last_error %>
-             Error
-           <% elsif job.attempts == 0 and !job.locked_at %>
-             Pending
-           <% end %>
-          </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
 <% end %>
 <br><br>

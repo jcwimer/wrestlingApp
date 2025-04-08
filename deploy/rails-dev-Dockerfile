@@ -1,5 +1,9 @@
 FROM ruby:3.2.0
 
+# Accept build arguments for user/group IDs
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
 RUN apt-get -qq update \
   && apt-get -qq install -y \
     build-essential \
@@ -17,21 +21,62 @@ RUN echo "America/New_York" > /etc/timezone \
  && rm /etc/localtime \
  && ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 
-RUN echo 'gem: --no-rdoc --no-ri' > /root/.gemrc
+# Install gems as root first
 RUN gem install bundler
 RUN gem update --system
+
+# Add Gemfile before creating user (still as root)
 ADD Gemfile* /tmp/
 WORKDIR /tmp
-RUN bundle config set without 'production'
-RUN bundle install --jobs 4
 
-RUN mkdir /rails
+# Create a non-root user with the provided user/group IDs
+# Use existing group if GID already exists
+RUN if grep -q ":${GROUP_ID}:" /etc/group; then \
+      GROUP_NAME=$(getent group ${GROUP_ID} | cut -d: -f1); \
+    else \
+      GROUP_NAME=devuser; \
+      groupadd -g $GROUP_ID $GROUP_NAME; \
+    fi && \
+    useradd -u $USER_ID -g $GROUP_ID -m -s /bin/bash devuser \
+    && echo "devuser ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/devuser \
+    && chmod 0440 /etc/sudoers.d/devuser
+
+# Now that user exists, set up permissions
+RUN echo 'gem: --no-rdoc --no-ri' > /home/devuser/.gemrc \
+    && mkdir -p /home/devuser/.bundle \
+    && chown -R ${USER_ID}:${GROUP_ID} /home/devuser /tmp/Gemfile* \
+    && chmod -R 777 /usr/local/bundle
+
+# Switch to the non-root user for all subsequent commands
+USER devuser
+
+# Pre-install gems from Gemfile
+WORKDIR /tmp
+RUN bundle config set --local without 'production' && \
+    bundle install --jobs 4
+
+# Create the rails directory with correct ownership
+RUN sudo mkdir -p /rails && sudo chown ${USER_ID}:${GROUP_ID} /rails
 WORKDIR /rails
 
-ADD . /rails
+# Add helper script to initialize the project
+RUN echo '#!/bin/bash\n\
+if [ ! -f "bin/rails" ]; then\n\
+  echo "Setting up Rails binstubs..."\n\
+  bundle binstubs --all\n\
+  echo "Rails setup complete. You can now use bin/rails."\n\
+else\n\
+  echo "Rails binstubs already exist."\n\
+fi\n\
+exec "$@"\n\
+' > /home/devuser/init_rails.sh \
+&& chmod +x /home/devuser/init_rails.sh
 
 VOLUME ["/rails"]
 
 EXPOSE 3000
+ENV SOLID_QUEUE_IN_PUMA=true
 
-CMD /bin/bash
+# Use the init script as entrypoint
+ENTRYPOINT ["/home/devuser/init_rails.sh"]
+CMD ["/bin/bash"]

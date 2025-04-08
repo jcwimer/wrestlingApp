@@ -11,7 +11,7 @@ spec:
         image: jcwimer/wrestlingdev:prod
         imagePullPolicy: Always
         command: ["/bin/sh","-c"]
-        args: ["bundle exec rake db:create; bundle exec rake db:migrate"]
+        args: ["bundle exec rake db:create; bundle exec rake db:migrate;"]
         env:
         - name: RAILS_ENV
           value: production

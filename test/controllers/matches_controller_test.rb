@@ -1,7 +1,8 @@
 require 'test_helper'
 
 class MatchesControllerTest < ActionController::TestCase
-  include Devise::Test::ControllerHelpers # Needed to sign in
+  # Remove Devise helpers since we're no longer using Devise
+  # include Devise::Test::ControllerHelpers # Needed to sign in
   include ActionView::Helpers::DateHelper # Needed for time ago in words
 
   setup do

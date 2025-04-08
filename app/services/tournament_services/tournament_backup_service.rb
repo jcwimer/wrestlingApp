@@ -5,11 +5,8 @@ class TournamentBackupService
   end
 
   def create_backup
-    if Rails.env.production?
-      self.delay(:job_owner_id => @tournament.id, :job_owner_type => "Create a backup").create_backup_raw
-    else
-      self.create_backup_raw
-    end  
+    # Use perform_later which will execute based on centralized adapter config
+    TournamentBackupJob.perform_later(@tournament, @reason)
   end
 
   def create_backup_raw

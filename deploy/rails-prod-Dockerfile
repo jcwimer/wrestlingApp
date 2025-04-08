@@ -52,10 +52,8 @@ EXPOSE 443
 # Tini solves the zombie PID problem
 ENTRYPOINT ["/tini", "--"]
 
-CMD bundle exec passenger start --max-pool-size ${PASSENGER_POOL_SIZE} --min-instances ${PASSENGER_POOL_SIZE} --environment production -p 80
-# Higher max pool uses more ram
-# Followed recommendation from: https://blog.phusion.nl/2015/11/10/heroku-and-passenger-focus-on-the-app-performance/
+# Enable Solid Queue to run inside Puma
+ENV SOLID_QUEUE_IN_PUMA=true
 
-#CMD bundle exec puma -w 3 -t 5:5 -b 'tcp://0.0.0.0:80' -e production
-#CMD bundle exec puma -w 3 -t 5:5 -b 'ssl://0.0.0.0:443?key=/ssl/server.key&verify_mode=none&cert=/ssl/server.crt' -e production
-#CMD bundle exec passenger start --max-pool-size 3 --environment production --ssl --ssl-certificate /ssl/server.crt --ssl-certificate-key /ssl/server.key
+# Use rails server instead of Puma directly to ensure Rails environment is loaded
+CMD bundle exec rails server -e production -p 80 -b '0.0.0.0'

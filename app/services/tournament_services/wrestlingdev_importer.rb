@@ -1,19 +1,24 @@
 class WrestlingdevImporter
-
   ##### Note, the json contains id's for each row in the tables as well as its associations
   ##### this ignores those ids and uses this tournament id and then looks up associations based on name
   ##### and this tournament id
-  def initialize(tournament, backup)
+  attr_accessor :import_data
+  
+  # Support both parameter styles for backward compatibility
+  # Old: initialize(tournament, backup)
+  # New: initialize(tournament) with import_data setter
+  def initialize(tournament, backup = nil)
     @tournament = tournament
-    @import_data = JSON.parse(Base64.decode64(backup.backup_data))
+    
+    # Handle the old style where backup was passed directly
+    if backup.present?
+      @import_data = JSON.parse(Base64.decode64(backup.backup_data)) rescue nil
+    end
   end
 
   def import
-    if Rails.env.production?
-      self.delay(job_owner_id: @tournament.id, job_owner_type: "Importing a backup").import_raw
-    else
-      import_raw
-    end
+    # Use perform_later which will execute based on centralized adapter config
+    WrestlingdevImportJob.perform_later(@tournament, @import_data)
   end
 
   def import_raw

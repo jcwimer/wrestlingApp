@@ -4,11 +4,8 @@ class GenerateTournamentMatches
     end
 
     def generate
-      if Rails.env.production?
-        self.delay(:job_owner_id => @tournament.id, :job_owner_type => "Generate matches for all weights").generate_raw
-      else
-        self.generate_raw
-      end        
+      # Use perform_later which will execute based on centralized adapter config
+      GenerateTournamentMatchesJob.perform_later(@tournament)
     end
 
     def generate_raw

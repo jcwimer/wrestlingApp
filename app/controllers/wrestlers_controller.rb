@@ -1,6 +1,6 @@
 class WrestlersController < ApplicationController
-  before_action :set_wrestler, only: [:show, :edit, :update, :destroy, :update_pool]
-  before_action :check_access, only: [:new, :create, :update, :destroy, :edit, :update_pool]
+  before_action :set_wrestler, only: [:show, :edit, :update, :destroy]
+  before_action :check_access, only: [:new, :create, :update, :destroy, :edit]
   before_action :check_read_access, only: [:show]
 
   # GET /wrestlers/1
@@ -36,7 +36,7 @@ class WrestlersController < ApplicationController
     @school_permission_key = wrestler_params[:school_permission_key].presence
     @weights = @school.tournament.weights if @school
 
-    # Remove the key from attributes so it isn’t assigned to the model.
+    # Remove the key from attributes so it isn't assigned to the model.
     @wrestler = Wrestler.new(wrestler_params.except(:school_permission_key))
 
     respond_to do |format|

@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '7.2.2'
+gem 'rails', '8.0.2'
 
 # Added in rails 7.1
 gem 'rails-html-sanitizer'
@@ -10,9 +10,12 @@ gem 'rails-html-sanitizer'
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
+# Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false
+
 # Use sqlite3 as the database for Active Record
-# can't use 2.0 maybe in a future rails upgrade?
-gem 'sqlite3', "~> 1.4", :group => :development
+# Use sqlite3 version compatible with Rails 8
+gem 'sqlite3', ">= 2.1", :group => :development
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
@@ -34,7 +37,7 @@ gem 'sdoc', :group => :doc
 gem 'spring', :group => :development
 
 # Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1.7'
 
 # Use unicorn as the app server
 # gem 'unicorn'
@@ -49,20 +52,31 @@ gem 'spring', :group => :development
 group :production do
   gem 'rails_12factor'
   gem 'mysql2'
-  gem 'dalli'
 end
 
+gem 'solid_cache'
+  
 gem 'influxdb-rails'
-gem 'devise'
+# Authentication
+# gem 'devise' # Removed - replaced with Rails built-in authentication
+
+# Role Management
 gem 'cancancan'
 gem 'round_robin_tournament'
 gem 'rb-readline'
-gem 'delayed_job_active_record'
+# Replacing Delayed Job with Solid Queue
+# gem 'delayed_job_active_record'
+gem 'solid_queue'
+gem 'solid_cable'
 gem 'puma'
 gem 'passenger'
 gem 'tzinfo-data'
 gem 'daemons'
-gem 'delayed_job_web'
+# Interface for viewing and managing background jobs
+# gem 'delayed_job_web'
+# Note: solid_queue-ui is not compatible with Rails 8.0 yet
+# We'll create a custom UI or wait for compatibility updates
+# gem 'solid_queue_ui', '~> 0.1.1'
 
 group :development do
 #  gem 'rubocop'
@@ -70,4 +84,12 @@ group :development do
  gem 'brakeman'
  gem 'bundler-audit'
 end
+
+group :development, :test do
+  gem 'mocha'
+  # rails-controller-testing is needed for assert_template
+  gem 'rails-controller-testing'
+end
+
+gem 'font-awesome-sass'
 

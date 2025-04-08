@@ -1,7 +1,7 @@
 class MatAssignmentRulesController < ApplicationController
   before_action :set_tournament
   before_action :check_access_manage
-  before_action :set_mat_assignment_rule, only: [:edit, :update, :show, :destroy]
+  before_action :set_mat_assignment_rule, only: [:edit, :update, :destroy]
 
   def index
     @mat_assignment_rules = @tournament.mat_assignment_rules

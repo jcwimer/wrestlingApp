@@ -1,5 +1,5 @@
 class MatchesController < ApplicationController
-  before_action :set_match, only: [:show, :edit, :update, :destroy, :stat]
+  before_action :set_match, only: [:show, :edit, :update, :stat]
   before_action :check_access, only: [:edit,:update, :stat]
 
   # GET /matches/1

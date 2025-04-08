@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+# Start Rails server with defaults
+exec "bin/rails", "server", *ARGV

@@ -1,7 +1,8 @@
 require 'test_helper'
 
 class MatsControllerTest < ActionController::TestCase
-  include Devise::Test::ControllerHelpers
+  # Remove Devise helpers since we're no longer using Devise
+  # include Devise::Test::ControllerHelpers
 
   setup do
     @tournament = Tournament.find(1)

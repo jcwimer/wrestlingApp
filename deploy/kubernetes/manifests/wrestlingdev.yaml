@@ -13,16 +13,20 @@ spec:
   clusterIP: None
 ---
 apiVersion: apps/v1
-kind: Deployment
+# Use a statefulset instead of a deployment because we need to have a unique identity for each pod
+# for solid queue to work properly and solid queue is running with puma threads
+kind: StatefulSet
 metadata:
-  name: wrestlingdev-app-deployment
+  name: wrestlingdev-app
   labels:
     app: wrestlingdev
 spec:
   replicas: 2
+  serviceName: wrestlingdev-app
   selector:
     matchLabels:
       app: wrestlingdev
+      tier: frontend
   template:
     metadata:
       labels:
@@ -34,12 +38,16 @@ spec:
         image: jcwimer/wrestlingdev:prod
         imagePullPolicy: Always
         command: ["bundle"]
-        args: ["exec", "passenger", "start", "-p", "80", "--max-pool-size", "2","--environment", "production"]
+        args: ["exec", "rails", "server", "-e", "production", "-p", "80", "-b", "0.0.0.0"]
         ports:
         - containerPort: 80
         env:
         - name: RAILS_ENV
           value: production
+        - name: SOLID_QUEUE_IN_PUMA
+          value: "true"
+        - name: REVERSE_PROXY_SSL_TERMINATION
+          value: "true"
         - name: PASSENGER_POOL_SIZE
           valueFrom:
            secretKeyRef:
@@ -135,94 +143,4 @@ spec:
   #   resource:
   #     name: memory
   #     targetAverageValue: 100Mi
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: wrestlingdev-worker
-  labels:
-    app: wrestlingdev
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: wrestlingdev
-  serviceName: wrestlingdev-worker
-  template:
-    metadata:
-      labels:
-        app: wrestlingdev
-        tier: worker
-    spec:
-      containers:
-      - name: wrestlingdev-worker
-        image: jcwimer/wrestlingdev:prod
-        imagePullPolicy: Always
-        env:
-        - name: RAILS_ENV
-          value: production
-        - name: WRESTLINGDEV_DB_NAME
-          value: wrestlingdev
-        - name: WRESTLINGDEV_DB_USR
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: dbusername
-        - name: WRESTLINGDEV_DB_PWD
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: dbpassword
-        - name: WRESTLINGDEV_DB_PORT
-          value: "3306"
-        - name: MEMCACHIER_SERVERS
-          value: wrestlingdev-memcached:11211
-        - name: WRESTLINGDEV_DB_HOST
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: dbhost
-        - name: WRESTLINGDEV_DEVISE_SECRET_KEY
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: devisesecretkey
-        - name: WRESTLINGDEV_SECRET_KEY_BASE
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: railssecretkey
-        - name: WRESTLINGDEV_EMAIL_PWD
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: gmailpassword
-        - name: WRESTLINGDEV_EMAIL
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: gmailemail
-        - name: WRESTLINGDEV_INFLUXDB_DATABASE
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: influxdb_database
-        - name: WRESTLINGDEV_INFLUXDB_HOST
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: influxdb_hostname
-        - name: WRESTLINGDEV_INFLUXDB_PORT
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: influxdb_port
-        command: ["bundle"]
-        args: ["exec", "bin/delayed_job", "-n", "1", "run"]
-        # resources:
-        #   limits:
-        #     memory: "512Mi"
-        #   requests:
-        #     memory: "200Mi"
-        #     cpu: "0.2"
 

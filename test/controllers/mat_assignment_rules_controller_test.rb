@@ -1,7 +1,8 @@
 require 'test_helper'
 
 class MatAssignmentRulesControllerTest < ActionController::TestCase
-  include Devise::Test::ControllerHelpers
+  # Remove Devise helpers since we're no longer using Devise
+  # include Devise::Test::ControllerHelpers
 
   setup do
     @tournament = tournaments(:one) # Existing fixture

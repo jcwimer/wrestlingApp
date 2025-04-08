@@ -13,6 +13,20 @@ class ActiveSupport::TestCase
 
   # Add more helper methods to be used by all tests here...
   
+  # Authentication helpers for tests - replaces Devise test helpers
+  def sign_in(user)
+    # Set the password_digest for the user if it's not already set
+    unless user.password_digest.present?
+      user.password_digest = BCrypt::Password.create("password")
+      user.save(validate: false)
+    end
+    
+    # For controller tests
+    if defined?(@request)
+      @request.session[:user_id] = user.id
+    end
+  end
+  
   def create_a_tournament_with_single_weight(tournament_type, number_of_wrestlers)
     @tournament = Tournament.new
     @tournament.name = "Test Tournament"
@@ -319,4 +333,19 @@ class ActiveSupport::TestCase
     Match.where("(w1 = ? OR w2 = ?) AND (w1 = ? OR w2 = ?)",translate_name_to_id(wrestler1_name), translate_name_to_id(wrestler1_name), translate_name_to_id(wrestler2_name),translate_name_to_id(wrestler2_name)).first
   end
 
+end
+
+# Add support for controller tests
+class ActionController::TestCase
+  # Authentication helpers for tests - replaces Devise test helpers
+  def sign_in(user)
+    # Set the password_digest for the user if it's not already set
+    unless user.password_digest.present?
+      user.password_digest = BCrypt::Password.create("password")
+      user.save(validate: false)
+    end
+    
+    # Set the session for the controller test
+    @request.session[:user_id] = user.id
+  end
 end

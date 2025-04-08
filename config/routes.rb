@@ -4,7 +4,18 @@ Wrestling::Application.routes.draw do
 
   resources :matches
 
-  devise_for :users
+  # Replace devise_for :users with custom routes
+  get    '/login',   to: 'sessions#new'
+  post   '/login',   to: 'sessions#create'
+  delete '/logout',  to: 'sessions#destroy'
+  get    '/signup',  to: 'users#new'
+  post   '/signup',  to: 'users#create'
+  
+  # Password reset routes
+  resources :password_resets, only: [:new, :create, :edit, :update]
+  
+  # User resources for account management
+  resources :users, only: [:show, :edit, :update]
 
   resources :tournaments do
     resources :mat_assignment_rules, only: [:index, :new, :create, :edit, :update, :show, :destroy]
@@ -78,8 +89,6 @@ Wrestling::Application.routes.draw do
   get "/api/index" => "api#index"
   post "/api/tournaments/new" => "newTournament"
 
-  match "/delayed_job" => DelayedJobWeb, :anchor => false, :via => [:get, :post]
-
   get "/matches/:id/stat" => "matches#stat", :as => :stat_match_path
 
   resources :tournaments do
@@ -88,6 +97,7 @@ Wrestling::Application.routes.draw do
       post :delete_school_keys
     end
   end
+
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

@@ -1,0 +1,38 @@
+<h1>Edit profile</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_with(model: @user, local: true) do |f| %>
+      <% if @user.errors.any? %>
+        <div class="error_explanation">
+          <div class="alert alert-danger">
+            The form contains <%= pluralize(@user.errors.count, "error") %>.
+          </div>
+          <ul>
+            <% @user.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label :email %>
+        <%= f.email_field :email, class: 'form-control' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password %>
+        <%= f.password_field :password, class: 'form-control' %>
+        <small class="text-muted">Leave blank if you don't want to change it</small>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirmation" %>
+        <%= f.password_field :password_confirmation, class: 'form-control' %>
+      </div>
+
+      <%= f.submit "Save changes", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div> 

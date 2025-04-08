@@ -1,20 +1,18 @@
 class AdvanceWrestler
-    def initialize( wrestler, last_match )
+    def initialize(wrestler, last_match)
       @wrestler = wrestler
       @tournament = @wrestler.tournament
       @last_match = last_match
     end
     
     def advance
-      if Rails.env.production?
-          self.delay(:job_owner_id => @tournament.id, :job_owner_type => "Advance wrestler #{@wrestler.name} in the bracket").advance_raw
-      else
-          advance_raw
-      end
+      # Use perform_later which will execute based on centralized adapter config
+      # This will be converted to inline execution in test environment by ActiveJob
+      AdvanceWrestlerJob.perform_later(@wrestler, @last_match)
     end
 
     def advance_raw
-      @tournament.clear_errored_deferred_jobs
+      
       if @last_match && @last_match.finished?
         pool_to_bracket_advancement if @tournament.tournament_type == "Pool to bracket"
         ModifiedDoubleEliminationAdvance.new(@wrestler, @last_match).bracket_advancement if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"

@@ -1,6 +1,6 @@
 class WeightsController < ApplicationController
-  before_action :set_weight, only: [:pool_order, :show, :edit, :update, :destroy,:re_gen]
-  before_action :check_access_manage, only: [:pool_order, :new,:create,:update,:destroy,:edit, :re_gen]
+  before_action :set_weight, only: [:pool_order, :show, :edit, :update, :destroy]
+  before_action :check_access_manage, only: [:pool_order, :new,:create,:update,:destroy,:edit]
   before_action :check_access_read, only: [:show]
 
 

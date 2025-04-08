@@ -1,7 +1,8 @@
 require 'test_helper'
 
 class TournamentsControllerTest < ActionController::TestCase
-  include Devise::Test::ControllerHelpers
+  # Remove Devise helpers since we're no longer using Devise
+  # include Devise::Test::ControllerHelpers
 
   setup do
      @tournament = Tournament.find(1)
@@ -933,5 +934,154 @@ class TournamentsControllerTest < ActionController::TestCase
     # no sign_in
     post :delete_school_keys, params: { id: @tournament.id }
     redirect
+  end
+
+  # TESTS FOR BRACKET MATCH RENDERING
+
+  test "all match bout numbers render in double elimination bracket page" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bout numbers appear in the HTML response
+    @tournament.matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
+  end
+  
+  test "all match bout numbers render in modified double elimination bracket page" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight(14, "Modified 16 Man Double Elimination 1-8")
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bout numbers appear in the HTML response
+    @tournament.matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
+  end
+  
+  test "all match bout numbers render in pool to bracket (two pools to semi) page" do
+    sign_in_owner
+    create_pool_tournament_single_weight(8)
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bracket match bout numbers appear in the HTML response
+    @tournament.matches.where.not(bracket_position: "Pool").each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
+    
+    # For pool matches, they should appear in the pool section
+    pool_matches = @tournament.matches.where(bracket_position: "Pool")
+    pool_matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Pool bout number #{match.bout_number} is missing from the bracket page")
+    end
+  end
+  
+  test "all match bout numbers render in pool to bracket (four pools to quarter) page" do
+    sign_in_owner
+    create_pool_tournament_single_weight(12)
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bracket match bout numbers appear in the HTML response
+    @tournament.matches.where.not(bracket_position: "Pool").each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
+    
+    # For pool matches, they should appear in the pool section
+    pool_matches = @tournament.matches.where(bracket_position: "Pool")
+    pool_matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Pool bout number #{match.bout_number} is missing from the bracket page")
+    end
+  end
+  
+  test "all match bout numbers render in pool to bracket (four pools to semi) page" do
+    sign_in_owner
+    create_pool_tournament_single_weight(16)
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bracket match bout numbers appear in the HTML response
+    @tournament.matches.where.not(bracket_position: "Pool").each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
+    
+    # For pool matches, they should appear in the pool section
+    pool_matches = @tournament.matches.where(bracket_position: "Pool")
+    pool_matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Pool bout number #{match.bout_number} is missing from the bracket page")
+    end
+  end
+  
+  test "all match bout numbers render in pool to bracket (two pools to final) page" do
+    sign_in_owner
+    create_pool_tournament_single_weight(10)
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bracket match bout numbers appear in the HTML response
+    @tournament.matches.where.not(bracket_position: "Pool").each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
+    
+    # For pool matches, they should appear in the pool section
+    pool_matches = @tournament.matches.where(bracket_position: "Pool")
+    pool_matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Pool bout number #{match.bout_number} is missing from the bracket page")
+    end
+  end
+  
+  test "all match bout numbers render in pool to bracket (eight pools) page" do
+    sign_in_owner
+    create_pool_tournament_single_weight(24)
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bracket match bout numbers appear in the HTML response
+    @tournament.matches.where.not(bracket_position: "Pool").each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
+    
+    # For pool matches, they should appear in the pool section
+    pool_matches = @tournament.matches.where(bracket_position: "Pool")
+    pool_matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Pool bout number #{match.bout_number} is missing from the bracket page")
+    end
+  end
+  
+  test "all match bout numbers render in double elimination 8-man bracket page" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight_1_6(6)
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bout numbers appear in the HTML response
+    @tournament.matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
+  end
+  
+  test "all match bout numbers render in double elimination 32-man bracket page" do
+    sign_in_owner
+    create_double_elim_tournament_single_weight(30, "Regular Double Elimination 1-8")
+    
+    get :bracket, params: { id: @tournament.id, weight: @tournament.weights.first.id }
+    assert_response :success
+    
+    # Verify all bout numbers appear in the HTML response
+    @tournament.matches.each do |match|
+      assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
+    end
   end
 end

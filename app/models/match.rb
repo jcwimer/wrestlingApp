@@ -6,9 +6,8 @@ class Match < ApplicationRecord
 	has_many :schools, :through => :wrestlers
 	validate :score_validation, :win_type_validation, :bracket_position_validation, :overtime_type_validation
 	
-	# Callback to update finished_at when finished changes
-	# for some reason saved_change_to_finished? does not work on before_save like it does for after_update
-	before_save :update_finished_at, if: -> { will_save_change_to_attribute?(:finished) }
+	# Callback to update finished_at when a match is finished
+	before_save :update_finished_at
 
 	after_update :after_finished_actions, if: -> { 
 		saved_change_to_finished? || 
@@ -312,6 +311,12 @@ class Match < ApplicationRecord
 	private
 
 	def update_finished_at
-	  self.finished_at = finished == 1 ? Time.current.utc : nil
+	  # Get the changes that will be persisted
+	  changes = changes_to_save
+
+	  # Check if finished is changing from 0 to 1 or if it's already 1 but has no timestamp
+	  if (changes['finished'] && changes['finished'][1] == 1) || (finished == 1 && finished_at.nil?)
+	    self.finished_at = Time.current.utc
+	  end
 	end
 end

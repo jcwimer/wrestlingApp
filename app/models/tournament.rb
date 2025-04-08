@@ -14,16 +14,6 @@ class Tournament < ApplicationRecord
 
 	attr_accessor :import_text
 
-	def deferred_jobs
-        Delayed::Job.where(job_owner_id: self.id)
-	end
-
-	def clear_errored_deferred_jobs
-		Delayed::Job.where(job_owner_id: self.id, last_error: ! nil).each do |job|
-			job.destroy
-		end
-	end
-
 	def self.search_date_name(pattern)
 		if pattern.blank?  # blank? covers both nil and empty string
 			all
@@ -87,11 +77,8 @@ class Tournament < ApplicationRecord
 	end
 	
 	def total_rounds
-		if self.matches.count > 0
-		  self.matches.sort_by{|m| m.round}.last.round
-		else
-		  0
-		end
+		# Assuming this is line 147 that's causing the error
+		matches.maximum(:round) || 0  # Return 0 if no matches or max round is nil
 	end
 	
 	def assign_mats(mats_to_assign)
@@ -259,5 +246,26 @@ class Tournament < ApplicationRecord
 	def create_backup()
 		TournamentBackupService.new(self, "Manual backup").create_backup
 	end	  
+
+	def confirm_all_weights_have_original_seeds
+	  error_string = wrestlers_with_higher_seed_than_bracket_size_error
+	  error_string += wrestlers_with_duplicate_original_seed_error
+	  error_string += wrestlers_with_out_of_order_seed_error
 	  
+	  return error_string.blank?
+	end
+
+	def confirm_each_weight_class_has_correct_number_of_wrestlers
+	  error_string = pool_to_bracket_number_of_wrestlers_error
+	  error_string += modified_sixteen_man_number_of_wrestlers_error
+	  error_string += double_elim_number_of_wrestlers_error
+	  
+	  return error_string.blank?
+	end
+	  
+	private
+	
+	def connection_adapter
+	  ActiveRecord::Base.connection.adapter_name
+	end
 end
