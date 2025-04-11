@@ -13,6 +13,15 @@ class ActiveSupport::TestCase
 
   # Add more helper methods to be used by all tests here...
   
+  # Configure email for testing
+  def setup_test_mailer
+    ActionMailer::Base.delivery_method = :test
+    ActionMailer::Base.perform_deliveries = true
+    ActionMailer::Base.deliveries = []
+    Rails.application.routes.default_url_options[:host] = 'example.com'
+    ActionMailer::Base.default from: 'test@example.com'
+  end
+  
   # Authentication helpers for tests - replaces Devise test helpers
   def sign_in(user)
     # Set the password_digest for the user if it's not already set

@@ -12,6 +12,13 @@ class SessionsControllerTest < ActionController::TestCase
     get :new
     assert_response :success
     assert_select 'h1', 'Log in'
+    assert_select "a[href=?]", new_password_reset_path, text: "Forgot password?"
+  end
+
+  test "login page should have forgot password link" do
+    get :new
+    assert_response :success
+    assert_select "a[href=?]", new_password_reset_path, text: "Forgot password?"
   end
 
   test "should create session with valid credentials" do
