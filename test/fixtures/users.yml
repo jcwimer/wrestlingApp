@@ -23,3 +23,7 @@ three:
 four:
   email: test4@test.com
   id: 4
+
+admin:
+  email: admin@example.com
+  id: 5

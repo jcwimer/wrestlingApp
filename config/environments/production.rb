@@ -59,8 +59,8 @@ Rails.application.configure do
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue
-  # Don't use connects_to here since it's configured via queue.yml
-  # config.solid_queue.connects_to = { database: { writing: :queue } }
+  # Configure Solid Queue to use the queue database
+  config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue } }
   
   # Configure path for queue migrations
   config.paths["db/migrate"] << "db/queue/migrate"

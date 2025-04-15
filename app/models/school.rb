@@ -1,8 +1,8 @@
 class School < ApplicationRecord
 	belongs_to :tournament, touch: true
 	has_many :wrestlers, dependent: :destroy
-	has_many :deductedPoints, class_name: "Teampointadjust"
-	has_many :delegates, class_name: "SchoolDelegate"
+	has_many :deductedPoints, class_name: "Teampointadjust", dependent: :destroy
+	has_many :delegates, class_name: "SchoolDelegate", dependent: :destroy
 	
 	validates :name, presence: true
 

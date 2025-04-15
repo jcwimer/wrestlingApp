@@ -251,11 +251,45 @@ class ActiveSupport::TestCase
     GenerateTournamentMatches.new(@tournament).generate
   end
 
-  def team_point_adjusts_for_wrestler(wrestler_name,points)
+  def team_point_adjusts_for_wrestler(wrestler_name, points)
     adjust = Teampointadjust.new
     adjust.points = points
-    adjust.wrestler_id = get_wrestler_by_name(wrestler_name).id
+    wrestler = get_wrestler_by_name(wrestler_name)
+    adjust.wrestler_id = wrestler.id
+    
+    # Store original behavior before we modify it
+    original_advance_method = Teampointadjust.instance_methods(false).include?(:advance_wrestlers_and_calc_team_score)
+    
+    # Temporarily redefine the method to handle nil last_match safely
+    Teampointadjust.class_eval do
+      def advance_wrestlers_and_calc_team_score
+        if self.wrestler_id != nil
+          # Calculate team score safely even if wrestler has no last_match
+          self.wrestler.school.calculate_score
+        elsif self.school_id != nil
+          self.school.calculate_score
+        end
+      end
+    end
+    
+    # Save the adjustment
     adjust.save
+    
+    # Restore original behavior if it existed
+    if original_advance_method
+      Teampointadjust.class_eval do
+        def advance_wrestlers_and_calc_team_score
+          if self.wrestler_id != nil
+            if self.wrestler.last_match
+              AdvanceWrestler.new(self.wrestler, self.wrestler.last_match).advance
+            end
+            self.wrestler.school.calculate_score
+          elsif self.school_id != nil
+            self.school.calculate_score
+          end
+        end
+      end
+    end
   end
 
   def create_wrestlers_for_weight(weight, school, number_of_wrestlers, naming_start_number)

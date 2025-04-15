@@ -3,7 +3,7 @@ class Wrestler < ApplicationRecord
 	belongs_to :weight, touch: true
 	has_one :tournament, through: :weight
 	has_many :matches, through: :weight
-	has_many :deductedPoints, class_name: "Teampointadjust"
+	has_many :deductedPoints, class_name: "Teampointadjust", dependent: :destroy
 	attr_accessor :poolAdvancePoints, :originalId, :swapId
 	
 	validates :name, :weight_id, :school_id, presence: true

@@ -34,24 +34,15 @@ Rails.application.configure do
   # Don't use connects_to here since it's configured via cache.yml
   # config.solid_cache.connects_to = { database: { writing: :cache } }
 
-  # Configure path for cache migrations
-  config.paths["db/migrate"] << "db/cache/migrate"
-
   # Configure Solid Queue as the ActiveJob queue adapter
   config.active_job.queue_adapter = :solid_queue
   # Don't use connects_to here since it's configured via queue.yml
   # config.solid_queue.connects_to = { database: { writing: :queue } }
   
-  # Configure path for queue migrations  
-  config.paths["db/migrate"] << "db/queue/migrate"
-  
   # Configure ActionCable to use its own database
   # Don't use connects_to here since it's configured via cable.yml
   # config.action_cable.connects_to = { database: { writing: :cable } }
   
-  # Configure path for cable migrations
-  config.paths["db/migrate"] << "db/cable/migrate"
-
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
@@ -98,4 +89,10 @@ Rails.application.configure do
     #Bullet.console = true
     #Bullet.bullet_logger = true
   end
+
+  # Raise error on unpermitted parameters, because we want to be sure we're catching them all.
+  config.action_controller.action_on_unpermitted_parameters = :raise
+
+  # Dump the schema after migrations
+  config.active_record.dump_schema_after_migration = true
 end

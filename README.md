@@ -173,24 +173,4 @@ SolidQueue plugin enabled in Puma
 
 See `SOLID_QUEUE.md` for details about the job system configuration.
 
-# AI Assistant Note
-
-<!--
-This section contains information specifically for AI code assistants to help understand the codebase structure:
-
-1. Project type: Rails 8 application for managing wrestling tournaments
-2. Key components: 
-   - Database: MySQL/MariaDB in production, SQLite in development
-   - Background jobs: SolidQueue running in Puma (SOLID_QUEUE_IN_PUMA=true)
-   - Multiple databases: One each for main app, queue, cache, and cable
-3. Development paths:
-   - Docker-based: Primary method using deploy/rails-dev-Dockerfile
-   - RVM-based: Alternative for local development
-4. Important services:
-   - Tournament management (tournaments, matches, wrestlers)
-   - Background job processing (SolidQueue)
-   - User authentication (Devise)
-5. Deployment: Kubernetes-based with environment variables
--->
-
 This project provides multiple ways to develop and deploy, with Docker being the primary method.

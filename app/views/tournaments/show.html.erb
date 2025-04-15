@@ -9,6 +9,19 @@
   </div>
 <% end %>
 
+<% if (can? :manage, @tournament) && @tournament.has_active_jobs? %>
+  <div class="alert alert-info">
+    <strong>Background Jobs In Progress</strong>
+    <p>The following background jobs are currently running:</p>
+    <ul>
+      <% @tournament.active_jobs.each do |job| %>
+        <li><%= job.job_name %> - <%= job.status %> <%= "(#{job.details})" if job.details.present? %></li>
+      <% end %>
+    </ul>
+    <p>Please refresh the page to check progress.</p>
+  </div>
+<% end %>
+
 <p>
   <strong>Address:</strong>
   <%= @tournament.address %>

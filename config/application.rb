@@ -23,7 +23,7 @@ module Wrestling
     
     # Configure schema dumping for multiple databases
     config.active_record.schema_format = :ruby
-    config.active_record.dump_schemas = :individual
+    config.active_record.dump_schemas = :all
     
     # Fix deprecation warning for to_time in Rails 8.1
     config.active_support.to_time_preserves_timezone = :zone

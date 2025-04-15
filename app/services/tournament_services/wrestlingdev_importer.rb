@@ -31,14 +31,19 @@ class WrestlingdevImporter
   end
 
   def destroy_all
-    @tournament.mat_assignment_rules.destroy_all
-    @tournament.mats.destroy_all
+    # These depend directly on @tournament and will cascade deletes
+    # due to `dependent: :destroy` in the Tournament model
+    @tournament.schools.destroy_all # Cascades to Wrestlers, Teampointadjusts, SchoolDelegates
+    @tournament.weights.destroy_all # Cascades to Wrestlers, Matches
+    @tournament.mats.destroy_all    # Cascades to Matches, MatAssignmentRules
+    # Explicitly destroy matches again just in case some aren't linked via mats/weights? Unlikely but safe.
+    # Also handles matches linked directly to tournament if that's possible.
     @tournament.matches.destroy_all
-    @tournament.schools.each do |school|
-      school.wrestlers.destroy_all
-      school.destroy
-    end
-    @tournament.weights.destroy_all
+    @tournament.mat_assignment_rules.destroy_all # Explicitly destroy rules (might be redundant if Mat cascades)
+    @tournament.delegates.destroy_all
+    @tournament.tournament_backups.destroy_all
+    @tournament.tournament_job_statuses.destroy_all
+    # Note: Teampointadjusts are deleted via School/Wrestler cascade
   end
 
   def parse_data

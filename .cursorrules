@@ -1,0 +1,4 @@
+- If rails isn't installed use docker: docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>
+- If the docker image doesn't exist, use the build command: docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .
+- If the Gemfile changes, you need to rebuild the docker image: docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile.
+- Do not add unnecessary comments to the code where you remove things.

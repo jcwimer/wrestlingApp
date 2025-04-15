@@ -6,9 +6,10 @@ class Tournament < ApplicationRecord
 	has_many :mats, dependent: :destroy
 	has_many :wrestlers, through: :weights
 	has_many :matches, dependent: :destroy
-	has_many :delegates, class_name: "TournamentDelegate"
+	has_many :delegates, class_name: "TournamentDelegate", dependent: :destroy
 	has_many :mat_assignment_rules, dependent: :destroy
 	has_many :tournament_backups, dependent: :destroy
+	has_many :tournament_job_statuses, dependent: :destroy
 	
 	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
 
@@ -263,6 +264,16 @@ class Tournament < ApplicationRecord
 	  return error_string.blank?
 	end
 	  
+	# Check if there are any active jobs for this tournament
+	def has_active_jobs?
+	  tournament_job_statuses.active.exists?
+	end
+	
+	# Get all active jobs for this tournament
+	def active_jobs
+	  tournament_job_statuses.active
+	end
+	
 	private
 	
 	def connection_adapter

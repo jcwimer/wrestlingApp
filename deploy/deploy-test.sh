@@ -1,16 +1,35 @@
 #!/bin/bash
 project_dir="$(dirname $( dirname $(readlink -f ${BASH_SOURCE[0]})))"
 
-#docker build -t wrestlingdev:test -f ${project_dir}/deploy/rails-prod-Dockerfile ${project_dir}
+# Stop existing services
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml kill
-docker-compose -f ${project_dir}/deploy/docker-compose-test.yml build
-docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d
-sleep 30s
-# echo Make sure your local mysql database has a wrestlingtourney db
-# docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 rake db:drop"
-docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app rake db:create
-docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app rake db:migrate
 
+# Build images
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml build
+
+# Start the database service first and wait for it
+echo "Starting database service..."
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d db
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d influxdb
+echo "Waiting for database to be ready..."
+sleep 15 # Adjust sleep time if needed
+
+# <<< Run migrations BEFORE starting the main services >>>
+echo "Making sure databases exist..."
+# DISABLE_DATABASE_ENVIRONMENT_CHECK=1 is needed because this is "destructive" action on production
+# docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:drop"
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:create
+echo "Running database migrations..."
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:migrate
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:migrate:cache
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:migrate:queue
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:migrate:cable
+
+# Start all services (will start app and others, db is already running)
+echo "Starting application services..."
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d
+
+# DISABLE_DATABASE_ENVIRONMENT_CHECK=1 is needed because this is "destructive" action on production
 echo Resetting the db with seed data
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 rake db:reset"
 

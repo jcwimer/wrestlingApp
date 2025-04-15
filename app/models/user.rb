@@ -4,8 +4,8 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   has_many :tournaments
-  has_many :delegated_tournament_permissions, class_name: "TournamentDelegate"
-  has_many :delegated_school_permissions, class_name: "SchoolDelegate"
+  has_many :delegated_tournament_permissions, class_name: "TournamentDelegate", dependent: :destroy
+  has_many :delegated_school_permissions, class_name: "SchoolDelegate", dependent: :destroy
 
   # Replace Devise with has_secure_password
   has_secure_password
