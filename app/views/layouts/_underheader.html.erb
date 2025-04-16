@@ -14,21 +14,37 @@
 		<p>We've detected that you have an ad blocker enabled! Please consider disabling it for <strong>wrestlingdev.com</strong>. This site is free for users and supported by ads. Ad blockers also block performance monitoring that help us with user experience.</p>
     </div>
 <script>
-let fakeAd = document.createElement("div");
-  fakeAd.className = "textads banner-ads banner_ads ad-unit ad-zone ad-space adsbox"
+  // Only run ad blocker check if fakeAd hasn't been checked yet in this context
+  if (typeof window.adBlockerCheckExecuted === 'undefined') {
+    let fakeAd = document.createElement("div");
+    fakeAd.className = "textads banner-ads banner_ads ad-unit ad-zone ad-space adsbox"
+        
+    fakeAd.style.height = "1px"
+    fakeAd.style.position = "absolute"; // Prevent potential layout shift
+    fakeAd.style.top = "-10px";
+    fakeAd.style.left = "-10px";
       
-  fakeAd.style.height = "1px"
-    
-  document.body.appendChild(fakeAd)
-    
-  let x_width = fakeAd.offsetHeight;
-  let msg = document.getElementById("msg")
-    
+    document.body.appendChild(fakeAd)
       
-    if(x_width){
-      console.log("No AdBlocker Detected")
-    }else{
-      console.log("AdBlocker detected")
-      document.getElementById("blocked_message").style.display = 'block';
-    }
+    // Use requestAnimationFrame to ensure the element is rendered before checking offsetHeight
+    requestAnimationFrame(() => {
+      let x_width = fakeAd.offsetHeight;
+      // let msg = document.getElementById("msg") // msg variable wasn't used
+      
+      if(x_width){
+        console.log("No AdBlocker Detected")
+      }else{
+        console.log("AdBlocker detected")
+        const blockedMessage = document.getElementById("blocked_message");
+        if (blockedMessage) {
+          blockedMessage.style.display = 'block';
+        }
+      }
+      // Clean up the fake element
+      document.body.removeChild(fakeAd);
+    });
+
+    // Mark check as executed
+    window.adBlockerCheckExecuted = true;
+  }
 </script>

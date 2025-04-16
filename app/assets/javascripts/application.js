@@ -10,11 +10,13 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require_tree .
 //= require jquery
 //= require jquery_ujs
 // Bootstrap 3.3.6 in vendor/assets/javascripts
 //= require bootstrap.min.js
 // Data Tables 1.10.6 in vendor/assets/javascripts
 //= require jquery.dataTables.min.js
+//= require turbolinks
+//
+//= require_tree .
 

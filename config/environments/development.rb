@@ -38,6 +38,7 @@ Rails.application.configure do
   config.active_job.queue_adapter = :solid_queue
   # Don't use connects_to here since it's configured via queue.yml
   # config.solid_queue.connects_to = { database: { writing: :queue } }
+  config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue } }
   
   # Configure ActionCable to use its own database
   # Don't use connects_to here since it's configured via cable.yml

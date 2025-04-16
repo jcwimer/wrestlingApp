@@ -77,6 +77,7 @@ Whether you have a shell from docker or are using rvm you can now run normal rai
 * ` rails s -b 0.0.0.0` port 3000 is exposed. You can open [http://localhost:3000](http://localhost:3000) after running that command
 * etc.
 * `rake finish_seed_tournaments` will complete all matches from the seed data. This command takes about 5 minutes to execute
+* `rake assets:clobber` - removes previously compiled assets stored in `public/assets` forcing Rails to recompile them from scratch the next time they are requested.
 
 ## Testing Job Status
 

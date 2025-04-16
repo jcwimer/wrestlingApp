@@ -10,10 +10,13 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require_tree .
- *= require_self
+ * For some reason this needs to be above bootstrap for the zindex of the main navbar to work.
+ * With it lower, bootstraps css overrides it.
+ *= require custom
  * Bootstrap 3.3.6 in vendor/assets/stylesheets
  *= require bootstrap.min.css
  *= require bootstrap-theme.min.css
-
+ *= require_tree .
+ *= require_self
  */
+

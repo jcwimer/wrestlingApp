@@ -1,5 +1,6 @@
+<br><br>
 <h3>
-  Info
+  <%= @tournament.name %> Info
 </h3>
 
 <% if (can? :manage, @tournament) && @tournament.curently_generating_matches == 1 %>
