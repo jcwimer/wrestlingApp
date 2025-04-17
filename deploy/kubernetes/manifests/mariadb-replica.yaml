@@ -210,5 +210,10 @@ data:
     sync_binlog=1                              # Flush binary logs after each transaction for safety
     read_only=0                                # Default, will be managed by the init script
     expire_logs_days=7                         # Retain binary logs for 7 days
+
+    # if you want to ignore dbs to replicate
+    # replicate-ignore-db=wrestlingtourney-queue
+    # if you only want to replicate certain dbs
+    replicate-do-db=wrestlingtourney
     
     # /etc/mysql/mariadb.conf.d/70-mysettings.cnf

@@ -9,6 +9,11 @@ class AdvanceWrestlerJob < ApplicationJob
   end
   
   def perform(wrestler, match)
+    # Add a small delay to increase chance of transaction commit
+    # without this some matches were getting a deserialization error when running the rake task
+    # to finish tournaments
+    sleep(0.5)
+
     # Get tournament from wrestler
     tournament = wrestler.tournament
     
@@ -18,7 +23,7 @@ class AdvanceWrestlerJob < ApplicationJob
       tournament: tournament,
       job_name: job_name,
       status: "Running",
-      details: "Match ID: #{match&.bout_number || 'No match'}"
+      details: "Match ID: #{match&.bout_number || 'No match'} Wrestler Name #{wrestler&.name || 'No Wrestler'}"
     )
     
     begin

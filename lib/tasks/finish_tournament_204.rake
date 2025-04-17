@@ -5,33 +5,46 @@ namespace :tournament do
   
       @tournament = Tournament.find(204)
 
-      Mat.create(
+      Mat.find_or_create_by(
         name: "1",
         tournament_id: @tournament.id
       )
-      Mat.create(
+      Mat.find_or_create_by(
         name: "2",
         tournament_id: @tournament.id
       )
-      Mat.create(
+      Mat.find_or_create_by(
         name: "3",
         tournament_id: @tournament.id
       )
-      Mat.create(
+      Mat.find_or_create_by(
         name: "4",
         tournament_id: @tournament.id
       )
-      Mat.create(
+      Mat.find_or_create_by(
         name: "5",
         tournament_id: @tournament.id
       )
 
       GenerateTournamentMatches.new(@tournament).generate
-      sleep(180)
+      sleep(10)
+      while @tournament.reload.curently_generating_matches == 1
+        puts "Waiting for tournament to finish generating matches..."
+        sleep(5)
+      end
   
+      @tournament.reload # Ensure matches association is fresh before iterating
       @tournament.matches.sort_by(&:bout_number).each do |match|
         match.reload
         if match.loser1_name != "BYE" and match.loser2_name != "BYE"
+            # Wait until both wrestlers are assigned
+            while match.w1.nil? || match.w2.nil?
+              puts "Waiting for wrestlers in match #{match.bout_number}..."
+              sleep(5) # Wait for 5 seconds before checking again
+              match.reload
+            end
+            puts "Finishing match with bout number #{match.bout_number}..."
+
             # Choose a random winner
             wrestlers = [match.w1, match.w2]
             match.winner_id = wrestlers.sample
@@ -63,10 +76,7 @@ namespace :tournament do
     
             # Mark match as finished
             match.finished = 1
-            match.save
-    
-            # Pause to simulate processing delay
-            sleep(10)
+            match.save!
         end
       end
     end
