@@ -1,5 +1,5 @@
 class MatchesController < ApplicationController
-  before_action :set_match, only: [:show, :edit, :update, :stat]
+  before_action :set_match, only: [:show, :edit, :update, :stat, :spectate]
   before_action :check_access, only: [:edit,:update, :stat]
 
   # GET /matches/1
@@ -54,12 +54,42 @@ class MatchesController < ApplicationController
     session[:error_return_path] = "/matches/#{@match.id}/stat"
   end
 
+  # GET /matches/:id/spectate
+  def spectate
+    # Similar to stat, but potentially simplified for read-only view
+    # We mainly need @match for the view to get the ID
+    # and maybe initial wrestler names/schools
+    if @match
+      @wrestler1_name = @match.w1 ? @match.wrestler1.name : "Not assigned"
+      @wrestler1_school_name = @match.w1 ? @match.wrestler1.school.name : "N/A"
+      @wrestler2_name = @match.w2 ? @match.wrestler2.name : "Not assigned"
+      @wrestler2_school_name = @match.w2 ? @match.wrestler2.school.name : "N/A"
+      @tournament = @match.tournament
+    else
+      # Handle case where match isn't found, perhaps redirect or render error
+      redirect_to root_path, alert: "Match not found."
+    end
+  end
 
   # PATCH/PUT /matches/1
   # PATCH/PUT /matches/1.json
   def update
     respond_to do |format|
       if @match.update(match_params)
+        # Broadcast the update
+        MatchChannel.broadcast_to(
+          @match,
+          {
+            w1_stat: @match.w1_stat,
+            w2_stat: @match.w2_stat,
+            score: @match.score,
+            win_type: @match.win_type,
+            winner_id: @match.winner_id,
+            winner_name: @match.winner&.name,
+            finished: @match.finished
+          }
+        )
+
         if session[:return_path]
           sanitized_return_path = sanitize_return_path(session[:return_path])
           format.html { redirect_to sanitized_return_path, notice: 'Match was successfully updated.' }

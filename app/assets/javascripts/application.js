@@ -18,5 +18,15 @@
 //= require jquery.dataTables.min.js
 //= require turbolinks
 //
+//= require actioncable
+//= require_self
 //= require_tree .
+
+// Create the Action Cable consumer instance
+(function() {
+  this.App || (this.App = {});
+
+  App.cable = ActionCable.createConsumer();
+
+}).call(this);
 

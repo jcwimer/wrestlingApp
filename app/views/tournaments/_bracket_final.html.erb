@@ -2,7 +2,7 @@
   <div class="round">
 		<div class="game">
 		  <div class="game-top "><%= match.w1_bracket_name.html_safe %> <span></span></div>
-		  <div class="bout-number"><p><%= match.bout_number %> <%= match.bracket_score_string %></p><p><%= @winner_place %> Place Winner</p></div>
+		  <div class="bout-number"><p><%= link_to match.bout_number, spectate_match_path(match) %> <%= match.bracket_score_string %></p><p><%= @winner_place %> Place Winner</p></div>
 		  <div class="game-bottom "><%= match.w2_bracket_name.html_safe %><span></span></div>
 		</div>
   </div>

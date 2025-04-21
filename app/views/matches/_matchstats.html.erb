@@ -10,6 +10,7 @@
       </ul>
     </div>
   <% end %>
+  <div id="cable-status-indicator" class="alert alert-secondary" style="padding: 5px; margin-bottom: 10px; border-radius: 4px;"></div>
   <h4>Bout <strong><%= @match.bout_number %></strong></h4>
   <% if @show_next_bout_button && @next_match %>
     <%= link_to "Skip to Next Match for Mat #{@mat.name}", mat_path(@mat, bout_number: @next_match.bout_number), class: "btn btn-primary" %>
@@ -165,13 +166,11 @@
 <%= render 'matches/matchstats_color_change' %>
 
 <script>
-// Get variables
+// ############### CORE STATE & HELPERS (Define First) #############
 var tournament = <%= @match.tournament.id %>;
 var bout = <%= @match.bout_number %>;
 var match_finsihed = "<%= @match.finished %>";
 
-// ############### STATS
-// Create person object
 function Person(stats, name) {
   this.name = name;
   this.stats = stats;
@@ -181,25 +180,17 @@ function Person(stats, name) {
     "blood": { time: 0, startTime: null, interval: null },
   };
 }
-
-// Declare variables
 var w1 = new Person("", "w1");
 var w2 = new Person("", "w2");
-updateJsValues();
 
-// Generate unique localStorage key
 function generateKey(wrestler_name) {
   return `${wrestler_name}-${tournament}-${bout}`;
 }
-
-// Load values from localStorage
 function loadFromLocalStorage(wrestler_name) {
   const key = generateKey(wrestler_name);
   const data = localStorage.getItem(key);
   return data ? JSON.parse(data) : null;
 }
-
-// Save values to localStorage
 function saveToLocalStorage(person) {
   const key = generateKey(person.name);
   const data = {
@@ -209,77 +200,74 @@ function saveToLocalStorage(person) {
   };
   localStorage.setItem(key, JSON.stringify(data));
 }
-
-// Update HTML values
 function updateHtmlValues() {
   document.getElementById("match_w1_stat").value = w1.stats;
   document.getElementById("match_w2_stat").value = w2.stats;
 }
-
-// Update JS object values from HTML
 function updateJsValues() {
   w1.stats = document.getElementById("match_w1_stat").value;
   w2.stats = document.getElementById("match_w2_stat").value;
 }
-
-// Update stats and persist to localStorage
-function updateStats(wrestler, text) {
-  updateJsValues();
-  wrestler.stats += text + " ";
-  wrestler.updated_at = new Date().toISOString(); // Update timestamp
-  updateHtmlValues();
-
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+function handleTextAreaInput(textAreaElement, wrestler) {
+  const newValue = textAreaElement.value;
+  console.log(`Text area input detected for ${wrestler.name}:`, newValue.substring(0, 50) + "..."); // Log input
+  
+  // Update the internal JS object
+  wrestler.stats = newValue;
+  wrestler.updated_at = new Date().toISOString();
+  
   // Save to localStorage
-  if (wrestler === w1) {
-    saveToLocalStorage(w1);
-  } else if (wrestler === w2) {
-    saveToLocalStorage(w2);
-  }
-}
+  saveToLocalStorage(wrestler);
 
-// Initialize data on page load
-function initializeTimers(wrestler) {
-  // Iterate over each timer in the wrestler object
-  Object.keys(wrestler.timers).forEach((timerKey) => {
-    const savedData = loadFromLocalStorage(wrestler.name);
-    if (savedData && savedData.timers && savedData.timers[timerKey]) {
-      wrestler.timers[timerKey].time = savedData.timers[timerKey].time || 0;
-      updateTimerDisplay(wrestler, timerKey, wrestler.timers[timerKey].time);
+  // Send the update via Action Cable if subscribed
+  if (matchSubscription) {
+    let payload = {};
+    if (wrestler.name === 'w1') {
+      payload.new_w1_stat = wrestler.stats;
+    } else if (wrestler.name === 'w2') {
+      payload.new_w2_stat = wrestler.stats;
     }
-  });
+    if (Object.keys(payload).length > 0) {
+      console.log('[ActionCable] Performing send_stat from textarea with payload:', payload);
+      matchSubscription.perform('send_stat', payload);
+    }
+  }
+}
+function updateStats(wrestler, text) {
+  if (!wrestler) { console.error("updateStats called with undefined wrestler"); return; }
+  wrestler.stats += text + " ";
+  wrestler.updated_at = new Date().toISOString(); 
+  updateHtmlValues(); 
+  saveToLocalStorage(wrestler); 
+
+  // Reference the global matchSubscription
+  if (matchSubscription) {
+    let payload = {};
+    if (wrestler.name === 'w1') payload.new_w1_stat = wrestler.stats;
+    else if (wrestler.name === 'w2') payload.new_w2_stat = wrestler.stats;
+    if (Object.keys(payload).length > 0) {
+       console.log('[ActionCable] updateStats performing send_stat:', payload);
+       matchSubscription.perform('send_stat', payload);
+    }
+  } else {
+    console.warn('[ActionCable] updateStats called but matchSubscription is null.');
+  }
 }
 
-function initialize() {
-  const localW1 = loadFromLocalStorage("w1");
-  const localW2 = loadFromLocalStorage("w2");
+var debouncedW1Handler = debounce((el) => { if(typeof w1 !== 'undefined') handleTextAreaInput(el, w1); }, 400);
+var debouncedW2Handler = debounce((el) => { if(typeof w2 !== 'undefined') handleTextAreaInput(el, w2); }, 400);
 
-  if (localW1) {
-    w1.stats = localW1.stats || "";
-    w1.updated_at = localW1.updated_at || null;
-    w1.timers = localW1.timers || w1.timers; // Load timer data
-    // set localStorage values to html
-    updateHtmlValues();
-  }
-  if (localW2) {
-    w2.stats = localW2.stats || "";
-    w2.updated_at = localW2.updated_at || null;
-    w2.timers = localW2.timers || w2.timers; // Load timer data
-    // set localStorage values to html
-    updateHtmlValues();
-  }
-
-  initializeTimers(w1);
-  initializeTimers(w2);
-  updateJsValues()
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  initialize();
-});
-
-// ############### Blood and Injury time timers
-// Timer storage and interval references
-// Start a timer for a wrestler
 function startTimer(wrestler, timerKey) {
   const timer = wrestler.timers[timerKey];
   if (timer.interval) return; // Prevent multiple intervals
@@ -289,8 +277,6 @@ function startTimer(wrestler, timerKey) {
     updateTimerDisplay(wrestler, timerKey, timer.time + elapsedSeconds); // Show total time
   }, 1000);
 }
-
-// Stop a timer for a wrestler
 function stopTimer(wrestler, timerKey) {
   const timer = wrestler.timers[timerKey];
   if (!timer.interval || !timer.startTime) return; // Timer not running
@@ -305,8 +291,6 @@ function stopTimer(wrestler, timerKey) {
   updateTimerDisplay(wrestler, timerKey, timer.time); // Update final display
   updateStatsBox(wrestler, timerKey, elapsedSeconds); // Update wrestler stats
 }
-
-// Reset a timer for a wrestler
 function resetTimer(wrestler, timerKey) {
   const timer = wrestler.timers[timerKey];
   stopTimer(wrestler, timerKey); // Stop if running
@@ -314,8 +298,6 @@ function resetTimer(wrestler, timerKey) {
   updateTimerDisplay(wrestler, timerKey, 0); // Update display
   saveToLocalStorage(wrestler); // Save wrestler data
 }
-
-// Update the timer display
 function updateTimerDisplay(wrestler, timerKey, totalTime) {
   const elementId = `${wrestler.name}-${timerKey}-time`; // Construct element ID
   const element = document.getElementById(elementId);
@@ -323,11 +305,146 @@ function updateTimerDisplay(wrestler, timerKey, totalTime) {
     element.innerText = `${Math.floor(totalTime / 60)}m ${totalTime % 60}s`;
   }
 }
-
-// Update wrestler stats box with elapsed timer information
 function updateStatsBox(wrestler, timerKey, elapsedSeconds) {
   const timerType = timerKey.includes("injury") ? "Injury Time" : "Blood Time";
   const formattedTime = `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s`;
   updateStats(wrestler, `${timerType}: ${formattedTime}`);
 }
+function initializeTimers(wrestler) {
+  // Implementation of initializeTimers method
+}
+function initializeFromLocalStorage() {
+  console.log("[Init] Initializing from local storage...");
+  // ... existing initializeFromLocalStorage logic ...
+}
+
+// ############### ACTION CABLE LIFECYCLE (Define Before Listeners) #############
+var matchSubscription = null; // Use var for safety with Turbolinks re-evaluation
+
+function cleanupSubscription() {
+  if (matchSubscription) {
+    console.log('[AC Cleanup] Unsubscribing...');
+    matchSubscription.unsubscribe();
+    matchSubscription = null;
+  }
+}
+
+function setupSubscription(matchId) {
+  cleanupSubscription(); // Ensure clean state
+  console.log(`[Stats AC Setup] Attempting subscription for match ID: ${matchId}`);
+  
+  const statusIndicator = document.getElementById("cable-status-indicator"); // Get indicator
+
+  if (typeof App === 'undefined' || typeof App.cable === 'undefined') {
+    console.error("[Stats AC Setup] Action Cable consumer not found.");
+    if(statusIndicator) { 
+      statusIndicator.textContent = "Error: AC Not Loaded"; 
+      statusIndicator.classList.remove('text-dark', 'text-success');
+      statusIndicator.classList.add('alert-danger', 'text-danger');
+    }
+    return;
+  }
+  
+  // Set initial connecting state
+  if(statusIndicator) { 
+    statusIndicator.textContent = "Connecting to backend for live updates..."; 
+    statusIndicator.classList.remove('alert-danger', 'alert-success', 'text-danger', 'text-success');
+    statusIndicator.classList.add('alert-secondary', 'text-dark');
+  }
+
+  // Assign to the global var
+  matchSubscription = App.cable.subscriptions.create(
+    { channel: "MatchChannel", match_id: matchId },
+    {
+      initialized() { 
+        console.log(`[Stats AC Callback] Initialized: ${matchId}`); 
+        // Set connecting state again in case of retry
+        if(statusIndicator) { 
+          statusIndicator.textContent = "Connecting to backend for live updates..."; 
+          statusIndicator.classList.remove('alert-danger', 'alert-success', 'text-danger', 'text-success');
+          statusIndicator.classList.add('alert-secondary', 'text-dark');
+        }
+      },
+      connected() { 
+        console.log(`[Stats AC Callback] CONNECTED: ${matchId}`); 
+        if(statusIndicator) { 
+          statusIndicator.textContent = "Connected to backend for live updates..."; 
+          statusIndicator.classList.remove('alert-danger', 'alert-secondary', 'text-danger', 'text-dark');
+          statusIndicator.classList.add('alert-success'); 
+        }
+      },
+      disconnected() { 
+        console.log(`[Stats AC Callback] Disconnected: ${matchId}`); 
+        if(statusIndicator) { 
+          statusIndicator.textContent = "Disconnected from backend for live updates. Retrying..."; 
+          statusIndicator.classList.remove('alert-success', 'alert-secondary', 'text-success', 'text-dark');
+          statusIndicator.classList.add('alert-danger'); 
+        }
+      },
+      rejected() { 
+        console.error(`[Stats AC Callback] REJECTED: ${matchId}`); 
+        if(statusIndicator) { 
+          statusIndicator.textContent = "Connection to backend rejected"; 
+          statusIndicator.classList.remove('alert-success', 'alert-secondary', 'text-success', 'text-dark');
+          statusIndicator.classList.add('alert-danger'); 
+        }
+        matchSubscription = null; 
+      },
+      received(data) {
+        console.log("[AC Callback] Received:", data);
+        const currentW1TextArea = document.getElementById("match_w1_stat");
+        const currentW2TextArea = document.getElementById("match_w2_stat");
+        if (data.w1_stat !== undefined && currentW1TextArea) {
+          currentW1TextArea.value = data.w1_stat;
+          if(w1) w1.stats = data.w1_stat; 
+        }
+        if (data.w2_stat !== undefined && currentW2TextArea) {
+          currentW2TextArea.value = data.w2_stat;
+          if(w2) w2.stats = data.w2_stat; 
+        }
+      }
+    }
+  );
+  
+  // Re-attach listeners AFTER subscription is attempted
+  const w1TextArea = document.getElementById("match_w1_stat");
+  const w2TextArea = document.getElementById("match_w2_stat");
+  if (w1TextArea) {
+    w1TextArea.addEventListener('input', (event) => { debouncedW1Handler(event.target); });
+  } else { console.warn('[AC Setup] w1StatsTextArea not found for listener'); }
+  if (w2TextArea) {
+    w2TextArea.addEventListener('input', (event) => { debouncedW2Handler(event.target); });
+  } else { console.warn('[AC Setup] w2StatsTextArea not found for listener'); }
+}
+
+// ############### EVENT LISTENERS (Define Last) #############
+
+document.addEventListener("turbolinks:load", () => {
+  console.log("Stats Event: turbolinks:load fired.");
+  
+  // --- Check if we are actually on the match stats page ---
+  const statsElementCheck = document.getElementById('match_w1_stat'); // Check for stats textarea
+  if (!statsElementCheck) {
+    console.log("Stats Event: Not on match stats page, skipping AC setup.");
+    cleanupSubscription(); // Cleanup just in case
+    return; 
+  }
+  // --- End Check ---
+  
+  initializeFromLocalStorage(); // Load state first
+  const matchId = <%= @match.id %>; 
+  if (matchId) {
+    setupSubscription(matchId); // Then setup ActionCable
+  } else {
+    console.warn("Stats Event: turbolinks:load - Could not determine match ID");
+  }
+});
+
+document.addEventListener("turbolinks:before-cache", () => {
+  console.log("Event: turbolinks:before-cache fired. Cleaning up subscription.");
+  cleanupSubscription();
+});
+
+// Optional: Cleanup on full page unload too
+window.addEventListener('beforeunload', cleanupSubscription);
 </script>

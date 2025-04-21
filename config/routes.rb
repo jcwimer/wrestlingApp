@@ -1,8 +1,16 @@
 Wrestling::Application.routes.draw do
+  # Mount Action Cable server
+  mount ActionCable.server => '/cable'
+
   resources :mats
   post "mats/:id/assign_next_match" => "mats#assign_next_match", :as => :assign_next_match
 
-  resources :matches
+  resources :matches do
+    member do
+      get :stat
+      get :spectate
+    end
+  end
 
   # Replace devise_for :users with custom routes
   get    '/login',   to: 'sessions#new'
@@ -88,8 +96,6 @@ Wrestling::Application.routes.draw do
   get "/api/tournaments/:tournament" => "api#tournament"
   get "/api/index" => "api#index"
   post "/api/tournaments/new" => "newTournament"
-
-  get "/matches/:id/stat" => "matches#stat", :as => :stat_match_path
 
   resources :tournaments do
     member do

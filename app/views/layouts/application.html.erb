@@ -3,6 +3,7 @@
   <% if params[:print] %>
       <head>
         <%= csrf_meta_tags %>
+        <%= action_cable_meta_tag %>
         <title>WrestlingDev</title>
         <%= stylesheet_link_tag "application", media: "all",
                                                  "data-turbolinks-track" => true %>
@@ -16,6 +17,7 @@
   <% else %>
         <head>
           <title>WrestlingDev</title>
+          <%= action_cable_meta_tag %>
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <% if Rails.env.production? %>
             <%= render 'layouts/analytics' %>
