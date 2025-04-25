@@ -29,7 +29,7 @@ class PoolOrder
 	
 	def setOriginalPoints
 	   @wrestlers.each do |w|
-		   matches = w.matches.reload
+		   matches = w.reload.all_matches
 	   	   w.pool_placement_tiebreaker = nil
 	   	   w.pool_placement = nil
 	       w.poolAdvancePoints = w.pool_wins.size
@@ -80,10 +80,13 @@ class PoolOrder
 	def headToHead(wrestlers_with_same_points)
 	   wrestlers_with_same_points.each do |wr|
 	        otherWrestler = wrestlers_with_same_points.select{|w| w.id != wr.id}.first
-	        if otherWrestler and wr.match_against(otherWrestler).select{|match| match.bracket_position == "Pool"}.first.winner_id == wr.id
-	        	addPointsToWrestlersAhead(wr)
-	        	wr.pool_placement_tiebreaker = "Head to Head"
+	        if otherWrestler
+	          matches = wr.match_against(otherWrestler).select { |match| match.bracket_position == "Pool" }
+	          if matches.any? && matches.first.winner == wr
+	            addPointsToWrestlersAhead(wr)
+	            wr.pool_placement_tiebreaker = "Head to Head"
 	            addPoints(wr)
+	          end
 	        end
 	   end
 	end

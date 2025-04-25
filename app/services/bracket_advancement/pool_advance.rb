@@ -30,15 +30,20 @@ class PoolAdvance
  end
 
  def bracketAdvancment
-   if @last_match.winner_id == @wrestler.id
-	    winnerAdvance
-   end
-   if @last_match.winner_id != @wrestler.id
-	    loserAdvance
-   end
+   advance_wrestlers
  end
 
- def winnerAdvance
+ def advance_wrestlers
+    # Advance winner
+    if @last_match.winner == @wrestler
+      winner_advance
+    # Advance loser
+    elsif @last_match.winner != @wrestler
+      loser_advance
+    end
+ end
+
+ def winner_advance
    if @wrestler.last_match.bracket_position == "Quarter"
      new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Semis",@wrestler.next_match_position_number.ceil,@wrestler.weight_id).first
      updateNewMatch(new_match)
@@ -65,7 +70,7 @@ class PoolAdvance
      end
  end
 
- def loserAdvance
+ def loser_advance
     bout = @wrestler.last_match.bout_number
     next_match = Match.where("(loser1_name = ? OR loser2_name = ?) AND weight_id = ?","Loser of #{bout}","Loser of #{bout}",@wrestler.weight_id)
     if next_match.size > 0

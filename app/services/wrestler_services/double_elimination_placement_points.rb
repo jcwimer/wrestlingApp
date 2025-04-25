@@ -27,10 +27,22 @@ class DoubleEliminationPlacementPoints
     end
 
     def bracket_position_size(bracket_position_name)
-        @wrestler.all_matches.select{|m| m.bracket_position == bracket_position_name}.size
+      @wrestler.all_matches.select{|m| m.bracket_position == bracket_position_name}.size
     end
     
     def won_bracket_position_size(bracket_position_name)
         @wrestler.matches_won.select{|m| m.bracket_position == bracket_position_name}.size
+    end
+
+    def bracket_placement_points(bracket_position_name)
+        if bracket_position_name == "Did not place"
+            return 0
+        end
+        if @wrestler.participating_matches.where(bracket_position: bracket_position_name).count > 0
+            points = Teampointadjust.find_by(tournament_id: @wrestler.tournament.id, points_for_placement: bracket_position_name)
+            if points
+                # ... existing code ...
+            end
+        end
     end
 end

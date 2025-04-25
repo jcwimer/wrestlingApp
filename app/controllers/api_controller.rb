@@ -14,9 +14,9 @@ class ApiController < ApplicationController
     end
     
     def tournament
-        @tournament = Tournament.where(:id => params[:tournament]).includes(:schools,:weights,:mats,:matches,:user,:wrestlers).first
-        @schools = @tournament.schools.includes(:wrestlers)
-        @weights = @tournament.weights.includes(:wrestlers)
+        @tournament = Tournament.where(:id => params[:tournament]).includes(:user, :mats, :schools, :weights, :matches, wrestlers: [:school, :weight, :matches_as_w1, :matches_as_w2]).first
+        @schools = @tournament.schools.includes(wrestlers: [:weight, :matches_as_w1, :matches_as_w2])
+        @weights = @tournament.weights.includes(wrestlers: [:school, :matches_as_w1, :matches_as_w2])
         @matches = @tournament.matches.includes(:wrestlers,:schools)
         @mats = @tournament.mats.includes(:matches)
     end

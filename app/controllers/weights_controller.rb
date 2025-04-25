@@ -98,7 +98,8 @@ class WeightsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_weight
-      @weight = Weight.where(:id => params[:id]).includes(:tournament,:wrestlers).first
+      # Add nested includes for wrestlers
+      @weight = Weight.includes(:tournament, wrestlers: [:school, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

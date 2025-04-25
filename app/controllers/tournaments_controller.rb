@@ -164,15 +164,16 @@ class TournamentsController < ApplicationController
   end
 
   def bracket
-      if params[:weight]
-        @weight = Weight.where(:id => params[:weight]).includes(:matches,:wrestlers).first
-        @matches = @weight.matches.includes(:schools,:wrestlers)
-        @wrestlers = @weight.wrestlers.includes(:school)
-        if @tournament.tournament_type == "Pool to bracket"
-          @pools = @weight.pool_rounds(@matches)
-          @bracketType = @weight.pool_bracket_type
-        end
+    if params[:weight]
+      @weight = Weight.includes(:matches, wrestlers: [:school, :matches_as_w1, :matches_as_w2]).find_by(id: params[:weight])
+      @matches = @weight.matches
+      @wrestlers = @weight.wrestlers
+      
+      if @tournament.tournament_type == "Pool to bracket"
+        @pools = @weight.pool_rounds(@matches)
+        @bracketType = @weight.pool_bracket_type
       end
+    end
   end
 
   def all_results
@@ -303,7 +304,7 @@ class TournamentsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_tournament
-      @tournament = Tournament.where(:id => params[:id]).includes(:schools,:weights,:mats,:matches,:user,:wrestlers).first
+      @tournament = Tournament.includes(:user, :mats, :schools, :weights, :matches, wrestlers: [:school, :weight, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

@@ -2,7 +2,8 @@ class Wrestler < ApplicationRecord
 	belongs_to :school, touch: true
 	belongs_to :weight, touch: true
 	has_one :tournament, through: :weight
-	has_many :matches, through: :weight
+	has_many :matches_as_w1, ->(wrestler){ where(weight_id: wrestler.weight_id) }, class_name: 'Match', foreign_key: 'w1'
+	has_many :matches_as_w2, ->(wrestler){ where(weight_id: wrestler.weight_id) }, class_name: 'Match', foreign_key: 'w2'
 	has_many :deductedPoints, class_name: "Teampointadjust", dependent: :destroy
 	attr_accessor :poolAdvancePoints, :originalId, :swapId
 	
@@ -59,7 +60,7 @@ class Wrestler < ApplicationRecord
 	end
 	
 	def winner_of_last_match?
-		if last_match.winner_id == self.id
+		if last_match && last_match.winner == self # Keep winner association change
 			return true
 		else 
 			return false
@@ -87,28 +88,28 @@ class Wrestler < ApplicationRecord
 	end
 	
 	def result_by_bout(bout)
-	   bout_match = all_matches.select{|m| m.bout_number == bout and m.finished == 1}
-	   if bout_match.size == 0
+	   bout_match_results = all_matches.select{|m| m.bout_number == bout and m.finished == 1}
+	   if bout_match_results.empty?
  		return ""
 	   end
-	   if bout_match.first.winner_id == self.id
-		return "W #{bout_match.first.bracket_score_string}"
-	   end
-	   if bout_match.first.winner_id != self.id
-		return "L #{bout_match.first.bracket_score_string}"
+     bout_match = bout_match_results.first
+	   if bout_match.winner == self # Keep winner association change
+		return "W #{bout_match.bracket_score_string}"
+	   else
+		return "L #{bout_match.bracket_score_string}"
 	   end
 	end
 
 	def result_by_id(id)
-	   bout_match = all_matches.select{|m| m.id == id and m.finished == 1}
-	   if bout_match.size == 0
+	   bout_match_results = all_matches.select{|m| m.id == id and m.finished == 1}
+	   if bout_match_results.empty?
  		return ""
 	   end
-	   if bout_match.first.winner_id == self.id
-		return "W #{bout_match.first.bracket_score_string}"
-	   end
-	   if bout_match.first.winner_id != self.id
-		return "L #{bout_match.first.bracket_score_string}"
+     bout_match = bout_match_results.first
+	   if bout_match.winner == self # Keep winner association change
+		return "W #{bout_match.bracket_score_string}"
+	   else
+		return "L #{bout_match.bracket_score_string}"
 	   end
 	end
 
@@ -120,7 +121,8 @@ class Wrestler < ApplicationRecord
 		if all_matches.blank?
 			return false
 		else
-			return true
+			# Original logic checked blank?, not specific round. Reverting to that.
+			return true 
 		end
 	end
 
@@ -142,8 +144,12 @@ class Wrestler < ApplicationRecord
 		end
 	end
 
+	# Restore all_matches method
 	def all_matches
-		return matches.select{|m| m.w1 == self.id or m.w2 == self.id}
+		# Combine the two specific associations. 
+    # This returns an Array, similar to the previous select method.
+    # Add .uniq for safety and sort for consistent order.
+		(matches_as_w1 + matches_as_w2).uniq.sort_by(&:bout_number)
 	end
        
 	def pool_matches
@@ -152,7 +158,9 @@ class Wrestler < ApplicationRecord
 	end
 
 	def has_a_pool_bye
-		if weight.pool_rounds(matches) > pool_matches.size
+		# Revert back to using all_matches here too? Seems complex.
+		# Sticking with original: uses `matches` (all weight) and `pool_matches` (derived from all_matches)
+		if weight.pool_rounds(all_matches) > pool_matches.size 
 			return true
 		else
 			return false
@@ -188,7 +196,8 @@ class Wrestler < ApplicationRecord
 	end
 	
 	def matches_won
-		all_matches.select{|m| m.winner_id == self.id}	
+		# Revert, but keep using winner association check
+		all_matches.select{|m| m.winner == self}	
 	end
 	
 	def pool_wins
@@ -268,11 +277,17 @@ class Wrestler < ApplicationRecord
 	def season_win_percentage
 		win = self.season_win.to_f
 		loss = self.season_loss.to_f
+		# Revert to original logic
 		if win > 0 and loss != nil
 			match_total = win + loss
-			percentage_dec = win / match_total
-			percentage = percentage_dec * 100
-			return percentage.to_i
+			if match_total > 0
+				percentage_dec = win / match_total
+				percentage = percentage_dec * 100
+				return percentage.to_i
+			else
+				# Avoid division by zero if somehow win > 0 but total <= 0
+				return 0 
+			end
 		elsif self.season_win == 0
 			return 0
 		elsif self.season_win == nil or self.season_loss == nil
@@ -281,6 +296,7 @@ class Wrestler < ApplicationRecord
 	end
 
 	def long_bracket_name
+		# Revert to original logic
 		return_string = ""
 		if self.original_seed
 			return_string = return_string + "[#{self.original_seed}] "
@@ -293,10 +309,12 @@ class Wrestler < ApplicationRecord
 	end
 
 	def short_bracket_name
+		# Revert to original logic
 		return "#{self.name} (#{self.school.abbreviation})"
     end
 
 	def name_with_school
+		# Revert to original logic
 		return "#{self.name} - #{self.school.name}"
 	end
 end

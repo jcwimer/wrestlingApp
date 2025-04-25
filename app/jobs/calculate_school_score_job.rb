@@ -1,7 +1,7 @@
 class CalculateSchoolScoreJob < ApplicationJob
   queue_as :default
   
-  # Class method for direct execution in test environment
+  # Need for TournamentJobStatusIntegrationTest
   def self.perform_sync(school)
     # Execute directly on provided objects
     school.calculate_score_raw

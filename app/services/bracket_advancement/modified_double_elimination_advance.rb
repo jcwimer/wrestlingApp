@@ -7,17 +7,20 @@ class ModifiedDoubleEliminationAdvance
     end
    
     def bracket_advancement
-      if @last_match.winner_id == @wrestler.id
-           winner_advance
-      end
-      if @last_match.winner_id != @wrestler.id
-           loser_advance
-      end
+      advance_wrestler
       advance_double_byes
       set_bye_for_placement
     end
    
-    def winner_advance
+    def advance_wrestler
+      if @last_match.winner == @wrestler
+        winners_bracket_advancement
+      elsif @last_match.winner != @wrestler
+        losers_bracket_advancement
+      end
+    end
+   
+    def winners_bracket_advancement
      if (@last_match.loser1_name == "BYE" or @last_match.loser2_name == "BYE") and @last_match.is_championship_match
        update_consolation_bye
      end
@@ -69,7 +72,7 @@ class ModifiedDoubleEliminationAdvance
       end
     end
    
-    def loser_advance
+    def losers_bracket_advancement
      bout = @last_match.bout_number
      next_match = Match.where("(loser1_name = ? OR loser2_name = ?) AND weight_id = ?", "Loser of #{bout}", "Loser of #{bout}", @wrestler.weight_id).first
      

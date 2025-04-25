@@ -1,13 +1,6 @@
 class GenerateTournamentMatchesJob < ApplicationJob
   queue_as :default
   
-  # Class method for direct execution in test environment
-  def self.perform_sync(tournament)
-    # Execute directly on provided objects
-    generator = GenerateTournamentMatches.new(tournament)
-    generator.generate_raw
-  end
-  
   def perform(tournament)
     # Log information about the job
     Rails.logger.info("Starting tournament match generation for tournament ##{tournament.id}")

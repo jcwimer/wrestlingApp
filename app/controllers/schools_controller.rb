@@ -12,7 +12,7 @@ class SchoolsController < ApplicationController
   # GET /schools/1.json
   def show
     session.delete(:return_path)
-    @wrestlers = @school.wrestlers.includes(:deductedPoints,:matches,:weight,:school)
+    @wrestlers = @school.wrestlers.includes(:deductedPoints, :weight, :school, :matches_as_w1, :matches_as_w2)
     @tournament = @school.tournament
   end
 
@@ -84,7 +84,7 @@ class SchoolsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_school
-      @school = School.where(:id => params[:id]).includes(:tournament,:wrestlers,:deductedPoints,:delegates).first
+      @school = School.includes(:tournament, :delegates, :deductedPoints, wrestlers: [:weight, :deductedPoints, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

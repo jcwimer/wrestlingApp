@@ -86,7 +86,11 @@ class WrestlersController < ApplicationController
   private
 
   def set_wrestler
-    @wrestler = Wrestler.includes(:school, :weight, :tournament, :matches).find_by(id: params[:id])
+    @wrestler = Wrestler.includes(:school, :weight, :tournament, :matches_as_w1, :matches_as_w2).find_by(id: params[:id])
+
+    if @wrestler.nil?
+      redirect_to root_path, alert: "Wrestler not found"
+    end
   end
 
   def wrestler_params

@@ -230,10 +230,10 @@ class Match < ApplicationRecord
 		if self.finished != 1
 			return ""
 		end
-		if self.winner_id == self.w1
+		if self.winner == self.wrestler1
 			return self.w1_name
 		end
-		if self.winner_id == self.w2
+		if self.winner == self.wrestler2
 			return self.w2_name
 		end
 	end
@@ -242,20 +242,28 @@ class Match < ApplicationRecord
 		if self.finished != 1
 			return ""
 		end
-		if self.winner_id == self.w1
-			winning_wrestler = self.wrestler1
+		winning_wrestler = self.winner
+		if winning_wrestler == self.wrestler1
 			losing_wrestler = self.wrestler2
-		end
-		if self.winner_id == self.w2
-			winning_wrestler = self.wrestler2
+		elsif winning_wrestler == self.wrestler2
 			losing_wrestler = self.wrestler1
+		else
+			# Handle cases where winner is not w1 or w2 (e.g., BYE, DQ where opponent might be nil)
+      # Or maybe the match hasn't been fully populated yet after a win?
+      # Returning an empty string for now, but this might need review based on expected scenarios.
+			return "" 
 		end
-		return "#{self.weight.max} lbs - #{winning_wrestler.name} (#{winning_wrestler.school.name}) #{self.win_type} #{losing_wrestler.name} (#{losing_wrestler.school.name}) #{self.score}"
+		# Ensure losing_wrestler is not nil before accessing its properties
+		losing_wrestler_name = losing_wrestler ? losing_wrestler.name : "Unknown"
+		losing_wrestler_school = losing_wrestler ? losing_wrestler.school.name : "Unknown"
+
+		return "#{self.weight.max} lbs - #{winning_wrestler.name} (#{winning_wrestler.school.name}) #{self.win_type} #{losing_wrestler_name} (#{losing_wrestler_school}) #{self.score}"
 	end
 
     def bracket_winner_name
-      if winner_name != ""
-      	return "#{winner_name} (#{Wrestler.find(winner_id).school.abbreviation})"
+      # Use the winner association directly
+      if self.winner
+      	return "#{self.winner.name} (#{self.winner.school.abbreviation})"
       else
       	""
       end

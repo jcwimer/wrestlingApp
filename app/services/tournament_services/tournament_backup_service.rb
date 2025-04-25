@@ -54,11 +54,11 @@ class TournamentBackupService
         end,
         matches: @tournament.matches.sort_by(&:bout_number).map do |match|
           match.attributes.merge(
-            w1_name: Wrestler.find_by(id: match.w1)&.name,
-            w2_name: Wrestler.find_by(id: match.w2)&.name,
-            winner_name: Wrestler.find_by(id: match.winner_id)&.name,
-            weight: Weight.find_by(id: match.weight_id)&.attributes,
-            mat: Mat.find_by(id: match.mat_id)&.attributes
+            w1_name: match.wrestler1&.name,
+            w2_name: match.wrestler2&.name,
+            winner_name: match.winner&.name,
+            weight: match.weight&.attributes,
+            mat: match.mat&.attributes
           )
         end
       }
