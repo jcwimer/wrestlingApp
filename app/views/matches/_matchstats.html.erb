@@ -310,12 +310,77 @@ function updateStatsBox(wrestler, timerKey, elapsedSeconds) {
   const formattedTime = `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s`;
   updateStats(wrestler, `${timerType}: ${formattedTime}`);
 }
+
+// Function to initialize timer displays based on loaded data
 function initializeTimers(wrestler) {
-  // Implementation of initializeTimers method
+  if (!wrestler || !wrestler.timers) return;
+  updateTimerDisplay(wrestler, 'injury', wrestler.timers.injury.time || 0);
+  updateTimerDisplay(wrestler, 'blood', wrestler.timers.blood.time || 0);
 }
+
+// Modified function to load from local storage conditionally
 function initializeFromLocalStorage() {
-  console.log("[Init] Initializing from local storage...");
-  // ... existing initializeFromLocalStorage logic ...
+  console.log("[Init] Initializing stats state...");
+  const now = new Date().toISOString(); // Get current time for potential updates
+
+  // Process Wrestler 1
+  const localDataW1 = loadFromLocalStorage('w1');
+  // Check if local data exists, has non-blank stats, and an updated_at timestamp
+  const useLocalW1 = localDataW1 && localDataW1.stats && typeof localDataW1.stats === 'string' && localDataW1.stats.trim() !== '' && localDataW1.updated_at;
+
+  if (useLocalW1) {
+    console.log("[Init W1] Using valid data from local storage.");
+    w1.stats = localDataW1.stats;
+    w1.updated_at = localDataW1.updated_at;
+    // Ensure timers object exists and has the expected structure
+    w1.timers = localDataW1.timers && localDataW1.timers.injury && localDataW1.timers.blood
+                  ? localDataW1.timers
+                  : { injury: { time: 0, startTime: null, interval: null }, blood: { time: 0, startTime: null, interval: null } };
+  } else {
+    // Use server data (already in w1.stats from updateJsValues)
+    // Check if local data exists but is invalid/old, or doesn't exist at all
+    if (localDataW1) {
+        console.log("[Init W1] Local storage data invalid/blank/missing timestamp. Overwriting with server data.");
+    } else {
+        console.log("[Init W1] No local storage data found. Using server data.");
+    }
+    // w1.stats already holds server value
+    w1.updated_at = now; // Mark as updated now
+    w1.timers = { injury: { time: 0, startTime: null, interval: null }, blood: { time: 0, startTime: null, interval: null } }; // Reset timers
+    saveToLocalStorage(w1); // Save the server state to local storage
+  }
+
+  // Process Wrestler 2
+  const localDataW2 = loadFromLocalStorage('w2');
+  // Check if local data exists, has non-blank stats, and an updated_at timestamp
+  const useLocalW2 = localDataW2 && localDataW2.stats && typeof localDataW2.stats === 'string' && localDataW2.stats.trim() !== '' && localDataW2.updated_at;
+
+  if (useLocalW2) {
+    console.log("[Init W2] Using valid data from local storage.");
+    w2.stats = localDataW2.stats;
+    w2.updated_at = localDataW2.updated_at;
+    // Ensure timers object exists
+    w2.timers = localDataW2.timers && localDataW2.timers.injury && localDataW2.timers.blood
+                  ? localDataW2.timers
+                  : { injury: { time: 0, startTime: null, interval: null }, blood: { time: 0, startTime: null, interval: null } };
+  } else {
+     // Use server data (already in w2.stats from updateJsValues)
+    if (localDataW2) {
+        console.log("[Init W2] Local storage data invalid/blank/missing timestamp. Overwriting with server data.");
+    } else {
+        console.log("[Init W2] No local storage data found. Using server data.");
+    }
+    // w2.stats already holds server value
+    w2.updated_at = now; // Mark as updated now
+    w2.timers = { injury: { time: 0, startTime: null, interval: null }, blood: { time: 0, startTime: null, interval: null } }; // Reset timers
+    saveToLocalStorage(w2); // Save the server state to local storage
+  }
+
+  // After deciding state, update HTML elements and timer displays
+  updateHtmlValues();
+  initializeTimers(w1);
+  initializeTimers(w2);
+  console.log("[Init] State initialization complete.");
 }
 
 // ############### ACTION CABLE LIFECYCLE (Define Before Listeners) #############
@@ -421,22 +486,28 @@ function setupSubscription(matchId) {
 
 document.addEventListener("turbolinks:load", () => {
   console.log("Stats Event: turbolinks:load fired.");
-  
+
   // --- Check if we are actually on the match stats page ---
   const statsElementCheck = document.getElementById('match_w1_stat'); // Check for stats textarea
   if (!statsElementCheck) {
-    console.log("Stats Event: Not on match stats page, skipping AC setup.");
+    console.log("Stats Event: Not on match stats page, skipping init and AC setup.");
     cleanupSubscription(); // Cleanup just in case
-    return; 
+    return;
   }
   // --- End Check ---
-  
-  initializeFromLocalStorage(); // Load state first
-  const matchId = <%= @match.id %>; 
+
+  // 1. Initialize JS objects with server-rendered values from HTML first
+  updateJsValues();
+
+  // 2. Attempt to load from local storage, overwriting server values only if local is valid and non-blank
+  initializeFromLocalStorage(); // This now contains the core logic
+
+  // 3. Setup ActionCable
+  const matchId = <%= @match.id %>;
   if (matchId) {
-    setupSubscription(matchId); // Then setup ActionCable
+    setupSubscription(matchId);
   } else {
-    console.warn("Stats Event: turbolinks:load - Could not determine match ID");
+    console.warn("Stats Event: turbolinks:load - Could not determine match ID for AC setup.");
   }
 });
 
