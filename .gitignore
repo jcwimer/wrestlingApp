@@ -22,3 +22,7 @@ tmp
 deploy/prod.env
 frontend/node_modules
 .aider*
+
+# Ignore cypress test results
+cypress-tests/cypress/screenshots
+cypress-tests/cypress/videos

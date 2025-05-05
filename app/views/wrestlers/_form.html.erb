@@ -39,6 +39,14 @@
     <%= f.number_field :season_loss %>
   </div>
 
+  <div class="field">
+    <%= f.label "Seed Criteria" %><br>
+    <%= f.text_field :criteria %>
+  </div>
+  <div class="field">
+    <%= f.label "Check box if extra" %> <%= f.check_box :extra %>
+  </div>
+
   <!-- Render the hidden field if a permission key is present -->
   <% if @school_permission_key.present? %>
     <%= f.hidden_field :school_permission_key, value: @school_permission_key %>
