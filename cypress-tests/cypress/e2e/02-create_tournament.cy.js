@@ -27,7 +27,13 @@ describe('Create a tournament', () => {
     cy.get('input[name="tournament[address]"]').type('123 Wrestling Way');
     cy.get('input[name="tournament[director]"]').type('John Doe');
     cy.get('input[name="tournament[director_email]"]').type('john.doe@example.com');
-    cy.get('input[name="tournament[date]"]').type('2024-12-31');
+    
+    // Set date to 1 month from today dynamically
+    const futureDate = new Date();
+    futureDate.setMonth(futureDate.getMonth() + 1);
+    const formattedDate = futureDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    cy.get('input[name="tournament[date]"]').type(formattedDate);
+    
     cy.get('select[name="tournament[tournament_type]"]').select('Pool to bracket');
     // cy.get('input[name="tournament[is_public]"]').check();
 

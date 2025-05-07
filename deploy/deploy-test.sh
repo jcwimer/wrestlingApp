@@ -31,7 +31,7 @@ docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d
 
 # DISABLE_DATABASE_ENVIRONMENT_CHECK=1 is needed because this is "destructive" action on production
 echo Resetting the db with seed data
-docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 rake db:reset"
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 rake db:reset"
 
 # echo Simulating tournament 204
 # docker-compose -f ${project_dir}/deploy/docker-compose-test.yml exec -T app rails tournament:assign_random_wins

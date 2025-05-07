@@ -36,6 +36,9 @@ services:
       - "443:443"
     healthcheck: 
       test: curl http://127.0.0.1/
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
 
   db:
     image: mariadb:10.10
@@ -43,6 +46,8 @@ services:
       - "3306:3306"
     volumes:
       - mysql:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     environment:
       - MYSQL_ROOT_PASSWORD=password
     restart: always
@@ -65,3 +70,5 @@ services:
       metrics:
     volumes:
       - influxdb:/var/lib/influxdb
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro

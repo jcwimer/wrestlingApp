@@ -17,4 +17,6 @@ docker build -t $1 -f ${project_dir}/deploy/rails-dev-Dockerfile \
 
 docker run --rm -it -p 3000:3000 \
   -v ${project_dir}:/rails \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /etc/timezone:/etc/timezone:ro \
   $1 /bin/bash

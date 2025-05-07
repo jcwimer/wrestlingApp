@@ -2,3 +2,5 @@
 - If the docker image doesn't exist, use the build command: docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .
 - If the Gemfile changes, you need to rebuild the docker image: docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile.
 - Do not add unnecessary comments to the code where you remove things.
+- Cypress tests are created for js tests. They can be found in cypress-tests/cypress
+- Cypress tests can be run with docker: bash cypress-tests/run-cypress-tests.sh

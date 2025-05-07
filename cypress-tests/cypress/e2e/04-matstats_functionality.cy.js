@@ -148,55 +148,125 @@ describe('Matstats Page Functionality', () => {
     // Only attempt this test if the match_win_type element exists
     cy.get('body').then(($body) => {
       if ($body.find('#match_win_type').length) {
-        // Select win type as Decision
+        // 1. Test Decision win type with no winner selected
         cy.get('#match_win_type').select('Decision');
         
-        // Check if there are input fields visible in the form
-        const hasScoreInputs = $body.find('input[type="number"]').length > 0 || 
-                               $body.find('input[type="text"]').length > 0;
+        // Wait for dynamic fields to update
+        cy.wait(300);
         
-        if (hasScoreInputs) {
-          // Try to find score inputs using a more generic approach
-          cy.get('input[type="number"], input[type="text"]').then($inputs => {
-            if ($inputs.length >= 2) {
-              // Use the first two inputs for winner and loser scores
-              cy.wrap($inputs).first().as('winnerScore');
-              cy.wrap($inputs).eq(1).as('loserScore');
-              
-              // Try invalid input (loser score > winner score)
-              cy.get('@winnerScore').clear().type('2');
-              cy.get('@loserScore').clear().type('5');
-              
-              // Should show validation error
-              cy.get('#validation-alerts').should('be.visible');
-              
-              // Update to valid scores for Decision
-              cy.get('@winnerScore').clear().type('5');
-              cy.get('@loserScore').clear().type('2');
-              
-              // Error should be gone after valid input
-              cy.get('#validation-alerts').should('not.exist').should('not.be.visible');
-              
-              // Test Major validation (score difference 8+)
-              cy.get('@winnerScore').clear().type('10');
-              cy.get('@loserScore').clear().type('2');
-              
-              // Should show type validation error for needing Major
-              cy.get('#validation-alerts').should('be.visible');
-              
-              // Change to Major
-              cy.get('#match_win_type').select('Major');
-              
-              // Error should be gone after changing win type
-              cy.wait(500); // Give validation time to update
-              cy.get('#validation-alerts').should('not.exist').should('not.be.visible');
-            } else {
-              cy.log('Found fewer than 2 score input fields - test conditionally passed');
-            }
-          });
-        } else {
-          cy.log('No score input fields found - test conditionally passed');
-        }
+        // Verify correct form fields appear
+        cy.get('#winner-score').should('exist');
+        cy.get('#loser-score').should('exist');
+        
+        // Enter valid scores for Decision
+        cy.get('#winner-score').clear().type('5');
+        cy.get('#loser-score').clear().type('2');
+        
+        // Without a winner, form should show validation error
+        cy.get('#validation-alerts').should('be.visible')
+          .and('contain.text', 'Please select a winner');
+        cy.get('#update-match-btn').should('be.disabled');
+        
+        // 2. Test invalid score scenario (loser score > winner score)
+        cy.get('#winner-score').clear().type('2');
+        cy.get('#loser-score').clear().type('5');
+        
+        cy.get('#validation-alerts').should('be.visible')
+          .and('contain.text', 'Winner\'s score must be higher than loser\'s score');
+        cy.get('#update-match-btn').should('be.disabled');
+        
+        // 3. Fix scores and select a winner
+        cy.get('#winner-score').clear().type('5');
+        cy.get('#loser-score').clear().type('2');
+        cy.get('#match_winner_id').select(1);
+        
+        // Now validation should pass for Decision
+        cy.get('#validation-alerts').should('not.be.visible');
+        cy.get('#update-match-btn').should('not.be.disabled');
+        
+        // 4. Test Major score range validation
+        cy.get('#winner-score').clear().type('10');
+        cy.get('#loser-score').clear().type('2');
+        // Score difference is 8, should require Major
+        cy.get('#validation-alerts').should('be.visible')
+          .and('contain.text', 'Win type should be');
+        cy.get('#update-match-btn').should('be.disabled');
+        
+        // 5. Fix by changing win type to Major
+        cy.get('#match_win_type').select('Major');
+        cy.wait(300);
+        
+        // Validation should now pass
+        cy.get('#validation-alerts').should('not.be.visible');
+        cy.get('#update-match-btn').should('not.be.disabled');
+        
+        // 6. Test Tech Fall score range validation
+        cy.get('#winner-score').clear().type('17');
+        cy.get('#loser-score').clear().type('2');
+        // Score difference is 15, should require Tech Fall
+        cy.get('#validation-alerts').should('be.visible')
+          .and('contain.text', 'Win type should be');
+        cy.get('#update-match-btn').should('be.disabled');
+        
+        // 7. Fix by changing win type to Tech Fall
+        cy.get('#match_win_type').select('Tech Fall');
+        cy.wait(300);
+        
+        // Validation should now pass
+        cy.get('#validation-alerts').should('not.be.visible');
+        cy.get('#update-match-btn').should('not.be.disabled');
+        
+        // 8. Test Pin win type form
+        cy.get('#match_win_type').select('Pin');
+        cy.wait(300);
+        
+        // Should show pin time inputs
+        cy.get('#minutes').should('exist');
+        cy.get('#seconds').should('exist');
+        cy.get('#pin-time-tip').should('be.visible');
+        
+        // Winner still required
+        cy.get('#validation-alerts').should('not.be.visible'); // Previous winner selection should still be valid
+        
+        // 9. Test other win types (no score input)
+        cy.get('#match_win_type').select('Forfeit');
+        cy.wait(300);
+        
+        // Should not show score inputs
+        cy.get('#dynamic-score-input').should('be.empty');
+        
+        // Winner still required
+        cy.get('#validation-alerts').should('not.be.visible'); // Previous winner selection should still be valid
+      } else {
+        cy.log('Match form not present - test conditionally passed');
+      }
+    });
+  });
+
+  it('should display final score fields without requiring page refresh', () => {
+    // Check if we're on a mat page with match form
+    cy.get('body').then(($body) => {
+      if ($body.find('#match_win_type').length) {
+        // Test Decision type first
+        cy.get('#match_win_type').select('Decision');
+        cy.wait(300);
+        cy.get('#dynamic-score-input').should('exist');
+        cy.get('#winner-score').should('exist');
+        cy.get('#loser-score').should('exist');
+        
+        // Test Pin type
+        cy.get('#match_win_type').select('Pin');
+        cy.wait(300);
+        cy.get('#minutes').should('exist');
+        cy.get('#seconds').should('exist');
+        cy.get('#pin-time-tip').should('be.visible');
+        
+        // Test other types
+        cy.get('#match_win_type').select('Forfeit');
+        cy.wait(300);
+        cy.get('#dynamic-score-input').should('be.empty');
+        
+        cy.log('Final score fields load correctly without page refresh');
       } else {
         cy.log('Match form not present - test conditionally passed');
       }

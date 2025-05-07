@@ -161,6 +161,9 @@ describe('Matstats Real-time Updates', () => {
               cy.get('#cable-status-indicator', { timeout: 10000 })
                 .should('contain.text', 'Connected');
               
+              // Select a winner
+              cy.get('#match_winner_id').select(1);
+              
               // Check if match form and inputs still exist after reload
               cy.get('body').then(($reloadedBody) => {
                 if ($reloadedBody.find('#match_win_type').length && 
