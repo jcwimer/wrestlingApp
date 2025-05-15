@@ -1,0 +1,17 @@
+.navbar-inverse.navbar-fixed-top {
+  z-index: 1040; /* Ensure main navbar is above tournament navbar */
+}
+
+#tournament-navbar {
+  top: 50px; /* Position below the first fixed navbar */
+  z-index: 1030; /* Explicitly set standard fixed navbar z-index */
+} 
+
+/* Make desktop navbar dropdowns scrollable if they overflow */
+@media (min-width: 768px) {
+  /* Target dropdowns in main nav and tournament nav specifically */
+  .navbar-fixed-top .dropdown-menu {
+    max-height: 70vh; /* Adjust as needed - 70% of viewport height */
+    overflow-y: auto;
+  }
+}

@@ -16,7 +16,20 @@
  * Bootstrap 3.3.6 in vendor/assets/stylesheets
  *= require bootstrap.min.css
  *= require bootstrap-theme.min.css
+ * Font Awesome 5.7.1 in vendor/assets/stylesheets/fontawesome
+ *= require fontawesome/all
  *= require_tree .
  *= require_self
  */
+
+@font-face {
+  font-family: 'Font Awesome 5 Brands';
+  /* other properties */
+  src: url("/webfonts/fa-brands-400.eot");
+  src: url("/webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"), 
+       url("/webfonts/fa-brands-400.woff2") format("woff2"), 
+       url("/webfonts/fa-brands-400.woff") format("woff"), 
+       url("/webfonts/fa-brands-400.ttf") format("truetype"), 
+       url("/webfonts/fa-brands-400.svg#fontawesome") format("svg");
+}
 
