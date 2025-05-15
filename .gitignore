@@ -26,3 +26,5 @@ frontend/node_modules
 # Ignore cypress test results
 cypress-tests/cypress/screenshots
 cypress-tests/cypress/videos
+
+.DS_Store

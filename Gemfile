@@ -69,7 +69,6 @@ gem 'rb-readline'
 gem 'solid_queue'
 gem 'solid_cable'
 gem 'puma'
-gem 'passenger'
 gem 'tzinfo-data'
 gem 'daemons'
 # Interface for viewing and managing background jobs
