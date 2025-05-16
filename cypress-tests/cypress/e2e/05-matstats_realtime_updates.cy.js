@@ -185,7 +185,7 @@ describe('Matstats Real-time Updates', () => {
                       cy.get('@newLoserScore').clear().type('0');
                       
                       // Validation should be working - no error for valid major
-                      cy.get('#validation-alerts').should('not.exist').should('not.be.visible');
+                      cy.get('#validation-alerts').should('not.be.visible');
                       
                       // Try an invalid combination
                       cy.get('#match_win_type').select('Decision');

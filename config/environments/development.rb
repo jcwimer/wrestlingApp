@@ -96,4 +96,7 @@ Rails.application.configure do
 
   # Dump the schema after migrations
   config.active_record.dump_schema_after_migration = true
+
+ # Nobuild in development
+ config.assets.build_assets = false
 end

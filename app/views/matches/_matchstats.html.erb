@@ -384,7 +384,7 @@ function initializeFromLocalStorage() {
 }
 
 // ############### ACTION CABLE LIFECYCLE (Define Before Listeners) #############
-var matchSubscription = null; // Use var for safety with Turbolinks re-evaluation
+var matchSubscription = null; // Use var for safety with Turbo re-evaluation / page navigation
 
 function cleanupSubscription() {
   if (matchSubscription) {
@@ -484,8 +484,8 @@ function setupSubscription(matchId) {
 
 // ############### EVENT LISTENERS (Define Last) #############
 
-document.addEventListener("turbolinks:load", () => {
-  console.log("Stats Event: turbolinks:load fired.");
+document.addEventListener("turbo:load", () => {
+  console.log("Stats Event: turbo:load fired.");
 
   // --- Check if we are actually on the match stats page ---
   const statsElementCheck = document.getElementById('match_w1_stat'); // Check for stats textarea
@@ -507,12 +507,12 @@ document.addEventListener("turbolinks:load", () => {
   if (matchId) {
     setupSubscription(matchId);
   } else {
-    console.warn("Stats Event: turbolinks:load - Could not determine match ID for AC setup.");
+    console.warn("Stats Event: turbo:load - Could not determine match ID for AC setup.");
   }
 });
 
-document.addEventListener("turbolinks:before-cache", () => {
-  console.log("Event: turbolinks:before-cache fired. Cleaning up subscription.");
+document.addEventListener("turbo:before-cache", () => {
+  console.log("Event: turbo:before-cache fired. Cleaning up subscription.");
   cleanupSubscription();
 });
 

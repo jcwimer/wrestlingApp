@@ -7,8 +7,9 @@ gem 'rails', '8.0.2'
 # Added in rails 7.1
 gem 'rails-html-sanitizer'
 
-# The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
-gem "sprockets-rails"
+# Asset Management: Propshaft for serving, Importmap for JavaScript
+gem "propshaft"
+gem "importmap-rails"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -17,17 +18,17 @@ gem "bootsnap", require: false
 # Use sqlite3 version compatible with Rails 8
 gem 'sqlite3', ">= 2.1", :group => :development
 
-# Use Uglifier as compressor for JavaScript assets
-gem 'uglifier'
-# Use CoffeeScript for .js.coffee assets and views
-gem 'coffee-rails'
+# JavaScript and CSS related gems
+# Uglifier is not used with Propshaft by default
+# CoffeeScript (.js.coffee) files need to be converted to .js as Propshaft doesn't compile them
+
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 # gem 'therubyracer',  platforms: :ruby
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
-# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks'
+# Turbo for modern page interactions
+gem 'turbo-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'
 # bundle exec rake doc:rails generates the API under doc/api.
@@ -89,6 +90,4 @@ group :development, :test do
   # rails-controller-testing is needed for assert_template
   gem 'rails-controller-testing'
 end
-
-gem 'font-awesome-sass'
 

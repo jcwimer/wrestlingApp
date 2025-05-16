@@ -44,7 +44,7 @@ module Wrestling
     # Restored custom settings from original application.rb
     
     # gzip assets
-    config.middleware.use Rack::Deflater
+    # config.middleware.use Rack::Deflater # Temporarily commented out for debugging asset 404s
     
     config.active_job.queue_adapter = :solid_queue
     

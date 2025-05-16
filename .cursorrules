@@ -4,3 +4,4 @@
 - Do not add unnecessary comments to the code where you remove things.
 - Cypress tests are created for js tests. They can be found in cypress-tests/cypress
 - Cypress tests can be run with docker: bash cypress-tests/run-cypress-tests.sh
+- Write as little code as possible. I do not want crazy non standard rails implementations.

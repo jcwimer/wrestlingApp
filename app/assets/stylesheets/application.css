@@ -1,35 +1,17 @@
-/*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
- * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any styles
- * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
- * file per style scope.
- *
- * For some reason this needs to be above bootstrap for the zindex of the main navbar to work.
- * With it lower, bootstraps css overrides it.
- *= require custom
- * Bootstrap 3.3.6 in vendor/assets/stylesheets
- *= require bootstrap.min.css
- *= require bootstrap-theme.min.css
- * Font Awesome 5.7.1 in vendor/assets/stylesheets/fontawesome
- *= require fontawesome/all
- *= require_tree .
- *= require_self
- */
+/* relative pathing from /vender/assets/stylesheets = / */
+@import url("/bootstrap.min.css");
+@import url("/bootstrap-theme.min.css");
+@import url("/fontawesome/all.css");
+@import url("/custom.css");
+@import url("/scaffolds.css");
 
 @font-face {
-  font-family: 'Font Awesome 5 Brands';
-  /* other properties */
-  src: url("/webfonts/fa-brands-400.eot");
-  src: url("/webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"), 
-       url("/webfonts/fa-brands-400.woff2") format("woff2"), 
-       url("/webfonts/fa-brands-400.woff") format("woff"), 
-       url("/webfonts/fa-brands-400.ttf") format("truetype"), 
-       url("/webfonts/fa-brands-400.svg#fontawesome") format("svg");
-}
-
+    font-family: 'Font Awesome 5 Brands';
+    /* relative pathing from /vender/assets/stylesheets = / */
+    src: url("/webfonts/fa-brands-400.eot");
+    src: url("/webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"), 
+         url("/webfonts/fa-brands-400.woff2") format("woff2"), 
+         url("/webfonts/fa-brands-400.woff") format("woff"), 
+         url("/webfonts/fa-brands-400.ttf") format("truetype"), 
+         url("/webfonts/fa-brands-400.svg#fontawesome") format("svg");
+  }

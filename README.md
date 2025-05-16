@@ -175,3 +175,14 @@ SolidQueue plugin enabled in Puma
 See `SOLID_QUEUE.md` for details about the job system configuration.
 
 This project provides multiple ways to develop and deploy, with Docker being the primary method.
+
+# Sprockets to Propshaft Migration
+
+- Propshaft will automatically include in its search paths the folders vendor/assets, lib/assets and app/assets of your project and of all the gems in your Gemfile. You can see all included files by using the reveal rake task: `rake assets:reveal`. When importing you'll use the relative path from this command.
+- All css files are imported via `app/assets/stylesheets/application.css`. This is imported on `app/views/layouts/application.html.erb`.
+  - Bootstrap and fontawesome have been downloaded locally to `vendor/`
+- All js files are imported with a combination of "pinning" with `config/importmaps.rb` and `app/assets/javascript/application.js` and imported to `app/views/layouts/application.html.erb`
+  - Jquery, bootstrap, datatables have been downloaded locally to `vendor/`
+  - Turbo and action cable are gems and get pathed properly by propshaft.
+- development is "nobuild" with `config.assets.build_assets = false` in `config/environments/development.rb`
+- production needs to run rake assets:precompile. This is done in the `deploy/rails-prod-Dockerfile`.

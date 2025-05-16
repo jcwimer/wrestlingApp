@@ -78,8 +78,8 @@
 </style>
 
 <script>
-// ############### ACTION CABLE LIFECYCLE & SETUP #############
-var matchSubscription = null; // Use var for Turbolinks compatibility
+// ############### ACTION CABLE LIFECYCLE #############
+var matchSubscription = null; // Use var for handling Turbo page navigations
 
 // Function to tear down the existing subscription
 function cleanupSubscription() {
@@ -188,12 +188,12 @@ function setupSubscription(matchId) {
   );
 }
 
-// ############### EVENT LISTENERS (Define Last) #############
+// ############### EVENT LISTENERS #############
 
-document.addEventListener("turbolinks:load", () => {
-  console.log("Spectator Event: turbolinks:load fired.");
-  
-  // --- Check if we are actually on the spectator page ---
+document.addEventListener("turbo:load", () => {
+  console.log("Spectator Event: turbo:load fired.");
+
+  // Check for necessary elements before proceeding
   const spectatorElementCheck = document.getElementById('w1-stats-display');
   if (!spectatorElementCheck) {
     console.log("Spectator Event: Not on spectator page, skipping AC setup.");
@@ -201,18 +201,17 @@ document.addEventListener("turbolinks:load", () => {
     cleanupSubscription(); 
     return; 
   }
-  // --- End Check ---
-  
+
   const matchId = <%= @match.id %>; // Get match ID from ERB
   if (matchId) {
     setupSubscription(matchId);
   } else {
-    console.warn("Spectator Event: turbolinks:load - Could not determine match ID");
+    console.warn("Spectator Event: turbo:load - Could not determine match ID");
   }
 });
 
-document.addEventListener("turbolinks:before-cache", () => {
-  console.log("Spectator Event: turbolinks:before-cache fired. Cleaning up subscription.");
+document.addEventListener("turbo:before-cache", () => {
+  console.log("Spectator Event: turbo:before-cache fired. Cleaning up subscription.");
   cleanupSubscription();
 });
 

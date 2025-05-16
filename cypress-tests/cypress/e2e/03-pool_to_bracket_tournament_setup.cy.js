@@ -71,7 +71,10 @@ describe('Pool to bracket setup', () => {
     
     
     // Go back to the tournament using the tournament navbar link
+    // Doing intecept/wait because turbo is causing it to act like a spa
+    cy.intercept('GET', /\/tournaments\/\d+$/).as('loadTournamentPageAfterLoop');
     cy.get('#tournament-navbar .navbar-brand').contains('Tournament Menu').click();
+    cy.wait('@loadTournamentPageAfterLoop');
     cy.url().should('match', /\/tournaments\/\d+$/); // Check URL is /tournaments/ID
     cy.contains('Cypress Test Tournament - Pool to bracket').should('be.visible'); // Verify page content
 
@@ -87,6 +90,33 @@ describe('Pool to bracket setup', () => {
       }
     });
 
+    // Generate Matches
+    cy.contains('Director Links').first().click();
+    cy.contains('Generate Brackets').first().click();
+    cy.url().should('include', '/generate_matches');
+  });
+
+  it('Should create a new mat.', () => {
+    // Create boys weights
+    // Listen for the confirmation popup and automatically confirm it
+    cy.on('window:confirm', (text) => {
+      return true; // Simulates clicking "OK"
+    });
+
+    // Create Mat 1
+    cy.get('body').then($body => {
+      if (!$body.find('h3:contains("Mats")').length || !$body.find('a:contains("Mat 1")').length) {
+        cy.contains('Director Links').first().click();
+        cy.contains('New Mat').first().click();
+        cy.url().should('include', '/mats/new');
+        cy.get('input[name="mat[name]"]').type('1'); // Mat name is just '1'
+        cy.get('input[type="submit"]').click({ multiple: true });
+        cy.contains('a', 'Mat 1').should('be.visible');
+      }
+    });
+   });
+
+  it('Should generate matches.', () => {
     // Generate Matches
     cy.contains('Director Links').first().click();
     cy.contains('Generate Brackets').first().click();

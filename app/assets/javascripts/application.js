@@ -1,32 +1,27 @@
-// This is a manifest file that'll be compiled into application.js, which will include all the files
-// listed below.
-//
-// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
-// or vendor/assets/javascripts of plugins, if any, can be referenced here using a relative path.
-//
-// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
-// compiled file.
-//
-// Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
-// about supported directives.
-//
-//= require jquery
-//= require jquery_ujs
-// Bootstrap 3.3.6 in vendor/assets/javascripts
-//= require bootstrap.min.js
-// Data Tables 1.10.6 in vendor/assets/javascripts
-//= require jquery.dataTables.min.js
-//= require turbolinks
-//
-//= require actioncable
-//= require_self
-//= require_tree .
+// Entry point for your JavaScript application
 
-// Create the Action Cable consumer instance
+// These are pinned in config/importmap.rb
+import "@hotwired/turbo-rails";
+import { createConsumer } from "@rails/actioncable"; // Import createConsumer directly
+import "jquery";
+import "bootstrap"; 
+import "datatables.net";
+
+// Your existing Action Cable consumer setup
 (function() {
-  this.App || (this.App = {});
-
-  App.cable = ActionCable.createConsumer();
-
+  try {
+    window.App || (window.App = {});
+    window.App.cable = createConsumer(); // Use the imported createConsumer
+    console.log('Action Cable Consumer Created via app/javascript/application.js');
+  } catch (e) {
+    console.error('Error creating ActionCable consumer:', e);
+    console.error('ActionCable not loaded or createConsumer failed, App.cable not created.');
+  }
 }).call(this);
 
+console.log("Propshaft/Importmap application.js initialized with jQuery, Bootstrap, and DataTables.");
+
+// If you have custom JavaScript files in app/javascript/ that were previously
+// handled by Sprockets `require_tree`, you'll need to import them here explicitly.
+// For example:
+// import "./my_custom_logic"; 
