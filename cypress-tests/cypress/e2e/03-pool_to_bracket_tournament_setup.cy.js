@@ -85,7 +85,19 @@ describe('Pool to bracket setup', () => {
         cy.contains('New Mat').first().click();
         cy.url().should('include', '/mats/new');
         cy.get('input[name="mat[name]"]').type('1'); // Mat name is just '1'
-        cy.get('input[type="submit"]').click({ multiple: true });
+        
+        // Intercept the form submission response to wait for it
+        cy.intercept('POST', '/mats').as('createMat');
+        
+        // Wait for the Submit button to be fully rendered and ready
+        cy.get('input[type="submit"]').should('be.visible').should('be.enabled').wait(1000);
+        
+        // Submit the form and wait for the response
+        cy.get('input[type="submit"]').click();
+        cy.wait('@createMat');
+        
+        // Verify we're redirected back and the mat is created
+        cy.url().should('match', /\/tournaments\/\d+$/);
         cy.contains('a', 'Mat 1').should('be.visible');
       }
     });
@@ -110,7 +122,19 @@ describe('Pool to bracket setup', () => {
         cy.contains('New Mat').first().click();
         cy.url().should('include', '/mats/new');
         cy.get('input[name="mat[name]"]').type('1'); // Mat name is just '1'
-        cy.get('input[type="submit"]').click({ multiple: true });
+        
+        // Intercept the form submission response to wait for it
+        cy.intercept('POST', '/mats').as('createMat');
+        
+        // Wait for the Submit button to be fully rendered and ready
+        cy.get('input[type="submit"]').should('be.visible').should('be.enabled').wait(1000);
+        
+        // Submit the form and wait for the response
+        cy.get('input[type="submit"]').click();
+        cy.wait('@createMat');
+        
+        // Verify we're redirected back and the mat is created
+        cy.url().should('match', /\/tournaments\/\d+$/);
         cy.contains('a', 'Mat 1').should('be.visible');
       }
     });

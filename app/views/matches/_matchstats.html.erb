@@ -10,128 +10,146 @@
       </ul>
     </div>
   <% end %>
-  <div id="cable-status-indicator" class="alert alert-secondary" style="padding: 5px; margin-bottom: 10px; border-radius: 4px;"></div>
+
+<div data-controller="match-data" 
+     data-match-data-tournament-id-value="<%= @match.tournament.id %>"
+     data-match-data-bout-number-value="<%= @match.bout_number %>"
+     data-match-data-match-id-value="<%= @match.id %>">
+  
+  <div id="cable-status-indicator" data-match-data-target="statusIndicator" class="alert alert-secondary" style="padding: 5px; margin-bottom: 10px; border-radius: 4px;"></div>
   <h4>Bout <strong><%= @match.bout_number %></strong></h4>
   <% if @show_next_bout_button && @next_match %>
     <%= link_to "Skip to Next Match for Mat #{@mat.name}", mat_path(@mat, bout_number: @next_match.bout_number), class: "btn btn-primary" %>
   <% end %>
   <h4>Bracket Position: <strong><%= @match.bracket_position %></strong></h4>
-<table class="table">
-  <thead>
-      <tr>
-        <th>Name: <%= @wrestler1_name %> <select id="w1-color" onchange="changeW1Color(this)">
-            <option value="green">Green</option>
-            <option value="red">Red</option>
-        </select>
-        <br>School: <%= @wrestler1_school_name %>
-        <br>Last Match: <%= @wrestler1_last_match && @wrestler1_last_match.finished_at ? time_ago_in_words(@wrestler1_last_match.finished_at) : "N/A" %></th>
-        <th>Name: <%= @wrestler2_name %> <select id="w2-color" onchange="changeW2Color(this)">
-            <option value="red">Red</option>
-            <option value="green">Green</option>
-        </select>
-        <br>School: <%= @wrestler2_school_name %>
-        <br>Last Match: <%= @wrestler2_last_match && @wrestler2_last_match.finished_at ? time_ago_in_words(@wrestler2_last_match.finished_at) : "N/A" %></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><%= @wrestler1_name %> Stats: <br><%= f.text_area :w1_stat, cols: "30", rows: "10"  %></td>
-        <td><%= @wrestler2_name %> Stats: <br><%= f.text_area :w2_stat, cols: "30", rows: "10"  %></td>
-      </tr>
-      <tr>
-        <td><%= @wrestler1_name %> Scoring <br><button id="w1-takedown" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'T3');updateStats(w2,'__');">T3</button>
-        <button id="w1-escape" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'E1');updateStats(w2,'__');">E1</button>
-        <button id="w1-reversal" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'R2');updateStats(w2,'__');">R2</button>
-        <button id="w1-nf2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N2');updateStats(w2,'__');">N2 </button>
-        <button id="w1-nf3" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N3');updateStats(w2,'__');">N3</button>
-        <button id="w1-nf4" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N4');updateStats(w2,'__');">N4</button>
-        <button id="w1-nf5" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'N5');updateStats(w2,'__');">N5</button>
-        <button id="w1-penalty" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P1');updateStats(w2,'__');">P1</button>
-        <button id="w1-penalty2" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'P2');updateStats(w2,'__');">P2</button></td>
-        <td><%= @wrestler2_name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'T3');updateStats(w1,'__');">T3</button>
-        <button id="w2-escape" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'E1');updateStats(w1,'__');">E1</button>
-        <button id="w2-reversal" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'R2');updateStats(w1,'__');">R2</button>
-        <button id="w2-nf2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N2');updateStats(w1,'__');">N2</button>
-        <button id="w2-nf3" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N3');updateStats(w1,'__');">N3</button>
-        <button id="w2-nf4" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N4');updateStats(w1,'__');">N4</button>
-        <button id="w2-nf5" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'N5');updateStats(w1,'__');">N5</button>
-        <button id="w2-penalty" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P1');updateStats(w1,'__');">P1</button>
-        <button id="w2-penalty2" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'P2');updateStats(w1,'__');">P2</button></td>
-      </tr>
-      <tr>
-        <td><%= @wrestler1_name %> Choice <br><button id="w1-top" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Top|')">Chose Top</button>
-        <button id="w1-bottom" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Bottom|')">Chose Bottom</button>
-        <button id="w1-neutral" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Chose Neutral|')">Chose Neutral</button>
-        <button id="w1-defer" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'|Deferred|')">Deferred</button></td>
-        <td><%= @wrestler2_name %> Choice <br><button id="w2-top" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Chose Top|')">Chose Top</button>
-        <button id="w2-bottom" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Chose Bottom|')">Chose Bottom</button>
-        <button id="w2-neutral" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Chose Neutral|')">Chose Neutral</button>
-        <button id="w2-defer" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'|Deferred|')">Deferred</button></td>
-      </tr>
-      <tr>
-        <td><%= @wrestler1_name %> Warnings <br><button id="w1-stalling" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'S');updateStats(w2,'_');">Stalling</button>
-        <button id="w1-caution" type="button" class="btn btn-success btn-sm" onclick="updateStats(w1,'C');updateStats(w2,'_');">Caution</button></td>
-        <td><%= @wrestler2_name %> Warnings <br><button id="w2-stalling" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'S');updateStats(w1,'_');">Stalling</button>
-        <button id="w2-caution" type="button" class="btn btn-danger btn-sm" onclick="updateStats(w2,'C');updateStats(w1,'_');">Caution</button></td>
-      </tr>
-      <tr>
-        <td>Match Options <br><button type="button" class="btn btn-primary btn-sm" onclick="updateStats(w2,'|End Period|'); updateStats(w1,'|End Period|');">End Period</button></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>
-          <h5><%= @wrestler1_name %> Timer Controls</h5>
-          Injury Time (90 second max): <span id="w1-injury-time">0 sec</span>
-          <button type="button" onclick="startTimer(w1, 'injury')" class="btn btn-primary btn-sm">Start</button>
-          <button type="button" onclick="stopTimer(w1, 'injury')" class="btn btn-primary btn-sm">Stop</button>
-          <button type="button" onclick="resetTimer(w1, 'injury')" class="btn btn-primary btn-sm">Reset</button>
-          <br><br>
-          Blood Time (600 second max): <span id="w1-blood-time">0 sec</span>
-          <button type="button" onclick="startTimer(w1, 'blood')" class="btn btn-primary btn-sm">Start</button>
-          <button type="button" onclick="stopTimer(w1, 'blood')" class="btn btn-primary btn-sm">Stop</button>
-          <button type="button" onclick="resetTimer(w1, 'blood')" class="btn btn-primary btn-sm">Reset</button>
-        </td>
-        <td>
-          <h5><%= @wrestler2_name %> Timer Controls</h5>
-          Injury Time (90 second max): <span id="w2-injury-time">0 sec</span>
-          <button type="button" onclick="startTimer(w2, 'injury')" class="btn btn-primary btn-sm">Start</button>
-          <button type="button" onclick="stopTimer(w2, 'injury')" class="btn btn-primary btn-sm">Stop</button>
-          <button type="button" onclick="resetTimer(w2, 'injury')" class="btn btn-primary btn-sm">Reset</button>
-          <br><br>
-          Blood Time (600 second max): <span id="w2-blood-time">0 sec</span>
-          <button type="button" onclick="startTimer(w2, 'blood')" class="btn btn-primary btn-sm">Start</button>
-          <button type="button" onclick="stopTimer(w2, 'blood')" class="btn btn-primary btn-sm">Stop</button>
-          <button type="button" onclick="resetTimer(w2, 'blood')" class="btn btn-primary btn-sm">Reset</button>
-        </td>
-      </tr>
-    </tbody>
-</table>
-<br>
-<br>
-<br>
-<h4>Match Results</h4>
-<br>
-  <div class="field">
-    <%= f.label "Win Type" %><br>
-    <%= f.select(:win_type, Match::WIN_TYPES) %>
-  </div>
+  
+  <div data-controller="wrestler-color">
+    <table class="table">
+      <thead>
+          <tr>
+            <th>Name: <%= @wrestler1_name %> <select id="w1-color" data-wrestler-color-target="w1ColorSelect" data-action="change->wrestler-color#changeW1Color">
+                <option value="green">Green</option>
+                <option value="red">Red</option>
+            </select>
+            <br>School: <%= @wrestler1_school_name %>
+            <br>Last Match: <%= @wrestler1_last_match && @wrestler1_last_match.finished_at ? time_ago_in_words(@wrestler1_last_match.finished_at) : "N/A" %></th>
+            <th>Name: <%= @wrestler2_name %> <select id="w2-color" data-wrestler-color-target="w2ColorSelect" data-action="change->wrestler-color#changeW2Color">
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+            </select>
+            <br>School: <%= @wrestler2_school_name %>
+            <br>Last Match: <%= @wrestler2_last_match && @wrestler2_last_match.finished_at ? time_ago_in_words(@wrestler2_last_match.finished_at) : "N/A" %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><%= @wrestler1_name %> Stats: <br><%= f.text_area :w1_stat, cols: "30", rows: "10", data: { match_data_target: "w1Stat" } %></td>
+            <td><%= @wrestler2_name %> Stats: <br><%= f.text_area :w2_stat, cols: "30", rows: "10", data: { match_data_target: "w2Stat" } %></td>
+          </tr>
+          <tr>
+            <td><%= @wrestler1_name %> Scoring <br><button id="w1-takedown" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Takedown" data-action="click->match-data#updateW1Stats" data-match-data-text="T3">T3</button>
+            <button id="w1-escape" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Escape" data-action="click->match-data#updateW1Stats" data-match-data-text="E1">E1</button>
+            <button id="w1-reversal" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Reversal" data-action="click->match-data#updateW1Stats" data-match-data-text="R2">R2</button>
+            <button id="w1-nf2" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Nf2" data-action="click->match-data#updateW1Stats" data-match-data-text="N2">N2 </button>
+            <button id="w1-nf3" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Nf3" data-action="click->match-data#updateW1Stats" data-match-data-text="N3">N3</button>
+            <button id="w1-nf4" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Nf4" data-action="click->match-data#updateW1Stats" data-match-data-text="N4">N4</button>
+            <button id="w1-nf5" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Nf5" data-action="click->match-data#updateW1Stats" data-match-data-text="N5">N5</button>
+            <button id="w1-penalty" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Penalty" data-action="click->match-data#updateW1Stats" data-match-data-text="P1">P1</button>
+            <button id="w1-penalty2" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Penalty2" data-action="click->match-data#updateW1Stats" data-match-data-text="P2">P2</button></td>
+            <td><%= @wrestler2_name %> Scoring <br><button id="w2-takedown" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Takedown" data-action="click->match-data#updateW2Stats" data-match-data-text="T3">T3</button>
+            <button id="w2-escape" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Escape" data-action="click->match-data#updateW2Stats" data-match-data-text="E1">E1</button>
+            <button id="w2-reversal" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Reversal" data-action="click->match-data#updateW2Stats" data-match-data-text="R2">R2</button>
+            <button id="w2-nf2" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Nf2" data-action="click->match-data#updateW2Stats" data-match-data-text="N2">N2</button>
+            <button id="w2-nf3" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Nf3" data-action="click->match-data#updateW2Stats" data-match-data-text="N3">N3</button>
+            <button id="w2-nf4" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Nf4" data-action="click->match-data#updateW2Stats" data-match-data-text="N4">N4</button>
+            <button id="w2-nf5" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Nf5" data-action="click->match-data#updateW2Stats" data-match-data-text="N5">N5</button>
+            <button id="w2-penalty" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Penalty" data-action="click->match-data#updateW2Stats" data-match-data-text="P1">P1</button>
+            <button id="w2-penalty2" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Penalty2" data-action="click->match-data#updateW2Stats" data-match-data-text="P2">P2</button></td>
+          </tr>
+          <tr>
+            <td><%= @wrestler1_name %> Choice <br><button id="w1-top" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Top" data-action="click->match-data#updateW1Stats" data-match-data-text="|Chose Top|">Chose Top</button>
+            <button id="w1-bottom" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Bottom" data-action="click->match-data#updateW1Stats" data-match-data-text="|Chose Bottom|">Chose Bottom</button>
+            <button id="w1-neutral" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Neutral" data-action="click->match-data#updateW1Stats" data-match-data-text="|Chose Neutral|">Chose Neutral</button>
+            <button id="w1-defer" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Defer" data-action="click->match-data#updateW1Stats" data-match-data-text="|Deferred|">Deferred</button></td>
+            <td><%= @wrestler2_name %> Choice <br><button id="w2-top" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Top" data-action="click->match-data#updateW2Stats" data-match-data-text="|Chose Top|">Chose Top</button>
+            <button id="w2-bottom" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Bottom" data-action="click->match-data#updateW2Stats" data-match-data-text="|Chose Bottom|">Chose Bottom</button>
+            <button id="w2-neutral" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Neutral" data-action="click->match-data#updateW2Stats" data-match-data-text="|Chose Neutral|">Chose Neutral</button>
+            <button id="w2-defer" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Defer" data-action="click->match-data#updateW2Stats" data-match-data-text="|Deferred|">Deferred</button></td>
+          </tr>
+          <tr>
+            <td><%= @wrestler1_name %> Warnings <br><button id="w1-stalling" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Stalling" data-action="click->match-data#updateW1Stats" data-match-data-text="S">Stalling</button>
+            <button id="w1-caution" type="button" class="btn btn-success btn-sm" data-wrestler-color-target="w1Caution" data-action="click->match-data#updateW1Stats" data-match-data-text="C">Caution</button></td>
+            <td><%= @wrestler2_name %> Warnings <br><button id="w2-stalling" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Stalling" data-action="click->match-data#updateW2Stats" data-match-data-text="S">Stalling</button>
+            <button id="w2-caution" type="button" class="btn btn-danger btn-sm" data-wrestler-color-target="w2Caution" data-action="click->match-data#updateW2Stats" data-match-data-text="C">Caution</button></td>
+          </tr>
+          <tr>
+            <td>Match Options <br><button type="button" class="btn btn-primary btn-sm" data-action="click->match-data#endPeriod">End Period</button></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>
+              <h5><%= @wrestler1_name %> Timer Controls</h5>
+              Injury Time (90 second max): <span id="w1-injury-time">0 sec</span>
+              <button type="button" data-action="click->match-data#startW1InjuryTimer" class="btn btn-primary btn-sm">Start</button>
+              <button type="button" data-action="click->match-data#stopW1InjuryTimer" class="btn btn-primary btn-sm">Stop</button>
+              <button type="button" data-action="click->match-data#resetW1InjuryTimer" class="btn btn-primary btn-sm">Reset</button>
+              <br><br>
+              Blood Time (600 second max): <span id="w1-blood-time">0 sec</span>
+              <button type="button" data-action="click->match-data#startW1BloodTimer" class="btn btn-primary btn-sm">Start</button>
+              <button type="button" data-action="click->match-data#stopW1BloodTimer" class="btn btn-primary btn-sm">Stop</button>
+              <button type="button" data-action="click->match-data#resetW1BloodTimer" class="btn btn-primary btn-sm">Reset</button>
+            </td>
+            <td>
+              <h5><%= @wrestler2_name %> Timer Controls</h5>
+              Injury Time (90 second max): <span id="w2-injury-time">0 sec</span>
+              <button type="button" data-action="click->match-data#startW2InjuryTimer" class="btn btn-primary btn-sm">Start</button>
+              <button type="button" data-action="click->match-data#stopW2InjuryTimer" class="btn btn-primary btn-sm">Stop</button>
+              <button type="button" data-action="click->match-data#resetW2InjuryTimer" class="btn btn-primary btn-sm">Reset</button>
+              <br><br>
+              Blood Time (600 second max): <span id="w2-blood-time">0 sec</span>
+              <button type="button" data-action="click->match-data#startW2BloodTimer" class="btn btn-primary btn-sm">Start</button>
+              <button type="button" data-action="click->match-data#stopW2BloodTimer" class="btn btn-primary btn-sm">Stop</button>
+              <button type="button" data-action="click->match-data#resetW2BloodTimer" class="btn btn-primary btn-sm">Reset</button>
+            </td>
+          </tr>
+        </tbody>
+    </table>
+  </div><!-- End of wrestler-color controller div -->
+
   <br>
-  <div class="field">
-    <%= f.label "Overtime Type" %> Leave blank if not overtime. For High School the 1st overtime is SV-1, second overtime is TB-1, third overtime is UTB.<br>
-    <%= f.select(:overtime_type, Match::OVERTIME_TYPES) %>
-  </div>
   <br>
-  <div class="field">
-    <%= f.label "Winner" %> Please choose the winner<br>
-    <%= f.collection_select :winner_id, @wrestlers, :id, :name_with_school, include_blank: true %>
-  </div>
   <br>
-  <% if @match.finished && @match.finished == 1 %>
+  <h4>Match Results</h4>
+  <br>
+  <div data-controller="match-score">
     <div class="field">
-      <%= f.label "Final Score" %> For decision, major, or tech fall put the score here in Number-Number format. If pin, put the accumulated pin time in the format MM:SS. If default, injury default, dq, bye, or forfeit, leave blank. Examples: 7-2, 17-2, 0:30, or 2:34.<br>
-      <%= f.text_field :score %>
+      <%= f.label "Win type" %><br>
+      <%= f.select :win_type, Match::WIN_TYPES, { include_blank: false }, { 
+        data: { 
+          match_score_target: "winType", 
+          action: "change->match-score#winTypeChanged" 
+        } 
+      } %>
     </div>
-  <% else %>
+    <br>
+    <div class="field">
+      <%= f.label "Overtime Type" %> Leave blank if not overtime. For High School the 1st overtime is SV-1, second overtime is TB-1, third overtime is UTB.<br>
+      <%= f.select(:overtime_type, Match::OVERTIME_TYPES) %>
+    </div>
+    <br>
+    <div class="field">
+      <%= f.label "Winner" %> Please choose the winner<br>
+      <%= f.collection_select :winner_id, @wrestlers, :id, :name_with_school, 
+        { include_blank: true }, 
+        { 
+          data: { 
+            match_score_target: "winnerSelect", 
+            action: "change->match-score#winnerChanged" 
+          } 
+        } 
+      %>
+    </div>
+    <br>
     <div class="field">
       <%= f.label "Final Score" %>
       <br>
@@ -139,383 +157,27 @@
         The input will adjust based on the selected win type.
       </span>
       <br>
-      <div id="dynamic-score-input"></div>
-      <p id="pin-time-tip" class="text-muted mt-2" style="display: none;">
+      <div id="dynamic-score-input" data-match-score-target="dynamicScoreInput"></div>
+      <p id="pin-time-tip" class="text-muted mt-2" style="display: none;" data-match-score-target="pinTimeTip">
         <strong>Tip:</strong> Pin time is an accumulation over the match, not how much time was left in the current period. 
         <br>For example, if all 3 periods are 2 minutes and a pin happened with 1:27 left in the second period, 
         the pin time would be <strong>2:33</strong> (2 minutes for the first period + 33 seconds elapsed in the second period).
       </p>
-      <div id="validation-alerts" class="text-danger mt-2"></div>
-      <%= f.hidden_field :score, id: "final-score-field" %>
+      <div id="validation-alerts" class="text-danger mt-2" data-match-score-target="validationAlerts"></div>
+      <%= f.hidden_field :score, id: "final-score-field", data: { match_score_target: "finalScoreField" } %>
+      
+      <br>
+      <%= f.submit "Update Match", id: "update-match-btn", 
+        data: { 
+          match_score_target: "submitButton",
+          action: "click->match-score#confirmWinner" 
+        },
+        class: "btn btn-success" %>
     </div>
-    <%= render 'matches/matchstats_variable_score_input' %>
-  <% end %>
-  <br>
+  </div><!-- End of match-score controller -->
+</div><!-- End of match-data controller div -->
 
+  <br>
   <%= f.hidden_field :finished, :value => 1 %>
   <%= f.hidden_field :round, :value => @match.round %>
-
-<br>
-
-<div class="actions">
-<%= f.submit "Update Match", id: "update-match-btn", onclick: "return confirm('Is the name of the winner ' + document.getElementById('match_winner_id').options[document.getElementById('match_winner_id').selectedIndex].text + '?')", class: "btn btn-success" %>
-</div>
-
-<% end %>
-
-<%= render 'matches/matchstats_color_change' %>
-
-<script>
-// ############### CORE STATE & HELPERS (Define First) #############
-var tournament = <%= @match.tournament.id %>;
-var bout = <%= @match.bout_number %>;
-var match_finsihed = "<%= @match.finished %>";
-
-function Person(stats, name) {
-  this.name = name;
-  this.stats = stats;
-  this.updated_at = null; // Track last updated timestamp
-  this.timers = {
-    "injury": { time: 0, startTime: null, interval: null },
-    "blood": { time: 0, startTime: null, interval: null },
-  };
-}
-var w1 = new Person("", "w1");
-var w2 = new Person("", "w2");
-
-function generateKey(wrestler_name) {
-  return `${wrestler_name}-${tournament}-${bout}`;
-}
-function loadFromLocalStorage(wrestler_name) {
-  const key = generateKey(wrestler_name);
-  const data = localStorage.getItem(key);
-  return data ? JSON.parse(data) : null;
-}
-function saveToLocalStorage(person) {
-  const key = generateKey(person.name);
-  const data = {
-    stats: person.stats,
-    updated_at: person.updated_at,
-    timers: person.timers, // Save all timers
-  };
-  localStorage.setItem(key, JSON.stringify(data));
-}
-function updateHtmlValues() {
-  document.getElementById("match_w1_stat").value = w1.stats;
-  document.getElementById("match_w2_stat").value = w2.stats;
-}
-function updateJsValues() {
-  w1.stats = document.getElementById("match_w1_stat").value;
-  w2.stats = document.getElementById("match_w2_stat").value;
-}
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-function handleTextAreaInput(textAreaElement, wrestler) {
-  const newValue = textAreaElement.value;
-  console.log(`Text area input detected for ${wrestler.name}:`, newValue.substring(0, 50) + "..."); // Log input
-  
-  // Update the internal JS object
-  wrestler.stats = newValue;
-  wrestler.updated_at = new Date().toISOString();
-  
-  // Save to localStorage
-  saveToLocalStorage(wrestler);
-
-  // Send the update via Action Cable if subscribed
-  if (matchSubscription) {
-    let payload = {};
-    if (wrestler.name === 'w1') {
-      payload.new_w1_stat = wrestler.stats;
-    } else if (wrestler.name === 'w2') {
-      payload.new_w2_stat = wrestler.stats;
-    }
-    if (Object.keys(payload).length > 0) {
-      console.log('[ActionCable] Performing send_stat from textarea with payload:', payload);
-      matchSubscription.perform('send_stat', payload);
-    }
-  }
-}
-function updateStats(wrestler, text) {
-  if (!wrestler) { console.error("updateStats called with undefined wrestler"); return; }
-  wrestler.stats += text + " ";
-  wrestler.updated_at = new Date().toISOString(); 
-  updateHtmlValues(); 
-  saveToLocalStorage(wrestler); 
-
-  // Reference the global matchSubscription
-  if (matchSubscription) {
-    let payload = {};
-    if (wrestler.name === 'w1') payload.new_w1_stat = wrestler.stats;
-    else if (wrestler.name === 'w2') payload.new_w2_stat = wrestler.stats;
-    if (Object.keys(payload).length > 0) {
-       console.log('[ActionCable] updateStats performing send_stat:', payload);
-       matchSubscription.perform('send_stat', payload);
-    }
-  } else {
-    console.warn('[ActionCable] updateStats called but matchSubscription is null.');
-  }
-}
-
-var debouncedW1Handler = debounce((el) => { if(typeof w1 !== 'undefined') handleTextAreaInput(el, w1); }, 400);
-var debouncedW2Handler = debounce((el) => { if(typeof w2 !== 'undefined') handleTextAreaInput(el, w2); }, 400);
-
-function startTimer(wrestler, timerKey) {
-  const timer = wrestler.timers[timerKey];
-  if (timer.interval) return; // Prevent multiple intervals
-  timer.startTime = Date.now(); // Record the start time
-  timer.interval = setInterval(() => {
-    const elapsedSeconds = Math.floor((Date.now() - timer.startTime) / 1000);
-    updateTimerDisplay(wrestler, timerKey, timer.time + elapsedSeconds); // Show total time
-  }, 1000);
-}
-function stopTimer(wrestler, timerKey) {
-  const timer = wrestler.timers[timerKey];
-  if (!timer.interval || !timer.startTime) return; // Timer not running
-  clearInterval(timer.interval);
-
-  const elapsedSeconds = Math.floor((Date.now() - timer.startTime) / 1000); // Calculate elapsed time
-  timer.time += elapsedSeconds; // Add elapsed time to total
-  timer.interval = null;
-  timer.startTime = null;
-
-  saveToLocalStorage(wrestler); // Save wrestler data
-  updateTimerDisplay(wrestler, timerKey, timer.time); // Update final display
-  updateStatsBox(wrestler, timerKey, elapsedSeconds); // Update wrestler stats
-}
-function resetTimer(wrestler, timerKey) {
-  const timer = wrestler.timers[timerKey];
-  stopTimer(wrestler, timerKey); // Stop if running
-  timer.time = 0; // Reset time
-  updateTimerDisplay(wrestler, timerKey, 0); // Update display
-  saveToLocalStorage(wrestler); // Save wrestler data
-}
-function updateTimerDisplay(wrestler, timerKey, totalTime) {
-  const elementId = `${wrestler.name}-${timerKey}-time`; // Construct element ID
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.innerText = `${Math.floor(totalTime / 60)}m ${totalTime % 60}s`;
-  }
-}
-function updateStatsBox(wrestler, timerKey, elapsedSeconds) {
-  const timerType = timerKey.includes("injury") ? "Injury Time" : "Blood Time";
-  const formattedTime = `${Math.floor(elapsedSeconds / 60)}m ${elapsedSeconds % 60}s`;
-  updateStats(wrestler, `${timerType}: ${formattedTime}`);
-}
-
-// Function to initialize timer displays based on loaded data
-function initializeTimers(wrestler) {
-  if (!wrestler || !wrestler.timers) return;
-  updateTimerDisplay(wrestler, 'injury', wrestler.timers.injury.time || 0);
-  updateTimerDisplay(wrestler, 'blood', wrestler.timers.blood.time || 0);
-}
-
-// Modified function to load from local storage conditionally
-function initializeFromLocalStorage() {
-  console.log("[Init] Initializing stats state...");
-  const now = new Date().toISOString(); // Get current time for potential updates
-
-  // Process Wrestler 1
-  const localDataW1 = loadFromLocalStorage('w1');
-  // Check if local data exists, has non-blank stats, and an updated_at timestamp
-  const useLocalW1 = localDataW1 && localDataW1.stats && typeof localDataW1.stats === 'string' && localDataW1.stats.trim() !== '' && localDataW1.updated_at;
-
-  if (useLocalW1) {
-    console.log("[Init W1] Using valid data from local storage.");
-    w1.stats = localDataW1.stats;
-    w1.updated_at = localDataW1.updated_at;
-    // Ensure timers object exists and has the expected structure
-    w1.timers = localDataW1.timers && localDataW1.timers.injury && localDataW1.timers.blood
-                  ? localDataW1.timers
-                  : { injury: { time: 0, startTime: null, interval: null }, blood: { time: 0, startTime: null, interval: null } };
-  } else {
-    // Use server data (already in w1.stats from updateJsValues)
-    // Check if local data exists but is invalid/old, or doesn't exist at all
-    if (localDataW1) {
-        console.log("[Init W1] Local storage data invalid/blank/missing timestamp. Overwriting with server data.");
-    } else {
-        console.log("[Init W1] No local storage data found. Using server data.");
-    }
-    // w1.stats already holds server value
-    w1.updated_at = now; // Mark as updated now
-    w1.timers = { injury: { time: 0, startTime: null, interval: null }, blood: { time: 0, startTime: null, interval: null } }; // Reset timers
-    saveToLocalStorage(w1); // Save the server state to local storage
-  }
-
-  // Process Wrestler 2
-  const localDataW2 = loadFromLocalStorage('w2');
-  // Check if local data exists, has non-blank stats, and an updated_at timestamp
-  const useLocalW2 = localDataW2 && localDataW2.stats && typeof localDataW2.stats === 'string' && localDataW2.stats.trim() !== '' && localDataW2.updated_at;
-
-  if (useLocalW2) {
-    console.log("[Init W2] Using valid data from local storage.");
-    w2.stats = localDataW2.stats;
-    w2.updated_at = localDataW2.updated_at;
-    // Ensure timers object exists
-    w2.timers = localDataW2.timers && localDataW2.timers.injury && localDataW2.timers.blood
-                  ? localDataW2.timers
-                  : { injury: { time: 0, startTime: null, interval: null }, blood: { time: 0, startTime: null, interval: null } };
-  } else {
-     // Use server data (already in w2.stats from updateJsValues)
-    if (localDataW2) {
-        console.log("[Init W2] Local storage data invalid/blank/missing timestamp. Overwriting with server data.");
-    } else {
-        console.log("[Init W2] No local storage data found. Using server data.");
-    }
-    // w2.stats already holds server value
-    w2.updated_at = now; // Mark as updated now
-    w2.timers = { injury: { time: 0, startTime: null, interval: null }, blood: { time: 0, startTime: null, interval: null } }; // Reset timers
-    saveToLocalStorage(w2); // Save the server state to local storage
-  }
-
-  // After deciding state, update HTML elements and timer displays
-  updateHtmlValues();
-  initializeTimers(w1);
-  initializeTimers(w2);
-  console.log("[Init] State initialization complete.");
-}
-
-// ############### ACTION CABLE LIFECYCLE (Define Before Listeners) #############
-var matchSubscription = null; // Use var for safety with Turbo re-evaluation / page navigation
-
-function cleanupSubscription() {
-  if (matchSubscription) {
-    console.log('[AC Cleanup] Unsubscribing...');
-    matchSubscription.unsubscribe();
-    matchSubscription = null;
-  }
-}
-
-function setupSubscription(matchId) {
-  cleanupSubscription(); // Ensure clean state
-  console.log(`[Stats AC Setup] Attempting subscription for match ID: ${matchId}`);
-  
-  const statusIndicator = document.getElementById("cable-status-indicator"); // Get indicator
-
-  if (typeof App === 'undefined' || typeof App.cable === 'undefined') {
-    console.error("[Stats AC Setup] Action Cable consumer not found.");
-    if(statusIndicator) { 
-      statusIndicator.textContent = "Error: AC Not Loaded"; 
-      statusIndicator.classList.remove('text-dark', 'text-success');
-      statusIndicator.classList.add('alert-danger', 'text-danger');
-    }
-    return;
-  }
-  
-  // Set initial connecting state
-  if(statusIndicator) { 
-    statusIndicator.textContent = "Connecting to backend for live updates..."; 
-    statusIndicator.classList.remove('alert-danger', 'alert-success', 'text-danger', 'text-success');
-    statusIndicator.classList.add('alert-secondary', 'text-dark');
-  }
-
-  // Assign to the global var
-  matchSubscription = App.cable.subscriptions.create(
-    { channel: "MatchChannel", match_id: matchId },
-    {
-      initialized() { 
-        console.log(`[Stats AC Callback] Initialized: ${matchId}`); 
-        // Set connecting state again in case of retry
-        if(statusIndicator) { 
-          statusIndicator.textContent = "Connecting to backend for live updates..."; 
-          statusIndicator.classList.remove('alert-danger', 'alert-success', 'text-danger', 'text-success');
-          statusIndicator.classList.add('alert-secondary', 'text-dark');
-        }
-      },
-      connected() { 
-        console.log(`[Stats AC Callback] CONNECTED: ${matchId}`); 
-        if(statusIndicator) { 
-          statusIndicator.textContent = "Connected to backend for live updates..."; 
-          statusIndicator.classList.remove('alert-danger', 'alert-secondary', 'text-danger', 'text-dark');
-          statusIndicator.classList.add('alert-success'); 
-        }
-      },
-      disconnected() { 
-        console.log(`[Stats AC Callback] Disconnected: ${matchId}`); 
-        if(statusIndicator) { 
-          statusIndicator.textContent = "Disconnected from backend for live updates. Retrying..."; 
-          statusIndicator.classList.remove('alert-success', 'alert-secondary', 'text-success', 'text-dark');
-          statusIndicator.classList.add('alert-danger'); 
-        }
-      },
-      rejected() { 
-        console.error(`[Stats AC Callback] REJECTED: ${matchId}`); 
-        if(statusIndicator) { 
-          statusIndicator.textContent = "Connection to backend rejected"; 
-          statusIndicator.classList.remove('alert-success', 'alert-secondary', 'text-success', 'text-dark');
-          statusIndicator.classList.add('alert-danger'); 
-        }
-        matchSubscription = null; 
-      },
-      received(data) {
-        console.log("[AC Callback] Received:", data);
-        const currentW1TextArea = document.getElementById("match_w1_stat");
-        const currentW2TextArea = document.getElementById("match_w2_stat");
-        if (data.w1_stat !== undefined && currentW1TextArea) {
-          currentW1TextArea.value = data.w1_stat;
-          if(w1) w1.stats = data.w1_stat; 
-        }
-        if (data.w2_stat !== undefined && currentW2TextArea) {
-          currentW2TextArea.value = data.w2_stat;
-          if(w2) w2.stats = data.w2_stat; 
-        }
-      }
-    }
-  );
-  
-  // Re-attach listeners AFTER subscription is attempted
-  const w1TextArea = document.getElementById("match_w1_stat");
-  const w2TextArea = document.getElementById("match_w2_stat");
-  if (w1TextArea) {
-    w1TextArea.addEventListener('input', (event) => { debouncedW1Handler(event.target); });
-  } else { console.warn('[AC Setup] w1StatsTextArea not found for listener'); }
-  if (w2TextArea) {
-    w2TextArea.addEventListener('input', (event) => { debouncedW2Handler(event.target); });
-  } else { console.warn('[AC Setup] w2StatsTextArea not found for listener'); }
-}
-
-// ############### EVENT LISTENERS (Define Last) #############
-
-document.addEventListener("turbo:load", () => {
-  console.log("Stats Event: turbo:load fired.");
-
-  // --- Check if we are actually on the match stats page ---
-  const statsElementCheck = document.getElementById('match_w1_stat'); // Check for stats textarea
-  if (!statsElementCheck) {
-    console.log("Stats Event: Not on match stats page, skipping init and AC setup.");
-    cleanupSubscription(); // Cleanup just in case
-    return;
-  }
-  // --- End Check ---
-
-  // 1. Initialize JS objects with server-rendered values from HTML first
-  updateJsValues();
-
-  // 2. Attempt to load from local storage, overwriting server values only if local is valid and non-blank
-  initializeFromLocalStorage(); // This now contains the core logic
-
-  // 3. Setup ActionCable
-  const matchId = <%= @match.id %>;
-  if (matchId) {
-    setupSubscription(matchId);
-  } else {
-    console.warn("Stats Event: turbo:load - Could not determine match ID for AC setup.");
-  }
-});
-
-document.addEventListener("turbo:before-cache", () => {
-  console.log("Event: turbo:before-cache fired. Cleaning up subscription.");
-  cleanupSubscription();
-});
-
-// Optional: Cleanup on full page unload too
-window.addEventListener('beforeunload', cleanupSubscription);
-</script>
+<% end %><!-- End of form_for -->

@@ -5,3 +5,6 @@
 - Cypress tests are created for js tests. They can be found in cypress-tests/cypress
 - Cypress tests can be run with docker: bash cypress-tests/run-cypress-tests.sh
 - Write as little code as possible. I do not want crazy non standard rails implementations.
+- This project is using propshaft and importmap.
+- Stimulus is used for javascript.
+- Use the context7 mcp server for context.

@@ -2,32 +2,40 @@
 <h2><%= @match.weight.max %> lbs</h2>
 <h3><%= @tournament.name %></h3>
 
-<div id="cable-status-indicator" class="alert alert-secondary" style="padding: 5px; margin-bottom: 10px; border-radius: 4px;"></div>
+<div data-controller="match-spectate"
+     data-match-spectate-match-id-value="<%= @match.id %>">
 
-<div class="match-details">
-  <div class="wrestler-info wrestler1">
-    <h4><%= @wrestler1_name %> (<%= @wrestler1_school_name %>)</h4>
-    <div class="stats">
-      <strong>Stats:</strong>
-      <pre id="w1-stats-display"><%= @match.w1_stat %></pre> 
+  <div id="cable-status-indicator" 
+       data-match-spectate-target="statusIndicator" 
+       class="alert alert-secondary" 
+       style="padding: 5px; margin-bottom: 10px; border-radius: 4px;"></div>
+
+  <div class="match-details">
+    <div class="wrestler-info wrestler1">
+      <h4><%= @wrestler1_name %> (<%= @wrestler1_school_name %>)</h4>
+      <div class="stats">
+        <strong>Stats:</strong>
+        <pre data-match-spectate-target="w1Stats"><%= @match.w1_stat %></pre> 
+      </div>
+    </div>
+    
+    <div class="wrestler-info wrestler2">
+      <h4><%= @wrestler2_name %> (<%= @wrestler2_school_name %>)</h4>
+      <div class="stats">
+        <strong>Stats:</strong>
+        <pre data-match-spectate-target="w2Stats"><%= @match.w2_stat %></pre>
+      </div>
+    </div>
+    
+    <div class="match-result">
+      <h4>Result</h4>
+      <p><strong>Winner:</strong> <span data-match-spectate-target="winner"><%= @match.winner_id ? @match.winner.name : '-' %></span></p>
+      <p><strong>Win Type:</strong> <span data-match-spectate-target="winType"><%= @match.win_type || '-' %></span></p>
+      <p><strong>Score:</strong> <span data-match-spectate-target="score"><%= @match.score || '-' %></span></p>
+      <p><strong>Finished:</strong> <span data-match-spectate-target="finished"><%= @match.finished ? 'Yes' : 'No' %></span></p>
     </div>
   </div>
-  
-  <div class="wrestler-info wrestler2">
-    <h4><%= @wrestler2_name %> (<%= @wrestler2_school_name %>)</h4>
-    <div class="stats">
-      <strong>Stats:</strong>
-      <pre id="w2-stats-display"><%= @match.w2_stat %></pre>
-    </div>
-  </div>
-  
-  <div class="match-result">
-    <h4>Result</h4>
-    <p><strong>Winner:</strong> <span id="winner-display"><%= @match.winner_id ? @match.winner.name : '-' %></span></p>
-    <p><strong>Win Type:</strong> <span id="win-type-display"><%= @match.win_type || '-' %></span></p>
-    <p><strong>Score:</strong> <span id="score-display"><%= @match.score || '-' %></span></p>
-    <p><strong>Finished:</strong> <span id="finished-display"><%= @match.finished ? 'Yes' : 'No' %></span></p>
-  </div>
+
 </div>
 
 <style>
@@ -75,147 +83,4 @@
     color: white;
   }
   */
-</style>
-
-<script>
-// ############### ACTION CABLE LIFECYCLE #############
-var matchSubscription = null; // Use var for handling Turbo page navigations
-
-// Function to tear down the existing subscription
-function cleanupSubscription() {
-  if (matchSubscription) {
-    console.log('[Spectator AC Cleanup] Unsubscribing...');
-    matchSubscription.unsubscribe();
-    matchSubscription = null;
-  }
-}
-
-// Function to set up the Action Cable subscription for a given matchId
-function setupSubscription(matchId) {
-  cleanupSubscription(); // Ensure clean state
-  console.log(`[Spectator AC Setup] Attempting subscription for match ID: ${matchId}`);
-  
-  const statusIndicator = document.getElementById("cable-status-indicator"); // Get indicator
-
-  if (typeof App === 'undefined' || typeof App.cable === 'undefined') {
-    console.error("[Spectator AC Setup] Action Cable consumer not found.");
-    if(statusIndicator) { 
-      statusIndicator.textContent = "Error: AC Not Loaded"; 
-      statusIndicator.classList.remove('text-dark', 'text-success');
-      statusIndicator.classList.add('alert-danger', 'text-danger'); // Use alert-danger for error state too
-    }
-    return;
-  }
-  
-  // Set initial connecting state for indicator
-  if(statusIndicator) { 
-    statusIndicator.textContent = "Connecting to backend for live updates..."; 
-    statusIndicator.classList.remove('alert-danger', 'alert-success', 'text-danger', 'text-success');
-    statusIndicator.classList.add('alert-secondary', 'text-dark'); // Keep grey, dark text
-  }
-
-  // Get references to display elements (needed inside received)
-  const w1StatsDisplay = document.getElementById("w1-stats-display");
-  const w2StatsDisplay = document.getElementById("w2-stats-display");
-  const winnerDisplay = document.getElementById("winner-display");
-  const winTypeDisplay = document.getElementById("win-type-display");
-  const scoreDisplay = document.getElementById("score-display");
-  const finishedDisplay = document.getElementById("finished-display");
-
-  // Assign to the global var
-  matchSubscription = App.cable.subscriptions.create(
-    { channel: "MatchChannel", match_id: matchId },
-    {
-      initialized() { 
-        console.log(`[Spectator AC Callback] Initialized: ${matchId}`); 
-        // Set connecting state again in case of retry
-        if(statusIndicator) { 
-          statusIndicator.textContent = "Connecting to backend for live updates..."; 
-          statusIndicator.classList.remove('alert-danger', 'alert-success', 'text-danger', 'text-success');
-          statusIndicator.classList.add('alert-secondary', 'text-dark'); 
-        }
-      },
-      connected() { 
-        console.log(`[Spectator AC Callback] CONNECTED: ${matchId}`); 
-        if(statusIndicator) { 
-          statusIndicator.textContent = "Connected to backend for live updates..."; 
-          statusIndicator.classList.remove('alert-danger', 'alert-secondary', 'text-danger', 'text-dark');
-          statusIndicator.classList.add('alert-success'); // Use alert-success for connected
-        }
-      },
-      disconnected() { 
-        console.log(`[Spectator AC Callback] Disconnected: ${matchId}`); 
-        if(statusIndicator) { 
-          statusIndicator.textContent = "Disconnected from backend for live updates. Retrying..."; 
-          statusIndicator.classList.remove('alert-success', 'alert-secondary', 'text-success', 'text-dark');
-          statusIndicator.classList.add('alert-danger'); // Use alert-danger for disconnected
-        }
-      },
-      rejected() { 
-        console.error(`[Spectator AC Callback] REJECTED: ${matchId}`); 
-        if(statusIndicator) { 
-          statusIndicator.textContent = "Connection to backend rejected"; 
-          statusIndicator.classList.remove('alert-success', 'alert-secondary', 'text-success', 'text-dark');
-          statusIndicator.classList.add('alert-danger'); // Use alert-danger for rejected
-        }
-        matchSubscription = null; 
-      },
-      received(data) {
-        console.log("[Spectator AC Callback] Received:", data);
-        // Update display elements if they exist
-        if (data.w1_stat !== undefined && w1StatsDisplay) {
-          w1StatsDisplay.textContent = data.w1_stat;
-        }
-        if (data.w2_stat !== undefined && w2StatsDisplay) {
-          w2StatsDisplay.textContent = data.w2_stat;
-        }
-        if (data.score !== undefined && scoreDisplay) {
-          scoreDisplay.textContent = data.score || '-';
-        }
-        if (data.win_type !== undefined && winTypeDisplay) {
-          winTypeDisplay.textContent = data.win_type || '-';
-        }
-        if (data.winner_name !== undefined && winnerDisplay) { 
-          winnerDisplay.textContent = data.winner_name || (data.winner_id ? `ID: ${data.winner_id}` : '-'); 
-        } else if (data.winner_id !== undefined && winnerDisplay) {
-          winnerDisplay.textContent = data.winner_id ? `ID: ${data.winner_id}` : '-'; 
-        }
-        if (data.finished !== undefined && finishedDisplay) {
-          finishedDisplay.textContent = data.finished ? 'Yes' : 'No';
-        }
-      }
-    }
-  );
-}
-
-// ############### EVENT LISTENERS #############
-
-document.addEventListener("turbo:load", () => {
-  console.log("Spectator Event: turbo:load fired.");
-
-  // Check for necessary elements before proceeding
-  const spectatorElementCheck = document.getElementById('w1-stats-display');
-  if (!spectatorElementCheck) {
-    console.log("Spectator Event: Not on spectator page, skipping AC setup.");
-    // Ensure any potentially lingering subscription is cleaned up just in case
-    cleanupSubscription(); 
-    return; 
-  }
-
-  const matchId = <%= @match.id %>; // Get match ID from ERB
-  if (matchId) {
-    setupSubscription(matchId);
-  } else {
-    console.warn("Spectator Event: turbo:load - Could not determine match ID");
-  }
-});
-
-document.addEventListener("turbo:before-cache", () => {
-  console.log("Spectator Event: turbo:before-cache fired. Cleaning up subscription.");
-  cleanupSubscription();
-});
-
-// Optional: Cleanup on full page unload too
-window.addEventListener('beforeunload', cleanupSubscription);
-
-</script> 
+</style> 

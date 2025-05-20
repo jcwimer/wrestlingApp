@@ -39,6 +39,3 @@ Right now, mariadb's root password comes from the secrets.yaml and wrestlingdev 
 From a mysql shell> `CREATE USER ${username} IDENTIFIED BY '${password}'; GRANT ALL PRIVILEGES ON  ${database}.* TO ${username}; FLUSH PRIVILEGES;` $database would be wrestlingdev. I'll do this automatically later.
 
 Right now, we're also only using gmail for email.
-
-## Recommended cloud machines
-In production, this runs on GKE. I have two node pools. The first is 2 x `n2-high-cpu-2` ($12.63/month preemptible). That pool can run 1 "copy" of the application. That means 2 x app pods, 1 x worker, 1 x memcached, and 1 x mariadb. The second node pool is an autoscale from 0-10 and is of the machine type `n1-standard-1` ($7.30/ month preemptible). This pool is strictly for scaling the app pods and the worker pods.

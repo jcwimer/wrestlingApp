@@ -29,6 +29,8 @@ gem 'sqlite3', ">= 2.1", :group => :development
 gem 'jquery-rails'
 # Turbo for modern page interactions
 gem 'turbo-rails'
+# Stimulus for JavaScript behaviors
+gem 'stimulus-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'
 # bundle exec rake doc:rails generates the API under doc/api.

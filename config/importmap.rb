@@ -1,7 +1,9 @@
 # Pin npm packages by running ./bin/importmap
 
-pin "application", preload: true # Preloads app/javascript/application.js
+pin "application", preload: true # Preloads app/assets/javascripts/application.js
 pin "@hotwired/turbo-rails", to: "turbo.min.js", preload: true
+pin "@hotwired/stimulus", to: "stimulus.min.js", preload: true
+pin "@hotwired/stimulus-loading", to: "stimulus-loading.js", preload: true
 pin "@rails/actioncable", to: "actioncable.esm.js" # For Action Cable
 
 # Pin jQuery. jquery-rails should make "jquery.js" or "jquery.min.js" available.
@@ -16,9 +18,8 @@ pin "datatables.net", to: "jquery.dataTables.min.js" # Assuming this is how you 
 # If Bootstrap requires Popper.js, and you have it in vendor/assets/javascripts/
 # pin "@popperjs/core", to: "popper.min.js" # Or the actual filename if different
 
-# Pin all files in app/javascript/controllers (if you use Stimulus, not explicitly requested yet)
-# pin_all_from "app/javascript/controllers", under: "controllers"
+# Pin controllers from app/assets/javascripts/controllers
+pin_all_from "app/assets/javascripts/controllers", under: "controllers"
 
-# Pin all JS files from app/javascript directory. They can be imported by their path relative to app/javascript.
-# For example, if you have app/javascript/custom/my_script.js, you can import it as import "custom/my_script";
-pin_all_from "app/javascript", under: "app/javascript" 
+# Pin all JS files from app/assets/javascripts directory
+pin_all_from "app/assets/javascripts", under: "assets/javascripts" 

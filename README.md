@@ -8,10 +8,12 @@ This application is being created to run a wrestling tournament.
 
 **App Info**
 * Ruby 3.2.0
-* Rails 8.0.0
+* Rails 8.0.2
 * DB MySQL/MariaDB
-* Memcached
-* Solid Queue for background job processing
+* Solid Cache -> MySQL/MariaDB for html partial caching
+* Solid Queue -> MySQL/MariaDB for background job processing
+* Solid Cable -> MySQL/MariaDB for websocket channels
+* Hotwired Stimulus for client-side JavaScript
 
 # Development
 
@@ -106,9 +108,24 @@ See `SOLID_QUEUE.md` for more details about the job system.
 Note: If updating rails, do not change the version in `Gemfile` until after you run `bash bin/rails-dev-run.sh wrestlingdev-dev`. Creating the container will fail due to a mismatch in Gemfile and Gemfile.lock.
 Then run `rails app:update` to update rails.
 
+## Stimulus Controllers
+
+The application uses Hotwired Stimulus for client-side JavaScript interactivity. Controllers can be found in `app/asssets/javascripts/controllers`
+
+### Testing Stimulus Controllers
+
+The Stimulus controllers are tested using Cypress end-to-end tests:
+
+```bash
+# Run Cypress tests in headless mode
+bash cypress-tests/run-cypress-tests.sh
+```
+
 # Deployment
 
-The production version of this is currently deployed in Kubernetes. See [Deploying with Kubernetes](deploy/kubernetes/README.md)
+The production version of this is currently deployed in Kubernetes (via K3s). See [Deploying with Kubernetes](deploy/kubernetes/README.md)
+
+I'm using a Hetzner dedicated server with an i7-8700, 500GB NVME (RAID1), and 64GB ECC RAM. I have a hot standby (SQL read only replication) in my homelab.
 
 ## Server Configuration
 
@@ -121,11 +138,6 @@ The application uses an intelligent auto-scaling configuration for Puma (the web
 - **Thread Configuration**: Each Puma worker uses 5-12 threads by default, optimized for mixed I/O and CPU workloads.
 - **SolidQueue Integration**: When `SOLID_QUEUE_IN_PUMA=true`, background jobs run within the Puma process.
 - **Database Connection Pool**: Automatically sized based on the maximum number of threads across all workers.
-
-The configuration is designed to adapt to different environments:
-- Small servers: Uses fewer workers to avoid memory exhaustion
-- Large servers: Scales up to utilize available CPU cores
-- Development: Uses a single worker for simplicity
 
 All of these settings can be overridden with environment variables if needed.
 
@@ -172,11 +184,11 @@ SolidQueue plugin enabled in Puma
 * `WRESTLINGDEV_INFLUXDB_USERNAME` - InfluxDB username (optional)
 * `WRESTLINGDEV_INFLUXDB_PASSWORD` - InfluxDB password (optional)
 
-See `SOLID_QUEUE.md` for details about the job system configuration.
-
 This project provides multiple ways to develop and deploy, with Docker being the primary method.
 
-# Sprockets to Propshaft Migration
+# Frontend Assets
+
+## Sprockets to Propshaft Migration
 
 - Propshaft will automatically include in its search paths the folders vendor/assets, lib/assets and app/assets of your project and of all the gems in your Gemfile. You can see all included files by using the reveal rake task: `rake assets:reveal`. When importing you'll use the relative path from this command.
 - All css files are imported via `app/assets/stylesheets/application.css`. This is imported on `app/views/layouts/application.html.erb`.
@@ -186,3 +198,12 @@ This project provides multiple ways to develop and deploy, with Docker being the
   - Turbo and action cable are gems and get pathed properly by propshaft.
 - development is "nobuild" with `config.assets.build_assets = false` in `config/environments/development.rb`
 - production needs to run rake assets:precompile. This is done in the `deploy/rails-prod-Dockerfile`.
+
+## Stimulus Implementation
+
+The application has been migrated from using vanilla JavaScript to Hotwired Stimulus. The Stimulus controllers are organized in:
+
+- `app/assets/javascripts/controllers/` - Contains all Stimulus controllers
+- `app/assets/javascripts/application.js` - Registers and loads all controllers
+
+The importmap configuration in `config/importmap.rb` handles the loading of all JavaScript dependencies including Stimulus controllers.
