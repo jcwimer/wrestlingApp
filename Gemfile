@@ -85,6 +85,7 @@ group :development do
  gem 'bullet'
  gem 'brakeman'
  gem 'bundler-audit'
+ gem 'rubocop'
 end
 
 group :development, :test do
