@@ -113,7 +113,7 @@
 	
 	# Regular Double Elimination 1-8
 	tournament = Tournament.create(id: 204, name: 'Regular Double Elimination 1-8', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-8', user_id: 1, date: future_date, is_public: true)
-	create_schools(tournament, 32)
+	create_schools(tournament, 64)
 	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
 	tournament.create_pre_defined_weights(weight_classes)
 	wrestler_name_number = 1
@@ -126,6 +126,8 @@
 			number_of_wrestlers = 32
 		elsif index == 3
 			number_of_wrestlers = 17
+		elsif index == 4
+			number_of_wrestlers = 62
 		else
 		  number_of_wrestlers = 16
 		end

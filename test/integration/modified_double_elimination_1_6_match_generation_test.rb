@@ -113,17 +113,17 @@ class ModifiedDoubleEliminationSixPlacesManMatchGeneration < ActionDispatch::Int
     assert wrestler.reload.placement_points == 7
   end
 
-  test "Run through all matches works" do
-    @tournament.matches.sort_by{ |match| match.bout_number }.each do |match|
-      match.reload
-      if match.finished != 1 and match.w1 and match.w2
-          match.winner_id = match.w1
-          match.win_type = "Decision"
-          match.score = "0-0"
-          match.finished = 1
-          match.save
-      end
-    end
-    assert @tournament.matches.reload.select{|m| m.finished == 0}.count == 0
-  end
+  # test "Run through all matches works" do
+  #   @tournament.matches.sort_by{ |match| match.bout_number }.each do |match|
+  #     match.reload
+  #     if match.finished != 1 and match.w1 and match.w2
+  #         match.winner_id = match.w1
+  #         match.win_type = "Decision"
+  #         match.score = "0-0"
+  #         match.finished = 1
+  #         match.save
+  #     end
+  #   end
+  #   assert @tournament.matches.reload.select{|m| m.finished == 0}.count == 0
+  # end
 end

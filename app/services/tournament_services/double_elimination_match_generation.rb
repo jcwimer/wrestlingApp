@@ -202,6 +202,61 @@ class DoubleEliminationMatchGeneration
           { bracket_position: "3/4",                 number_of_matches: 1, round: 8 }
         ]
       }
+    when 64
+      {
+        round_one_matchups: [
+          { seeds: [1, 64], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [32, 33], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [17, 48], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [16, 49], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [9, 56], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [24, 41], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [25, 40], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [8, 57], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [5, 60], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [28, 37], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [21, 44], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [12, 53], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [13, 52], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [20, 45], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [29, 36], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [4, 61], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [3, 62], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [30, 35], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [19, 46], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [14, 51], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [11, 54], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [22, 43], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [27, 38], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [6, 59], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [7, 58], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [26, 39], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [23, 42], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [10, 55], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [15, 50], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [18, 47], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [31, 34], bracket_position: "Bracket Round of 64", round: 1 },
+          { seeds: [2, 63], bracket_position: "Bracket Round of 64", round: 1 }
+        ],
+        championship_rounds: [
+          { bracket_position: "Bracket Round of 32", number_of_matches: 16, round: 2 },
+          { bracket_position: "Bracket Round of 16", number_of_matches: 8, round: 3 },
+          { bracket_position: "Quarter", number_of_matches: 4, round: 4 },
+          { bracket_position: "Semis", number_of_matches: 2, round: 5 },
+          { bracket_position: "1/2", number_of_matches: 1, round: 10 }
+        ],
+        consolation_rounds: [
+          { bracket_position: "Conso Round of 32.1", number_of_matches: 16, round: 2 },
+          { bracket_position: "Conso Round of 32.2", number_of_matches: 16, round: 3 },
+          { bracket_position: "Conso Round of 16.1", number_of_matches: 8, round: 4 },
+          { bracket_position: "Conso Round of 16.2", number_of_matches: 8, round: 5 },
+          { bracket_position: "Conso Round of 8.1", number_of_matches: 4, round: 6 },
+          { bracket_position: "Conso Round of 8.2", number_of_matches: 4, round: 7 },
+          { bracket_position: "Conso Quarter", number_of_matches: 2, round: 8 },
+          { bracket_position: "Conso Semis", number_of_matches: 2, round: 9 },
+          { bracket_position: "3/4", number_of_matches: 1, round: 10 }
+        ]
+      }
     else
       nil
     end

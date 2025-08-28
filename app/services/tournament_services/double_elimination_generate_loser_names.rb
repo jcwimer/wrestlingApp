@@ -36,6 +36,14 @@ class DoubleEliminationGenerateLoserNames
         { conso_bracket_position: "Conso Semis", championship_bracket_position: "Semis", cross_bracket: true, both_wrestlers: false },
 
       ]
+    when 64
+      [
+        { conso_bracket_position: "Conso Round of 32.1", championship_bracket_position: "Bracket Round of 64", cross_bracket: false, both_wrestlers: true },
+        { conso_bracket_position: "Conso Round of 32.2", championship_bracket_position: "Bracket Round of 32", cross_bracket: true, both_wrestlers: false },
+        { conso_bracket_position: "Conso Round of 16.2", championship_bracket_position: "Bracket Round of 16", cross_bracket: false, both_wrestlers: false },
+        { conso_bracket_position: "Conso Round of 8.2", championship_bracket_position: "Quarter", cross_bracket: true, both_wrestlers: false },
+        { conso_bracket_position: "Conso Semis", championship_bracket_position: "Semis", cross_bracket: false, both_wrestlers: false }
+      ]
     else
       nil
     end
