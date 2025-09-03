@@ -207,3 +207,6 @@ The application has been migrated from using vanilla JavaScript to Hotwired Stim
 - `app/assets/javascripts/application.js` - Registers and loads all controllers
 
 The importmap configuration in `config/importmap.rb` handles the loading of all JavaScript dependencies including Stimulus controllers.
+
+# Using Repomix with LLMs
+`npx repomix app test`
