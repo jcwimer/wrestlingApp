@@ -27,13 +27,14 @@ namespace :tournament do
       )
 
       GenerateTournamentMatches.new(@tournament).generate
-      sleep(10)
+      sleep(60)
       while @tournament.reload.curently_generating_matches == 1
         puts "Waiting for tournament to finish generating matches..."
         sleep(5)
         @tournament.reload
       end
   
+      sleep(10)
       @tournament.reload # Ensure matches association is fresh before iterating
       @tournament.matches.reload.sort_by(&:bout_number).each do |match|
         if match.reload.loser1_name != "BYE" and match.reload.loser2_name != "BYE" and match.reload.finished != 1
