@@ -35,8 +35,8 @@ namespace :tournament do
       end
   
       @tournament.reload # Ensure matches association is fresh before iterating
-      @tournament.matches.sort_by(&:bout_number).each do |match|
-        if match.reload.loser1_name != "BYE" and match.reload.loser2_name != "BYE" && match.reload.finished != 1
+      @tournament.matches.reload.sort_by(&:bout_number).each do |match|
+        if match.reload.loser1_name != "BYE" and match.reload.loser2_name != "BYE" and match.reload.finished != 1
             # Wait until both wrestlers are assigned
             while (match.w1.nil? || match.w2.nil?)
               puts "Waiting for wrestlers in match #{match.bout_number}..."
