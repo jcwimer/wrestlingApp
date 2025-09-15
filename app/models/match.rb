@@ -10,12 +10,17 @@ class Match < ApplicationRecord
 	# Callback to update finished_at when a match is finished
 	before_save :update_finished_at
 
-	after_update :after_finished_actions, if: -> { 
-		saved_change_to_finished? || 
-		saved_change_to_winner_id? || 
-		saved_change_to_win_type? || 
-		saved_change_to_score? || 
-		saved_change_to_overtime_type?
+	# Enqueue advancement and related actions after the DB transaction has committed.
+	# Using after_commit ensures any background jobs enqueued inside these callbacks
+	# will see the committed state of the match (e.g. finished == 1). Enqueuing
+	# jobs from after_update can cause jobs to run before the transaction commits,
+	# which leads to jobs observing stale data and not performing advancement.
+	after_commit :after_finished_actions, on: :update, if: -> {
+	  saved_change_to_finished? ||
+	  saved_change_to_winner_id? ||
+	  saved_change_to_win_type? ||
+	  saved_change_to_score? ||
+	  saved_change_to_overtime_type?
 	}
 
 	def after_finished_actions
@@ -30,7 +35,8 @@ class Match < ApplicationRecord
 			self.mat.assign_next_match
 		end
 		advance_wrestlers
-		calculate_school_points
+		# School point calculation has move to the end of advance wrestler
+		# calculate_school_points
 	  end
 	end
     

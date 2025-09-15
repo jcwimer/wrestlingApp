@@ -12,12 +12,14 @@ class AdvanceWrestler
     end
 
     def advance_raw
-      
+      @last_match.reload
+      @wrestler.reload
       if @last_match && @last_match.finished?
         pool_to_bracket_advancement if @tournament.tournament_type == "Pool to bracket"
         ModifiedDoubleEliminationAdvance.new(@wrestler, @last_match).bracket_advancement if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
         DoubleEliminationAdvance.new(@wrestler, @last_match).bracket_advancement if @tournament.tournament_type.include? "Regular Double Elimination"
       end
+      @wrestler.school.calculate_score
     end
     
     def pool_to_bracket_advancement

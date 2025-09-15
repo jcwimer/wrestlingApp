@@ -31,14 +31,14 @@ namespace :tournament do
       while @tournament.reload.curently_generating_matches == 1
         puts "Waiting for tournament to finish generating matches..."
         sleep(5)
+        @tournament.reload
       end
   
       @tournament.reload # Ensure matches association is fresh before iterating
       @tournament.matches.sort_by(&:bout_number).each do |match|
-        match.reload
-        if match.loser1_name != "BYE" and match.loser2_name != "BYE"
+        if match.reload.loser1_name != "BYE" and match.reload.loser2_name != "BYE" && match.reload.finished != 1
             # Wait until both wrestlers are assigned
-            while match.w1.nil? || match.w2.nil?
+            while (match.w1.nil? || match.w2.nil?)
               puts "Waiting for wrestlers in match #{match.bout_number}..."
               sleep(5) # Wait for 5 seconds before checking again
               match.reload
@@ -77,6 +77,8 @@ namespace :tournament do
             # Mark match as finished
             match.finished = 1
             match.save!
+            # sleep to prevent mysql locks when assign_next_match to a mat runs
+            sleep(0.5)
         end
       end
     end

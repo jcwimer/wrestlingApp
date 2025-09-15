@@ -2,11 +2,6 @@ class AdvanceWrestlerJob < ApplicationJob
   queue_as :default
   
   def perform(wrestler, match)
-    # Add a small delay to increase chance of transaction commit
-    # without this some matches were getting a deserialization error when running the rake task
-    # to finish tournaments
-    sleep(0.5) unless Rails.env.test?
-
     # Get tournament from wrestler
     tournament = wrestler.tournament
     
