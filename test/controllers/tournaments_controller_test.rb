@@ -1084,4 +1084,55 @@ class TournamentsControllerTest < ActionController::TestCase
       assert_match(/#{match.bout_number}/, response.body, "Bout number #{match.bout_number} is missing from the bracket page")
     end
   end
+  test "index sorts tournaments by date closest to today" do
+    today = Date.today
+    t_today = Tournament.create!(name: "Closest Today", address: "123 Test St", director: "Director", director_email: "today@example.com", date: today, tournament_type: "Pool to bracket", is_public: true)
+    t_minus1 = Tournament.create!(name: "Minus 1", address: "123 Test St", director: "Director", director_email: "m1@example.com", date: today - 1, tournament_type: "Pool to bracket", is_public: true)
+    t_plus1 = Tournament.create!(name: "Plus 1", address: "123 Test St", director: "Director", director_email: "p1@example.com", date: today + 1, tournament_type: "Pool to bracket", is_public: true)
+    t_plus2 = Tournament.create!(name: "Plus 2", address: "123 Test St", director: "Director", director_email: "p2@example.com", date: today + 2, tournament_type: "Pool to bracket", is_public: true)
+    t_minus3 = Tournament.create!(name: "Minus 3", address: "123 Test St", director: "Director", director_email: "m3@example.com", date: today - 3, tournament_type: "Pool to bracket", is_public: true)
+    t_plus10 = Tournament.create!(name: "Plus 10", address: "123 Test St", director: "Director", director_email: "p10@example.com", date: today + 10, tournament_type: "Pool to bracket", is_public: true)
+
+    created = [t_today, t_minus1, t_plus1, t_plus2, t_minus3, t_plus10]
+    # Hit index
+    get :index
+    assert_response :success
+
+    # From the controller result, select only the tournaments we just created and verify their relative order
+    results = assigns(:tournaments).select { |t| created.map(&:id).include?(t.id) }
+    expected_order = created.sort_by { |t| (t.date - today).abs }.map(&:id)
+
+    # Basic ordering assertions
+    assert_equal expected_order, results.map(&:id), "Created tournaments should be ordered by distance from today"
+    assert_equal t_today.id, results.first.id, "The tournament dated today should be first (closest)"
+    assert_equal t_plus10.id, results.last.id, "The farthest tournament should appear last"
+
+    # Relative order checks (smaller distance should appear before larger distance)
+    assert results.index { |r| r.id == t_minus1.id } < results.index { |r| r.id == t_plus2.id }, "t_minus1 (distance 1) should appear before t_plus2 (distance 2)"
+    assert results.index { |r| r.id == t_plus2.id } < results.index { |r| r.id == t_minus3.id }, "t_plus2 (distance 2) should appear before t_minus3 (distance 3)"
+  end
+
+  test "index paginates tournaments with page param and exposes total_count" do
+    initial_count = Tournament.count
+    # Create 25 tournaments to ensure we exceed the per_page (20)
+    25.times do |i|
+      Tournament.create!(name: "Paginate Test #{i}", address: "1 Paginate Rd", director: "Dir", director_email: "paginate#{i}@example.com", date: Date.today + i, tournament_type: "Pool to bracket", is_public: true)
+    end
+    expected_total = initial_count + 25
+
+    # Page 1
+    get :index, params: { page: 1 }
+    assert_response :success
+    assert_equal expected_total, assigns(:total_count), "total_count should reflect all tournaments"
+    assert_equal 20, assigns(:tournaments).size, "first page should contain 20 tournaments"
+
+    # Page 2
+    get :index, params: { page: 2 }
+    assert_response :success
+    assert_equal expected_total, assigns(:total_count), "total_count should remain the same on subsequent pages"
+    expected_page2_size = expected_total - 20
+    # If there are more than 20 initial fixtures, expected_page2_size might be > 20; clamp to per_page logic:
+    expected_page2_display = [expected_page2_size, 20].min
+    assert_equal expected_page2_display, assigns(:tournaments).size, "second page should contain the remaining tournaments (or up to per_page)"
+  end
 end

@@ -221,12 +221,26 @@ class TournamentsController < ApplicationController
   end
 
   def index
-    if params[:search]
-      # @tournaments = Tournament.limit(200).search(params[:search]).order("date DESC")
-      @tournaments = Tournament.limit(200).search_date_name(params[:search]).order("date DESC")
+    # Simple manual pagination to avoid introducing a gem.
+    per_page = 20
+    page = params[:page].to_i > 0 ? params[:page].to_i : 1
+    offset = (page - 1) * per_page
+
+    if params[:search].present?
+      tournaments = Tournament.search_date_name(params[:search]).to_a
     else
-      @tournaments = Tournament.all.sort_by{|t| t.days_until_start}.first(20)
+      tournaments = Tournament.all.to_a
     end
+
+    # Sort by distance from today (closest first)
+    today = Date.today
+    tournaments.sort_by! { |t| (t.date - today).abs }
+
+    @total_count = tournaments.size
+    @total_pages = (@total_count / per_page.to_f).ceil
+    @page = page
+    @per_page = per_page
+    @tournaments = tournaments.slice(offset, per_page) || []
   end
 
   def show

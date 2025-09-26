@@ -1,28 +1,29 @@
-<h1>Upcoming Tournaments</h1> <%= form_tag(tournaments_path, :method => "get", id: "search-form") do %>
-                                <%= text_field_tag :search, params[:search], placeholder: "Search Tournaments" %>
-                                <%= submit_tag "Search" %>
-                              <% end %>
-                              <p>Search by name or date YYYY-MM-DD</p>
-<script>
-  // $(document).ready(function() {
-  //   $('#tournamentList').dataTable();
-  //   pagingType: "bootstrap";
-  // } );
-</script>
+<h1>Upcoming Tournaments</h1>
+<%= form_tag(tournaments_path, :method => "get", id: "search-form") do %>
+  <%= text_field_tag :search, params[:search], placeholder: "Search Tournaments" %>
+  <%= submit_tag "Search" %>
+<% end %>
+<p>Search by name or date YYYY-MM-DD</p>
+
 <br>
+
 <table class="table table-hover table-condensed" id="tournamentList">
   <thead>
     <tr>
       <th>Name</th>
       <th>Date</th>
-      <th><% if user_signed_in? %><%= link_to ' New Tournament', new_tournament_path, :class=>"fas fa-plus" %></th><% end %>
+      <th>
+        <% if user_signed_in? %>
+          <%= link_to ' New Tournament', new_tournament_path, :class=>"fas fa-plus" %>
+        <% end %>
+      </th>
     </tr>
   </thead>
 
   <tbody>
     <% @tournaments.each do |tournament| %>
       <tr>
-        <td><%= link_to "#{tournament.name}", tournament %></td>
+        <td><%= link_to tournament.name, tournament %></td>
         <td><%= tournament.date %></td>
         <td>
           <% if can? :manage, tournament %>
@@ -30,13 +31,56 @@
             <% if can? :destroy, tournament %>
               <%= link_to '', tournament, method: :delete, data: { confirm: "Are you sure you want to delete #{tournament.name}?" }, :class=>"fas fa-trash-alt" %>
             <% end %>
-        <% end %>  
+          <% end %>
         </td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<br>
+<%# Pagination controls %>
+<% if @total_pages.present? && @total_pages > 1 %>
+  <nav aria-label="Tournaments pagination">
+    <ul class="pagination">
+      <%# Previous link %>
+      <% if @page > 1 %>
+        <li class="page-item">
+          <%= link_to 'Previous', tournaments_path(page: @page - 1, search: params[:search]), class: "page-link" %>
+        </li>
+      <% else %>
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+      <% end %>
 
+      <%# Page number links (limit displayed pages for large counts) %>
+      <% window = 5
+         left = [1, @page - window/2].max
+         right = [@total_pages, left + window - 1].min
+         left = [1, right - window + 1].max
+      %>
+      <% (left..right).each do |p| %>
+        <% if p == @page %>
+          <li class="page-item active"><span class="page-link"><%= p %></span></li>
+        <% else %>
+          <li class="page-item"><%= link_to p, tournaments_path(page: p, search: params[:search]), class: "page-link" %></li>
+        <% end %>
+      <% end %>
+
+      <%# Next link %>
+      <% if @page < @total_pages %>
+        <li class="page-item">
+          <%= link_to 'Next', tournaments_path(page: @page + 1, search: params[:search]), class: "page-link" %>
+        </li>
+      <% else %>
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+      <% end %>
+    </ul>
+  </nav>
+
+  <p class="text-muted">
+    <% start_index = ((@page - 1) * @per_page) + 1
+       end_index = [@page * @per_page, @total_count].min
+    %>
+    Showing <%= start_index %> - <%= end_index %> of <%= @total_count %> tournaments
+  </p>
+<% end %>
 
