@@ -56,6 +56,16 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: dbpassword
+        - name: REPLICATION_USER
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_user
+        - name: REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_password
         ports:
         - containerPort: 3306
           name: mariadb
@@ -64,12 +74,36 @@ spec:
           mountPath: /var/lib/mysql
         - name: mysettings-config-volume
           mountPath: /etc/mysql/mariadb.conf.d
+        # lifecycle: create replication user with proper privileges if it doesn't exist
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - sh
+              - -c
+              - |
+                # Wait up to 60s for mysqld to be available
+                for i in $(seq 1 60); do
+                  if mysqladmin ping -uroot -p"$MARIADB_ROOT_PASSWORD" --silent; then
+                    echo "mysqld is up"
+                    break
+                  fi
+                  sleep 1
+                done
+
+                echo "Ensuring replication user ${REPLICATION_USER} exists and has REPLICATION SLAVE privileges"
+
+                # Create the replication user if it doesn't exist and grant replication privileges.
+                # Use CREATE USER IF NOT EXISTS so the command is idempotent.
+                mysql -uroot -p"$MARIADB_ROOT_PASSWORD" -e "CREATE USER IF NOT EXISTS '${REPLICATION_USER}'@'%' IDENTIFIED BY '${REPLICATION_PASSWORD}';" 2>/dev/null || true
+                mysql -uroot -p"$MARIADB_ROOT_PASSWORD" -e "GRANT REPLICATION SLAVE ON *.* TO '${REPLICATION_USER}'@'%';" 2>/dev/null || true
+                mysql -uroot -p"$MARIADB_ROOT_PASSWORD" -e "FLUSH PRIVILEGES;" 2>/dev/null || true
+                echo "Replication user ready (errors ignored to avoid blocking startup)"
         # resources:
         #   limits:
         #     memory: "512Mi"
         #   requests:
         #     memory: "256Mi"
-        #     cpu: "0.2"
       - image: jcwimer/mariadb-rclone-backup-docker:10.3
         name: mariadb-backup
         env:
@@ -204,5 +238,6 @@ data:
     performance_schema=ON
     innodb_log_file_size=32M
     table_open_cache=4000
+    expire_logs_days=7
     
     # /etc/mysql/mariadb.conf.d/70-mysettings.cnf

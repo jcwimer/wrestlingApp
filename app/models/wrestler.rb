@@ -2,9 +2,13 @@ class Wrestler < ApplicationRecord
 	belongs_to :school, touch: true
 	belongs_to :weight, touch: true
 	has_one :tournament, through: :weight
+	has_many :deductedPoints, class_name: "Teampointadjust", dependent: :destroy
+	## Matches association
+	# Rails associations expect only a single column so we cannot do a w1 OR w2
+	# So we have to create two associations and combine them with the all_matches method
 	has_many :matches_as_w1, ->(wrestler){ where(weight_id: wrestler.weight_id) }, class_name: 'Match', foreign_key: 'w1'
 	has_many :matches_as_w2, ->(wrestler){ where(weight_id: wrestler.weight_id) }, class_name: 'Match', foreign_key: 'w2'
-	has_many :deductedPoints, class_name: "Teampointadjust", dependent: :destroy
+	##
 	attr_accessor :poolAdvancePoints, :originalId, :swapId
 	
 	validates :name, :weight_id, :school_id, presence: true

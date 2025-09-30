@@ -1,0 +1,160 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-replica-watcher
+  labels:
+    app: wrestlingdev
+    component: mariadb-watcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wrestlingdev
+      component: mariadb-watcher
+  template:
+    metadata:
+      labels:
+        app: wrestlingdev
+        component: mariadb-watcher
+    spec:
+      containers:
+      - name: replica-watcher
+        image: mariadb:10.3
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: dbpassword
+        - name: MYSQL_REPLICATION_USER
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_user
+        - name: MYSQL_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_password
+        - name: MASTER_SERVICE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_host
+        - name: REPLICA_SERVICE_HOST
+          value: "wrestlingdev-mariadb"
+        - name: DB_NAME
+          value: "wrestlingdev"
+        command:
+        - bash
+        - -c
+        - |
+          set -euo pipefail
+          LOG=/var/log/replica-watcher.log
+          echo "replica-watcher starting: $(date -u)" >>"$LOG"
+
+          trim() { sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'; }
+          get_val() {
+            grep -m1 -E "^[[:space:]]*$1[[:space:]]*:" \
+            | sed -E "s/^[[:space:]]*$1[[:space:]]*:[[:space:]]*(.*)$/\1/" \
+            | tr -d '\r' \
+            | xargs
+          }
+
+          # initial wait
+          sleep 120
+          while true; do
+            echo "$(date -u) Checking SHOW SLAVE STATUS" | tee -a "$LOG"
+            SLAVE_RAW=$(mysql --protocol=TCP -h "$REPLICA_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" -e "SHOW SLAVE STATUS\\G" 2>>"$LOG" || true)
+
+            NEED=0
+            if [ -z "$SLAVE_RAW" ]; then
+              echo "SHOW SLAVE STATUS is empty (replication not configured / not running) -> will rebootstrap" | tee -a "$LOG"
+              NEED=1
+            else
+              SLAVE_IO=$(echo "$SLAVE_RAW" | get_val "Slave_IO_Running")
+              SLAVE_SQL=$(echo "$SLAVE_RAW" | get_val "Slave_SQL_Running")
+              LAST_IO_ERRNO=$(echo "$SLAVE_RAW" | get_val "Last_IO_Errno")
+              LAST_SQL_ERRNO=$(echo "$SLAVE_RAW" | get_val "Last_SQL_Errno")
+              LAST_IO_ERR=$(echo "$SLAVE_RAW" | get_val "Last_IO_Error")
+              LAST_SQL_ERR=$(echo "$SLAVE_RAW" | get_val "Last_SQL_Error")
+
+              echo "Slave IO='${SLAVE_IO:-}' Slave SQL='${SLAVE_SQL:-}'" | tee -a "$LOG"
+              echo "Last_IO_Errno='${LAST_IO_ERRNO:-}' Last_SQL_Errno='${LAST_SQL_ERRNO:-}'" | tee -a "$LOG"
+              echo "Last_IO_Error='${LAST_IO_ERR:-}' Last_SQL_Error='${LAST_SQL_ERR:-}'" | tee -a "$LOG"
+
+              if [ "${SLAVE_IO:-}" = "Yes" ] && [ "${SLAVE_SQL:-}" = "Yes" ] \
+                 && { [ -z "${LAST_IO_ERR:-}" ] || [ "${LAST_IO_ERR,,}" = "no error" ]; } \
+                 && { [ -z "${LAST_SQL_ERR:-}" ] || [ "${LAST_SQL_ERR,,}" = "no error" ]; } \
+                 && { [ -z "${LAST_IO_ERRNO:-}" ] || [ "${LAST_IO_ERRNO:-0}" = "0" ]; } \
+                 && { [ -z "${LAST_SQL_ERRNO:-}" ] || [ "${LAST_SQL_ERRNO:-0}" = "0" ]; }; then
+                echo "Both slave threads running and no replication errors -> no action" | tee -a "$LOG"
+              else
+                NOT_RUNNING=0
+                [ "${SLAVE_IO:-No}" != "Yes" ] && NOT_RUNNING=1
+                [ "${SLAVE_SQL:-No}" != "Yes" ] && NOT_RUNNING=1
+                HAS_ERROR=0
+                [ -n "${LAST_IO_ERRNO:-}" ] && [ "${LAST_IO_ERRNO:-0}" != "0" ] && HAS_ERROR=1
+                [ -n "${LAST_SQL_ERRNO:-}" ] && [ "${LAST_SQL_ERRNO:-0}" != "0" ] && HAS_ERROR=1
+                ERR_TEXT="$(printf '%s %s' "${LAST_IO_ERR:-}" "${LAST_SQL_ERR:-}" | tr '[:upper:]' '[:lower:]' | trim)"
+                [ -n "$ERR_TEXT" ] && [ "$ERR_TEXT" != "no error" ] && HAS_ERROR=1
+
+                echo "Decision: NOT_RUNNING=$NOT_RUNNING HAS_ERROR=$HAS_ERROR" | tee -a "$LOG"
+                [ $NOT_RUNNING -eq 1 ] || [ $HAS_ERROR -eq 1 ] && NEED=1 || echo "Threads healthy -> no action" | tee -a "$LOG"
+              fi
+            fi
+
+            if [ $NEED -eq 1 ]; then
+              echo "$(date -u) Starting rebootstrap flow" | tee -a "$LOG"
+
+              MASTER_STATUS=$(mysql --protocol=TCP -h "$MASTER_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" -sse "SHOW MASTER STATUS;" 2>>"$LOG" || true)
+              MASTER_LOG_FILE=$(echo "$MASTER_STATUS" | awk '{print $1}' | trim || true)
+              MASTER_LOG_POS=$(echo "$MASTER_STATUS" | awk '{print $2}' | trim || true)
+              if [ -z "$MASTER_LOG_FILE" ] || [ -z "$MASTER_LOG_POS" ]; then
+                echo "Failed to get master position from $MASTER_SERVICE_HOST" | tee -a "$LOG"
+                sleep 120; continue
+              fi
+              echo "Master position: ${MASTER_LOG_FILE}:${MASTER_LOG_POS}" | tee -a "$LOG"
+
+              echo "Stopping slave on replica host" | tee -a "$LOG"
+              mysql --protocol=TCP -h "$REPLICA_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" -e "STOP SLAVE;" >>"$LOG" 2>&1 || true
+
+              DUMP_FILE="/tmp/${DB_NAME}_backup.sql"
+              echo "Dumping ${DB_NAME} from master ${MASTER_SERVICE_HOST}" | tee -a "$LOG"
+              if command -v timeout >/dev/null 2>&1; then
+                if ! timeout 300 mysqldump --protocol=TCP -h "$MASTER_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" "$DB_NAME" \
+                     | tee "$DUMP_FILE" >/dev/null 2>>"$LOG"; then
+                  echo "Dump FAILED; aborting this cycle" | tee -a "$LOG"; sleep 120; continue
+                fi
+              else
+                if ! mysqldump --protocol=TCP -h "$MASTER_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" "$DB_NAME" \
+                     | tee "$DUMP_FILE" >/dev/null 2>>"$LOG"; then
+                  echo "Dump FAILED; aborting this cycle" | tee -a "$LOG"; sleep 120; continue
+                fi
+              fi
+
+              ls -lh $DUMP_FILE
+
+              echo "Ensuring database '$DB_NAME' exists on replica" | tee -a "$LOG"
+              mysql --protocol=TCP -h "$REPLICA_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" \
+                -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;" >>"$LOG" 2>&1
+
+              echo "Importing dump into replica host" | tee -a "$LOG"
+              if ! cat "$DUMP_FILE" | mysql --protocol=TCP -h "$REPLICA_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" "$DB_NAME" >>"$LOG" 2>&1; then
+                echo "Import FAILED; aborting this cycle (replication will not be reconfigured)" | tee -a "$LOG"
+                sleep 120; continue
+              fi
+              echo "Import completed successfully" | tee -a "$LOG"
+
+              echo "Reconfiguring replication to ${MASTER_SERVICE_HOST}:${MASTER_LOG_FILE}:${MASTER_LOG_POS}" | tee -a "$LOG"
+              mysql --protocol=TCP -h "$REPLICA_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" -e "RESET SLAVE ALL;" >>"$LOG" 2>&1 || true
+              mysql --protocol=TCP -h "$REPLICA_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" -e "CHANGE MASTER TO MASTER_HOST='${MASTER_SERVICE_HOST}', MASTER_USER='${MYSQL_REPLICATION_USER}', MASTER_PASSWORD='${MYSQL_REPLICATION_PASSWORD}', MASTER_LOG_FILE='${MASTER_LOG_FILE}', MASTER_LOG_POS=${MASTER_LOG_POS}; START SLAVE;" >>"$LOG" 2>&1 || true
+
+              echo "SHOW SLAVE STATUS after rebootstrap:" | tee -a "$LOG"
+              mysql --protocol=TCP -h "$REPLICA_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" -e "SHOW SLAVE STATUS\\G" >>"$LOG" 2>&1 || true
+            fi
+
+            echo "Sleeping 120s before next check" | tee -a "$LOG"
+            sleep 120
+          done
+      restartPolicy: Always
