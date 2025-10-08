@@ -86,17 +86,30 @@ class WrestlingdevImporter
     mat_assignment_rules.each do |rule_attributes|
       mat_name = rule_attributes.dig("mat", "name")
       mat = Mat.find_by(name: mat_name, tournament_id: @tournament.id)
-
-      # Map max values of weight_classes to their new IDs
-      new_weight_classes = rule_attributes["weight_classes"].map do |max_value|
-        Weight.find_by(max: max_value, tournament_id: @tournament.id)&.id
-      end.compact
-
-      # Extract bracket_positions and rounds
+  
+      # Prefer the new "weight_class_maxes" key emitted by backups (human-readable
+      # max values). If not present, fall back to the legacy "weight_classes"
+      # value which may be a comma-separated string or an array of IDs.
+      if rule_attributes.key?("weight_class_maxes") && rule_attributes["weight_class_maxes"].respond_to?(:map)
+        new_weight_classes = rule_attributes["weight_class_maxes"].map do |max_value|
+          Weight.find_by(max: max_value, tournament_id: @tournament.id)&.id
+        end.compact
+      elsif rule_attributes["weight_classes"].is_a?(Array)
+        # Already an array of IDs
+        new_weight_classes = rule_attributes["weight_classes"].map(&:to_i)
+      elsif rule_attributes["weight_classes"].is_a?(String)
+        # Comma-separated IDs stored in the DB column; split into integers.
+        new_weight_classes = rule_attributes["weight_classes"].to_s.split(",").map(&:strip).reject(&:empty?).map(&:to_i)
+      else
+        new_weight_classes = []
+      end
+  
+      # Extract bracket_positions and rounds (leave as-is; model will coerce if needed)
       bracket_positions = rule_attributes["bracket_positions"]
       rounds = rule_attributes["rounds"]
-
-      rule_attributes.except!("id", "mat", "tournament_id", "weight_classes")
+  
+      # Remove any keys we don't want to mass-assign (including both old/new weight keys)
+      rule_attributes.except!("id", "mat", "tournament_id", "weight_classes", "weight_class_maxes")
       
       MatAssignmentRule.create(
         rule_attributes.merge(

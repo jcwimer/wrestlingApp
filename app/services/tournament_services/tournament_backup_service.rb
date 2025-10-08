@@ -41,7 +41,11 @@ class TournamentBackupService
         mat_assignment_rules: @tournament.mat_assignment_rules.map do |rule|
           rule.attributes.merge(
             mat: Mat.find_by(id: rule.mat_id)&.attributes.slice("name"),
-            weight_classes: rule.weight_classes.map do |weight_id|
+            # Emit the human-readable max values under a distinct key to avoid
+            # colliding with the raw DB-backed "weight_classes" attribute (which
+            # is stored as a comma-separated string). Using a different key
+            # prevents duplicate JSON keys when symbols and strings are both present.
+            "weight_class_maxes" => rule.weight_classes.map do |weight_id|
               Weight.find_by(id: weight_id)&.max
             end
           )
