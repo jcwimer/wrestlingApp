@@ -55,5 +55,7 @@ module Wrestling
     # Set cache format version to a value supported by Rails 8.0
     # Valid values are 7.0 or 7.1
     config.active_support.cache_format_version = 7.1
+
+    config.load_defaults 8.0
   end
 end

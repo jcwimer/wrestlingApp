@@ -2,26 +2,4 @@
 
 # This model requires tournament, job_name, and status fields
 
-queued_job:
-  tournament: one
-  job_name: "Test Queued Job"
-  status: "Queued"
-  details: "Test job details"
 
-running_job:
-  tournament: one
-  job_name: "Test Running Job"
-  status: "Running"
-  details: "Test running job details"
-
-errored_job:
-  tournament: one
-  job_name: "Test Errored Job"
-  status: "Errored"
-  details: "Test error message"
-
-another_tournament_job:
-  tournament: two
-  job_name: "Another Tournament Job"
-  status: "Running"
-  details: "Different tournament test"
