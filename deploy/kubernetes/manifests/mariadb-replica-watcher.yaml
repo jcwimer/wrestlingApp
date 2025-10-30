@@ -122,12 +122,12 @@ spec:
               DUMP_FILE="/tmp/${DB_NAME}_backup.sql"
               echo "Dumping ${DB_NAME} from master ${MASTER_SERVICE_HOST}" | tee -a "$LOG"
               if command -v timeout >/dev/null 2>&1; then
-                if ! timeout 300 mysqldump --protocol=TCP -h "$MASTER_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" "$DB_NAME" \
+                if ! timeout 300 mysqldump --protocol=TCP -h "$MASTER_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" --single-transaction "$DB_NAME" \
                      | tee "$DUMP_FILE" >/dev/null 2>>"$LOG"; then
                   echo "Dump FAILED; aborting this cycle" | tee -a "$LOG"; sleep 120; continue
                 fi
               else
-                if ! mysqldump --protocol=TCP -h "$MASTER_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" "$DB_NAME" \
+                if ! mysqldump --protocol=TCP -h "$MASTER_SERVICE_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" --single-transaction "$DB_NAME" \
                      | tee "$DUMP_FILE" >/dev/null 2>>"$LOG"; then
                   echo "Dump FAILED; aborting this cycle" | tee -a "$LOG"; sleep 120; continue
                 fi

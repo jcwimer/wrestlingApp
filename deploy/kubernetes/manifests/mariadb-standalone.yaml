@@ -239,5 +239,13 @@ data:
     innodb_log_file_size=32M
     table_open_cache=4000
     expire_logs_days=7
+
+    # master slave
+    server_id=1                       # Unique server ID for the master
+    log_bin=mysql-bin                 # Enable binary logging
+    binlog_format=ROW                 # Recommended format for replication (ROW, STATEMENT, or MIXED)
+    log_slave_updates=ON              # Ensure any changes replicated to the master are also logged to the binary log (useful for multi-source replication)
+    sync_binlog=1                     # Ensures binary logs are synchronized with disk after each transaction for data safety
+    expire_logs_days=7                # Optional: Number of days to retain binary logs (helps with cleanup)
     
     # /etc/mysql/mariadb.conf.d/70-mysettings.cnf

@@ -122,25 +122,27 @@ spec:
           initialDelaySeconds: 180
           periodSeconds: 20
           timeoutSeconds: 10
-# ---
-# apiVersion: autoscaling/v2beta1
-# kind: HorizontalPodAutoscaler
-# metadata:
-#   name: wrestlingdev-app-deployment-autoscale
-# spec:
-#   scaleTargetRef:
-#     apiVersion: apps/v1
-#     kind: Deployment
-#     name: wrestlingdev-app-deployment
-#   minReplicas: 2
-#   maxReplicas: 5
-#   metrics:
-#   - type: Resource
-#     resource:
-#       name: cpu
-#       targetAverageUtilization: 75
-  # - type: Resource
-  #   resource:
-  #     name: memory
-  #     targetAverageValue: 100Mi
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: wrestlingdev-app-autoscale
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: wrestlingdev-app
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 75
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80  
 
