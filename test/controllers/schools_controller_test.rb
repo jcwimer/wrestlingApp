@@ -357,7 +357,7 @@ Some Guy
   
     @school.wrestlers.each do |wrestler|
       # Check only for the DELETE link, specifying 'data-method="delete"' to exclude profile links
-      assert_select "a[href=?][data-method=delete]", wrestler_path(wrestler), count: 1
+      assert_select "a[href=?][data-turbo-method=delete]", wrestler_path(wrestler), count: 1
   
       # Check edit link
       assert_select "a[href=?]", edit_wrestler_path(wrestler), count: 1
