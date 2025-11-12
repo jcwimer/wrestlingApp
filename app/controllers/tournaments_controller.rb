@@ -300,7 +300,7 @@ class TournamentsController < ApplicationController
 
   def reset_bout_board
     @tournament.reset_and_fill_bout_board
-    redirect_to tournament_path(@tournament), notice: "Successfully reset the bout board."
+    redirect_to tournament_path(@tournament), notice: "Successfully reset the bout board. Please have all mat table workers refresh their page."
   end
 
   def generate_school_keys
