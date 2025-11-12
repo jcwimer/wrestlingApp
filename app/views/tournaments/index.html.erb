@@ -29,7 +29,7 @@
           <% if can? :manage, tournament %>
             <%= link_to '', edit_tournament_path(tournament), :class=>"fas fa-edit" %>
             <% if can? :destroy, tournament %>
-              <%= link_to '', tournament, method: :delete, data: { confirm: "Are you sure you want to delete #{tournament.name}?" }, :class=>"fas fa-trash-alt" %>
+              <%= link_to '', tournament, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{tournament.name}?" }, :class=>"fas fa-trash-alt" %>
             <% end %>
           <% end %>
         </td>
@@ -83,4 +83,3 @@
     Showing <%= start_index %> - <%= end_index %> of <%= @total_count %> tournaments
   </p>
 <% end %>
-

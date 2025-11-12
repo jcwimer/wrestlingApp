@@ -23,7 +23,7 @@
         <td><%= Array(rule.rounds).join(", ") %></td>
         <td>
           <%= link_to '', edit_tournament_mat_assignment_rule_path(@tournament, rule), class: "fas fa-edit" %>
-          <%= link_to '', tournament_mat_assignment_rule_path(@tournament, rule), method: :delete, data: { confirm: "Are you sure?" }, class: "fas fa-trash-alt" %>
+          <%= link_to '', tournament_mat_assignment_rule_path(@tournament, rule), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "fas fa-trash-alt" %>
         </td>
       </tr>
     <% end %>

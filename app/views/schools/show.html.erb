@@ -77,7 +77,7 @@
               <% delete_wrestler_path_with_key += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
 
               <%= link_to '', edit_wrestler_path_with_key, class: "fas fa-edit" %>
-              <%= link_to '', delete_wrestler_path_with_key, method: :delete, data: { confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "fas fa-trash-alt" %>
+              <%= link_to '', delete_wrestler_path_with_key, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "fas fa-trash-alt" %>
             </td>
           <% end %>
         </tr>
@@ -102,7 +102,7 @@
                 <% delete_wrestler_path_with_key += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
 
                 <%= link_to '', edit_wrestler_path_with_key, class: "fas fa-edit" %>
-                <%= link_to '', delete_wrestler_path_with_key, method: :delete, data: { confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "fas fa-trash-alt" %>
+                <%= link_to '', delete_wrestler_path_with_key, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "fas fa-trash-alt" %>
               </td>
             <% end %>
           </tr>

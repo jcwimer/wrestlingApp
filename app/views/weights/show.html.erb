@@ -35,7 +35,7 @@
           			<% end %></td>
       				<% if can? :manage, @tournament %> 
                 <td>
-      					<%= link_to '', wrestler, method: :delete, data: { confirm: "Are you sure you want to delete #{wrestler.name}? THIS WILL DELETE ALL MATCHES." } , :class=>"fas fa-trash-alt" %>     
+      					<%= link_to '', wrestler, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? THIS WILL DELETE ALL MATCHES." } , :class=>"fas fa-trash-alt" %>     
                 </td>
 	      			<% end %>
       			</tr>

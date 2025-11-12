@@ -78,7 +78,7 @@
               			<tr>
               				<td><%= delegate.user.email %></td>
               				<td><%= delegate.school.name %></td>
-              				<td><%= link_to 'Remove permissions', "/tournaments/#{@tournament.id}/#{delegate.id}/remove_school_delegate", method: :delete, confirm: 'Are you sure?', :class=>"btn btn-danger btn-sm" %></td>
+              				<td><%= link_to 'Remove permissions', "/tournaments/#{@tournament.id}/#{delegate.id}/remove_school_delegate", data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' }, :class=>"btn btn-danger btn-sm" %></td>
               			</tr>
             	
             <% end %>

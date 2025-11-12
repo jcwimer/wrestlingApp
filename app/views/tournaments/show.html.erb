@@ -72,7 +72,7 @@
           <% if can? :manage, school %>
             <%= link_to '', edit_school_path(school), :class=>"fas fa-edit" %>
             <% if can? :manage, @tournament %>
-              <%= link_to '', school, method: :delete, data: { confirm: "Are you sure you want to delete #{school.name}?" }, :class=>"fas fa-trash-alt" %>
+              <%= link_to '', school, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{school.name}?" }, :class=>"fas fa-trash-alt" %>
             <% end %>
           <% end %>
         </td>
@@ -106,7 +106,7 @@
           <% if can? :manage, @tournament %>
           <td>
             <%= link_to '', edit_weight_path(weight), :class=>"fas fa-edit" %>
-            <%= link_to '', weight, method: :delete, data: { confirm: "Are you sure you want to delete the #{weight.max} weight class?" }, :class=>"fas fa-trash-alt" %>
+            <%= link_to '', weight, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete the #{weight.max} weight class?" }, :class=>"fas fa-trash-alt" %>
           </td>
           <% end %>
       </tr>
@@ -130,7 +130,7 @@
           <td><%= link_to "Mat #{mat.name}", mat %></td>
             <% if can? :manage, @tournament %>
             <td>
-             <%= link_to '', mat, method: :delete, data: { confirm: "Are you sure you want to delete Mat #{mat.name}?" }, :class=>"fas fa-trash-alt" %>
+             <%= link_to '', mat, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete Mat #{mat.name}?" }, :class=>"fas fa-trash-alt" %>
              <%= link_to '', "/mats/#{mat.id}/assign_next_match", method: :post, :class=>"fas fa-solid fa-arrow-right" %>
              </td>
             <% end %>

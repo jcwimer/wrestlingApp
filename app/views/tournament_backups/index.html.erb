@@ -19,8 +19,8 @@ and will also delete all of your current data. It's best to use the create backu
         </td>
         <td><%= backup.backup_reason.presence || 'No reason provided' %></td>
         <td>
-          <%= link_to '', restore_tournament_tournament_backup_path(@tournament, backup), method: :post, data: { confirm: "This will restore the backup from #{backup.created_at.strftime('%Y-%m-%d %H:%M:%S')}. It will delete all current data from the tournament in order to restore the backup." }, class: 'fas fa-undo-alt text-warning', title: 'Restore Backup' %>
-          <%= link_to '', tournament_tournament_backup_path(@tournament, backup), method: :delete, data: { confirm: 'Are you sure you want to delete this backup?' }, class: 'fas fa-trash-alt', title: 'Delete Backup' %>
+          <%= link_to '', restore_tournament_tournament_backup_path(@tournament, backup), data: { turbo_method: :post, turbo_confirm: "This will restore the backup from #{backup.created_at.strftime('%Y-%m-%d %H:%M:%S')}. It will delete all current data from the tournament in order to restore the backup." }, class: 'fas fa-undo-alt text-warning', title: 'Restore Backup' %>
+          <%= link_to '', tournament_tournament_backup_path(@tournament, backup), data: { turbo_method: :delete, turbo_confirm: 'Are you sure you want to delete this backup?' }, class: 'fas fa-trash-alt', title: 'Delete Backup' %>
         </td>
       </tr>
     <% end %>
