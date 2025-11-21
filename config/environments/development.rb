@@ -99,4 +99,7 @@ Rails.application.configure do
 
  # Nobuild in development
  config.assets.build_assets = false
+
+  MissionControl::Jobs.http_basic_auth_user = "dev"
+  MissionControl::Jobs.http_basic_auth_password = "secret"
 end

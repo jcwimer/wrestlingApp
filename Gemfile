@@ -74,11 +74,9 @@ gem 'solid_cable'
 gem 'puma'
 gem 'tzinfo-data'
 gem 'daemons'
-# Interface for viewing and managing background jobs
-# gem 'delayed_job_web'
-# Note: solid_queue-ui is not compatible with Rails 8.0 yet
-# We'll create a custom UI or wait for compatibility updates
-# gem 'solid_queue_ui', '~> 0.1.1'
+# Solid Queue UI
+gem "mission_control-jobs"
+
 
 group :development do
 #  gem 'rubocop'

@@ -109,6 +109,16 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: influxdb_port
+        - name: WRESTLINGDEV_MISSION_CONTROL_USER
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: mission_control_user
+        - name: WRESTLINGDEV_MISSION_CONTROL_PASSWORD
+          valueFrom:
+           secretKeyRef:
+             name: wrestlingdev-secrets
+             key: mission_control_password
         # resources:
         #   limits:
         #     memory: "768Mi"

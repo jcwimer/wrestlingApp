@@ -1,6 +1,7 @@
 Wrestling::Application.routes.draw do
   # Mount Action Cable server
   mount ActionCable.server => '/cable'
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 
   resources :mats
   post "mats/:id/assign_next_match" => "mats#assign_next_match", :as => :assign_next_match

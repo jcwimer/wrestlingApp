@@ -26,6 +26,8 @@ services:
       - WRESTLINGDEV_INFLUXDB_HOST=influxdb
       - WRESTLINGDEV_INFLUXDB_PORT=8086
       - SOLID_QUEUE_IN_PUMA=true
+      - WRESTLINGDEV_MISSION_CONTROL_USER=dev
+      - WRESTLINGDEV_MISSION_CONTROL_PASSWORD=secret
     networks:
       database:
       caching:

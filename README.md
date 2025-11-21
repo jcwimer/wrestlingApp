@@ -148,6 +148,9 @@ Available system resources: X CPU(s), YMMMB RAM
 SolidQueue plugin enabled in Puma
 ```
 
+I have deployed Mission Control as a UI for SolidQueue. The uri for mission control is `/jobs`.
+For the development environment, the user/password is dev/secret. For the production environment, it is defined by environment variables.
+
 ## Environment Variables
 
 ### Required Environment Variables
@@ -160,6 +163,8 @@ SolidQueue plugin enabled in Puma
 * `WRESTLINGDEV_SECRET_KEY_BASE` - Rails application secret key (can be generated with `rake secret`)
 * `WRESTLINGDEV_EMAIL` - Email address (currently must be a Gmail account)
 * `WRESTLINGDEV_EMAIL_PWD` - Email password
+* `WRESTLINGDEV_MISSION_CONTROL_USER` - mission control username
+* `WRESTLINGDEV_MISSION_CONTROL_PASSWORD` - mission control password
 
 ### Optional Environment Variables
 * `SOLID_QUEUE_IN_PUMA` - Set to "true" to run Solid Queue workers inside Puma (default in development)

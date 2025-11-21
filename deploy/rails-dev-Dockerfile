@@ -4,7 +4,7 @@ FROM ruby:3.2.0
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-RUN apt-get -qq update \
+RUN apt-get -qq update --fix-missing \
   && apt-get -qq install -y \
     build-essential \
     sqlite3 \

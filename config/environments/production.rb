@@ -120,4 +120,7 @@ Rails.application.configure do
   config.assets.compile = true
   # Generate digests for assets URLs.
   config.assets.digest = true
+
+  MissionControl::Jobs.http_basic_auth_user = ENV["WRESTLINGDEV_MISSION_CONTROL_USER"]
+  MissionControl::Jobs.http_basic_auth_password =ENV["WRESTLINGDEV_MISSION_CONTROL_PASSWORD"]
 end
