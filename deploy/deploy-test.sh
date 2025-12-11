@@ -25,9 +25,11 @@ docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:migrate:queue
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:migrate:cable
 
-# Start all services (will start app and others, db is already running)
+echo "Stopping all services..."
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml down
+
 echo "Starting application services..."
-docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up --force-recreate --remove-orphans -d
 
 # DISABLE_DATABASE_ENVIRONMENT_CHECK=1 is needed because this is "destructive" action on production
 echo Resetting the db with seed data
