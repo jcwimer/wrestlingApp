@@ -373,10 +373,24 @@ Some Guy
     success
   end
 
+  test "logged in user without delegation can get show page when using valid school_permission_key" do
+    sign_in_non_owner
+    @tournament.update(is_public: false)
+    get_show(school_permission_key: @school_permission_key)
+    success
+  end
+
   test "non logged in user cannot get show page when using invalid school_permission_key" do
     @tournament.update(is_public: false)
     get_show(school_permission_key: "invalid-key")
     redirect
+  end
+
+  test "logged in user without delegation can edit school with valid school_permission_key" do
+    sign_in_non_owner
+    @tournament.update(is_public: false)
+    get_edit(school_permission_key: @school_permission_key)
+    success
   end
 
   test "non logged in user can edit school with valid school_permission_key" do

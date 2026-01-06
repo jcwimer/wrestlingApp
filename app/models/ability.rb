@@ -1,6 +1,20 @@
 class Ability
   include CanCan::Ability
 
+  def school_permission_key_check(school_permission_key)
+    # Can read school if tournament is public or a valid school permission key is provided
+    can :read, School do |school|
+      school.tournament.is_public ||
+      (school_permission_key.present? && school.permission_key == school_permission_key)
+    end
+
+    # Can manage school if a valid school permission key is provided
+    # school_permission_key comes from app/controllers/application_controller.rb
+    can :manage, School do |school|
+      (school_permission_key.present? && school.permission_key == school_permission_key)
+    end
+  end
+
   def initialize(user, school_permission_key = nil)
     if user
       # LOGGED IN USER PERMISSIONS
@@ -46,6 +60,8 @@ class Ability
         school.tournament.delegates.map(&:user_id).include?(user.id) ||
         school.tournament.user_id == user.id
       end
+
+      school_permission_key_check(school_permission_key)
     else
       # NON LOGGED IN USER PERMISSIONS
 
@@ -58,18 +74,7 @@ class Ability
 
       # SCHOOL PERMISSIONS
       # wrestler permissions are included with school permissions 
-
-      # Can read school if tournament is public or a valid school permission key is provided
-      can :read, School do |school|
-        school.tournament.is_public ||
-        (school_permission_key.present? && school.permission_key == school_permission_key)
-      end
-
-      # Can read school if a valid school permission key is provided
-      # school_permission_key comes from app/controllers/application_controller.rb
-      can :manage, School do |school|
-        (school_permission_key.present? && school.permission_key == school_permission_key)
-      end
+      school_permission_key_check(school_permission_key)
     end
   end
 end
