@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_04_153529) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_04_190000) do
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
     t.bigint "job_id", null: false
     t.string "queue_name", null: false
@@ -41,7 +41,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_04_153529) do
   create_table "solid_queue_jobs", force: :cascade do |t|
     t.string "queue_name", null: false
     t.string "class_name", null: false
-    t.text "arguments"
+    t.text "arguments", limit: 16777215
     t.integer "priority", default: 0, null: false
     t.string "active_job_id"
     t.datetime "scheduled_at"
