@@ -1,4 +1,6 @@
 class Match < ApplicationRecord
+	include ActionView::RecordIdentifier
+
 	belongs_to :tournament, touch: true
 	belongs_to :weight, touch: true
 	belongs_to :mat, touch: true, optional: true
@@ -9,6 +11,10 @@ class Match < ApplicationRecord
 	
 	# Callback to update finished_at when a match is finished
 	before_save :update_finished_at
+
+	# update mat show with correct match if bout board is reset
+	# this is done with a turbo stream
+	after_commit :broadcast_mat_assignment_change, if: :saved_change_to_mat_id?, on: [:create, :update]
 
 	# Enqueue advancement and related actions after the DB transaction has committed.
 	# Using after_commit ensures any background jobs enqueued inside these callbacks
@@ -50,7 +56,7 @@ class Match < ApplicationRecord
 				errors.add(:winner_id, "cannot be blank")
 			end
 		    if win_type == "Pin" and ! score.match(/^[0-5]?[0-9]:[0-5][0-9]/)
-		    	errors.add(:score, "needs to be in time format MM:SS when win type is Pin example: 1:23 or 10:03")
+		    	errors.add(:score, "needs to be in time format MM:SS when win type is Pin example: 2:23, 0:25, 10:03")
 		    end
 		    if win_type == "Decision" or win_type == "Tech Fall" or win_type == "Major" and ! score.match(/^[0-9]?[0-9]-[0-9]?[0-9]/)
 		    	errors.add(:score, "needs to be in Number-Number format when win type is Decision, Tech Fall, and Major example: 10-2")
@@ -333,5 +339,27 @@ class Match < ApplicationRecord
 	  if (changes['finished'] && changes['finished'][1] == 1) || (finished == 1 && finished_at.nil?)
 	    self.finished_at = Time.current.utc
 	  end
+	end
+
+	def broadcast_mat_assignment_change
+		old_mat_id, new_mat_id = saved_change_to_mat_id || previous_changes["mat_id"]
+		return unless old_mat_id || new_mat_id
+
+		[old_mat_id, new_mat_id].compact.uniq.each do |mat_id|
+			mat = Mat.find_by(id: mat_id)
+			next unless mat
+
+			Turbo::StreamsChannel.broadcast_update_to(
+				mat,
+				target: dom_id(mat, :current_match),
+				partial: "mats/current_match",
+				locals: {
+					mat: mat,
+					match: mat.unfinished_matches.first,
+					next_match: mat.unfinished_matches.second,
+					show_next_bout_button: true
+				}
+			)
+		end
 	end
 end

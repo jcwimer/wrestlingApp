@@ -1,0 +1,37 @@
+<% @mat = mat %>
+<% @match = local_assigns[:match] || mat.unfinished_matches.first %>
+<% @next_match = local_assigns[:next_match] || mat.unfinished_matches.second %>
+<% @show_next_bout_button = local_assigns.key?(:show_next_bout_button) ? local_assigns[:show_next_bout_button] : true %>
+
+<% @wrestlers = [] %>
+<% if @match %>
+  <% if @match.w1 %>
+    <% @wrestler1_name = @match.wrestler1.name %>
+    <% @wrestler1_school_name = @match.wrestler1.school.name %>
+    <% @wrestler1_last_match = @match.wrestler1.last_match %>
+    <% @wrestlers.push(@match.wrestler1) %>
+  <% else %>
+    <% @wrestler1_name = "Not assigned" %>
+    <% @wrestler1_school_name = "N/A" %>
+    <% @wrestler1_last_match = nil %>
+  <% end %>
+
+  <% if @match.w2 %>
+    <% @wrestler2_name = @match.wrestler2.name %>
+    <% @wrestler2_school_name = @match.wrestler2.school.name %>
+    <% @wrestler2_last_match = @match.wrestler2.last_match %>
+    <% @wrestlers.push(@match.wrestler2) %>
+  <% else %>
+    <% @wrestler2_name = "Not assigned" %>
+    <% @wrestler2_school_name = "N/A" %>
+    <% @wrestler2_last_match = nil %>
+  <% end %>
+
+  <% @tournament = @match.tournament %>
+<% end %>
+
+<% if @match %>
+  <%= render "matches/matchstats" %>
+<% else %>
+  <p>No matches assigned to this mat.</p>
+<% end %>

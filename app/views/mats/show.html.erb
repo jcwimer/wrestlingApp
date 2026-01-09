@@ -1,9 +1,12 @@
 <h3>Mat <%= @mat.name %></h3>
 <h3>Tournament: <%= @mat.tournament.name %></h3>
 
-<% if @match %>
-<%= render 'matches/matchstats' %>
-<% else %>
-<p>No matches assigned to this mat.</p>
-<% end %>
+<%= turbo_stream_from @mat %>
 
+<%= turbo_frame_tag dom_id(@mat, :current_match) do %>
+  <%= render "mats/current_match",
+             mat: @mat,
+             match: @match,
+             next_match: @next_match,
+             show_next_bout_button: @show_next_bout_button %>
+<% end %>

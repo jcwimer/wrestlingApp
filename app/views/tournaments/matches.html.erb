@@ -34,3 +34,6 @@
     <% end %>
   </tbody>
 </table>
+<br>
+<p>Total matches without byes: <%= @matches.select{|m| m.loser1_name != 'BYE' and m.loser2_name != 'BYE'}.size %></p>
+<p>Unfinished matches: <%= @matches.select{|m| m.finished != 1 and m.loser1_name != 'BYE' and m.loser2_name != 'BYE'}.size %></p>
