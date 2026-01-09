@@ -8,7 +8,7 @@ and will also delete all of your current data. It's best to use the create backu
     <tr>
       <th>Backup Created At</th>
       <th>Backup Reason</th>
-      <th><%= link_to ' Create New Backup', tournament_tournament_backups_path(@tournament), method: :post, class: 'fas fa-plus'%></th>
+      <th><%= link_to ' Create New Backup', tournament_tournament_backups_path(@tournament), turbo_method: :post, class: 'fas fa-plus'%></th>
     </tr>
   </thead>
   <tbody>
