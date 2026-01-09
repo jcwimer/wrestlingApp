@@ -131,7 +131,7 @@
             <% if can? :manage, @tournament %>
             <td>
              <%= link_to '', mat, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete Mat #{mat.name}?" }, :class=>"fas fa-trash-alt" %>
-             <%= link_to '', "/mats/#{mat.id}/assign_next_match", method: :post, :class=>"fas fa-solid fa-arrow-right" %>
+             <%= link_to '', "/mats/#{mat.id}/assign_next_match", data: { turbo_method: :post }, :class=>"fas fa-solid fa-arrow-right" %>
              </td>
             <% end %>
         </tr>
