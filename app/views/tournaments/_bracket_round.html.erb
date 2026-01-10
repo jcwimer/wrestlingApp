@@ -2,7 +2,11 @@
 <% @round_matches.sort_by{|m| m.bracket_position_number}.each do |match| %>
 	<div class="game">
 	  <div class="game-top "><%= match.w1_bracket_name.html_safe %> <span></span></div>
-	  <div class="bout-number"><%= link_to match.bout_number, spectate_match_path(match) %> <%= match.bracket_score_string %>&nbsp;</div>
+	  <% if params[:print] %>
+		 <div class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</div>
+	  <% else %>
+		 <div class="bout-number"><%= link_to match.bout_number, spectate_match_path(match) %> <%= match.bracket_score_string %>&nbsp;</div>
+	  <% end %>
 	  <div class="game-bottom "><%= match.w2_bracket_name.html_safe %><span></span></div>
 	</div>
 <% end %>
