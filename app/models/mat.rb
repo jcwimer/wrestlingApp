@@ -1,6 +1,6 @@
 class Mat < ApplicationRecord
 	belongs_to :tournament
-	has_many :matches, dependent: :destroy
+	has_many :matches, dependent: :nullify
 	has_many :mat_assignment_rules, dependent: :destroy
 
 	validates :name, presence: true
