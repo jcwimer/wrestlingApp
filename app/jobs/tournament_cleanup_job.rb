@@ -17,7 +17,8 @@ class TournamentCleanupJob < ApplicationJob
       has_real_matches = tournament.matches.where(finished: 1).where.not(win_type: 'BYE').exists?
       
       if has_real_matches
-        
+        tournament.tournament_backups.destroy_all
+
         # 1. Remove all school delegates
         tournament.schools.each do |school|
           school.delegates.destroy_all

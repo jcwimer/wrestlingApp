@@ -76,8 +76,12 @@
               <% delete_wrestler_path_with_key = wrestler_path(wrestler) %>
               <% delete_wrestler_path_with_key += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
 
-              <%= link_to '', edit_wrestler_path_with_key, class: "fas fa-edit" %>
-              <%= link_to '', delete_wrestler_path_with_key, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "fas fa-trash-alt" %>
+              <%= link_to edit_wrestler_path_with_key, class: "text-decoration-none" do %>
+                <span class="fas fa-edit" aria-hidden="true"></span>
+              <% end %>
+              <%= link_to delete_wrestler_path_with_key, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "text-decoration-none" do %>
+                <span class="fas fa-trash-alt" aria-hidden="true"></span>
+              <% end %>
             </td>
           <% end %>
         </tr>
@@ -101,8 +105,12 @@
                 <% delete_wrestler_path_with_key = wrestler_path(wrestler) %>
                 <% delete_wrestler_path_with_key += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
 
-                <%= link_to '', edit_wrestler_path_with_key, class: "fas fa-edit" %>
-                <%= link_to '', delete_wrestler_path_with_key, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "fas fa-trash-alt" %>
+                <%= link_to edit_wrestler_path_with_key, class: "text-decoration-none" do %>
+                  <span class="fas fa-edit" aria-hidden="true"></span>
+                <% end %>
+                <%= link_to delete_wrestler_path_with_key, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "text-decoration-none" do %>
+                  <span class="fas fa-trash-alt" aria-hidden="true"></span>
+                <% end %>
               </td>
             <% end %>
           </tr>
