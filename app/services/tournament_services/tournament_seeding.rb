@@ -19,13 +19,18 @@ class TournamentSeeding
 		half_of_bracket = bracket_size / 2
 		available_bracket_lines = (1..bracket_size).to_a
 		first_half_available_bracket_lines = (1..half_of_bracket).to_a
+		first_line_of_second_half_of_bracket = half_of_bracket + 1
+		second_half_available_bracket_lines = (first_line_of_second_half_of_bracket..bracket_size).to_a
 
 		# remove bracket lines that are taken from available_bracket_lines
 		wrestlers_with_bracket_lines = wrestlers.select{|w| w.bracket_line != nil }
 		wrestlers_with_bracket_lines.each do |wrestler|
 			available_bracket_lines.delete(wrestler.bracket_line)
 			first_half_available_bracket_lines.delete(wrestler.bracket_line)
+			second_half_available_bracket_lines.delete(wrestler.bracket_line)
 		end
+
+		available_bracket_lines_to_use = set_random_seeding_bracket_line_order(first_half_available_bracket_lines, second_half_available_bracket_lines)
 
 		wrestlers_without_bracket_lines = wrestlers.select{|w| w.bracket_line == nil }
 		if @tournament.tournament_type == "Pool to bracket"
@@ -38,15 +43,10 @@ class TournamentSeeding
 		else
 			# Iterrate over the list randomly
 			wrestlers_without_bracket_lines.shuffle.each do |wrestler|
-				if first_half_available_bracket_lines.size > 0
-					random_available_bracket_line = first_half_available_bracket_lines.sample
-					wrestler.bracket_line = random_available_bracket_line
-					available_bracket_lines.delete(random_available_bracket_line)
-					first_half_available_bracket_lines.delete(random_available_bracket_line)
-				else
-					random_available_bracket_line = available_bracket_lines.sample
-					wrestler.bracket_line = random_available_bracket_line
-					available_bracket_lines.delete(random_available_bracket_line)
+				if available_bracket_lines_to_use.size > 0
+					bracket_line_to_use = available_bracket_lines_to_use.first
+					wrestler.bracket_line = bracket_line_to_use
+					available_bracket_lines_to_use.delete(bracket_line_to_use)
 				end
 			end
 		end
@@ -80,5 +80,36 @@ class TournamentSeeding
 			w.bracket_line = nil
 		end
 		return wrestlers
+	end
+
+	private
+
+	def set_random_seeding_bracket_line_order(first_half_lines, second_half_lines)
+		# This method prevents double BYEs in round 1
+		# It also evenly distributes matches from the top half of the bracket to the bottom half
+		# It does both of these while keeping the randomness of the line assignment
+		odd_or_even = [0, 1]
+		odd_or_even_sample = odd_or_even.sample
+
+		# sort by odd or even based on the sample above
+		if odd_or_even_sample == 1
+			# odd numbers first
+			sorted_first_half_lines = first_half_lines.sort_by { |n| n.even? ? 1 : 0 }
+			sorted_second_half_lines = second_half_lines.sort_by { |n| n.even? ? 1 : 0 }
+		else
+			# even numbers first
+			sorted_first_half_lines = first_half_lines.sort_by { |n| n.odd? ? 1 : 0 }
+			sorted_second_half_lines = second_half_lines.sort_by { |n| n.odd? ? 1 : 0 }
+		end
+
+		# zip requires either even arrays or the receiver to be the bigger list
+		if first_half_lines.size >= second_half_lines.size
+			result = sorted_first_half_lines.zip(sorted_second_half_lines).flatten
+		else
+			result = sorted_second_half_lines.zip(sorted_first_half_lines).flatten
+		end
+		result.compact
+		result.delete(nil)
+		result
 	end
 end
