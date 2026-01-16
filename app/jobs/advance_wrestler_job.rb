@@ -1,7 +1,9 @@
 class AdvanceWrestlerJob < ApplicationJob
   queue_as :default
+  # associations are not available here so we had to pass tournament_id when creating the job
+  limits_concurrency to: 1, key: ->(_wrestler, _match, tournament_id) { "tournament:#{tournament_id}" }
   
-  def perform(wrestler, match)
+  def perform(wrestler, match, tournament_id)
     # Get tournament from wrestler
     tournament = wrestler.tournament
     

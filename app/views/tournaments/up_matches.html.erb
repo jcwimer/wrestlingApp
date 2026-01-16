@@ -5,7 +5,23 @@
     // } );
   </script>
   <script>
-    setTimeout("location.reload(true);",30000);
+    const setUpMatchesRefresh = () => {
+      if (window.__upMatchesRefreshTimeout) {
+        clearTimeout(window.__upMatchesRefreshTimeout);
+      }
+      window.__upMatchesRefreshTimeout = setTimeout(() => {
+        window.location.reload(true);
+      }, 30000);
+    };
+
+    document.addEventListener("turbo:load", setUpMatchesRefresh);
+    // turbo:before-cache stops the timer refresh from occurring if you navigate away from up_matches
+    document.addEventListener("turbo:before-cache", () => {
+      if (window.__upMatchesRefreshTimeout) {
+        clearTimeout(window.__upMatchesRefreshTimeout);
+        window.__upMatchesRefreshTimeout = null;
+      }
+    });
   </script>
   <br>
   <br>

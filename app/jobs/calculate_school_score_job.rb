@@ -1,5 +1,6 @@
 class CalculateSchoolScoreJob < ApplicationJob
   queue_as :default
+  limits_concurrency to: 1, key: ->(school) { "tournament:#{school.tournament_id}" }
   
   # Need for TournamentJobStatusIntegrationTest
   def self.perform_sync(school)

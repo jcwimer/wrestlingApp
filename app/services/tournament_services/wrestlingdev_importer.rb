@@ -41,7 +41,6 @@ class WrestlingdevImporter
     @tournament.matches.destroy_all
     @tournament.mat_assignment_rules.destroy_all # Explicitly destroy rules (might be redundant if Mat cascades)
     @tournament.delegates.destroy_all
-    @tournament.tournament_backups.destroy_all
     @tournament.tournament_job_statuses.destroy_all
     # Note: Teampointadjusts are deleted via School/Wrestler cascade
   end

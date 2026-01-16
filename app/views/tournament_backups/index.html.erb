@@ -27,12 +27,3 @@ and will also delete all of your current data. It's best to use the create backu
   </tbody>
 </table>
 <br><br>
-<h3>Import Manual Backup</h3>
-<p>Paste the backup text here. Note, if this is formatted wrong, you'll need to restore a backup from above to fix it and you'll see an error in your background jobs.</p>
-<%= form_for(:tournament, url: import_manual_tournament_tournament_backups_path(@tournament)) do |f| %>
-  <div class="field">
-    <%= f.label 'Import text' %><br>
-    <%= f.text_area :import_text, cols: "30", rows: "20" %>
-  </div>
-  <%= submit_tag "Import", class: "btn btn-success", data: { turbo_confirm: 'Are you sure? This will delete everything for the current tournament and restore it with the backup text pasted below.' } %>
-<% end %>

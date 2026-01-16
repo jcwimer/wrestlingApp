@@ -149,7 +149,7 @@ SolidQueue plugin enabled in Puma
 ```
 
 I have deployed Mission Control as a UI for SolidQueue. The uri for mission control is `/jobs`.
-For the development environment, the user/password is dev/secret. For the production environment, it is defined by environment variables.
+For the development environment, the user/password is dev/secret. For the production environment, it is defined by environment variables WRESTLINGDEV_MISSION_CONTROL_USER/WRESTLINGDEV_MISSION_CONTROL_PASSWORD. You can see this in `config/environments/production.rb` and `config/environments/development.rb`.
 
 ## Environment Variables
 

@@ -8,7 +8,7 @@ class AdvanceWrestler
     def advance
       # Use perform_later which will execute based on centralized adapter config
       # This will be converted to inline execution in test environment by ActiveJob
-      AdvanceWrestlerJob.perform_later(@wrestler, @last_match)
+      AdvanceWrestlerJob.perform_later(@wrestler, @last_match, @tournament.id)
     end
 
     def advance_raw

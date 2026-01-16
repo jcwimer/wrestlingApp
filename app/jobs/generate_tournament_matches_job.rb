@@ -1,5 +1,6 @@
 class GenerateTournamentMatchesJob < ApplicationJob
   queue_as :default
+  limits_concurrency to: 1, key: ->(tournament) { "tournament:#{tournament.id}" }
   
   def perform(tournament)
     # Log information about the job
