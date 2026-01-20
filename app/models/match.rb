@@ -201,6 +201,7 @@ class Match < ApplicationRecord
 	end
 
 	def w1_bracket_name
+	  first_round = self.weight.matches.sort_by{|m| m.round}.first.round
 	  return_string = ""
 	  return_string_ending = ""
       if self.w1 and self.winner_id == self.w1
@@ -208,7 +209,7 @@ class Match < ApplicationRecord
       	return_string_ending = return_string_ending + "</strong>"
       end
       if self.w1 != nil
-      	if self.round == 1
+      	if self.round == first_round
           return_string = return_string + "#{wrestler1.long_bracket_name}"
       	else
       	  return_string = return_string + "#{wrestler1.short_bracket_name}"
@@ -220,6 +221,7 @@ class Match < ApplicationRecord
 	end
 
 	def w2_bracket_name
+		first_round = self.weight.matches.sort_by{|m| m.round}.first.round
 		return_string = ""
 		return_string_ending = ""
 		if self.w2 and self.winner_id == self.w2
@@ -227,7 +229,7 @@ class Match < ApplicationRecord
 			return_string_ending = return_string_ending + "</strong>"
 		end
 		if self.w2 != nil
-			if self.round == 1
+			if self.round == first_round
 			return_string = return_string + "#{wrestler2.long_bracket_name}"
 			else
 			  return_string = return_string + "#{wrestler2.short_bracket_name}"
