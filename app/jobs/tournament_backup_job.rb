@@ -1,6 +1,6 @@
 class TournamentBackupJob < ApplicationJob
   queue_as :default
-  limits_concurrency to: 1, key: ->(tournament) { "tournament:#{tournament.id}" }
+  limits_concurrency to: 1, key: ->(tournament, *) { "tournament:#{tournament.id}" }
   
   def perform(tournament, reason = nil)
     # Log information about the job
