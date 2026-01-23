@@ -156,14 +156,14 @@ class Tournament < ApplicationRecord
 
   	def double_elim_number_of_wrestlers_error
   		error_string = ""
-        if self.tournament_type == "Double Elimination 1-6" or self.tournament_type == "Double Elimination 1-8"
+        if self.tournament_type == "Regular Double Elimination 1-6" or self.tournament_type == "Regular Double Elimination 1-8"
         	weights_with_too_many_wrestlers = weights.select{|w| w.wrestlers.size > 64}
-        	weight_with_too_few_wrestlers = weights.select{|w| w.wrestlers.size < 4}
+        	weight_with_too_few_wrestlers = weights.select{|w| w.wrestlers.size < 2}
         	weights_with_too_many_wrestlers.each do |weight|
         		error_string = error_string + " The weight class #{weight.max} has more than 64 wrestlers."
         	end
         	weight_with_too_few_wrestlers.each do |weight|
-        		error_string = error_string + " The weight class #{weight.max} has less than 4 wrestlers."
+        		error_string = error_string + " The weight class #{weight.max} has less than 2 wrestlers."
         	end
         end
         return error_string
