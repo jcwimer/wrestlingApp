@@ -6,9 +6,12 @@ class DoubleEliminationGenerateLoserNames
   # Entry point: assign loser placeholders and advance any byes
   def assign_loser_names
     @tournament.weights.each do |weight|
-      assign_loser_names_for_weight(weight)
-      advance_bye_matches_championship(weight)
-      advance_bye_matches_consolation(weight)
+      # only assign loser names if there's conso matches to be had
+      if weight.calculate_bracket_size > 2
+        assign_loser_names_for_weight(weight)
+        advance_bye_matches_championship(weight)
+        advance_bye_matches_consolation(weight)
+      end
     end
   end
 
@@ -87,7 +90,7 @@ class DoubleEliminationGenerateLoserNames
     end
 
     # 5th/6th place
-    if bracket_size >= 5 && num_placers >= 6
+    if bracket_size >= 5 && num_placers >= 6 && weight.wrestlers.size > 4
       conso_semis = matches.select { |m| m.bracket_position == "Conso Semis" }
                            .sort_by(&:bracket_position_number)
       if conso_semis.size >= 2
@@ -98,7 +101,7 @@ class DoubleEliminationGenerateLoserNames
     end
 
     # 7th/8th place
-    if bracket_size >= 7 && num_placers >= 8
+    if bracket_size >= 7 && num_placers >= 8 && weight.wrestlers.size > 6
       conso_quarters = matches.select { |m| m.bracket_position == "Conso Quarter" }
                                 .sort_by(&:bracket_position_number)
       if conso_quarters.size >= 2
