@@ -60,4 +60,29 @@ class MatchChannel < ApplicationCable::Channel
        Rails.logger.info "[MatchChannel] No new stat data provided in send_stat for match #{@match.id}, not updating DB or broadcasting."
     end
   end
+
+  # Called when client wants the latest stats immediately after reconnect
+  def request_sync
+    unless @match
+      Rails.logger.error "[MatchChannel] Error: request_sync called but @match is nil. Client params on sub: #{params[:match_id]}"
+      return
+    end
+
+    payload = {
+      w1_stat: @match.w1_stat,
+      w2_stat: @match.w2_stat,
+      score: @match.score,
+      win_type: @match.win_type,
+      winner_name: @match.winner&.name,
+      winner_id: @match.winner_id,
+      finished: @match.finished
+    }.compact
+
+    if payload.present?
+      Rails.logger.info "[MatchChannel] request_sync transmit for match #{@match.id} with payload: #{payload.inspect}"
+      transmit(payload)
+    else
+      Rails.logger.info "[MatchChannel] request_sync payload empty for match #{@match.id}, not transmitting."
+    end
+  end
 end

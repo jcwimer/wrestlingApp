@@ -13,6 +13,8 @@ export default class extends Controller {
 
   connect() {
     console.log("Match data controller connected")
+    this.isConnected = false
+    this.pendingLocalSync = { w1: false, w2: false }
     
     this.w1 = {
       name: "w1",
@@ -69,6 +71,7 @@ export default class extends Controller {
     wrestler.updated_at = new Date().toISOString()
     this.updateHtmlValues()
     this.saveToLocalStorage(wrestler)
+    if (!this.isConnected) this.pendingLocalSync[wrestler.name] = true
     
     // Send the update via Action Cable if subscribed
     if (this.matchSubscription) {
@@ -109,6 +112,7 @@ export default class extends Controller {
     // Update the internal JS object
     wrestler.stats = newValue
     wrestler.updated_at = new Date().toISOString()
+    if (!this.isConnected) this.pendingLocalSync[wrestler.name] = true
     
     // Save to localStorage
     this.saveToLocalStorage(wrestler)
@@ -334,15 +338,18 @@ export default class extends Controller {
       {
         connected: () => {
           console.log(`[Stats AC] Connected to MatchStatsChannel for match ID: ${matchId}`)
+          this.isConnected = true
           if (this.statusIndicatorTarget) {
             this.statusIndicatorTarget.innerText = "Connected: Stats will update in real-time."
             this.statusIndicatorTarget.classList.remove('alert-info', 'alert-warning', 'alert-danger')
             this.statusIndicatorTarget.classList.add('alert-success')
           }
+          this.sendCurrentStatsOnReconnect()
         },
         
         disconnected: () => {
           console.log(`[Stats AC] Disconnected from MatchStatsChannel`)
+          this.isConnected = false
           if (this.statusIndicatorTarget) {
             this.statusIndicatorTarget.innerText = "Disconnected: Stats updates paused."
             this.statusIndicatorTarget.classList.remove('alert-info', 'alert-success', 'alert-danger')
@@ -356,15 +363,25 @@ export default class extends Controller {
           // Update w1 stats
           if (data.w1_stat !== undefined && this.w1StatTarget) {
             console.log(`[Stats AC] Updating w1_stat: ${data.w1_stat.substring(0, 30)}...`)
-            this.w1.stats = data.w1_stat
-            this.w1StatTarget.value = data.w1_stat
+            if (!this.pendingLocalSync.w1 || data.w1_stat === this.w1.stats) {
+              this.w1.stats = data.w1_stat
+              this.w1StatTarget.value = data.w1_stat
+              this.pendingLocalSync.w1 = false
+            } else {
+              console.log('[Stats AC] Skipping w1_stat overwrite due to pending local changes.')
+            }
           }
           
           // Update w2 stats
           if (data.w2_stat !== undefined && this.w2StatTarget) {
             console.log(`[Stats AC] Updating w2_stat: ${data.w2_stat.substring(0, 30)}...`)
-            this.w2.stats = data.w2_stat
-            this.w2StatTarget.value = data.w2_stat
+            if (!this.pendingLocalSync.w2 || data.w2_stat === this.w2.stats) {
+              this.w2.stats = data.w2_stat
+              this.w2StatTarget.value = data.w2_stat
+              this.pendingLocalSync.w2 = false
+            } else {
+              console.log('[Stats AC] Skipping w2_stat overwrite due to pending local changes.')
+            }
           }
         },
         
@@ -381,4 +398,23 @@ export default class extends Controller {
       }
     )
   }
-} 
+
+  sendCurrentStatsOnReconnect() {
+    if (!this.matchSubscription) return
+    const payload = {}
+    if (typeof this.w1?.stats === 'string' && this.w1.stats.length > 0) {
+      payload.new_w1_stat = this.w1.stats
+      this.pendingLocalSync.w1 = true
+    }
+    if (typeof this.w2?.stats === 'string' && this.w2.stats.length > 0) {
+      payload.new_w2_stat = this.w2.stats
+      this.pendingLocalSync.w2 = true
+    }
+    if (Object.keys(payload).length > 0) {
+      console.log('[ActionCable] Reconnect sync: sending current stats payload:', payload)
+      this.matchSubscription.perform('send_stat', payload)
+    } else {
+      console.log('[ActionCable] Reconnect sync: no local stats to send.')
+    }
+  }
+}

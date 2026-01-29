@@ -76,6 +76,11 @@ export default class extends Controller {
             this.statusIndicatorTarget.classList.remove('alert-danger', 'alert-secondary', 'text-danger', 'text-dark')
             this.statusIndicatorTarget.classList.add('alert-success')
           }
+          try {
+            this.matchSubscription.perform('request_sync')
+          } catch (e) {
+            console.error('[Spectator AC] request_sync perform failed:', e)
+          }
         },
         disconnected: () => { 
           console.log(`[Spectator AC Callback] Disconnected: ${matchId}`)
