@@ -376,6 +376,27 @@ class ActiveSupport::TestCase
     Match.where("(w1 = ? OR w2 = ?) AND (w1 = ? OR w2 = ?)",translate_name_to_id(wrestler1_name), translate_name_to_id(wrestler1_name), translate_name_to_id(wrestler2_name),translate_name_to_id(wrestler2_name)).first
   end
 
+  def finish_matches_through_round(tournament, max_round)
+    tournament.matches.reload.select { |match| match.round && match.round <= max_round }.each do |match|
+      next if match.finished == 1
+      winner_id = match.w1 || match.w2
+      next unless winner_id
+      match.update!(
+        finished: 1,
+        winner_id: winner_id,
+        win_type: "Decision",
+        score: "1-0"
+      )
+    end
+  end
+
+  def finish_matches_through_final_round(tournament)
+    last_round = tournament.matches.maximum(:round)
+    return unless last_round
+
+    finish_matches_through_round(tournament, last_round - 1)
+  end
+
 end
 
 # Add support for controller tests

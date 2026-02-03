@@ -10,13 +10,13 @@ class MatsController < ApplicationController
   
     if bout_number_param
       @show_next_bout_button = false
-      @match = @mat.unfinished_matches.find { |m| m.bout_number == bout_number_param.to_i }
+      @match = @mat.queue_matches.compact.find { |m| m.bout_number == bout_number_param.to_i }
     else
       @show_next_bout_button = true
-      @match = @mat.unfinished_matches.first
+      @match = @mat.queue1_match
     end
   
-    @next_match = @mat.unfinished_matches.second # Second unfinished match on the mat
+    @next_match = @mat.queue2_match # Second match on the mat
   
     @wrestlers = []
     if @match
@@ -82,8 +82,8 @@ class MatsController < ApplicationController
   def assign_next_match
     @tournament = @mat.tournament_id
     respond_to do |format|
-      if @mat.assign_next_match
-        format.html { redirect_to "/tournaments/#{@mat.tournament.id}", notice: "Next Match on Mat #{@mat.name} successfully completed." }
+      if @mat.advance_queue!
+        format.html { redirect_to "/tournaments/#{@mat.tournament.id}", notice: "Mat #{@mat.name} queue advanced." }
         format.json { head :no_content }
       else
         format.html { redirect_to "/tournaments/#{@mat.tournament.id}", alert: "There was an error." }

@@ -25,12 +25,28 @@ class MatchesControllerTest < ActionController::TestCase
   end
 
   def post_update_from_match_stat
+    @request.env["HTTP_REFERER"] = "/tournaments/#{@tournament.id}/matches"
     get :stat, params: { id: @match.id }
     patch :update, params: { id: @match.id, match: {tournament_id: 1, mat_id: 1} }
   end
  
   def get_stat
     get :stat, params: { id: @match.id }
+  end
+
+  def get_edit_assignment(extra_params = {})
+    get :edit_assignment, params: { id: @match.id }.merge(extra_params)
+  end
+
+  def patch_update_assignment(extra_params = {})
+    base = {
+      id: @match.id,
+      match: {
+        mat_id: @match.mat_id,
+        queue_position: 2
+      }
+    }
+    patch :update_assignment, params: base.deep_merge(extra_params)
   end
   
   def sign_in_owner
@@ -173,5 +189,73 @@ class MatchesControllerTest < ActionController::TestCase
     # Check that the finished_at value is displayed on the page
     assert_response :success
     assert_includes @response.body, time_ago_in_words(finished_at), "time_ago_in_words(finished_at) should be displayed on the page"
+  end
+
+  test "tournament owner can view edit_assignment and execute update_assignment" do
+    sign_in_owner
+    get_edit_assignment
+    assert_response :success
+
+    patch_update_assignment
+    assert_response :redirect
+    assert_not_equal "/static_pages/not_allowed", @response.redirect_url&.sub("http://test.host", "")
+  end
+
+  test "tournament delegate can view edit_assignment and execute update_assignment" do
+    sign_in_tournament_delegate
+    get_edit_assignment
+    assert_response :success
+
+    patch_update_assignment
+    assert_response :redirect
+    assert_not_equal "/static_pages/not_allowed", @response.redirect_url&.sub("http://test.host", "")
+  end
+
+  test "school delegate cannot view edit_assignment or execute update_assignment" do
+    sign_in_school_delegate
+    get_edit_assignment
+    assert_redirected_to "/static_pages/not_allowed"
+
+    patch_update_assignment
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "non logged in user cannot view edit_assignment or execute update_assignment" do
+    get_edit_assignment
+    assert_redirected_to "/static_pages/not_allowed"
+
+    patch_update_assignment
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "logged in user without delegations cannot view edit_assignment or execute update_assignment" do
+    sign_in_non_owner
+    get_edit_assignment
+    assert_redirected_to "/static_pages/not_allowed"
+
+    patch_update_assignment
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "valid school permission key cannot view edit_assignment or execute update_assignment" do
+    school = @tournament.schools.first
+    school.update!(permission_key: "valid-school-key")
+
+    get_edit_assignment(school_permission_key: "valid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+
+    patch_update_assignment(school_permission_key: "valid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "invalid school permission key cannot view edit_assignment or execute update_assignment" do
+    school = @tournament.schools.first
+    school.update!(permission_key: "valid-school-key")
+
+    get_edit_assignment(school_permission_key: "invalid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+
+    patch_update_assignment(school_permission_key: "invalid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
   end
 end

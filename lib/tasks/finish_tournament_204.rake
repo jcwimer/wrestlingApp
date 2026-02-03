@@ -35,52 +35,68 @@ namespace :tournament do
       end
   
       sleep(10)
-      @tournament.reload # Ensure matches association is fresh before iterating
-      @tournament.matches.reload.sort_by(&:bout_number).each do |match|
-        if match.reload.loser1_name != "BYE" and match.reload.loser2_name != "BYE" and match.reload.finished != 1
-            # Wait until both wrestlers are assigned
-            while (match.w1.nil? || match.w2.nil?)
-              puts "Waiting for wrestlers in match #{match.bout_number}..."
-              sleep(5) # Wait for 5 seconds before checking again
-              match.reload
-            end
-            puts "Finishing match with bout number #{match.bout_number}..."
+      loop do
+        @tournament.reload
+        @tournament.refill_open_bout_board_queues
 
-            # Choose a random winner
-            wrestlers = [match.w1, match.w2]
-            match.winner_id = wrestlers.sample
-    
-            # Choose a random win type
-            win_type = WIN_TYPES.sample
-            match.win_type = win_type
-    
-            # Assign score based on win type
-            match.score = case win_type
-                        when "Decision"
-                            low_score = rand(0..10)
-                            high_score = low_score + rand(1..7)
-                            "#{high_score}-#{low_score}"
-                        when "Major"
-                            low_score = rand(0..10)
-                            high_score = low_score + rand(8..14)
-                            "#{high_score}-#{low_score}"
-                        when "Tech Fall"
-                            low_score = rand(0..10)
-                            high_score = low_score + rand(15..19)
-                            "#{high_score}-#{low_score}"
-                        when "Pin"
-                            pin_times = ["0:30","1:12","5:37","2:34","3:54","4:23","5:56","0:12","1:00"]
-                            pin_times.sample
-                        else
-                            "" # Default score
-                        end
-    
-            # Mark match as finished
-            match.finished = 1
-            match.save!
-            # sleep to prevent mysql locks when assign_next_match to a mat runs
-            sleep(0.5)
+        mats_with_queue1 = @tournament.mats.select do |mat|
+          match = mat.queue1_match
+          match && match.finished != 1 && match.loser1_name != "BYE" && match.loser2_name != "BYE"
         end
+
+        break if mats_with_queue1.empty?
+
+        mat = mats_with_queue1.sample
+        match = mat.queue1_match
+
+        # Wait until both wrestlers are assigned for the selected queue1 match.
+        while match && (match.w1.nil? || match.w2.nil?)
+          puts "Waiting for wrestlers in match #{match.bout_number} on mat #{mat.name}..."
+          sleep(5)
+          @tournament.reload
+          @tournament.refill_open_bout_board_queues
+          match = mat.reload.queue1_match
+        end
+
+        next unless match
+        next if match.finished == 1 || match.loser1_name == "BYE" || match.loser2_name == "BYE"
+
+        puts "Finishing queue1 match on mat #{mat.name} with bout number #{match.bout_number}..."
+
+        # Choose a random winner
+        wrestlers = [match.w1, match.w2]
+        match.winner_id = wrestlers.sample
+
+        # Choose a random win type
+        win_type = WIN_TYPES.sample
+        match.win_type = win_type
+
+        # Assign score based on win type
+        match.score = case win_type
+                      when "Decision"
+                        low_score = rand(0..10)
+                        high_score = low_score + rand(1..7)
+                        "#{high_score}-#{low_score}"
+                      when "Major"
+                        low_score = rand(0..10)
+                        high_score = low_score + rand(8..14)
+                        "#{high_score}-#{low_score}"
+                      when "Tech Fall"
+                        low_score = rand(0..10)
+                        high_score = low_score + rand(15..19)
+                        "#{high_score}-#{low_score}"
+                      when "Pin"
+                        pin_times = ["0:30","1:12","5:37","2:34","3:54","4:23","5:56","0:12","1:00"]
+                        pin_times.sample
+                      else
+                        ""
+                      end
+
+        # Mark match as finished
+        match.finished = 1
+        match.save!
+        # sleep to prevent mysql locks when queue advancement runs
+        sleep(0.5)
       end
     end
   end

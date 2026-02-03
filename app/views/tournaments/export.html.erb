@@ -3,7 +3,11 @@
     "attributes": <%= @tournament.attributes.to_json %>,
     "schools": <%= @tournament.schools.map(&:attributes).to_json %>,
     "weights": <%= @tournament.weights.map(&:attributes).to_json %>,
-    "mats": <%= @tournament.mats.map(&:attributes).to_json %>,
+    "mats": <%= @tournament.mats.map { |mat| mat.attributes.merge(
+      {
+        "queue_bout_numbers": mat.queue_matches.map { |match| match&.bout_number }
+      }
+    ) }.to_json %>,
     "wrestlers": <%= @tournament.wrestlers.map { |wrestler| wrestler.attributes.merge(
       {
         "school": wrestler.school&.attributes,

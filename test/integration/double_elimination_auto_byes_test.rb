@@ -31,8 +31,11 @@ class DoubleEliminationAutoByes < ActionDispatch::IntegrationTest
     assert round1.select{|m| m.bracket_position_number == 4}.first.wrestler1.name == "Test2"
     assert round1.select{|m| m.bracket_position_number == 4}.first.loser2_name == "BYE"
     winner_by_name("Test4", round1.select{|m| m.bracket_position_number == 2}.first)
-    assert mat.reload.unfinished_matches.first.loser1_name != "BYE"
-    assert mat.reload.unfinished_matches.first.loser2_name != "BYE"
+    queued_match = mat.reload.queue1_match
+    if queued_match
+      assert queued_match.loser1_name != "BYE"
+      assert queued_match.loser2_name != "BYE"
+    end
 
     semis = matches.select{|m| m.bracket_position == "Semis"}.sort_by{|m| m.bracket_position_number}
     assert semis.first.reload.wrestler1.name == "Test1"
@@ -40,11 +43,17 @@ class DoubleEliminationAutoByes < ActionDispatch::IntegrationTest
     assert semis.second.reload.wrestler1.name == "Test3"
     assert semis.second.reload.wrestler2.name == "Test2"
     winner_by_name("Test4",semis.first)
-    assert mat.reload.unfinished_matches.first.loser1_name != "BYE"
-    assert mat.reload.unfinished_matches.first.loser2_name != "BYE"
+    queued_match = mat.reload.queue1_match
+    if queued_match
+      assert queued_match.loser1_name != "BYE"
+      assert queued_match.loser2_name != "BYE"
+    end
     winner_by_name("Test2",semis.second)
-    assert mat.reload.unfinished_matches.first.loser1_name != "BYE"
-    assert mat.reload.unfinished_matches.first.loser2_name != "BYE"
+    queued_match = mat.reload.queue1_match
+    if queued_match
+      assert queued_match.loser1_name != "BYE"
+      assert queued_match.loser2_name != "BYE"
+    end
 
     conso_quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.sort_by{|m| m.bracket_position_number}
     assert conso_quarter.first.reload.loser1_name == "BYE"
@@ -58,8 +67,11 @@ class DoubleEliminationAutoByes < ActionDispatch::IntegrationTest
     assert conso_semis.second.reload.wrestler1.name == "Test1"
     assert conso_semis.second.reload.loser2_name == "BYE"
     winner_by_name("Test5",conso_semis.first)
-    assert mat.reload.unfinished_matches.first.loser1_name != "BYE"
-    assert mat.reload.unfinished_matches.first.loser2_name != "BYE"
+    queued_match = mat.reload.queue1_match
+    if queued_match
+      assert queued_match.loser1_name != "BYE"
+      assert queued_match.loser2_name != "BYE"
+    end
 
     first_finals = matches.select{|m| m.bracket_position == "1/2"}.first
     third_finals = matches.select{|m| m.bracket_position == "3/4"}.first

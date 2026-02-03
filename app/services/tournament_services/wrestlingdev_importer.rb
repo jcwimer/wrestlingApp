@@ -52,6 +52,7 @@ class WrestlingdevImporter
     parse_mats(@import_data["tournament"]["mats"])
     parse_wrestlers(@import_data["tournament"]["wrestlers"])
     parse_matches(@import_data["tournament"]["matches"])
+    apply_mat_queues
     parse_mat_assignment_rules(@import_data["tournament"]["mat_assignment_rules"])
   end
 
@@ -75,9 +76,15 @@ class WrestlingdevImporter
   end
 
   def parse_mats(mats)
+    @mat_queue_bout_numbers = {}
     mats.each do |mat_attributes|
-      mat_attributes.except!("id")
+      mat_name = mat_attributes["name"]
+      queue_bout_numbers = mat_attributes["queue_bout_numbers"]
+      mat_attributes.except!("id", "queue1", "queue2", "queue3", "queue4", "queue_bout_numbers", "tournament_id")
       Mat.create(mat_attributes.merge(tournament_id: @tournament.id))
+      if mat_name && queue_bout_numbers
+        @mat_queue_bout_numbers[mat_name] = queue_bout_numbers
+      end
     end
   end
 
@@ -155,6 +162,53 @@ class WrestlingdevImporter
         w2: w2&.id,
         winner_id: winner&.id
       ))
+    end
+  end
+
+  def apply_mat_queues
+    if @mat_queue_bout_numbers.blank?
+      Mat.where(tournament_id: @tournament.id).find_each do |mat|
+        match_ids = mat.matches.where(finished: [nil, 0]).order(:bout_number).limit(4).pluck(:id)
+        mat.update(
+          queue1: match_ids[0],
+          queue2: match_ids[1],
+          queue3: match_ids[2],
+          queue4: match_ids[3]
+        )
+      end
+      return
+    end
+
+    @mat_queue_bout_numbers.each do |mat_name, bout_numbers|
+      mat = Mat.find_by(name: mat_name, tournament_id: @tournament.id)
+      next unless mat
+
+      matches = Array(bout_numbers).map do |bout_number|
+        Match.find_by(bout_number: bout_number, tournament_id: @tournament.id)
+      end
+
+      mat.update(
+        queue1: matches[0]&.id,
+        queue2: matches[1]&.id,
+        queue3: matches[2]&.id,
+        queue4: matches[3]&.id
+      )
+
+      matches.compact.each do |match|
+        match.update(mat_id: mat.id)
+      end
+    end
+
+    Mat.where(tournament_id: @tournament.id)
+       .where(queue1: nil, queue2: nil, queue3: nil, queue4: nil)
+       .find_each do |mat|
+      match_ids = mat.matches.where(finished: [nil, 0]).order(:bout_number).limit(4).pluck(:id)
+      mat.update(
+        queue1: match_ids[0],
+        queue2: match_ids[1],
+        queue3: match_ids[2],
+        queue4: match_ids[3]
+      )
     end
   end
 end

@@ -28,6 +28,7 @@
         <td><%= match.finished %></td>
         <td><%= link_to 'Show', match, :class=>"btn btn-default btn-sm" %>
             <%= link_to 'Edit Wrestlers', edit_match_path(match), :class=>"btn btn-primary btn-sm" %>
+            <%= link_to 'Edit Mat/Queue', edit_assignment_match_path(match), :class=>"btn btn-primary btn-sm" %>
             <%= link_to 'Stat Match', "/matches/#{match.id}/stat", :class=>"btn btn-primary btn-sm" %>
         </td>
       </tr>

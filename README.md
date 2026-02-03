@@ -34,11 +34,14 @@ In development environments, background jobs run inline (synchronously) by defau
 
 To run a single test file:
 1. Get a shell with ruby and rails: `bash bin/rails-dev-run.sh wrestlingdev-development`
-2. `rake test TEST=test/models/match_test.rb`
+2. `rake test TEST=test/models/match_test.rb` OR `rails test test/models/match_test.rb`
 
 To run a single test inside a file:
 1. Get a shell with ruby and rails: `bash bin/rails-dev-run.sh wrestlingdev-development`
-2. `rake test TEST=test/models/match_test.rb TESTOPTS="--name='/test_Match_should_not_be_valid_if_an_incorrect_win_type_is_given/'"`
+2. `rake test TEST=test/models/match_test.rb TESTOPTS="--name='/test_Match_should_not_be_valid_if_an_incorrect_win_type_is_given/'"` OR `rails test test/models/match_test.rb --name=/test_Match_should_not_be_valid_if_an_incorrect_win_type_is_given/`
+
+To run tests in verbose mode (outputs the time for each test file and the test file name)
+`rails test -v`
 
 ## Develop with rvm
 With rvm installed, run `rvm install ruby-3.2.0`

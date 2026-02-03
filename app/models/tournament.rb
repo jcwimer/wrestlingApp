@@ -82,22 +82,17 @@ class Tournament < ApplicationRecord
 		matches.maximum(:round) || 0  # Return 0 if no matches or max round is nil
 	end
 	
-	def assign_mats(mats_to_assign)
-		if mats_to_assign.count > 0
-			until mats_to_assign.sort_by{|m| m.id}.last.matches.count == 4
-				mats_to_assign.sort_by{|m| m.id}.each do |m|
-					m.assign_next_match	
-				end
-			end	
-		end
-	end
-	
 	def reset_mats
+		matches.reload
+		mats.reload
 		matches_to_reset = matches.select{|m| m.mat_id != nil}
 		# matches_to_reset.update_all( {:mat_id => nil } )
 		matches_to_reset.each do |m|
 			m.mat_id = nil
 			m.save
+		end
+		mats.each do |mat|
+			mat.clear_queue!
 		end
 	end
 	
@@ -228,19 +223,24 @@ class Tournament < ApplicationRecord
 
 	def reset_and_fill_bout_board
 		reset_mats
-	  
-		if mats.any?
-		  4.times do
-			# Iterate over each mat and assign the next available match
-			mats.each do |mat|
-			  match_assigned = mat.assign_next_match
-			  # If no more matches are available, exit early
-			  unless match_assigned
-				puts "No more eligible matches to assign."
-				return
-			  end
+		matches.reload
+		refill_open_bout_board_queues
+	end
+
+	def refill_open_bout_board_queues
+		return unless mats.any?
+
+		loop do
+			assigned_any = false
+			# Fill in round-robin order by queue depth:
+			# all mats queue1 first, then queue2, then queue3, then queue4.
+			(1..4).each do |slot|
+				mats.reload.each do |mat|
+					next unless mat.public_send("queue#{slot}").nil?
+					assigned_any ||= mat.assign_next_match
+				end
 			end
-		  end
+			break unless assigned_any
 		end
 	end
 

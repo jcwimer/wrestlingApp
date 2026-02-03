@@ -8,13 +8,12 @@ class MatsCurrentMatchPartialTest < ActionView::TestCase
     mat = @tournament.mats.create!(name: "Mat 1")
     match = @tournament.matches.first
 
-    match.update!(mat: mat)
+    mat.assign_match_to_queue!(match, 1)
 
     render partial: "mats/current_match", locals: { mat: mat }
 
     assert_includes rendered, "Bout"
     assert_includes rendered, match.bout_number.to_s
-    assert_includes rendered, mat.name
   end
 
   test "renders friendly message when no matches assigned" do

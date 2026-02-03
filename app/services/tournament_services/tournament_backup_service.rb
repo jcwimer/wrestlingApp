@@ -37,7 +37,11 @@ class TournamentBackupService
         attributes: @tournament.attributes,
         schools: @tournament.schools.map(&:attributes),
         weights: @tournament.weights.map(&:attributes),
-        mats: @tournament.mats.map(&:attributes),
+        mats: @tournament.mats.map do |mat|
+          mat.attributes.merge(
+            "queue_bout_numbers" => mat.queue_matches.map { |match| match&.bout_number }
+          )
+        end,
         mat_assignment_rules: @tournament.mat_assignment_rules.map do |rule|
           rule.attributes.merge(
             mat: Mat.find_by(id: rule.mat_id)&.attributes.slice("name"),

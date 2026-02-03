@@ -45,31 +45,31 @@
         <tr>
           <td><%= m.name %></td>
           <td>
-            <% if m.unfinished_matches.first %><strong><%=m.unfinished_matches.first.bout_number%></strong> (<%= m.unfinished_matches.first.bracket_position %>)<br>
-              <%= m.unfinished_matches.first.weight_max %> lbs
-              <br><%= m.unfinished_matches.first.w1_bracket_name %> vs. <br>
-              <%= m.unfinished_matches.first.w2_bracket_name %>
+            <% if m.queue1_match %><strong><%=m.queue1_match.bout_number%></strong> (<%= m.queue1_match.bracket_position %>)<br>
+              <%= m.queue1_match.weight_max %> lbs
+              <br><%= m.queue1_match.w1_bracket_name %> vs. <br>
+              <%= m.queue1_match.w2_bracket_name %>
             <% end %>
           </td>
           <td>
-            <% if m.unfinished_matches.second %><strong><%=m.unfinished_matches.second.bout_number%></strong> (<%= m.unfinished_matches.second.bracket_position %>)<br>
-              <%= m.unfinished_matches.second.weight_max %> lbs
-              <br><%= m.unfinished_matches.second.w1_bracket_name %> vs. <br>
-              <%= m.unfinished_matches.second.w2_bracket_name %>
+            <% if m.queue2_match %><strong><%=m.queue2_match.bout_number%></strong> (<%= m.queue2_match.bracket_position %>)<br>
+              <%= m.queue2_match.weight_max %> lbs
+              <br><%= m.queue2_match.w1_bracket_name %> vs. <br>
+              <%= m.queue2_match.w2_bracket_name %>
             <% end %>
           </td>
           <td>
-            <% if m.unfinished_matches.third %><strong><%=m.unfinished_matches.third.bout_number%></strong> (<%= m.unfinished_matches.third.bracket_position %>)<br>
-              <%= m.unfinished_matches.third.weight_max %> lbs
-              <br><%= m.unfinished_matches.third.w1_bracket_name %> vs. <br>
-              <%= m.unfinished_matches.third.w2_bracket_name %>
+            <% if m.queue3_match %><strong><%=m.queue3_match.bout_number%></strong> (<%= m.queue3_match.bracket_position %>)<br>
+              <%= m.queue3_match.weight_max %> lbs
+              <br><%= m.queue3_match.w1_bracket_name %> vs. <br>
+              <%= m.queue3_match.w2_bracket_name %>
             <% end %>
           </td>
           <td>
-            <% if m.unfinished_matches.fourth %><strong><%=m.unfinished_matches.fourth.bout_number%></strong> (<%= m.unfinished_matches.fourth.bracket_position %>)<br>
-              <%= m.unfinished_matches.fourth.weight_max %> lbs
-              <br><%= m.unfinished_matches.fourth.w1_bracket_name %> vs. <br>
-              <%= m.unfinished_matches.fourth.w2_bracket_name %>
+            <% if m.queue4_match %><strong><%=m.queue4_match.bout_number%></strong> (<%= m.queue4_match.bracket_position %>)<br>
+              <%= m.queue4_match.weight_max %> lbs
+              <br><%= m.queue4_match.w1_bracket_name %> vs. <br>
+              <%= m.queue4_match.w2_bracket_name %>
             <% end %>
           </td>
         </tr>

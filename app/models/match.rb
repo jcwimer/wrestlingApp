@@ -37,12 +37,14 @@ class Match < ApplicationRecord
 		wrestler2.touch
 	  end
 	  if self.finished == 1 && self.winner_id != nil
-		if self.mat
-			self.mat.assign_next_match
-		end
 		advance_wrestlers
+		if self.mat
+			self.mat.advance_queue!(self)
+		end
+		self.tournament.refill_open_bout_board_queues
 		# School point calculation has move to the end of advance wrestler
 		# calculate_school_points
+		self.update(mat_id: nil)
 	  end
 	end
     
@@ -352,13 +354,13 @@ class Match < ApplicationRecord
 			next unless mat
 
 			Turbo::StreamsChannel.broadcast_update_to(
-				mat,
-				target: dom_id(mat, :current_match),
-				partial: "mats/current_match",
-				locals: {
-					mat: mat,
-					match: mat.unfinished_matches.first,
-					next_match: mat.unfinished_matches.second,
+					mat,
+					target: dom_id(mat, :current_match),
+					partial: "mats/current_match",
+					locals: {
+						mat: mat,
+					match: mat.queue1_match,
+					next_match: mat.queue2_match,
 					show_next_bout_button: true
 				}
 			)

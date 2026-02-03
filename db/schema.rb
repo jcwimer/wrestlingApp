@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_15_173921) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_29_120000) do
   create_table "mat_assignment_rules", force: :cascade do |t|
     t.bigint "tournament_id"
     t.bigint "mat_id"
@@ -56,6 +56,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_15_173921) do
     t.bigint "tournament_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.bigint "queue1"
+    t.bigint "queue2"
+    t.bigint "queue3"
+    t.bigint "queue4"
+    t.index ["queue1"], name: "index_mats_on_queue1"
+    t.index ["queue2"], name: "index_mats_on_queue2"
+    t.index ["queue3"], name: "index_mats_on_queue3"
+    t.index ["queue4"], name: "index_mats_on_queue4"
     t.index ["tournament_id"], name: "index_mats_on_tournament_id"
   end
 

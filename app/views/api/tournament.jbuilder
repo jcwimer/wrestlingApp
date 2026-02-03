@@ -28,7 +28,7 @@ json.cache! ["api_tournament", @tournament] do
     
     json.mats @mats do |mat|
       json.name mat.name
-      json.unfinished_matches mat.unfinished_matches do |match|
+      json.unfinished_matches mat.queue_matches.compact do |match|
         json.bout_number match.bout_number
         json.w1_name match.w1_name
         json.w2_name match.w2_name

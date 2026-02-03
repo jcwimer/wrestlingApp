@@ -7,7 +7,8 @@ class MatAssignmentRules < ActionDispatch::IntegrationTest
 
   test "Mat assignment works with no mat assignment rules" do
     @tournament.reset_and_fill_bout_board
-    assert @tournament.mats.first.matches.first != nil
+    assert @tournament.mats.first.queue1_match != nil
+    assert @tournament.mats.second.queue1_match != nil
   end
 
   test "Mat assignment only assigns matches for a certain weight" do
@@ -25,7 +26,7 @@ class MatAssignmentRules < ActionDispatch::IntegrationTest
     @tournament.reset_and_fill_bout_board
 
     mat.reload
-    assigned_matches = mat.matches.reload
+    assigned_matches = mat.queue_matches.compact
 
     assert_not_empty assigned_matches, "Matches should have been assigned to the mat"
     assert assigned_matches.all? { |match| match.weight_id == assignment_weight_id },
@@ -46,8 +47,15 @@ class MatAssignmentRules < ActionDispatch::IntegrationTest
     @tournament.reset_and_fill_bout_board
 
     mat.reload
-    assigned_matches = mat.matches.reload
+    assigned_matches = mat.queue_matches.compact
 
+    assert_empty assigned_matches, "Matches should not be assigned at tournament start for round 2"
+
+    finish_matches_through_round(@tournament, 1)
+    @tournament.reset_and_fill_bout_board
+
+    mat.reload
+    assigned_matches = mat.queue_matches.compact
     assert_not_empty assigned_matches, "Matches should have been assigned to the mat"
     assert assigned_matches.all? { |match| match.round == 2 },
            "All matches assigned to the mat should only be for round 2"
@@ -67,8 +75,15 @@ class MatAssignmentRules < ActionDispatch::IntegrationTest
     @tournament.reset_and_fill_bout_board
 
     mat.reload
-    assigned_matches = mat.matches.reload
+    assigned_matches = mat.queue_matches.compact
 
+    assert_empty assigned_matches, "Matches should not be assigned at tournament start for bracket position 1/2"
+
+    finish_matches_through_final_round(@tournament)
+    @tournament.reset_and_fill_bout_board
+
+    mat.reload
+    assigned_matches = mat.queue_matches.compact
     assert_not_empty assigned_matches, "Matches should have been assigned to the mat"
     assert assigned_matches.all? { |match| match.bracket_position == '1/2' },
            "All matches assigned to the mat should only be for bracket_position 1/2"
@@ -102,10 +117,16 @@ class MatAssignmentRules < ActionDispatch::IntegrationTest
     @tournament.reset_and_fill_bout_board
     
     mat.reload
-    assigned_matches = mat.matches.reload
+    assigned_matches = mat.queue_matches.compact
     
+    assert_empty assigned_matches, "Matches should not be assigned at tournament start for finals rules"
+
+    finish_matches_through_final_round(@tournament)
+    @tournament.reset_and_fill_bout_board
+
+    mat.reload
+    assigned_matches = mat.queue_matches.compact
     assert_not_empty assigned_matches, "Matches should have been assigned to the mat"
-    
     assert(
       assigned_matches.all? do |match|
         match.weight_id == assignment_weight_id &&
@@ -130,7 +151,7 @@ class MatAssignmentRules < ActionDispatch::IntegrationTest
     @tournament.reset_and_fill_bout_board
 
     mat.reload
-    assigned_matches = mat.matches.reload
+    assigned_matches = mat.queue_matches.compact
 
     assert_empty assigned_matches, "No matches should have been assigned to the mat"
   end
@@ -159,17 +180,25 @@ class MatAssignmentRules < ActionDispatch::IntegrationTest
     mat1.reload
     mat2.reload
 
-    mat1_matches = mat1.matches.reload
-    mat2_matches = mat2.matches.reload
+    mat1_matches = mat1.queue_matches.compact
+    mat2_matches = mat2.queue_matches.compact
 
-    assert_not_empty mat1_matches, "Matches should have been assigned to Mat 1"
-    assert_not_empty mat2_matches, "Matches should have been assigned to Mat 2"
+    if mat1_matches.empty?
+      eligible_matches = @tournament.matches.where(weight_id: @tournament.weights.first.id).where.not(w1: nil).where.not(w2: nil)
+      assert_empty eligible_matches, "No fully populated matches should be available for Mat 1 rule"
+    else
+      assert mat1_matches.all? { |match| match.weight_id == @tournament.weights.first.id },
+             "All matches assigned to Mat 1 should be for the specified weight class"
+    end
 
-    assert mat1_matches.all? { |match| match.weight_id == @tournament.weights.first.id },
-           "All matches assigned to Mat 1 should be for the specified weight class"
+    if mat2_matches.empty?
+      eligible_matches = @tournament.matches.where(round: 3).where.not(w1: nil).where.not(w2: nil)
+      assert_empty eligible_matches, "No fully populated matches should be available for Mat 2 rule"
+    else
+      assert mat2_matches.all? { |match| match.round == 3 },
+             "All matches assigned to Mat 2 should be for the specified round"
+    end
 
-    assert mat2_matches.all? { |match| match.round == 3 },
-           "All matches assigned to Mat 2 should be for the specified round"
   end
 
   test "No matches assigned in an empty tournament" do
@@ -188,8 +217,9 @@ class MatAssignmentRules < ActionDispatch::IntegrationTest
     @tournament.reset_and_fill_bout_board
   
     mat.reload
-    assigned_matches = mat.matches.reload
+    assigned_matches = mat.queue_matches.compact
   
     assert_empty assigned_matches, "No matches should have been assigned for an empty tournament"
   end  
+
 end

@@ -9,6 +9,10 @@ class MatsControllerTest < ActionController::TestCase
     # @tournament.generateMatchups
     @match = Match.where("tournament_id = ? and mat_id = ?",1,1).first
     @mat = mats(:one)
+    @match ||= @tournament.matches.first
+    if @match && @mat.queue1.nil?
+      @mat.assign_match_to_queue!(@match, 1)
+    end
   end
  
   def create
@@ -242,7 +246,7 @@ class MatsControllerTest < ActionController::TestCase
   test "logged in tournament owner should redirect back to the first unfinished bout on a mat after submitting a match with a bout number param" do
     sign_in_owner
   
-    first_bout_number = @mat.unfinished_matches.first.bout_number
+    first_bout_number = @mat.queue1_match.bout_number
   
     # Set a specific bout number to test
     bout_number = @match.bout_number

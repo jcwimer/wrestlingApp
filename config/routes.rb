@@ -10,6 +10,8 @@ Wrestling::Application.routes.draw do
     member do
       get :stat
       get :spectate
+      get :edit_assignment
+      patch :update_assignment
     end
   end
 
