@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '8.0.3'
+gem 'rails', '8.1.2'
 
 # Added in rails 7.1
 gem 'rails-html-sanitizer'

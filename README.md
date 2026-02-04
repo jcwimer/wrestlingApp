@@ -8,7 +8,7 @@ This application is being created to run a wrestling tournament.
 
 **App Info**
 * Ruby 3.2.0
-* Rails 8.0.2
+* Rails 8.1.2
 * DB MySQL/MariaDB
 * Solid Cache -> MySQL/MariaDB for html partial caching
 * Solid Queue -> MySQL/MariaDB for background job processing
