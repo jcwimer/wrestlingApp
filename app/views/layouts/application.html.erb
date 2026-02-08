@@ -36,7 +36,11 @@
 
                   <div id="page-content">
                     <div class="row">
-                      <div class="col-md-12"><%= render 'layouts/underheader' %></div>
+                      <div class="col-md-12">
+                        <% unless hide_ads? %>
+                          <%= render 'layouts/underheader' %>
+                        <% end %>
+                      </div>
                     </div>
                     <div class="row no-margin">
                         <div class="col-md-12" style="padding-left: 2%;">
@@ -58,4 +62,3 @@
         </body>
     <% end %>
 </html>
-
