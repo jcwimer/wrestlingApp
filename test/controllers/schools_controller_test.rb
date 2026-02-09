@@ -60,6 +60,15 @@ class SchoolsControllerTest < ActionController::TestCase
     assert_redirected_to '/static_pages/not_allowed'
   end
 
+  def assert_ads_hidden
+    assert_no_match(/blocked_message/, response.body)
+    assert_no_match(/adsbygoogle/, response.body)
+  end
+
+  def assert_ads_visible
+    assert_match(/blocked_message/, response.body)
+  end
+
   def baums_import
     baums_text = "***** 2019-01-09 13:36:50 *****
 Some School
@@ -397,6 +406,27 @@ Some Guy
     @tournament.update(is_public: false)
     get_edit(school_permission_key: @school_permission_key)
     success
+  end
+
+  test "ads are hidden for logged in user on school show" do
+    sign_in_owner
+    get_show
+    success
+    assert_ads_hidden
+  end
+
+  test "ads are hidden for school permission key on edit" do
+    @tournament.update(is_public: false)
+    get_edit(school_permission_key: @school_permission_key)
+    success
+    assert_ads_hidden
+  end
+
+  test "ads are visible for anonymous user without school permission key on show" do
+    @tournament.update(is_public: true)
+    get_show
+    success
+    assert_ads_visible
   end
 
   test "non logged in user cannot edit school with invalid school_permission_key" do
