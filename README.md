@@ -7,7 +7,7 @@ This application is being created to run a wrestling tournament.
 **Public Production Url:** [https://wrestlingdev.com](https://wrestlingdev.com)
 
 **App Info**
-* Ruby 3.2.0
+* Ruby 4.0.1
 * Rails 8.1.2
 * DB MySQL/MariaDB
 * Solid Cache -> MySQL/MariaDB for html partial caching
