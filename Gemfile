@@ -67,6 +67,7 @@ gem 'influxdb-rails'
 gem 'cancancan'
 gem 'round_robin_tournament'
 gem 'rb-readline'
+gem 'rqrcode'
 # Replacing Delayed Job with Solid Queue
 # gem 'delayed_job_active_record'
 gem 'solid_queue'
@@ -91,4 +92,3 @@ group :development, :test do
   # rails-controller-testing is needed for assert_template
   gem 'rails-controller-testing'
 end
-

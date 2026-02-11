@@ -27,6 +27,10 @@ class TournamentsControllerTest < ActionController::TestCase
   def get_up_matches
     get :up_matches, params: { id: 1 }
   end
+
+  def get_qrcode(params = {})
+    get :qrcode, params: { id: 1 }.merge(params)
+  end
  
   def get_edit
     get :edit, params: { id: 1 }
@@ -191,6 +195,47 @@ class TournamentsControllerTest < ActionController::TestCase
     post_update
     assert_redirected_to '/static_pages/not_allowed' 
   end 
+
+  test "logged in non owner and non delegate cannot access qrcode" do
+    sign_in_non_owner
+    get_qrcode
+    redirect
+  end
+
+  test "non logged in user cannot access qrcode" do
+    get_qrcode
+    redirect
+  end
+
+  test "non logged in user with valid school permission key cannot access qrcode" do
+    @school.update(permission_key: "valid-key")
+    get_qrcode(school_permission_key: "valid-key")
+    redirect
+  end
+
+  test "non logged in user with invalid school permission key cannot access qrcode" do
+    @school.update(permission_key: "valid-key")
+    get_qrcode(school_permission_key: "invalid-key")
+    redirect
+  end
+
+  test "logged in owner can access qrcode" do
+    sign_in_owner
+    get_qrcode
+    success
+  end
+
+  test "logged in tournament delegate can access qrcode" do
+    sign_in_delegate
+    get_qrcode
+    success
+  end
+
+  test "logged in school delegate cannot access qrcode" do
+    sign_in_school_delegate
+    get_qrcode
+    redirect
+  end
 
   test "logged in user should not post update tournament if not owner" do
     sign_in_non_owner

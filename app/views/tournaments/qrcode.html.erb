@@ -1,0 +1,50 @@
+<style>
+  .qr-page {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .qr-page h1 {
+    margin: 0 0 24px 0;
+    font-size: 40px;
+    font-weight: 700;
+  }
+
+  .qr-code {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .qr-code svg {
+    width: min(80vmin, 720px);
+    height: auto;
+    display: block;
+    margin: 0;
+  }
+
+  @media print {
+    body {
+      margin: 0;
+    }
+  }
+</style>
+
+<div class="qr-page">
+  <h1><%= @tournament.name %> Brackets and Results Available Here</h1>
+  <div class="qr-code">
+    <%= raw @qrcode.as_svg(
+      offset: 0,
+      color: "000",
+      shape_rendering: "crispEdges",
+      module_size: 8,
+      standalone: true
+    ) %>
+  </div>
+</div>

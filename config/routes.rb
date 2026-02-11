@@ -73,6 +73,7 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/bout_sheets' => 'tournaments#bout_sheets'
   get 'tournaments/:id/no_matches' => 'tournaments#no_matches'
   get 'tournaments/:id/matches' => 'tournaments#matches'
+  get 'tournaments/:id/qrcode' => 'tournaments#qrcode'
   get 'tournaments/:id/delegate' => 'tournaments#delegate', :as => :tournament_delegate
   post 'tournaments/:id/delegate' => 'tournaments#delegate', :as => :set_tournament_delegate
   delete 'tournaments/:id/:delegate/remove_delegate' => 'tournaments#remove_delegate', :as => :delete_delegate_path
