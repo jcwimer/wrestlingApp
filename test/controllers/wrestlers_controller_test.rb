@@ -56,6 +56,15 @@ class WrestlersControllerTest < ActionController::TestCase
     assert_redirected_to '/static_pages/not_allowed'
   end
 
+  def assert_ads_hidden
+    assert_no_match(/blocked_message/, response.body)
+    assert_no_match(/adsbygoogle/, response.body)
+  end
+
+  def assert_ads_visible
+    assert_match(/blocked_message/, response.body)
+  end
+
   test "logged in tournament owner should get edit wrestler page" do
     sign_in_owner
     get_edit
@@ -304,5 +313,40 @@ class WrestlersControllerTest < ActionController::TestCase
     success
 
     assert_select "a[href=?]", school_path(@school), text: /Back to/
+  end
+
+  test "ads are hidden on wrestler new" do
+    sign_in_owner
+    new
+    success
+    assert_ads_hidden
+  end
+
+  test "ads are hidden on wrestler edit" do
+    sign_in_owner
+    get_edit
+    success
+    assert_ads_hidden
+  end
+
+  test "ads are hidden on wrestler new with school permission key" do
+    valid_key = @school.permission_key
+    get :new, params: { school: @school.id, school_permission_key: valid_key }
+    success
+    assert_ads_hidden
+  end
+
+  test "ads are hidden on wrestler edit with school permission key" do
+    valid_key = @school.permission_key
+    get :edit, params: { id: @wrestler.id, school_permission_key: valid_key }
+    success
+    assert_ads_hidden
+  end
+
+  test "ads are visible on wrestler show" do
+    sign_in_owner
+    get :show, params: { id: @wrestler.id }
+    success
+    assert_ads_visible
   end
 end

@@ -408,21 +408,21 @@ Some Guy
     success
   end
 
-  test "ads are hidden for logged in user on school show" do
+  test "ads are hidden on school show when logged in" do
     sign_in_owner
     get_show
     success
     assert_ads_hidden
   end
 
-  test "ads are hidden for school permission key on edit" do
+  test "ads are hidden on school show with school permission key" do
     @tournament.update(is_public: false)
-    get_edit(school_permission_key: @school_permission_key)
+    get_show(school_permission_key: @school_permission_key)
     success
     assert_ads_hidden
   end
 
-  test "ads are visible for anonymous user without school permission key on show" do
+  test "ads are visible on school show for anonymous user without key" do
     @tournament.update(is_public: true)
     get_show
     success

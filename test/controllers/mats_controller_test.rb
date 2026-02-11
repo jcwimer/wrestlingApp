@@ -66,6 +66,15 @@ class MatsControllerTest < ActionController::TestCase
   def redirect
     assert_redirected_to '/static_pages/not_allowed'
   end
+
+  def assert_ads_hidden
+    assert_no_match(/blocked_message/, response.body)
+    assert_no_match(/adsbygoogle/, response.body)
+  end
+
+  def assert_ads_visible
+    assert_match(/blocked_message/, response.body)
+  end
   
   def no_matches
     assert_redirected_to "/tournaments/#{@tournament.id}/no_matches"
@@ -219,6 +228,13 @@ class MatsControllerTest < ActionController::TestCase
     sign_in_tournament_delegate
     show
     success
+  end
+
+  test "ads are hidden on mat show" do
+    sign_in_owner
+    show
+    success
+    assert_ads_hidden
   end
 
   test "redirect to mat show when posting a match from mat show" do
