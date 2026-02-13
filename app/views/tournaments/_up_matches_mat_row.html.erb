@@ -1,0 +1,34 @@
+<% queue1_match, queue2_match, queue3_match, queue4_match = mat.queue_matches %>
+<% cache ["up_matches_mat_row", mat, mat.queue1, mat.queue2, mat.queue3, mat.queue4] do %>
+  <tr>
+    <td><%= mat.name %></td>
+    <td>
+      <% if queue1_match %><strong><%= queue1_match.bout_number %></strong> (<%= queue1_match.bracket_position %>)<br>
+        <%= queue1_match.weight_max %> lbs
+        <br><%= queue1_match.w1_bracket_name %> vs. <br>
+        <%= queue1_match.w2_bracket_name %>
+      <% end %>
+    </td>
+    <td>
+      <% if queue2_match %><strong><%= queue2_match.bout_number %></strong> (<%= queue2_match.bracket_position %>)<br>
+        <%= queue2_match.weight_max %> lbs
+        <br><%= queue2_match.w1_bracket_name %> vs. <br>
+        <%= queue2_match.w2_bracket_name %>
+      <% end %>
+    </td>
+    <td>
+      <% if queue3_match %><strong><%= queue3_match.bout_number %></strong> (<%= queue3_match.bracket_position %>)<br>
+        <%= queue3_match.weight_max %> lbs
+        <br><%= queue3_match.w1_bracket_name %> vs. <br>
+        <%= queue3_match.w2_bracket_name %>
+      <% end %>
+    </td>
+    <td>
+      <% if queue4_match %><strong><%= queue4_match.bout_number %></strong> (<%= queue4_match.bracket_position %>)<br>
+        <%= queue4_match.weight_max %> lbs
+        <br><%= queue4_match.w1_bracket_name %> vs. <br>
+        <%= queue4_match.w2_bracket_name %>
+      <% end %>
+    </td>
+  </tr>
+<% end %>

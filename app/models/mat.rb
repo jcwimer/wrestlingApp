@@ -8,6 +8,8 @@ class Mat < ApplicationRecord
 
 	QUEUE_SLOTS = %w[queue1 queue2 queue3 queue4].freeze
 
+	after_save :clear_queue_matches_cache
+
 	def assign_next_match
 		slot = first_empty_queue_slot
 		return true unless slot
@@ -86,8 +88,20 @@ class Mat < ApplicationRecord
 		QUEUE_SLOTS.map { |slot| public_send(slot) }
 	end
 
+	# used to prevent N+1 query on each mat
 	def queue_matches
-		queue_match_ids.map { |match_id| match_id ? Match.find_by(id: match_id) : nil }
+		slot_ids = queue_match_ids
+		if @queue_matches.nil? || @queue_match_slot_ids != slot_ids
+			ids = slot_ids.compact
+			@queue_matches = if ids.empty?
+				[nil, nil, nil, nil]
+			else
+				matches_by_id = Match.where(id: ids).index_by(&:id)
+				slot_ids.map { |match_id| match_id ? matches_by_id[match_id] : nil }
+			end
+			@queue_match_slot_ids = slot_ids
+		end
+		@queue_matches
 	end
 
 	def queue1_match
@@ -175,9 +189,13 @@ class Mat < ApplicationRecord
 
 	private
 
+	def clear_queue_matches_cache
+		@queue_matches = nil
+		@queue_match_slot_ids = nil
+	end
+
 	def queue_match_at(position)
-		match_id = public_send("queue#{position}")
-		match_id ? Match.find_by(id: match_id) : nil
+		queue_matches[position - 1]
 	end
 
 	def first_empty_queue_slot

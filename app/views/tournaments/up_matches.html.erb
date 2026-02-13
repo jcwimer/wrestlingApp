@@ -1,4 +1,3 @@
-<% cache ["#{@tournament.id}_up_matches", @tournament] do %>
   <script>
     // $(document).ready(function() {
     //   $('#matchList').dataTable();
@@ -42,37 +41,7 @@
 
     <tbody>
       <% @mats.each.map do |m| %>
-        <tr>
-          <td><%= m.name %></td>
-          <td>
-            <% if m.queue1_match %><strong><%=m.queue1_match.bout_number%></strong> (<%= m.queue1_match.bracket_position %>)<br>
-              <%= m.queue1_match.weight_max %> lbs
-              <br><%= m.queue1_match.w1_bracket_name %> vs. <br>
-              <%= m.queue1_match.w2_bracket_name %>
-            <% end %>
-          </td>
-          <td>
-            <% if m.queue2_match %><strong><%=m.queue2_match.bout_number%></strong> (<%= m.queue2_match.bracket_position %>)<br>
-              <%= m.queue2_match.weight_max %> lbs
-              <br><%= m.queue2_match.w1_bracket_name %> vs. <br>
-              <%= m.queue2_match.w2_bracket_name %>
-            <% end %>
-          </td>
-          <td>
-            <% if m.queue3_match %><strong><%=m.queue3_match.bout_number%></strong> (<%= m.queue3_match.bracket_position %>)<br>
-              <%= m.queue3_match.weight_max %> lbs
-              <br><%= m.queue3_match.w1_bracket_name %> vs. <br>
-              <%= m.queue3_match.w2_bracket_name %>
-            <% end %>
-          </td>
-          <td>
-            <% if m.queue4_match %><strong><%=m.queue4_match.bout_number%></strong> (<%= m.queue4_match.bracket_position %>)<br>
-              <%= m.queue4_match.weight_max %> lbs
-              <br><%= m.queue4_match.w1_bracket_name %> vs. <br>
-              <%= m.queue4_match.w2_bracket_name %>
-            <% end %>
-          </td>
-        </tr>
+        <%= render "up_matches_mat_row", mat: m %>
       <% end %>
     </tbody>
   </table>
@@ -104,4 +73,3 @@
   </table>
 
   <br>
-<% end %>
