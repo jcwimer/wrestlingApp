@@ -25,9 +25,6 @@ module Wrestling
     config.active_record.schema_format = :ruby
     config.active_record.dump_schemas = :all
     
-    # Fix deprecation warning for to_time in Rails 8.1
-    config.active_support.to_time_preserves_timezone = :zone
-    
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
