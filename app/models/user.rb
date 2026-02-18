@@ -53,19 +53,16 @@ class User < ApplicationRecord
   end
 
   def delegated_tournaments
-    tournaments_delegated = []
-    delegated_tournament_permissions.each do |t|
-      tournaments_delegated << t.tournament
-    end
-    tournaments_delegated
+    Tournament.joins(:delegates)
+              .where(tournament_delegates: { user_id: id })
+              .distinct
   end
   
   def delegated_schools
-    schools_delegated = []
-    delegated_school_permissions.each do |t|
-      schools_delegated << t.school
-    end
-    schools_delegated
+    School.joins(:delegates)
+          .where(school_delegates: { user_id: id })
+          .includes(:tournament)
+          .distinct
   end
   
   def self.search(search)

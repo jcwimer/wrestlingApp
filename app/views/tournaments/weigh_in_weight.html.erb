@@ -9,7 +9,7 @@
     		</tr>
     	</thead>
     	<tbody>
-        <%= form_tag @wrestlers_update_path do %>
+        <%= form_tag "/tournaments/#{@tournament.id}/weigh_in/#{@weight.id}", method: :post do %>
     		<% @wrestlers.order("original_seed asc").each do |wrestler| %>
           		<% if wrestler.weight_id == @weight.id %>
           			<tr>
@@ -19,7 +19,7 @@
           				<td><%= wrestler.weight.max %></td>
           				<td>
                     <% if user_signed_in? %>
-                      <%= fields_for "wrestler[]", wrestler do |w| %>
+                      <%= fields_for "wrestler[#{wrestler.id}]", wrestler do |w| %>
                         <%= w.number_field  :offical_weight, :step => 'any' %>
                       <% end %> 
                     <% else %>

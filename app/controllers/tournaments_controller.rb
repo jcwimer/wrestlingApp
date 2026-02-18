@@ -7,7 +7,7 @@ class TournamentsController < ApplicationController
   before_action :check_access_read, only: [:all_results,:up_matches,:bracket,:all_brackets]
 
   def weigh_in_sheet
-
+    @schools = @tournament.schools.includes(wrestlers: :weight)
   end
 
   def calculate_team_scores
@@ -92,12 +92,9 @@ class TournamentsController < ApplicationController
         end
       end
     end
-    @users_delegates = []
-    @tournament.schools.each do |s|
-      s.delegates.each do |d|
-        @users_delegates << d
-      end
-    end
+    @users_delegates = SchoolDelegate.includes(:user, :school)
+                                     .joins(:school)
+                                     .where(schools: { tournament_id: @tournament.id })
   end
 
   def delegate
@@ -115,11 +112,13 @@ class TournamentsController < ApplicationController
         end
       end
     end
-    @users_delegates = @tournament.delegates
+    @users_delegates = @tournament.delegates.includes(:user)
   end
 
   def matches
-    @matches = @tournament.matches.includes(:wrestlers,:schools).sort_by{|m| m.bout_number}
+    @matches = @tournament.matches
+                         .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+                         .order(:bout_number)
     if @match
       @w1 = @match.wrestler1
       @w2 = @match.wrestler2
@@ -129,10 +128,18 @@ class TournamentsController < ApplicationController
 
   def weigh_in_weight
     if params[:wrestler]
-      Wrestler.update(params[:wrestler].keys, params[:wrestler].values)
+      sanitized_wrestlers = params.require(:wrestler).to_unsafe_h.each_with_object({}) do |(wrestler_id, attributes), result|
+        permitted = ActionController::Parameters.new(attributes).permit(:offical_weight)
+        result[wrestler_id] = permitted
+      end
+      Wrestler.update(sanitized_wrestlers.keys, sanitized_wrestlers.values) if sanitized_wrestlers.present?
+      redirect_to "/tournaments/#{@tournament.id}/weigh_in/#{params[:weight]}", notice: "Weights were successfully recorded."
+      return
     end
     if params[:weight]
-        @weight = Weight.where(:id => params[:weight]).includes(:wrestlers).first
+        @weight = Weight.where(id: params[:weight])
+                        .includes(wrestlers: [:school, :weight])
+                        .first
         @tournament_id = @tournament.id
         @tournament_name = @tournament.name
         @weights = @tournament.weights
@@ -159,8 +166,11 @@ class TournamentsController < ApplicationController
   def all_brackets
     @schools = @tournament.schools
     @schools = @schools.sort_by{|s| s.page_score_string}.reverse!
-    @matches = @tournament.matches.includes(:wrestlers,:schools)
-    @weights = @tournament.weights.includes(:matches,:wrestlers)
+    @weights = @tournament.weights.includes(:matches, wrestlers: :school)
+    all_matches = @tournament.matches.includes(:weight, { wrestler1: :school }, { wrestler2: :school })
+    all_wrestlers = @tournament.wrestlers.includes(:school, :weight)
+    @matches_by_weight_id = all_matches.group_by(&:weight_id)
+    @wrestlers_by_weight_id = all_wrestlers.group_by(&:weight_id)
   end
 
   def bracket
@@ -210,18 +220,31 @@ class TournamentsController < ApplicationController
             .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
 					  .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
             .order('bout_number ASC')
-            .limit(10).includes(:wrestlers)
+            .limit(10)
+            .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
     @mats = @tournament.mats.includes(:matches)
   end
 
   def bout_sheets
+    matches_scope = @tournament.matches
+                             .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
+                             .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
+
     if params[:round]
       round = params[:round]
       if round != "All"
-        @matches = @tournament.matches.where("round = ?",round).sort_by{|match| match.bout_number}
+        @matches = matches_scope
+                              .where(round: round)
+                              .includes(:weight)
+                              .order(:bout_number)
       else
-        @matches = @tournament.matches.sort_by{|match| match.bout_number}
+        @matches = matches_scope
+                              .includes(:weight)
+                              .order(:bout_number)
       end
+
+      wrestler_ids = @matches.flat_map { |match| [match.w1, match.w2] }.compact.uniq
+      @wrestlers_by_id = Wrestler.includes(:school).where(id: wrestler_ids).index_by(&:id)
     end
   end
 

@@ -5,6 +5,8 @@ class Match < ApplicationRecord
 	belongs_to :weight, touch: true
 	belongs_to :mat, touch: true, optional: true
 	belongs_to :winner, class_name: 'Wrestler', foreign_key: 'winner_id', optional: true
+	belongs_to :wrestler1, class_name: 'Wrestler', foreign_key: 'w1', optional: true
+	belongs_to :wrestler2, class_name: 'Wrestler', foreign_key: 'w2', optional: true
 	has_many :wrestlers, :through => :weight
 	has_many :schools, :through => :wrestlers
 	validate :score_validation, :win_type_validation, :bracket_position_validation, :overtime_type_validation
@@ -178,14 +180,6 @@ class Match < ApplicationRecord
 		end
 	end
 
-	def wrestler1
-		wrestlers.select{|w| w.id == self.w1}.first
-	end
-
-	def wrestler2
-		wrestlers.select{|w| w.id == self.w2}.first
-	end
-
 	def w1_name
 		if self.w1 != nil
 			wrestler1.name
@@ -203,7 +197,7 @@ class Match < ApplicationRecord
 	end
 
 	def w1_bracket_name
-	  first_round = self.weight.matches.sort_by{|m| m.round}.first.round
+	  first_round = first_round_for_weight
 	  return_string = ""
 	  return_string_ending = ""
       if self.w1 and self.winner_id == self.w1
@@ -223,7 +217,7 @@ class Match < ApplicationRecord
 	end
 
 	def w2_bracket_name
-		first_round = self.weight.matches.sort_by{|m| m.round}.first.round
+		first_round = first_round_for_weight
 		return_string = ""
 		return_string_ending = ""
 		if self.w2 and self.winner_id == self.w2
@@ -287,6 +281,17 @@ class Match < ApplicationRecord
 
 	def weight_max
 		self.weight.max
+	end
+
+	def first_round_for_weight
+		return @first_round_for_weight if defined?(@first_round_for_weight)
+
+		@first_round_for_weight =
+			if association(:weight).loaded? && self.weight&.association(:matches)&.loaded?
+				self.weight.matches.map(&:round).compact.min
+			else
+				Match.where(weight_id: self.weight_id).minimum(:round)
+			end
 	end
 
 	def replace_loser_name_with_wrestler(w,loser_name)

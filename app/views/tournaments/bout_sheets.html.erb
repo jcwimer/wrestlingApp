@@ -55,10 +55,10 @@
 </style>
 
 <% @matches.each do |match| %>
-<% if match.w1 && match.w2 %>
-  <% w1 = Wrestler.find(match.w1) %>
-  <% w2 = Wrestler.find(match.w2) %>
-<% end %>
+<% w1 = @wrestlers_by_id[match.w1] %>
+<% w2 = @wrestlers_by_id[match.w2] %>
+<% w1_name = w1&.name || match.loser1_name %>
+<% w2_name = w2&.name || match.loser2_name %>
 
 <div class="pagebreak">
   <p><strong>Bout Number:</strong> <%= match.bout_number %> <strong>Weight Class:</strong> <%= match.weight.max %> <strong>Round:</strong> <%= match.round %> <strong>Bracket Position:</strong> <%= match.bracket_position %></p>
@@ -69,10 +69,10 @@
       <tr class="small-row">
         <th class="fixed-width">Circle Winner</th>
         <th>
-          <p><%= match.w1_name %>-<%= w1&.school&.name %></p>
+          <p><%= w1_name %>-<%= w1&.school&.name %></p>
         </th>
         <th>
-          <p><%= match.w2_name %>-<%= w2&.school&.name %></p>
+          <p><%= w2_name %>-<%= w2&.school&.name %></p>
         </th>
       </tr>
     </thead>

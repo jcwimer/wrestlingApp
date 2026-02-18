@@ -96,7 +96,9 @@ class Mat < ApplicationRecord
 			@queue_matches = if ids.empty?
 				[nil, nil, nil, nil]
 			else
-				matches_by_id = Match.where(id: ids).index_by(&:id)
+				matches_by_id = Match.where(id: ids)
+								 .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+								 .index_by(&:id)
 				slot_ids.map { |match_id| match_id ? matches_by_id[match_id] : nil }
 			end
 			@queue_match_slot_ids = slot_ids

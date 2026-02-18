@@ -95,8 +95,6 @@ table.smallText tr td { font-size: 10px; }
       <table class='smallText'>          
         <tr>
           <td valign="top" style="padding: 10px;">
-            <% @matches = @tournament.matches.select{|m| m.weight_id == @weight.id} %>
-            <% @wrestlers = Wrestler.where(weight_id: @weight.id) %>
             <% @pools = @weight.pool_rounds(@matches) %>
             <%= render 'pool' %>
           </td>      

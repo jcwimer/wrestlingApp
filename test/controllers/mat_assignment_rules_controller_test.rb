@@ -215,5 +215,21 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     assert_equal [1, 2, 3], rule.weight_classes
     assert_equal ['A1', 'B2'], rule.bracket_positions
     assert_equal [1, 2], rule.rounds
-  end  
+  end
+
+  test "index lists created mat assignment rule once in html" do
+    sign_in_owner
+    unique_mat = Mat.create!(name: "Unique Mat #{SecureRandom.hex(4)}", tournament_id: @tournament.id)
+    MatAssignmentRule.create!(
+      mat_id: unique_mat.id,
+      tournament_id: @tournament.id,
+      weight_classes: [1],
+      bracket_positions: ['1/2'],
+      rounds: [2]
+    )
+
+    index
+    assert_response :success
+    assert_equal 1, response.body.scan(unique_mat.name).size
+  end
 end

@@ -97,18 +97,11 @@ class Tournament < ApplicationRecord
 	end
 	
 	def pointAdjustments
-	  point_adjustments = []
-      self.schools.each do |s|
-        s.deductedPoints.each do |d|
-          point_adjustments << d
-        end
-      end
-      self.wrestlers.each do |w|
-        w.deductedPoints.each do |d|
-          point_adjustments << d
-        end
-      end
-      point_adjustments
+	  school_scope = Teampointadjust.where(school_id: schools.select(:id))
+	  wrestler_scope = Teampointadjust.where(wrestler_id: wrestlers.select(:id))
+
+	  Teampointadjust.includes(:school, :wrestler)
+	               .merge(school_scope.or(wrestler_scope))
     end
     
     def remove_school_delegations

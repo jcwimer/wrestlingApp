@@ -12,9 +12,10 @@
         height: 1in;
     }
 </style>
-<% @tournament.schools.each do |school| %>
+<% @schools.each do |school| %>
     <table class="table table-striped table-bordered table-condensed pagebreak">
     <h5><%= school.name %></h4>
+    <p><strong>Weigh In Ref:</strong> <%= @tournament.weigh_in_ref %></p>
     <thead>
       <tr>
         <th>Name</th>
@@ -27,7 +28,7 @@
           <tr>
             <td><%= wrestler.name %></td>
             <td><%= wrestler.weight.max %></td>
-            <td></td>
+            <td><%= wrestler.offical_weight %></td>
           </tr>
       <% end %>
     </tbody>

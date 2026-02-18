@@ -119,14 +119,15 @@
     <% @weights.sort_by{|w| w.max}.each do |weight| %>
           <% if @tournament.tournament_type == "Pool to bracket" %>
                 <!-- Need to define what the tournaments#bracket controller defines -->
-                <% @matches = @tournament.matches.select{|m| m.weight_id == weight.id} %>
-                <% @wrestlers = Wrestler.where(weight_id: weight.id) %>
+                <% @matches = @matches_by_weight_id[weight.id] || [] %>
+                <% @wrestlers = @wrestlers_by_weight_id[weight.id] || [] %>
                 <% @pools = weight.pool_rounds(@matches) %>
                 <% @weight = weight %>
                 <%= render 'bracket_partial' %>
           <% elsif @tournament.tournament_type.include? "Modified 16 Man Double Elimination" or @tournament.tournament_type.include? "Regular Double Elimination" %>
             <!-- Need to define what the tournaments#bracket controller defines -->
-            <% @matches = weight.matches %>
+            <% @matches = @matches_by_weight_id[weight.id] || [] %>
+            <% @wrestlers = @wrestlers_by_weight_id[weight.id] || [] %>
             <% @weight = weight %>
             <%= render 'bracket_partial' %>
           <% end %>

@@ -117,6 +117,29 @@ class TournamentsControllerTest < ActionController::TestCase
     sign_in_owner
     get :weigh_in, params: { id: 1 }
     success
+    assert_not_includes response.body, "Weights were successfully recorded."
+  end
+
+  test "printable weigh in sheet includes wrestler name school weight class and actual weight" do
+    sign_in_owner
+    @tournament.update!(weigh_in_ref: "Ref Smith")
+    wrestler = @tournament.weights.first.wrestlers.first
+    wrestler.update!(
+      name: "Printable Test Wrestler",
+      offical_weight: 106.4
+    )
+    school = wrestler.school
+
+    get :weigh_in_sheet, params: { id: @tournament.id, print: true }
+    assert_response :success
+
+    assert_includes response.body, school.name
+    assert_includes response.body, "Printable Test Wrestler"
+    assert_includes response.body, wrestler.weight.max.to_s
+    assert_includes response.body, "106.4"
+    assert_includes response.body, "Actual Weight"
+    assert_includes response.body, "Weigh In Ref:"
+    assert_includes response.body, "Ref Smith"
   end
 
   test "logged in non tournament owner cannot access weigh_ins" do
@@ -153,6 +176,27 @@ class TournamentsControllerTest < ActionController::TestCase
     sign_in_owner
     post :weigh_in, params: { id: 1, weight: 1, wrestler: @wrestlers }
     success
+  end
+
+  test "logged in tournament owner can save wrestler actual weight on weigh in weight page" do
+    sign_in_owner
+    wrestler = @tournament.weights.first.wrestlers.first
+
+    post :weigh_in_weight, params: {
+      id: @tournament.id,
+      weight: wrestler.weight_id,
+      wrestler: {
+        wrestler.id.to_s => { offical_weight: "108.2" }
+      }
+    }
+
+    assert_redirected_to "/tournaments/#{@tournament.id}/weigh_in/#{wrestler.weight_id}"
+    assert_equal "Weights were successfully recorded.", flash[:notice]
+    assert_equal 108.2, wrestler.reload.offical_weight.to_f
+
+    get :weigh_in_weight, params: { id: @tournament.id, weight: wrestler.weight_id }
+    assert_response :success
+    assert_equal 1, response.body.scan("Weights were successfully recorded.").size
   end
 
   test "logged in non tournament owner cannot access post weigh_in_weight" do
@@ -685,6 +729,33 @@ class TournamentsControllerTest < ActionController::TestCase
     get :school_delegate, params: { id: 1 }
     success
   end
+
+  test "delegate page renders created tournament delegate in html" do
+    user = User.create!(
+      email: "tournament_delegate_render_#{SecureRandom.hex(4)}@example.com",
+      password: "password"
+    )
+    TournamentDelegate.create!(tournament_id: @tournament.id, user_id: user.id)
+
+    sign_in_owner
+    get :delegate, params: { id: @tournament.id }
+    assert_response :success
+    assert_includes response.body, user.email
+  end
+
+  test "school_delegate page renders created school delegate in html" do
+    user = User.create!(
+      email: "school_delegate_render_#{SecureRandom.hex(4)}@example.com",
+      password: "password"
+    )
+    SchoolDelegate.create!(school_id: @school.id, user_id: user.id)
+
+    sign_in_owner
+    get :school_delegate, params: { id: @tournament.id }
+    assert_response :success
+    assert_includes response.body, user.email
+    assert_includes response.body, @school.name
+  end
   
   test 'logged in tournament owner can delete a school delegate' do
     sign_in_owner
@@ -720,6 +791,16 @@ class TournamentsControllerTest < ActionController::TestCase
     sign_in_owner
     get :teampointadjust, params: { id: 1 }
     success
+  end
+
+  test "teampointadjust page lists created point deduction once in html" do
+    sign_in_owner
+    school = School.create!(name: "Point Deduction School #{SecureRandom.hex(3)}", tournament_id: @tournament.id)
+    adjustment = Teampointadjust.create!(school_id: school.id, points: 9876.5)
+
+    get :teampointadjust, params: { id: @tournament.id }
+    assert_response :success
+    assert_equal 1, response.body.scan(adjustment.points.to_s).size
   end
   
   test 'logged in tournament delegate cannot adjust team points' do
@@ -948,6 +1029,25 @@ class TournamentsControllerTest < ActionController::TestCase
     post :generate_school_keys, params: { id: @tournament.id }
     assert_redirected_to school_delegate_path(@tournament)
     assert_equal "School permission keys generated successfully.", flash[:notice]
+  end
+
+  test "generated school permission keys are displayed on school delegate page" do
+    sign_in_owner
+    post :generate_school_keys, params: { id: @tournament.id }
+    assert_redirected_to school_delegate_path(@tournament)
+
+    @tournament.schools.reload.each do |school|
+      assert_not_nil school.permission_key, "Expected permission key for school #{school.id}"
+      assert_not_empty school.permission_key, "Expected non-empty permission key for school #{school.id}"
+    end
+
+    get :school_delegate, params: { id: @tournament.id }
+    assert_response :success
+
+    @tournament.schools.each do |school|
+      expected_link_fragment = "/schools/#{school.id}?school_permission_key=#{school.permission_key}"
+      assert_includes response.body, expected_link_fragment
+    end
   end
   
   test "tournament delegate can delete school keys" do
@@ -1179,5 +1279,53 @@ class TournamentsControllerTest < ActionController::TestCase
     # If there are more than 20 initial fixtures, expected_page2_size might be > 20; clamp to per_page logic:
     expected_page2_display = [expected_page2_size, 20].min
     assert_equal expected_page2_display, assigns(:tournaments).size, "second page should contain the remaining tournaments (or up to per_page)"
+  end
+
+  test "bout_sheets renders wrestler names, school names, and round for selected round" do
+    tournament = create_double_elim_tournament_single_weight(8, "Regular Double Elimination 1-6")
+    tournament.update!(user_id: users(:one).id, is_public: true)
+    sign_in_owner
+
+    match = tournament.matches.where.not(w1: nil, w2: nil)
+                             .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
+                             .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
+                             .order(:bout_number)
+                             .first
+    assert_not_nil match, "Expected at least one fully populated non-BYE match"
+
+    round = match.round.to_s
+    w1 = Wrestler.find(match.w1)
+    w2 = Wrestler.find(match.w2)
+
+    get :bout_sheets, params: { id: tournament.id, round: round }
+    assert_response :success
+
+    assert_includes response.body, "Bout Number:</strong> #{match.bout_number}"
+    assert_includes response.body, "Round:</strong> #{match.round}"
+    assert_includes response.body, "#{w1.name}-#{w1.school.name}"
+    assert_includes response.body, "#{w2.name}-#{w2.school.name}"
+  end
+
+  test "bout_sheets filters out matches with BYE loser names" do
+    tournament = create_double_elim_tournament_single_weight(8, "Regular Double Elimination 1-6")
+    tournament.update!(user_id: users(:one).id, is_public: true)
+    sign_in_owner
+
+    bye_match = tournament.matches.order(:bout_number).first
+    assert_not_nil bye_match, "Expected at least one match to mark as BYE"
+    bye_match.update!(loser1_name: "BYE")
+
+    non_bye_match = tournament.matches.where.not(id: bye_match.id).where.not(w1: nil, w2: nil)
+                              .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
+                              .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
+                              .order(:bout_number)
+                              .first
+    assert_not_nil non_bye_match, "Expected at least one non-BYE match to remain"
+
+    get :bout_sheets, params: { id: tournament.id, round: "All" }
+    assert_response :success
+
+    assert_not_includes response.body, "Bout Number:</strong> #{bye_match.bout_number}"
+    assert_includes response.body, "Bout Number:</strong> #{non_bye_match.bout_number}"
   end
 end
