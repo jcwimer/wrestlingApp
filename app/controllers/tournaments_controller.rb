@@ -116,9 +116,59 @@ class TournamentsController < ApplicationController
   end
 
   def matches
-    @matches = @tournament.matches
-                         .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
-                         .order(:bout_number)
+    per_page = 50
+    @page = params[:page].to_i > 0 ? params[:page].to_i : 1
+    offset = (@page - 1) * per_page
+    matches_table = Match.arel_table
+
+    matches_scope = @tournament.matches.order(:bout_number)
+
+    if params[:search].present?
+      wrestlers_table = Wrestler.arel_table
+      schools_table = School.arel_table
+      search_terms = params[:search].downcase.split
+
+      search_terms.each do |term|
+        escaped_term = ActiveRecord::Base.sanitize_sql_like(term)
+        pattern = "%#{escaped_term}%"
+
+        matching_wrestler_ids = Wrestler
+          .joins(:weight)
+          .left_outer_joins(:school)
+          .where(weights: { tournament_id: @tournament.id })
+          .where(
+            wrestlers_table[:name].matches(pattern)
+              .or(schools_table[:name].matches(pattern))
+          )
+          .distinct
+          .select(:id)
+
+        term_scope = @tournament.matches.where(w1: matching_wrestler_ids)
+          .or(@tournament.matches.where(w2: matching_wrestler_ids))
+
+        if term.match?(/\A\d+\z/)
+          term_scope = term_scope.or(@tournament.matches.where(bout_number: term.to_i))
+        end
+
+        matches_scope = matches_scope.where(id: term_scope.select(:id))
+      end
+    end
+
+    @total_count = matches_scope.count
+    @total_pages = (@total_count / per_page.to_f).ceil
+    @per_page = per_page
+
+    loser1_not_bye = matches_table[:loser1_name].not_eq("BYE").or(matches_table[:loser1_name].eq(nil))
+    loser2_not_bye = matches_table[:loser2_name].not_eq("BYE").or(matches_table[:loser2_name].eq(nil))
+
+    non_bye_scope = matches_scope.where(loser1_not_bye).where(loser2_not_bye)
+    @matches_without_byes_count = non_bye_scope.count
+    @unfinished_matches_without_byes_count = non_bye_scope.where(finished: [nil, 0]).count
+
+    @matches = matches_scope
+      .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+      .offset(offset)
+      .limit(per_page)
     if @match
       @w1 = @match.wrestler1
       @w2 = @match.wrestler2

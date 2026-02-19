@@ -11,9 +11,8 @@ pin "@rails/actioncable", to: "actioncable.esm.js" # For Action Cable
 # and pin it directly, e.g., pin "jquery", to: "jquery.min.js"
 pin "jquery", to: "jquery.js"
 
-# Pin Bootstrap and DataTables from vendor/assets/javascripts/
+# Pin Bootstrap from vendor/assets/javascripts/
 pin "bootstrap", to: "bootstrap.min.js"
-pin "datatables.net", to: "jquery.dataTables.min.js" # Assuming this is how you want to import it
 
 # If Bootstrap requires Popper.js, and you have it in vendor/assets/javascripts/
 # pin "@popperjs/core", to: "popper.min.js" # Or the actual filename if different

@@ -839,6 +839,83 @@ class TournamentsControllerTest < ActionController::TestCase
     success
   end
 
+  test "matches page search finds by wrestler name, school name, and bout number" do
+    sign_in_owner
+
+    search_school = School.create!(name: "Search Prep Academy", tournament_id: @tournament.id)
+    search_wrestler = Wrestler.create!(
+      name: "Alpha Searchman",
+      school_id: search_school.id,
+      weight_id: @tournament.weights.first.id,
+      original_seed: 99,
+      bracket_line: 99,
+      season_loss: 0,
+      season_win: 0,
+      pool: 1
+    )
+    match = Match.create!(
+      tournament_id: @tournament.id,
+      weight_id: @tournament.weights.first.id,
+      bout_number: 888999,
+      w1: search_wrestler.id,
+      w2: @wrestlers.first.id,
+      bracket_position: "Pool",
+      round: 1
+    )
+
+    get :matches, params: { id: @tournament.id, search: "Searchman" }
+    assert_response :success
+    assert_includes response.body, match.bout_number.to_s
+
+    get :matches, params: { id: @tournament.id, search: "Search Prep" }
+    assert_response :success
+    assert_includes response.body, match.bout_number.to_s
+
+    get :matches, params: { id: @tournament.id, search: "888999" }
+    assert_response :success
+    assert_includes response.body, match.bout_number.to_s
+  end
+
+  test "matches page paginates filtered results" do
+    sign_in_owner
+
+    paging_school = School.create!(name: "Pager Academy", tournament_id: @tournament.id)
+    paging_wrestler = Wrestler.create!(
+      name: "Pager Wrestler",
+      school_id: paging_school.id,
+      weight_id: @tournament.weights.first.id,
+      original_seed: 100,
+      bracket_line: 100,
+      season_loss: 0,
+      season_win: 0,
+      pool: 1
+    )
+
+    55.times do |i|
+      Match.create!(
+        tournament_id: @tournament.id,
+        weight_id: @tournament.weights.first.id,
+        bout_number: 910000 + i,
+        w1: paging_wrestler.id,
+        w2: @wrestlers.first.id,
+        bracket_position: "Pool",
+        round: 1
+      )
+    end
+
+    get :matches, params: { id: @tournament.id, search: "Pager Academy" }
+    assert_response :success
+    assert_includes response.body, "Showing 1 - 50 of 55 matches"
+    assert_includes response.body, "910000"
+    assert_not_includes response.body, "910054"
+
+    get :matches, params: { id: @tournament.id, search: "Pager Academy", page: 2 }
+    assert_response :success
+    assert_includes response.body, "Showing 51 - 55 of 55 matches"
+    assert_includes response.body, "910054"
+    assert_not_includes response.body, "910000"
+  end
+
   test "logged in tournament owner can calculate team scores" do
     sign_in_owner
     post :calculate_team_scores, params: { id: 1 }

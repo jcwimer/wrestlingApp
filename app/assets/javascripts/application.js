@@ -5,7 +5,6 @@ import "@hotwired/turbo-rails";
 import { createConsumer } from "@rails/actioncable"; // Import createConsumer directly
 import "jquery";
 import "bootstrap"; 
-import "datatables.net";
 
 // Stimulus setup
 import { Application } from "@hotwired/stimulus";
@@ -39,7 +38,7 @@ application.register("match-spectate", MatchSpectateController);
   }
 }).call(this);
 
-console.log("Propshaft/Importmap application.js initialized with jQuery, Bootstrap, Stimulus, and DataTables.");
+console.log("Propshaft/Importmap application.js initialized with jQuery, Bootstrap, and Stimulus.");
 
 // If you have custom JavaScript files in app/javascript/ that were previously
 // handled by Sprockets `require_tree`, you'll need to import them here explicitly.
