@@ -559,6 +559,36 @@ class TournamentsControllerTest < ActionController::TestCase
     get_up_matches
     success 
   end
+
+  test "up matches uses turbo stream updates instead of timer refresh script" do
+    @tournament.is_public = true
+    @tournament.save
+    get_up_matches
+    success
+    assert_includes response.body, "turbo-cable-stream-source"
+    assert_includes response.body, "data-controller=\"up-matches-connection\""
+    assert_includes response.body, "up-matches-cable-status-indicator"
+    assert_not_includes response.body, "This page reloads every 30s"
+  end
+
+  test "up matches shows full screen button when print param is not true" do
+    @tournament.is_public = true
+    @tournament.save
+    get :up_matches, params: { id: @tournament.id }
+    assert_response :success
+
+    assert_includes response.body, "Show Bout Board in Full Screen"
+    assert_includes response.body, "print=true"
+  end
+
+  test "up matches hides full screen button when print param is true" do
+    @tournament.is_public = true
+    @tournament.save
+    get :up_matches, params: { id: @tournament.id, print: "true" }
+    assert_response :success
+
+    assert_not_includes response.body, "Show Bout Board in Full Screen"
+  end
   # END UP MATCHES PAGE PERMISSIONS
 
   # ALL_RESULTS PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
@@ -643,11 +673,11 @@ class TournamentsControllerTest < ActionController::TestCase
   # END ALL_RESULTS PAGE PERMISSIONS
 
 #TESTS THAT NEED MATCHES PUT ABOVE THIS
-  test "redirect up_matches if no matches" do
+  test "up_matches renders when no matches exist" do
     sign_in_owner
     wipe
     get :up_matches, params: { id: 1 }
-    no_matches
+    success
   end
   
   test "redirect bracket if no matches" do

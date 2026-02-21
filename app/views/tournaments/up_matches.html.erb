@@ -1,70 +1,19 @@
-  <script>
-    const setUpMatchesRefresh = () => {
-      if (window.__upMatchesRefreshTimeout) {
-        clearTimeout(window.__upMatchesRefreshTimeout);
-      }
-      window.__upMatchesRefreshTimeout = setTimeout(() => {
-        window.location.reload(true);
-      }, 30000);
-    };
+<div data-controller="up-matches-connection">
+  <% if params[:print] != "true" %>
+    <div style="margin-bottom: 10px;">
+      <%= link_to "Show Bout Board in Full Screen", up_matches_path(@tournament, print: true), class: "btn btn-primary" %>
+    </div>
+  <% end %>
 
-    document.addEventListener("turbo:load", setUpMatchesRefresh);
-    // turbo:before-cache stops the timer refresh from occurring if you navigate away from up_matches
-    document.addEventListener("turbo:before-cache", () => {
-      if (window.__upMatchesRefreshTimeout) {
-        clearTimeout(window.__upMatchesRefreshTimeout);
-        window.__upMatchesRefreshTimeout = null;
-      }
-    });
-  </script>
-  <br>
-  <br>
-  <h5 style="color:red">This page reloads every 30s</h5>
-  <br>
-  <h3>Upcoming Matches</h3>
-  <br>
-  <table class="table table-striped table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Mat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-        <th>On Mat</th>
-        <th>On Deck</th>
-        <th>In The Hole</th>
-        <th>Warm Up</th>
-      </tr>
-    </thead>
+  <%= turbo_stream_from @tournament, data: { up_matches_connection_target: "stream" } %>
+  <div
+    id="up-matches-cable-status-indicator"
+    data-up-matches-connection-target="statusIndicator"
+    class="alert alert-secondary"
+    style="padding: 5px; margin-bottom: 10px; border-radius: 4px;"
+  >
+    Connecting to server for real-time up matches updates...
+  </div>
 
-    <tbody>
-      <% @mats.each.map do |m| %>
-        <%= render "up_matches_mat_row", mat: m %>
-      <% end %>
-    </tbody>
-  </table>
-  <br>
-  <h3>Matches not assigned</h3>
-  <br>
-  <table class="table table-striped table-bordered table-condensed" id="matchList">
-    <thead>
-      <tr>
-        <th>Round</th>
-        <th>Bout Number</th>
-        <th>Weight Class</th>
-        <th>Matchup</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <% if @matches.size > 0 %>
-      <% @matches.each.map do |m| %>
-        <tr>
-          <td>Round <%= m.round %></td>
-          <td><%= m.bout_number %></td>
-          <td><%= m.weight_max %></td>
-          <td><%= m.w1_bracket_name %> vs. <%= m.w2_bracket_name %></td>
-        </tr>
-      <% end %>
-      <% end %>
-    </tbody>
-  </table>
-
-  <br>
+  <%= render "up_matches_board", tournament: @tournament, mats: @mats, matches: @matches %>
+</div>

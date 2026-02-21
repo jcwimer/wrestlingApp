@@ -69,6 +69,32 @@ class Tournament < ApplicationRecord
 		end
 	end
 
+	def up_matches_unassigned_matches
+		matches
+			.where("mat_id is NULL and (finished != 1 or finished is NULL)")
+			.where("loser1_name != ? OR loser1_name IS NULL", "BYE")
+			.where("loser2_name != ? OR loser2_name IS NULL", "BYE")
+			.order("bout_number ASC")
+			.limit(10)
+			.includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+	end
+
+	def up_matches_mats
+		mats.includes(:matches)
+	end
+
+	def self.broadcast_up_matches_board(tournament_id)
+		tournament = find_by(id: tournament_id)
+		return unless tournament
+
+		Turbo::StreamsChannel.broadcast_replace_to(
+			tournament,
+			target: "up_matches_board",
+			partial: "tournaments/up_matches_board",
+			locals: { tournament: tournament }
+		)
+	end
+
 	def destroy_all_matches
 		matches.destroy_all
 	end

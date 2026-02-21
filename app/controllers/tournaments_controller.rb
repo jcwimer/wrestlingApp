@@ -3,7 +3,7 @@ class TournamentsController < ApplicationController
   before_action :check_access_manage, only: [:delete_school_keys, :generate_school_keys,:reset_bout_board,:calculate_team_scores,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches,:qrcode]
   before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
-  before_action :check_for_matches, only: [:all_results,:up_matches,:bracket,:all_brackets]
+  before_action :check_for_matches, only: [:all_results,:bracket,:all_brackets]
   before_action :check_access_read, only: [:all_results,:up_matches,:bracket,:all_brackets]
 
   def weigh_in_sheet
@@ -263,16 +263,8 @@ class TournamentsController < ApplicationController
 
 
   def up_matches
-    # .where.not(loser1_name: 'BYE') won't return matches with NULL loser1_name
-    # so I was only getting back matches with Loser of BOUT_NUMBER
-    @matches = @tournament.matches
-            .where("mat_id is NULL and (finished != 1 or finished is NULL)")
-            .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
-					  .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
-            .order('bout_number ASC')
-            .limit(10)
-            .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
-    @mats = @tournament.mats.includes(:matches)
+    @matches = @tournament.up_matches_unassigned_matches
+    @mats = @tournament.up_matches_mats
   end
 
   def bout_sheets

@@ -40,9 +40,9 @@ class UpMatchesCacheTest < ActionController::TestCase
     mat.reload
     movable_match = mat.queue2_match || mat.queue1_match
     assert movable_match, "Expected at least one queued match to move"
-    mat.assign_match_to_queue!(movable_match, 4)
 
     third_events = cache_events_for_up_matches do
+      mat.assign_match_to_queue!(movable_match, 4)
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end

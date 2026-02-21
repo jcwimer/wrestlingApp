@@ -17,6 +17,7 @@ class Match < ApplicationRecord
 	# update mat show with correct match if bout board is reset
 	# this is done with a turbo stream
 	after_commit :broadcast_mat_assignment_change, if: :saved_change_to_mat_id?, on: [:create, :update]
+	after_commit :broadcast_up_matches_board, on: :update, if: :saved_change_to_mat_id?
 
 	# Enqueue advancement and related actions after the DB transaction has committed.
 	# Using after_commit ensures any background jobs enqueued inside these callbacks
@@ -370,5 +371,9 @@ class Match < ApplicationRecord
 				}
 			)
 		end
+	end
+
+	def broadcast_up_matches_board
+		Tournament.broadcast_up_matches_board(tournament_id)
 	end
 end

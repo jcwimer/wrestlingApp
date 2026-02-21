@@ -19,12 +19,14 @@ import WrestlerColorController from "controllers/wrestler_color_controller";
 import MatchScoreController from "controllers/match_score_controller";
 import MatchDataController from "controllers/match_data_controller";
 import MatchSpectateController from "controllers/match_spectate_controller";
+import UpMatchesConnectionController from "controllers/up_matches_connection_controller";
 
 // Register controllers
 application.register("wrestler-color", WrestlerColorController);
 application.register("match-score", MatchScoreController);
 application.register("match-data", MatchDataController);
 application.register("match-spectate", MatchSpectateController);
+application.register("up-matches-connection", UpMatchesConnectionController);
 
 // Your existing Action Cable consumer setup
 (function() {

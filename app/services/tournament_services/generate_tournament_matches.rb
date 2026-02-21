@@ -32,6 +32,7 @@ class GenerateTournamentMatches
         @tournament.reset_and_fill_bout_board
         @tournament.curently_generating_matches = nil
         @tournament.save!
+        Tournament.broadcast_up_matches_board(@tournament.id)
     end
 
     def assignBouts

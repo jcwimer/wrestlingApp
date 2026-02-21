@@ -9,6 +9,7 @@ class Mat < ApplicationRecord
 	QUEUE_SLOTS = %w[queue1 queue2 queue3 queue4].freeze
 
 	after_save :clear_queue_matches_cache
+	after_commit :broadcast_up_matches_board, on: :update, if: :up_matches_queue_changed?
 
 	def assign_next_match
 		slot = first_empty_queue_slot
@@ -274,6 +275,14 @@ class Mat < ApplicationRecord
 				show_next_bout_button: true
 			}
 		)
+	end
+
+	def broadcast_up_matches_board
+		Tournament.broadcast_up_matches_board(tournament_id)
+	end
+
+	def up_matches_queue_changed?
+		saved_change_to_queue1? || saved_change_to_queue2? || saved_change_to_queue3? || saved_change_to_queue4?
 	end
 
 end
