@@ -97,6 +97,7 @@ class Tournament < ApplicationRecord
 
 	def destroy_all_matches
 		matches.destroy_all
+		mats.each(&:clear_queue!)
 	end
 
 	def matches_by_round(round)

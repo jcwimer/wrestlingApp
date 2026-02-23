@@ -1,22 +1,21 @@
 class MatsController < ApplicationController
   before_action :set_mat, only: [:show, :edit, :update, :destroy, :assign_next_match]
   before_action :check_access, only: [:new,:create,:update,:destroy,:edit,:show, :assign_next_match]
-  before_action :check_for_matches, only: [:show]
 
   # GET /mats/1
   # GET /mats/1.json
   def show
-    bout_number_param = params[:bout_number] # Read the bout_number from the URL params
-  
-    if bout_number_param
-      @show_next_bout_button = false
-      @match = @mat.queue_matches.compact.find { |m| m.bout_number == bout_number_param.to_i }
+    bout_number_param = params[:bout_number]
+    @queue_matches = @mat.queue_matches
+    @match = if bout_number_param
+      @queue_matches.compact.find { |m| m.bout_number == bout_number_param.to_i }
     else
-      @show_next_bout_button = true
-      @match = @mat.queue1_match
+      @queue_matches[0]
     end
-  
-    @next_match = @mat.queue2_match # Second match on the mat
+    # If a requested bout is no longer queued, fall back to queue1.
+    @match ||= @queue_matches[0]
+    @next_match = @queue_matches[1]
+    @show_next_bout_button = false
   
     @wrestlers = []
     if @match
@@ -142,11 +141,4 @@ class MatsController < ApplicationController
     end
     
     
-  def check_for_matches
-    if @mat
-    	if @mat.tournament.matches.empty?
-    	  redirect_to "/tournaments/#{@tournament.id}/no_matches"
-    	end
-    end
-  end
 end

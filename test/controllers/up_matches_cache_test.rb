@@ -50,6 +50,29 @@ class UpMatchesCacheTest < ActionController::TestCase
     assert_operator cache_writes(third_events), :>, 0, "Expected queue change to invalidate and rewrite at least one row fragment"
   end
 
+  test "up_matches row fragments hit cache after queue clear rewrite" do
+    first_events = cache_events_for_up_matches do
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(first_events), :>, 0, "Expected initial render to write row fragments"
+
+    mat = @tournament.mats.first
+    clear_events = cache_events_for_up_matches do
+      mat.clear_queue!
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(clear_events), :>, 0, "Expected queue clear to invalidate and rewrite at least one row fragment"
+
+    repeat_events = cache_events_for_up_matches do
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+    assert_equal 0, cache_writes(repeat_events), "Expected subsequent render after queue clear rewrite to reuse cached row fragments"
+    assert_operator cache_hits(repeat_events), :>, 0, "Expected cache hits after queue clear rewrite"
+  end
+
   private
 
   def cache_events_for_up_matches

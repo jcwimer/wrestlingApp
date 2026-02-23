@@ -18,8 +18,19 @@
   
   <div id="cable-status-indicator" data-match-data-target="statusIndicator" class="alert alert-secondary" style="padding: 5px; margin-bottom: 10px; border-radius: 4px;"></div>
   <h4>Bout <strong><%= @match.bout_number %></strong></h4>
-  <% if @show_next_bout_button && @next_match %>
-    <%= link_to "Skip to Next Match for Mat #{@mat.name}", mat_path(@mat, bout_number: @next_match.bout_number), class: "btn btn-primary" %>
+  <% if @mat %>
+    <% queue_matches = @queue_matches || @mat.queue_matches %>
+    <div style="margin-bottom: 10px;">
+      <% queue_matches.each_with_index do |queue_match, index| %>
+        <% queue_label = "Queue #{index + 1}" %>
+        <% if queue_match %>
+          <% button_class = queue_match.id == @match.id ? "btn btn-success btn-sm" : "btn btn-primary btn-sm" %>
+          <%= link_to "#{queue_label}: Bout #{queue_match.bout_number}", mat_path(@mat, bout_number: queue_match.bout_number), class: button_class %>
+        <% else %>
+          <button type="button" class="btn btn-default btn-sm" disabled><%= "#{queue_label}: Not assigned" %></button>
+        <% end %>
+      <% end %>
+    </div>
   <% end %>
   <h4>Bracket Position: <strong><%= @match.bracket_position %></strong></h4>
   

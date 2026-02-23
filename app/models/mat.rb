@@ -184,6 +184,7 @@ class Mat < ApplicationRecord
 
 	def clear_queue!
 		update!(queue1: nil, queue2: nil, queue3: nil, queue4: nil)
+		broadcast_current_match
 	end
 
 	def unfinished_matches

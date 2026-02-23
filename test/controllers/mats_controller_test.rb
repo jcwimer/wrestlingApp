@@ -259,6 +259,62 @@ class MatsControllerTest < ActionController::TestCase
     assert_match /#{bout_number}/, response.body, "The bout_number should be rendered on the page"
   end
 
+  test "mat show renders queue buttons for all four queue slots" do
+    sign_in_owner
+
+    available_matches = @tournament.matches.where(mat_id: nil).limit(3).to_a
+    @mat.assign_match_to_queue!(available_matches[0], 2) if available_matches[0]
+    @mat.assign_match_to_queue!(available_matches[1], 3) if available_matches[1]
+    @mat.assign_match_to_queue!(available_matches[2], 4) if available_matches[2]
+
+    get :show, params: { id: @mat.id }
+    assert_response :success
+
+    assert_includes response.body, "Queue 1: Bout"
+    assert_includes response.body, "Queue 2:"
+    assert_includes response.body, "Queue 3:"
+    assert_includes response.body, "Queue 4:"
+  end
+
+  test "mat show highlights selected queue button and keeps bout_number links working" do
+    sign_in_owner
+
+    queue2_match = @mat.queue2_match
+    unless queue2_match
+      assignable = @tournament.matches.where(mat_id: nil).first
+      @mat.assign_match_to_queue!(assignable, 2) if assignable
+      queue2_match = @mat.reload.queue2_match
+    end
+    assert queue2_match, "Expected queue2 match to be present"
+
+    get :show, params: { id: @mat.id, bout_number: queue2_match.bout_number, foo: "bar" }
+    assert_response :success
+
+    assert_includes response.body, "Queue 2: Bout #{queue2_match.bout_number}"
+    assert_match(/btn btn-success btn-sm/, response.body)
+    assert_includes response.body, "bout_number=#{queue2_match.bout_number}"
+  end
+
+  test "mat show falls back to queue1 when requested bout number is not currently queued" do
+    sign_in_owner
+
+    queue1 = @mat.reload.queue1_match
+    assert queue1, "Expected queue1 to be present"
+
+    get :show, params: { id: @mat.id, bout_number: 999999 }
+    assert_response :success
+    assert_includes response.body, "Bout <strong>#{queue1.bout_number}</strong>"
+  end
+
+  test "mat show renders no matches assigned when queue is empty" do
+    sign_in_owner
+
+    @mat.clear_queue!
+    get :show, params: { id: @mat.id }
+    assert_response :success
+    assert_includes response.body, "No matches assigned to this mat."
+  end
+
   test "logged in tournament owner should redirect back to the first unfinished bout on a mat after submitting a match with a bout number param" do
     sign_in_owner
   
@@ -287,11 +343,12 @@ class MatsControllerTest < ActionController::TestCase
   end  
   
 #TESTS THAT NEED MATCHES PUT ABOVE THIS
-  test "redirect show if no matches" do
+  test "show renders when no matches" do
     sign_in_owner
     wipe
     show
-    no_matches
+    success
+    assert_includes response.body, "No matches assigned to this mat."
   end
 
   # Assign Next Match Permissions

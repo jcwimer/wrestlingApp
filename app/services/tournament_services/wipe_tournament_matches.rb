@@ -14,7 +14,7 @@ class WipeTournamentMatches
     end
     
     def wipeMatches
-       @tournament.matches.destroy_all
+       @tournament.destroy_all_matches
     end
     
     def resetSchoolScores

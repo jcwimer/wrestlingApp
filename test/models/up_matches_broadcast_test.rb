@@ -26,6 +26,21 @@ class UpMatchesBroadcastTest < ActiveSupport::TestCase
     assert_up_matches_replace_payload(broadcasts_for(stream).last)
   end
 
+  test "mat clear_queue broadcasts up matches board update" do
+    tournament = tournaments(:one)
+    mat = mats(:one)
+    match = matches(:tournament_1_bout_2000)
+    stream = stream_name_for(tournament)
+
+    mat.update!(queue1: match.id)
+    clear_streams(stream)
+
+    mat.clear_queue!
+
+    assert_operator broadcasts_for(stream).size, :>, 0
+    assert_up_matches_replace_payload(broadcasts_for(stream).last)
+  end
+
   test "match mat assignment change broadcasts up matches board update" do
     tournament = tournaments(:one)
     mat = mats(:one)
@@ -34,6 +49,21 @@ class UpMatchesBroadcastTest < ActiveSupport::TestCase
     clear_streams(stream)
 
     match.update!(mat_id: mat.id)
+
+    assert_operator broadcasts_for(stream).size, :>, 0
+    assert_up_matches_replace_payload(broadcasts_for(stream).last)
+  end
+
+  test "match mat unassignment broadcasts up matches board update" do
+    tournament = tournaments(:one)
+    mat = mats(:one)
+    match = matches(:tournament_1_bout_2001)
+    stream = stream_name_for(tournament)
+
+    match.update!(mat_id: mat.id)
+    clear_streams(stream)
+
+    match.update!(mat_id: nil)
 
     assert_operator broadcasts_for(stream).size, :>, 0
     assert_up_matches_replace_payload(broadcasts_for(stream).last)

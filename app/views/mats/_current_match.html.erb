@@ -1,6 +1,8 @@
 <% @mat = mat %>
-<% @match = local_assigns[:match] || mat.queue1_match %>
-<% @next_match = local_assigns[:next_match] || mat.queue2_match %>
+<% @queue_matches = local_assigns[:queue_matches] || mat.queue_matches %>
+<% @match = local_assigns[:match] || @queue_matches[0] %>
+<% @match ||= @queue_matches[0] %>
+<% @next_match = local_assigns[:next_match] || @queue_matches[1] %>
 <% @show_next_bout_button = local_assigns.key?(:show_next_bout_button) ? local_assigns[:show_next_bout_button] : true %>
 
 <% @wrestlers = [] %>
