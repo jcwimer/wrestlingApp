@@ -4,8 +4,6 @@ class PoolOrder
 	end
 
 	def getPoolOrder
-		# clear caching for weight for bracket page
-		@wrestlers.first.weight.touch
 	    setOriginalPoints
 	    while checkForTies(@wrestlers) == true
 	        getWrestlersOrderByPoolAdvancePoints.each do |wrestler|
@@ -18,7 +16,6 @@ class PoolOrder
 	    getWrestlersOrderByPoolAdvancePoints.each_with_index do |wrestler, index|
             placement = index + 1
             wrestler.pool_placement = placement
-            wrestler.save
 	    end
 	    @wrestlers.sort_by{|w| w.poolAdvancePoints}.reverse!
 	end
@@ -29,7 +26,6 @@ class PoolOrder
 	
 	def setOriginalPoints
 	   @wrestlers.each do |w|
-		   matches = w.reload.all_matches
 	   	   w.pool_placement_tiebreaker = nil
 	   	   w.pool_placement = nil
 	       w.poolAdvancePoints = w.pool_wins.size

@@ -3,16 +3,22 @@ class TournamentSeeding
       @tournament = tournament
     end
     
-    def set_seeds
-        @tournament.weights.each do |weight|
+    def set_seeds(weights: nil, persist: true)
+        weights_to_seed = weights || @tournament.weights.includes(:wrestlers)
+        updated_wrestlers = []
+
+        weights_to_seed.each do |weight|
 			wrestlers = weight.wrestlers
 			bracket_size = weight.calculate_bracket_size
 
             wrestlers = reset_bracket_line_for_lines_higher_than_bracket_size(wrestlers, bracket_size)
             wrestlers = set_original_seed_to_bracket_line(wrestlers)
             wrestlers = random_seeding(wrestlers, bracket_size)
-			wrestlers.each(&:save)
+            updated_wrestlers.concat(wrestlers)
         end
+
+        persist_bracket_lines(updated_wrestlers) if persist
+        updated_wrestlers
     end
     
     def random_seeding(wrestlers, bracket_size)
@@ -95,5 +101,20 @@ class TournamentSeeding
 			result = available_bracket_lines.sort_by { |n| n.odd? ? 1 : 0 }
 		end
 		result
+	end
+
+	def persist_bracket_lines(wrestlers)
+		return if wrestlers.blank?
+
+		timestamp = Time.current
+		updates = wrestlers.map do |wrestler|
+			{
+				id: wrestler.id,
+				bracket_line: wrestler.bracket_line,
+				updated_at: timestamp
+			}
+		end
+
+		Wrestler.upsert_all(updates)
 	end
 end

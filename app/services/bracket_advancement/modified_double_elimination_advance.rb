@@ -1,8 +1,12 @@
 class ModifiedDoubleEliminationAdvance
 
-    def initialize(wrestler,last_match)
+    attr_reader :matches_to_advance
+
+    def initialize(wrestler,last_match, matches: nil)
            @wrestler = wrestler
            @last_match = last_match
+           @matches = matches || @wrestler.weight.matches.to_a
+           @matches_to_advance = []
        @next_match_position_number = (@last_match.bracket_position_number / 2.0)
     end
    
@@ -25,42 +29,41 @@ class ModifiedDoubleEliminationAdvance
        update_consolation_bye
      end
      if @last_match.bracket_position == "Quarter"
-        new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Semis",@next_match_position_number.ceil,@wrestler.weight_id).first
+        new_match = @matches.find { |m| m.bracket_position == "Semis" && m.bracket_position_number == @next_match_position_number.ceil && m.weight_id == @wrestler.weight_id }
         update_new_match(new_match, get_wrestler_number)
      elsif @last_match.bracket_position == "Semis"
-        new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","1/2",@next_match_position_number.ceil,@wrestler.weight_id).first
+        new_match = @matches.find { |m| m.bracket_position == "1/2" && m.bracket_position_number == @next_match_position_number.ceil && m.weight_id == @wrestler.weight_id }
         update_new_match(new_match, get_wrestler_number)
      elsif @last_match.bracket_position == "Conso Semis"
-          new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","5/6",@next_match_position_number.ceil,@wrestler.weight_id).first
+          new_match = @matches.find { |m| m.bracket_position == "5/6" && m.bracket_position_number == @next_match_position_number.ceil && m.weight_id == @wrestler.weight_id }
           update_new_match(new_match, get_wrestler_number)
      elsif @last_match.bracket_position == "Conso Quarter"
         # it's a special bracket where a semi loser is not dropping down
-        new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Conso Semis",@next_match_position_number.ceil,@wrestler.weight_id).first
+        new_match = @matches.find { |m| m.bracket_position == "Conso Semis" && m.bracket_position_number == @next_match_position_number.ceil && m.weight_id == @wrestler.weight_id }
         update_new_match(new_match, get_wrestler_number)
      elsif @last_match.bracket_position == "Bracket Round of 16"
-        new_match = Match.where("bracket_position_number = ? and weight_id = ? and round > ? and bracket_position = ?", @next_match_position_number.ceil,@wrestler.weight_id, @last_match.round , "Quarter").sort_by{|m| m.round}.first
+        new_match = @matches.select { |m| m.bracket_position_number == @next_match_position_number.ceil && m.weight_id == @wrestler.weight_id && m.round > @last_match.round && m.bracket_position == "Quarter" }.sort_by(&:round).first
         update_new_match(new_match, get_wrestler_number)
      elsif @last_match.bracket_position == "Conso Round of 8"
-        new_match = Match.where("bracket_position_number = ? and weight_id = ? and round > ? and bracket_position = ?", @last_match.bracket_position_number,@wrestler.weight_id, @last_match.round, "Conso Quarter").sort_by{|m| m.round}.first
+        new_match = @matches.select { |m| m.bracket_position_number == @last_match.bracket_position_number && m.weight_id == @wrestler.weight_id && m.round > @last_match.round && m.bracket_position == "Conso Quarter" }.sort_by(&:round).first
         update_new_match(new_match, get_wrestler_number)
      end
     end
     
     def update_new_match(match, wrestler_number)
+        return unless match
         if wrestler_number == 2 or (match.loser1_name and match.loser1_name.include? "Loser of")
              match.w2 = @wrestler.id
-             match.save
         elsif  wrestler_number == 1
              match.w1 = @wrestler.id
-             match.save
         end
     end
    
     def update_consolation_bye
        bout = @wrestler.last_match.bout_number
-       next_match = Match.where("(loser1_name = ? OR loser2_name = ?) AND weight_id = ?","Loser of #{bout}","Loser of #{bout}",@wrestler.weight_id)
-       if next_match.size > 0
-         next_match.first.replace_loser_name_with_bye("Loser of #{bout}")
+       next_match = @matches.find { |m| m.weight_id == @wrestler.weight_id && (m.loser1_name == "Loser of #{bout}" || m.loser2_name == "Loser of #{bout}") }
+       if next_match
+         replace_loser_name_with_bye(next_match, "Loser of #{bout}")
        end
     end
    
@@ -74,27 +77,18 @@ class ModifiedDoubleEliminationAdvance
    
     def losers_bracket_advancement
      bout = @last_match.bout_number
-     next_match = Match.where("(loser1_name = ? OR loser2_name = ?) AND weight_id = ?", "Loser of #{bout}", "Loser of #{bout}", @wrestler.weight_id).first
+     next_match = @matches.find { |m| m.weight_id == @wrestler.weight_id && (m.loser1_name == "Loser of #{bout}" || m.loser2_name == "Loser of #{bout}") }
      
      if next_match.present?
-       next_match.replace_loser_name_with_wrestler(@wrestler, "Loser of #{bout}")
-       next_match.reload
+       replace_loser_name_with_wrestler(next_match, @wrestler, "Loser of #{bout}")
    
        if next_match.loser1_name == "BYE" || next_match.loser2_name == "BYE"
          next_match.winner_id = @wrestler.id
          next_match.win_type = "BYE"
          next_match.score = ""
          next_match.finished = 1
-         # puts "Before save: winner_id=#{next_match.winner_id}"
-         
-         # if next_match.save
-         #   puts "Save successful: winner_id=#{next_match.reload.winner_id}"
-         # else
-         #   puts "Save failed: #{next_match.errors.full_messages}"
-         # end
-         next_match.save
-   
-         next_match.advance_wrestlers
+         next_match.finished_at = Time.current
+         @matches_to_advance << next_match
        end
      end
     end
@@ -102,43 +96,53 @@ class ModifiedDoubleEliminationAdvance
    
     def advance_double_byes
       weight = @wrestler.weight
-      weight.matches.select{|m| m.loser1_name == "BYE" and m.loser2_name == "BYE" and m.finished != 1}.each do |match|
+      @matches.select{|m| m.weight_id == weight.id && m.loser1_name == "BYE" and m.loser2_name == "BYE" and m.finished != 1}.each do |match|
          match.finished = 1
+         match.finished_at = Time.current
          match.score = ""
          match.win_type = "BYE"
          next_match_position_number = (match.bracket_position_number / 2.0).ceil
-         after_matches = weight.matches.select{|m| m.round > match.round and m.is_consolation_match == match.is_consolation_match }.sort_by{|m| m.round}
-         next_matches = weight.matches.select{|m| m.round == after_matches.first.round and m.is_consolation_match == match.is_consolation_match }
-         this_round_matches = weight.matches.select{|m| m.round == match.round and m.is_consolation_match == match.is_consolation_match }
+         after_matches = @matches.select{|m| m.weight_id == weight.id && m.round > match.round and m.is_consolation_match == match.is_consolation_match }.sort_by{|m| m.round}
+         next if after_matches.empty?
+         next_matches = @matches.select{|m| m.weight_id == weight.id && m.round == after_matches.first.round and m.is_consolation_match == match.is_consolation_match }
+         this_round_matches = @matches.select{|m| m.weight_id == weight.id && m.round == match.round and m.is_consolation_match == match.is_consolation_match }
+         next_match = nil
    
          if next_matches.size == this_round_matches.size
            next_match = next_matches.select{|m| m.bracket_position_number == match.bracket_position_number}.first
-           next_match.loser2_name = "BYE"
-           next_match.save
+           next_match.loser2_name = "BYE" if next_match
          elsif next_matches.size < this_round_matches.size and next_matches.size > 0
            next_match = next_matches.select{|m| m.bracket_position_number == next_match_position_number}.first
-           if next_match.bracket_position_number == next_match_position_number
+           if next_match && next_match.bracket_position_number == next_match_position_number
              next_match.loser2_name = "BYE"
-           else
+           elsif next_match
              next_match.loser1_name = "BYE"
            end
          end
-         next_match.save
-         match.save
       end
     end
    
     def set_bye_for_placement
      weight = @wrestler.weight
-     seventh_finals = weight.matches.select{|match| match.bracket_position == '7/8'}.first
+     seventh_finals = @matches.select{|match| match.weight_id == weight.id && match.bracket_position == '7/8'}.first
      if seventh_finals
-       conso_quarter = weight.matches.select{|match| match.bracket_position == 'Conso Semis'}
+       conso_quarter = @matches.select{|match| match.weight_id == weight.id && match.bracket_position == 'Conso Semis'}
        conso_quarter.each do |match|
          if match.loser1_name == "BYE" or match.loser2_name == "BYE"
-           seventh_finals.replace_loser_name_with_bye("Loser of #{match.bout_number}")
+           replace_loser_name_with_bye(seventh_finals, "Loser of #{match.bout_number}")
          end
        end
      end
+    end
+
+    def replace_loser_name_with_wrestler(match, wrestler, loser_name)
+      match.w1 = wrestler.id if match.loser1_name == loser_name
+      match.w2 = wrestler.id if match.loser2_name == loser_name
+    end
+
+    def replace_loser_name_with_bye(match, loser_name)
+      match.loser1_name = "BYE" if match.loser1_name == loser_name
+      match.loser2_name = "BYE" if match.loser2_name == loser_name
     end
    end
    

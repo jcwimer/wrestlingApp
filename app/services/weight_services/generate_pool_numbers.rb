@@ -3,11 +3,13 @@ class GeneratePoolNumbers
       @weight = weight
     end
 
-    def savePoolNumbers
-    	@weight.wrestlers.each do |wrestler|
+    def savePoolNumbers(wrestlers: nil, persist: true)
+    	wrestlers_to_update = wrestlers || @weight.wrestlers.to_a
+    	wrestlers_to_update.each do |wrestler|
 			wrestler.pool = get_wrestler_pool_number(@weight.pools, wrestler.bracket_line)
-			wrestler.save
 		end
+		persist_pool_numbers(wrestlers_to_update) if persist
+		wrestlers_to_update
 	end
 
 	def get_wrestler_pool_number(number_of_pools, wrestler_seed)
@@ -36,4 +38,20 @@ class GeneratePoolNumbers
 	  
 		pool
 	end	  
+
+	private
+
+	def persist_pool_numbers(wrestlers)
+		return if wrestlers.blank?
+
+		timestamp = Time.current
+		rows = wrestlers.map do |w|
+			{
+				id: w.id,
+				pool: w.pool,
+				updated_at: timestamp
+			}
+		end
+		Wrestler.upsert_all(rows)
+	end
 end

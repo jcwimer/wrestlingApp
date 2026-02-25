@@ -12,18 +12,19 @@ class PoolBracketGeneration
   end
 
   def generateBracketMatches()
+    @rows = []
     if @pool_bracket_type == "twoPoolsToSemi"
-      return twoPoolsToSemi()
+      twoPoolsToSemi()
     elsif @pool_bracket_type == "twoPoolsToFinal"
-      return twoPoolsToFinal()
+      twoPoolsToFinal()
     elsif @pool_bracket_type == "fourPoolsToQuarter"
-      return fourPoolsToQuarter()
+      fourPoolsToQuarter()
     elsif @pool_bracket_type == "fourPoolsToSemi"
-      return fourPoolsToSemi()
+      fourPoolsToSemi()
     elsif @pool_bracket_type == "eightPoolsToQuarter"
-      return eightPoolsToQuarter()
+      eightPoolsToQuarter()
     end
-    return []
+    @rows
   end
 
   def twoPoolsToSemi()
@@ -86,14 +87,15 @@ class PoolBracketGeneration
   end
 
   def createMatchup(w1_name, w2_name, bracket_position, bracket_position_number)
-    @tournament.matches.create(
+    @rows << {
       loser1_name: w1_name,
       loser2_name: w2_name,
+      tournament_id: @tournament.id,
       weight_id: @weight.id,
       round: @round,
       bracket_position: bracket_position,
       bracket_position_number: bracket_position_number
-    )
+    }
   end
 
 end

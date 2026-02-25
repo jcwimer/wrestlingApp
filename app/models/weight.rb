@@ -156,7 +156,7 @@ class Weight < ApplicationRecord
 	end
 
 	def calculate_bracket_size
-		num_wrestlers = wrestlers.reload.size
+		num_wrestlers = wrestlers.size
 		return nil if num_wrestlers <= 0 # Handle invalid input
 	  
 		# Find the smallest power of 2 greater than or equal to num_wrestlers

@@ -1,8 +1,13 @@
 class PoolAdvance
 
- def initialize(wrestler)
+ attr_reader :matches_to_advance
+
+ def initialize(wrestler, last_match, matches: nil, wrestlers: nil)
 		@wrestler = wrestler
-		@last_match = @wrestler.last_match
+		@last_match = last_match
+    @matches = matches || @wrestler.weight.matches.to_a
+    @wrestlers = wrestlers || @wrestler.weight.wrestlers.to_a
+    @matches_to_advance = []
  end
 
  def advanceWrestler
@@ -17,15 +22,15 @@ class PoolAdvance
  def poolToBracketAdvancment
     pool = @wrestler.pool
     # This has to always run because the last match in a pool might not be a pool winner or runner up
-    winner = Wrestler.where("weight_id = ? and pool_placement = 1 and pool = ?",@wrestler.weight.id, pool).first
-    runner_up = Wrestler.where("weight_id = ? and pool_placement = 2 and pool = ?",@wrestler.weight.id, pool).first
+    winner = @wrestlers.find { |w| w.weight_id == @wrestler.weight.id && w.pool_placement == 1 && w.pool == pool }
+    runner_up = @wrestlers.find { |w| w.weight_id == @wrestler.weight.id && w.pool_placement == 2 && w.pool == pool }
     if runner_up
-      runner_up_match = Match.where("weight_id = ? and (loser1_name = ? or loser2_name = ?)",@wrestler.weight.id, "Runner Up Pool #{pool}", "Runner Up Pool #{pool}").first
-      runner_up_match.replace_loser_name_with_wrestler(runner_up,"Runner Up Pool #{pool}")
+      runner_up_match = @matches.find { |m| m.weight_id == @wrestler.weight.id && (m.loser1_name == "Runner Up Pool #{pool}" || m.loser2_name == "Runner Up Pool #{pool}") }
+      replace_loser_name_with_wrestler(runner_up_match, runner_up, "Runner Up Pool #{pool}") if runner_up_match
     end
     if winner
-      winner_match = Match.where("weight_id = ? and (loser1_name = ? or loser2_name = ?)",@wrestler.weight.id, "Winner Pool #{pool}", "Winner Pool #{pool}").first
-      winner_match.replace_loser_name_with_wrestler(winner,"Winner Pool #{pool}") 
+      winner_match = @matches.find { |m| m.weight_id == @wrestler.weight.id && (m.loser1_name == "Winner Pool #{pool}" || m.loser2_name == "Winner Pool #{pool}") }
+      replace_loser_name_with_wrestler(winner_match, winner, "Winner Pool #{pool}") if winner_match
     end
  end
 
@@ -45,36 +50,40 @@ class PoolAdvance
 
  def winner_advance
    if @wrestler.last_match.bracket_position == "Quarter"
-     new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","Semis",@wrestler.next_match_position_number.ceil,@wrestler.weight_id).first
+     new_match = @matches.find { |m| m.bracket_position == "Semis" && m.bracket_position_number == @wrestler.next_match_position_number.ceil && m.weight_id == @wrestler.weight_id }
      updateNewMatch(new_match)
    end
   if @wrestler.last_match.bracket_position == "Semis"
-     new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","1/2",@wrestler.next_match_position_number.ceil,@wrestler.weight_id).first
+     new_match = @matches.find { |m| m.bracket_position == "1/2" && m.bracket_position_number == @wrestler.next_match_position_number.ceil && m.weight_id == @wrestler.weight_id }
      updateNewMatch(new_match)
   end
   if @wrestler.last_match.bracket_position == "Conso Semis"
-     new_match = Match.where("bracket_position = ? AND bracket_position_number = ? AND weight_id = ?","5/6",@wrestler.next_match_position_number.ceil,@wrestler.weight_id).first
+     new_match = @matches.find { |m| m.bracket_position == "5/6" && m.bracket_position_number == @wrestler.next_match_position_number.ceil && m.weight_id == @wrestler.weight_id }
      updateNewMatch(new_match)
   end
 
  end
  
  def updateNewMatch(match)
+     return unless match
      if @wrestler.next_match_position_number == @wrestler.next_match_position_number.ceil
 	      match.w2 = @wrestler.id
-      	match.save
      end
      if @wrestler.next_match_position_number != @wrestler.next_match_position_number.ceil
 	      match.w1 = @wrestler.id
-	      match.save
      end
  end
 
  def loser_advance
     bout = @wrestler.last_match.bout_number
-    next_match = Match.where("(loser1_name = ? OR loser2_name = ?) AND weight_id = ?","Loser of #{bout}","Loser of #{bout}",@wrestler.weight_id)
-    if next_match.size > 0
-     	next_match.first.replace_loser_name_with_wrestler(@wrestler,"Loser of #{bout}")
+    next_match = @matches.find { |m| m.weight_id == @wrestler.weight_id && (m.loser1_name == "Loser of #{bout}" || m.loser2_name == "Loser of #{bout}") }
+    if next_match
+     	replace_loser_name_with_wrestler(next_match, @wrestler, "Loser of #{bout}")
     end
+ end
+
+ def replace_loser_name_with_wrestler(match, wrestler, loser_name)
+    match.w1 = wrestler.id if match.loser1_name == loser_name
+    match.w2 = wrestler.id if match.loser2_name == loser_name
  end
 end

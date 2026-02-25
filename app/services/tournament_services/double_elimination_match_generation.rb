@@ -1,29 +1,33 @@
 class DoubleEliminationMatchGeneration
-  def initialize(tournament)
+  def initialize(tournament, weights: nil)
     @tournament = tournament
+    @weights = weights
   end
 
   def generate_matches
-    #
-    # PHASE 1: Generate matches (with local round definitions).
-    #
-    @tournament.weights.each do |weight|
-      generate_matches_for_weight(weight)
+    build_match_rows
+  end
+
+  def build_match_rows
+    rows_by_weight_id = {}
+
+    generation_weights.each do |weight|
+      rows_by_weight_id[weight.id] = generate_match_rows_for_weight(weight)
     end
 
-    #
-    # PHASE 2: Align all rounds to match the largest bracket’s definitions.
-    #
-    align_all_rounds_to_largest_bracket
+    align_rows_to_largest_bracket(rows_by_weight_id)
+    rows_by_weight_id.values.flatten
   end
 
   ###########################################################################
   # PHASE 1: Generate all matches for each bracket, using a single definition.
   ###########################################################################
-  def generate_matches_for_weight(weight)
+  def generate_match_rows_for_weight(weight)
     bracket_size = weight.calculate_bracket_size
     bracket_info = define_bracket_matches(bracket_size)
-    return unless bracket_info
+    return [] unless bracket_info
+
+    rows = []
 
     # 1) Round one matchups
     bracket_info[:round_one_matchups].each_with_index do |matchup, idx|
@@ -32,7 +36,7 @@ class DoubleEliminationMatchGeneration
       bracket_pos_number = idx + 1
       round_number       = matchup[:round]
 
-      create_matchup_from_seed(
+      rows << create_matchup_from_seed(
         seed1,
         seed2,
         bracket_position,
@@ -49,7 +53,7 @@ class DoubleEliminationMatchGeneration
       round_number       = round_info[:round]
 
       matches_this_round.times do |i|
-        create_matchup(
+        rows << create_matchup(
           nil,
           nil,
           bracket_position,
@@ -67,7 +71,7 @@ class DoubleEliminationMatchGeneration
       round_number       = round_info[:round]
 
       matches_this_round.times do |i|
-        create_matchup(
+        rows << create_matchup(
           nil,
           nil,
           bracket_position,
@@ -79,12 +83,14 @@ class DoubleEliminationMatchGeneration
 
       # 5/6, 7/8 placing logic
       if weight.wrestlers.size >= 5 && @tournament.number_of_placers >= 6 && matches_this_round == 1
-        create_matchup(nil, nil, "5/6", 1, round_number, weight)
+        rows << create_matchup(nil, nil, "5/6", 1, round_number, weight)
       end
       if weight.wrestlers.size >= 7 && @tournament.number_of_placers >= 8 && matches_this_round == 1
-        create_matchup(nil, nil, "7/8", 1, round_number, weight)
+        rows << create_matchup(nil, nil, "7/8", 1, round_number, weight)
       end
     end
+
+    rows
   end
 
   # Single bracket definition dynamically generated for any power-of-two bracket size.
@@ -173,18 +179,18 @@ class DoubleEliminationMatchGeneration
   ###########################################################################
   # PHASE 2: Overwrite rounds in all smaller brackets to match the largest one.
   ###########################################################################
-  def align_all_rounds_to_largest_bracket
-    largest_weight = @tournament.weights.max_by { |w| w.calculate_bracket_size }
+  def align_rows_to_largest_bracket(rows_by_weight_id)
+    largest_weight = generation_weights.max_by { |w| w.calculate_bracket_size }
     return unless largest_weight
 
     position_to_round = {}
-    largest_weight.tournament.matches.where(weight_id: largest_weight.id).each do |m|
-      position_to_round[m.bracket_position] ||= m.round
+    rows_by_weight_id.fetch(largest_weight.id, []).each do |row|
+      position_to_round[row[:bracket_position]] ||= row[:round]
     end
 
-    @tournament.matches.find_each do |match|
-      if position_to_round.key?(match.bracket_position)
-        match.update(round: position_to_round[match.bracket_position])
+    rows_by_weight_id.each_value do |rows|
+      rows.each do |row|
+        row[:round] = position_to_round[row[:bracket_position]] if position_to_round.key?(row[:bracket_position])
       end
     end
   end
@@ -192,8 +198,12 @@ class DoubleEliminationMatchGeneration
   ###########################################################################
   # Helper methods
   ###########################################################################
+  def generation_weights
+    @weights || @tournament.weights.to_a
+  end
+
   def wrestler_with_seed(seed, weight)
-    Wrestler.where("weight_id = ? AND bracket_line = ?", weight.id, seed).first&.id
+    weight.wrestlers.find { |w| w.bracket_line == seed }&.id
   end
 
   def create_matchup_from_seed(w1_seed, w2_seed, bracket_position, bracket_position_number, round, weight)
@@ -208,14 +218,15 @@ class DoubleEliminationMatchGeneration
   end
 
   def create_matchup(w1, w2, bracket_position, bracket_position_number, round, weight)
-    weight.tournament.matches.create!(
+    {
       w1: w1,
       w2: w2,
+      tournament_id: weight.tournament_id,
       weight_id: weight.id,
       round: round,
       bracket_position: bracket_position,
       bracket_position_number: bracket_position_number
-    )
+    }
   end
 
   # Calculates the sequence of seeds for the first round of a power-of-two bracket.
