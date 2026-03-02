@@ -54,19 +54,8 @@
   <tbody>
     <% @wrestlers.sort_by { |w| w.weight.max }.each do |wrestler| %>
       <% if params[:school_permission_key].present? %>
-        <!-- No caching when school_permission_key is present -->
         <tr>
-          <td>
-            <% wrestler_path_with_key = wrestler_path(wrestler) %>
-            <% wrestler_path_with_key += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
-            <%= link_to wrestler.name, wrestler_path_with_key %>
-          </td>
-          <td><%= wrestler.weight.max %></td>
-          <td><%= wrestler.season_win %>-<%= wrestler.season_loss %> <%= wrestler.criteria %></td>
-          <td><%= wrestler.original_seed %></td>
-          <td><%= wrestler.total_team_points - wrestler.total_points_deducted %></td>
-          <td><%= "Yes" if wrestler.extra? %></td>
-          <td><%= wrestler.next_match_bout_number %> <%= wrestler.next_match_mat_name %></td>
+          <%= render "schools/wrestler_row_cells", wrestler: wrestler, school_permission_key: params[:school_permission_key] %>
 
           <% if can? :manage, wrestler.school %>
             <td>
@@ -86,34 +75,21 @@
           <% end %>
         </tr>
       <% else %>
-        <!-- Use caching only when school_permission_key is NOT present -->
-        <% cache ["#{wrestler.id}_school_show", @school] do %>
-          <tr>
-            <td><%= link_to wrestler.name, wrestler_path(wrestler) %></td>
-            <td><%= wrestler.weight.max %></td>
-            <td><%= wrestler.season_win %>-<%= wrestler.season_loss %> <%= wrestler.criteria %></td>
-            <td><%= wrestler.original_seed %></td>
-            <td><%= wrestler.total_team_points - wrestler.total_points_deducted %></td>
-            <td><%= "Yes" if wrestler.extra? %></td>
-            <td><%= wrestler.next_match_bout_number %> <%= wrestler.next_match_mat_name %></td>
-        <% end %>
-            <% if can? :manage, wrestler.school %>
-              <td>
-                <% edit_wrestler_path_with_key = edit_wrestler_path(wrestler) %>
-                <% edit_wrestler_path_with_key += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
-
-                <% delete_wrestler_path_with_key = wrestler_path(wrestler) %>
-                <% delete_wrestler_path_with_key += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
-
-                <%= link_to edit_wrestler_path_with_key, class: "text-decoration-none" do %>
-                  <span class="fas fa-edit" aria-hidden="true"></span>
-                <% end %>
-                <%= link_to delete_wrestler_path_with_key, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "text-decoration-none" do %>
-                  <span class="fas fa-trash-alt" aria-hidden="true"></span>
-                <% end %>
-              </td>
-            <% end %>
-          </tr>
+        <tr>
+          <% cache ["school_show_wrestler_cells", wrestler] do %>
+            <%= render "schools/wrestler_row_cells", wrestler: wrestler %>
+          <% end %>
+          <% if can? :manage, wrestler.school %>
+            <td>
+              <%= link_to edit_wrestler_path(wrestler), class: "text-decoration-none" do %>
+                <span class="fas fa-edit" aria-hidden="true"></span>
+              <% end %>
+              <%= link_to wrestler_path(wrestler), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "text-decoration-none" do %>
+                <span class="fas fa-trash-alt" aria-hidden="true"></span>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
       <% end %>
     <% end %>
   </tbody>

@@ -14,35 +14,36 @@
   		</tr>
   	</thead>
   	<tbody>
-  		<% @wrestlers.sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]}.each do |wrestler| %>
-        		<% if wrestler.weight_id == @weight.id %>
-        			<tr>
-        				<td><%= link_to "#{wrestler.name}", wrestler %></td>
-        				<td><%= wrestler.school.name %></td>
-        				<td>
-                  <% if can? :manage, @tournament %>
-                    <%= fields_for "wrestler[]", wrestler do |w| %>
-                      <%= w.text_field :original_seed %>
-                    <% end %> 
-                  <% else %>
-                    <%= wrestler.original_seed %>
-                  <% end %>
-                </td>
-        				<td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
-        				<td><%= wrestler.criteria %> Win <%= wrestler.season_win_percentage %>%</td>
-        				<td><% if wrestler.extra? == true %>
-             				 Yes
-            			<% end %></td>
-        				<% if can? :manage, @tournament %> 
-                  <td>
-                    <%= link_to wrestler, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? THIS WILL DELETE ALL MATCHES." }, class: "text-decoration-none" do %>
-                      <span class="fas fa-trash-alt" aria-hidden="true"></span>
-                    <% end %>
-                  </td>
-    	      			<% end %>
-        			</tr>
-        		<% end %>
-      	<% end %>
+      <% sorted_wrestlers = @wrestlers.sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]} %>
+      <% if can? :manage, @tournament %>
+        <% sorted_wrestlers.each do |wrestler| %>
+          <% if wrestler.weight_id == @weight.id %>
+            <tr>
+              <td><%= link_to wrestler.name, wrestler %></td>
+              <td><%= wrestler.school.name %></td>
+              <td>
+                <%= fields_for "wrestler[]", wrestler do |w| %>
+                  <%= w.text_field :original_seed %>
+                <% end %>
+              </td>
+              <td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
+              <td><%= wrestler.criteria %> Win <%= wrestler.season_win_percentage %>%</td>
+              <td><%= "Yes" if wrestler.extra? %></td>
+              <td>
+                <%= link_to wrestler, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? THIS WILL DELETE ALL MATCHES." }, class: "text-decoration-none" do %>
+                  <span class="fas fa-trash-alt" aria-hidden="true"></span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      <% else %>
+        <% sorted_wrestlers.each do |wrestler| %>
+          <% if wrestler.weight_id == @weight.id %>
+            <%= render "weights/readonly_wrestler_row", wrestler: wrestler %>
+          <% end %>
+        <% end %>
+      <% end %>
     	</tbody>
   </table>
 <br><p>*All wrestlers without a seed (determined by tournament director) will be assigned a random bracket line.</p>

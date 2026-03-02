@@ -1,0 +1,10 @@
+<% cache ["weight_show_wrestler_row", wrestler] do %>
+  <tr>
+    <td><%= link_to wrestler.name, wrestler %></td>
+    <td><%= wrestler.school.name %></td>
+    <td><%= wrestler.original_seed %></td>
+    <td><%= wrestler.season_win %>-<%= wrestler.season_loss %></td>
+    <td><%= wrestler.criteria %> Win <%= wrestler.season_win_percentage %>%</td>
+    <td><%= "Yes" if wrestler.extra? %></td>
+  </tr>
+<% end %>

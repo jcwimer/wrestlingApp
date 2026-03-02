@@ -1,0 +1,8 @@
+<% cache ["up_matches_unassigned_row", match, match.wrestler1, match.wrestler2] do %>
+  <tr>
+    <td>Round <%= match.round %></td>
+    <td><%= match.bout_number %></td>
+    <td><%= match.weight_max %></td>
+    <td><%= match.w1_bracket_name %> vs. <%= match.w2_bracket_name %></td>
+  </tr>
+<% end %>

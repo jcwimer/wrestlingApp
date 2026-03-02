@@ -1,0 +1,6 @@
+<% cache ["team_score_row", school, rank] do %>
+  <tr>
+    <td><%= rank %>. <%= school.name %> (<%= school.abbreviation %>)</td>
+    <td><%= school.page_score_string %></td>
+  </tr>
+<% end %>

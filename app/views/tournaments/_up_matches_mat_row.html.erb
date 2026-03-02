@@ -1,5 +1,6 @@
 <% queue1_match, queue2_match, queue3_match, queue4_match = mat.queue_matches %>
-<% cache ["up_matches_mat_row", mat, mat.queue1, mat.queue2, mat.queue3, mat.queue4] do %>
+<% queue_match_dependencies = [queue1_match, queue2_match, queue3_match, queue4_match].compact.flat_map { |match| [match, match.wrestler1, match.wrestler2] } %>
+<% cache ["up_matches_mat_row", mat, *queue_match_dependencies] do %>
   <tr>
     <td><%= mat.name %></td>
     <td>

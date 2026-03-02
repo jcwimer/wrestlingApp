@@ -31,14 +31,7 @@
     </thead>
 
     <tbody>
-      <% (local_assigns[:matches] || tournament.up_matches_unassigned_matches).each do |m| %>
-        <tr>
-          <td>Round <%= m.round %></td>
-          <td><%= m.bout_number %></td>
-          <td><%= m.weight_max %></td>
-          <td><%= m.w1_bracket_name %> vs. <%= m.w2_bracket_name %></td>
-        </tr>
-      <% end %>
+      <%= render partial: "tournaments/up_matches_unassigned_row", collection: (local_assigns[:matches] || tournament.up_matches_unassigned_matches), as: :match %>
     </tbody>
   </table>
   <br>

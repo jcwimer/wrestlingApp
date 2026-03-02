@@ -1,0 +1,13 @@
+<% if local_assigns[:school_permission_key].present? %>
+  <% wrestler_path_with_key = wrestler_path(wrestler) %>
+  <% wrestler_path_with_key += "?school_permission_key=#{school_permission_key}" %>
+  <td><%= link_to wrestler.name, wrestler_path_with_key %></td>
+<% else %>
+  <td><%= link_to wrestler.name, wrestler_path(wrestler) %></td>
+<% end %>
+<td><%= wrestler.weight.max %></td>
+<td><%= wrestler.season_win %>-<%= wrestler.season_loss %> <%= wrestler.criteria %></td>
+<td><%= wrestler.original_seed %></td>
+<td><%= wrestler.total_team_points - wrestler.total_points_deducted %></td>
+<td><%= "Yes" if wrestler.extra? %></td>
+<td><%= wrestler.next_match_bout_number %> <%= wrestler.next_match_mat_name %></td>

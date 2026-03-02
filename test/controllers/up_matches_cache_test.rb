@@ -73,13 +73,86 @@ class UpMatchesCacheTest < ActionController::TestCase
     assert_operator cache_hits(repeat_events), :>, 0, "Expected cache hits after queue clear rewrite"
   end
 
+  test "up_matches unassigned row fragments hit cache and invalidate after unassigned match update" do
+    key_markers = %w[up_matches_unassigned_row]
+
+    first_events = cache_events_for_up_matches(key_markers) do
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(first_events), :>, 0, "Expected initial unassigned row render to write fragments"
+
+    second_events = cache_events_for_up_matches(key_markers) do
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+    assert_equal 0, cache_writes(second_events), "Expected repeat unassigned row render to reuse cached fragments"
+    assert_operator cache_hits(second_events), :>, 0, "Expected repeat unassigned row render to hit cache"
+
+    unassigned_match = @tournament.up_matches_unassigned_matches.first
+    assert unassigned_match, "Expected at least one unassigned match for cache invalidation test"
+
+    third_events = cache_events_for_up_matches(key_markers) do
+      unassigned_match.touch
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(third_events), :>, 0, "Expected unassigned match update to invalidate unassigned row fragment"
+  end
+
+  test "completing an on-mat match expires up_matches cached fragments" do
+    warm_events = cache_events_for_up_matches(%w[up_matches_mat_row up_matches_unassigned_row]) do
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(warm_events), :>, 0, "Expected initial up_matches render to warm caches"
+
+    mat = @tournament.mats.detect { |m| m.queue1_match.present? }
+    assert mat, "Expected a mat with a queued match"
+    match = mat.queue1_match
+    assert match, "Expected queue1 match to complete"
+
+    post_action_events = cache_events_for_up_matches(%w[up_matches_mat_row up_matches_unassigned_row]) do
+      match.update!(
+        finished: 1,
+        winner_id: match.w1 || match.w2,
+        win_type: "Decision",
+        score: "1-0"
+      )
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+
+    assert_operator cache_writes(post_action_events), :>, 0, "Expected completed match to expire and rewrite up_matches caches"
+  end
+
+  test "manually assigning an unassigned match to a mat queue expires up_matches caches" do
+    warm_events = cache_events_for_up_matches(%w[up_matches_mat_row up_matches_unassigned_row]) do
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(warm_events), :>, 0, "Expected initial up_matches render to warm caches"
+
+    unassigned_match = @tournament.up_matches_unassigned_matches.first
+    assert unassigned_match, "Expected at least one unassigned match to manually place on a mat"
+    target_mat = @tournament.mats.first
+
+    post_action_events = cache_events_for_up_matches(%w[up_matches_mat_row up_matches_unassigned_row]) do
+      target_mat.assign_match_to_queue!(unassigned_match, 4)
+      get :up_matches, params: { id: @tournament.id }
+      assert_response :success
+    end
+
+    assert_operator cache_writes(post_action_events), :>, 0, "Expected manual mat assignment to expire and rewrite up_matches caches"
+  end
+
   private
 
-  def cache_events_for_up_matches
+  def cache_events_for_up_matches(key_markers = %w[up_matches_mat_row up_matches_unassigned_row])
     events = []
     subscriber = lambda do |name, _start, _finish, _id, payload|
       key = payload[:key].to_s
-      next unless key.include?("up_matches_mat_row")
+      next unless key_markers.any? { |marker| key.include?(marker) }
 
       events << { name: name, hit: payload[:hit] }
     end

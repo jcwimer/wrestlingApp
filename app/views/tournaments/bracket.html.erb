@@ -1,4 +1,4 @@
-<% cache ["#{@weight.id}_bracket", @weight] do %>
+<% cache ["#{@weight.id}_bracket", @weight, params[:print].to_s] do %>
 <%= render 'bracket_partial' %>
 <% end %>
 <% if @tournament.tournament_type == "Pool to bracket" %> 
