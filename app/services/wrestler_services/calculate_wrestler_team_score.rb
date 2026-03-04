@@ -54,29 +54,20 @@ class CalculateWrestlerTeamScore
     def byePoints
         points = 0
         if @tournament.tournament_type == "Pool to bracket"
-            if @wrestler.pool_wins.size >= 1 and @wrestler.has_a_pool_bye == true
+            if pool_bye_points_eligible?
               points += 2
             end
         end
-        if @tournament.tournament_type.include? "Regular Double Elimination"
-            if @wrestler.championship_advancement_wins.size > 0 or @wrestler.matches_won.select{|m| m.bracket_position == "1/2" and m.win_type != "BYE"}.size > 0
-                # if they have a win in the championship round or if they got a bye all the way to finals and won the finals
-                points += @wrestler.championship_byes.size * 2
+        if @tournament.tournament_type.include? "Double Elimination"
+            if @wrestler.championship_advancement_wins.any? &&
+               @wrestler.championship_byes.any? &&
+               any_bye_round_had_wrestled_match?(@wrestler.championship_byes)
+                points += 2
             end
-            if @wrestler.consolation_advancement_wins.size > 0 or @wrestler.matches_won.select{|m| m.bracket_position == "3/4" and m.win_type != "BYE"}.size > 0
-                # if they have a win in the consolation round or if they got a bye all the way to 3rd/4th match and won
-                points += @wrestler.consolation_byes.size * 1
-            end
-        end
-        if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
-            if @wrestler.championship_advancement_wins.size > 0 or @wrestler.matches_won.select{|m| m.bracket_position == "1/2" and m.win_type != "BYE"}.size > 0
-                # if they have a win in the championship round or if they got a bye all the way to finals and won the finals
-                points += @wrestler.championship_byes.size * 2
-            end
-            if @wrestler.consolation_advancement_wins.size > 0 or @wrestler.matches_won.select{|m| m.bracket_position == "5/6" and m.win_type != "BYE"}.size > 0
-                # if they have a win in the consolation round or if they got a bye all the way to 5th/6th match and won
-                # since the consolation bracket goes to 5/6 in a modified tournament
-                points += @wrestler.consolation_byes.size * 1
+            if @wrestler.consolation_advancement_wins.any? &&
+               @wrestler.consolation_byes.any? &&
+               any_bye_round_had_wrestled_match?(@wrestler.consolation_byes)
+                points += 1
             end
         end
         return points
@@ -84,6 +75,32 @@ class CalculateWrestlerTeamScore
 
     def bonusWinPoints
         (@wrestler.pin_wins.size * 2) + (@wrestler.tech_wins.size * 1.5) + (@wrestler.major_wins.size * 1)
+    end
+
+    private
+
+    def pool_bye_points_eligible?
+        return false unless @wrestler.pool_wins.size >= 1
+        return false unless @wrestler.weight.pools.to_i > 1
+
+        wrestler_pool_size = @wrestler.weight.wrestlers_in_pool(@wrestler.pool).size
+        largest_pool_size = (1..@wrestler.weight.pools).map { |pool_number| @wrestler.weight.wrestlers_in_pool(pool_number).size }.max
+
+        wrestler_pool_size < largest_pool_size
+    end
+
+    def any_bye_round_had_wrestled_match?(bye_matches)
+        bye_matches.any? do |bye_match|
+            next false if bye_match.round.nil?
+
+            @wrestler.weight.matches.any? do |match|
+                next false if match.id == bye_match.id
+                next false if match.round != bye_match.round
+                next false if match.is_consolation_match != bye_match.is_consolation_match
+
+                match.finished == 1 && match.win_type.present? && match.win_type != "BYE"
+            end
+        end
     end
 
 end

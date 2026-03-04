@@ -30,6 +30,15 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     return wrestler
   end
 
+  def wrestle_other_match_in_round(reference_match, conso: false)
+    match = @tournament.matches.reload
+      .select { |m| m.round == reference_match.round && m.id != reference_match.id && m.is_consolation_match == conso }
+      .first
+    return if match.nil?
+
+    winner_by_name("Test2", match)
+  end
+
   test "Wrestlers get points for byes in the championship rounds" do
     matches = @tournament.matches.reload
     round1 = matches.select{|m| m.bracket_position == "Bracket Round of 16"}.first
@@ -37,9 +46,10 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     semi = matches.select{|m| m.bracket_position == "Semis"}.first
     winner_by_name_by_bye("Test1", round1)
     winner_by_name_by_bye("Test1", quarter)
+    wrestle_other_match_in_round(round1, conso: false)
     winner_by_name("Test1", semi)
     wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 4
+    assert wrestler_points_calc.byePoints == 2
   end
   
   test "Wrestlers get points for byes in the consolation rounds" do
@@ -49,9 +59,10 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
     winner_by_name_by_bye("Test1", conso_r8_1)
     winner_by_name_by_bye("Test1", quarter)
+    wrestle_other_match_in_round(conso_r8_1, conso: true)
     winner_by_name("Test1", semi)
     wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 2
+    assert wrestler_points_calc.byePoints == 1
   end
   
   test "Wrestlers do not get bye points if they get byes to 1st/2nd and win by bye" do
@@ -93,7 +104,19 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", semi)
     winner_by_name("Test1", final)
     wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 6
+    assert wrestler_points_calc.byePoints == 0
+  end
+
+  test "Wrestlers do not get championship bye points when no championship match is wrestled in those bye rounds" do
+    matches = @tournament.matches.reload
+    round1 = matches.select{|m| m.bracket_position == "Bracket Round of 16"}.first
+    quarter = matches.select{|m| m.bracket_position == "Quarter"}.first
+    semi = matches.select{|m| m.bracket_position == "Semis"}.first
+    winner_by_name_by_bye("Test1", round1)
+    winner_by_name_by_bye("Test1", quarter)
+    winner_by_name("Test1", semi)
+    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    assert wrestler_points_calc.byePoints == 0
   end
   
   test "Wrestlers do not get bye points if they get byes to 3rd/4th and win by decision" do
@@ -107,6 +130,20 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", semi)
     winner_by_name("Test1", final)
     wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 3
+    assert wrestler_points_calc.byePoints == 0
+  end
+
+  test "Wrestlers do not get conso bye points when no conso match is wrestled in those rounds" do
+    matches = @tournament.matches.reload
+    conso_r8_1 = matches.select{|m| m.bracket_position == "Conso Round of 8.1"}.first
+    quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.first
+    semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
+    final = matches.select{|m| m.bracket_position == "3/4"}.first
+    winner_by_name_by_bye("Test1", conso_r8_1)
+    winner_by_name_by_bye("Test1", quarter)
+    winner_by_name_by_bye("Test1", semi)
+    winner_by_name("Test1", final)
+    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    assert wrestler_points_calc.byePoints == 0
   end
 end
