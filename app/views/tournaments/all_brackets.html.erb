@@ -1,20 +1,20 @@
 <style>
   /* General styles for pages */
   @page {
-    margin: 0.5in; /* Universal margin for all pages */
+    margin: 0.35in;
   }
 
   .page {
-    width: 7.5in; /* Portrait width (8.5in - margins) */
-    height: 10in; /* Portrait height (11in - margins) */
+    width: 7.8in; /* 8.5in - 2 * 0.35in */
+    height: 10.3in; /* 11in - 2 * 0.35in */
     margin: auto;
     overflow: hidden;
     position: relative;
   }
 
   .page-landscape {
-    width: 10in; /* Landscape width (11in - margins) */
-    height: 7.5in; /* Landscape height (8.5in - margins) */
+    width: 10.3in; /* 11in - 2 * 0.35in */
+    height: 7.8in; /* 8.5in - 2 * 0.35in */
     margin: auto;
     overflow: hidden;
     position: relative;
@@ -24,6 +24,11 @@
     width: 100%;
     height: auto;
     transform-origin: top left;
+  }
+
+  .bracket-container h4 {
+    margin-top: 0.15rem;
+    margin-bottom: 0.45rem;
   }
 
   /* Print-specific styles */
@@ -51,6 +56,10 @@
       transform-origin: top left;
     }
 
+    .bracket {
+      page-break-inside: avoid;
+    }
+
     /* Optional: Hide elements not needed in print */
     .no-print {
       display: none;
@@ -62,15 +71,10 @@
   function scaleContent() {
     document.querySelectorAll('.page, .page-landscape').forEach(page => {
       const container = page.querySelector('.bracket-container');
-      const isLandscape = page.classList.contains('page-landscape');
 
-      // Page dimensions (1 inch = 96px)
-      const pageWidth = isLandscape ? 10 * 96 : 7.5 * 96;
-      const pageHeight = isLandscape ? 7.5 * 96 : 10 * 96;
-
-      // Subtract margins (0.5 inch margin)
-      const availableWidth = pageWidth - (0.5 * 96 * 2);
-      const availableHeight = pageHeight - (0.5 * 96 * 2);
+      // Use the actual page box size (already accounts for @page margins)
+      const availableWidth = page.clientWidth;
+      const availableHeight = page.clientHeight;
 
       // Measure content dimensions
       const contentWidth = container.scrollWidth;
@@ -80,8 +84,8 @@
       const scaleX = availableWidth / contentWidth;
       const scaleY = availableHeight / contentHeight;
 
-      // Use a slightly relaxed scaling to avoid over-aggressive shrinking
-      const scale = Math.min(scaleX, scaleY, 1); // Ensure scale does not exceed 100% (1)
+      // Keep a tiny buffer so borders/text don't clip at print edges
+      const scale = Math.min(scaleX, scaleY, 1) * 0.99;
 
       // Apply the scale
       container.style.transform = `scale(${scale})`;
@@ -91,9 +95,9 @@
       const scaledWidth = contentWidth * scale;
       const scaledHeight = contentHeight * scale;
 
-      // Center the content within the page
-      const horizontalPadding = (pageWidth - scaledWidth) / 2;
-      const verticalPadding = (pageHeight - scaledHeight) / 2;
+      // Center the content within the available page box
+      const horizontalPadding = (availableWidth - scaledWidth) / 2;
+      const verticalPadding = (availableHeight - scaledHeight) / 2;
 
       // Apply margin adjustments
       container.style.marginLeft = `${Math.max(0, horizontalPadding)}px`;
