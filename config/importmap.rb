@@ -19,6 +19,13 @@ pin "bootstrap", to: "bootstrap.min.js"
 
 # Pin controllers from app/assets/javascripts/controllers
 pin_all_from "app/assets/javascripts/controllers", under: "controllers"
+pin "match-state-config", to: "lib/match_state/config.js"
+pin "match-state-engine", to: "lib/match_state/engine.js"
+pin "match-state-serializers", to: "lib/match_state/serializers.js"
+pin "match-state-presenters", to: "lib/match_state/presenters.js"
+pin "match-state-transport", to: "lib/match_state/transport.js"
+pin "match-state-scoreboard-presenters", to: "lib/match_state/scoreboard_presenters.js"
+pin "match-state-scoreboard-state", to: "lib/match_state/scoreboard_state.js"
 
 # Pin all JS files from app/assets/javascripts directory
 pin_all_from "app/assets/javascripts", under: "assets/javascripts" 

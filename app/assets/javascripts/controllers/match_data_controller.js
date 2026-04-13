@@ -1,4 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
+import {
+  loadJson,
+  saveJson,
+  MATCH_DATA_TTL_MS
+} from "match-state-transport"
 
 export default class extends Controller {
   static targets = [
@@ -238,8 +243,7 @@ export default class extends Controller {
   
   loadFromLocalStorage(wrestler_name) {
     const key = this.generateKey(wrestler_name)
-    const data = localStorage.getItem(key)
-    return data ? JSON.parse(data) : null
+    return loadJson(localStorage, key)
   }
   
   saveToLocalStorage(person) {
@@ -249,7 +253,7 @@ export default class extends Controller {
       updated_at: person.updated_at,
       timers: person.timers
     }
-    localStorage.setItem(key, JSON.stringify(data))
+    saveJson(localStorage, key, data, { ttlMs: MATCH_DATA_TTL_MS })
   }
   
   updateHtmlValues() {

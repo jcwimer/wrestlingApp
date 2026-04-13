@@ -1,0 +1,108 @@
+<h1><%= @wrestler1_name %> VS. <%= @wrestler2_name %></h1>
+
+<div
+  data-controller="match-state"
+  data-match-state-match-id-value="<%= @match.id %>"
+  data-match-state-tournament-id-value="<%= @match.tournament.id %>"
+  data-match-state-bout-number-value="<%= @match.bout_number %>"
+  data-match-state-weight-label-value="<%= @match.weight&.max %>"
+  data-match-state-bracket-position-value="<%= @match.bracket_position %>"
+  data-match-state-ruleset-value="<%= @match_state_ruleset %>"
+  data-match-state-w1-id-value="<%= @match.w1 || 0 %>"
+  data-match-state-w2-id-value="<%= @match.w2 || 0 %>"
+  data-match-state-w1-name-value="<%= @wrestler1_name %>"
+  data-match-state-w2-name-value="<%= @wrestler2_name %>"
+  data-match-state-w1-school-value="<%= @wrestler1_school_name %>"
+  data-match-state-w2-school-value="<%= @wrestler2_school_name %>">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="panel panel-success" data-match-state-target="greenPanel">
+        <div class="panel-heading">
+          <strong data-match-state-target="greenLabel">Green</strong> <span data-match-state-target="greenName"><%= @wrestler1_name %></span>
+        </div>
+        <div class="panel-body">
+          <p class="text-muted" data-match-state-target="greenSchool"><%= @wrestler1_school_name %></p>
+          <h2 data-match-state-target="greenScore">0</h2>
+          <div data-match-state-target="greenControls"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <strong>Bout <%= @match.bout_number %></strong>
+        </div>
+        <div class="panel-body">
+          <p><strong>Bracket Position:</strong> <%= @match.bracket_position %></p>
+          <p><strong>Period:</strong> <span data-match-state-target="periodLabel"></span></p>
+          <p><strong>Clock:</strong> <span data-match-state-target="clock">2:00</span></p>
+          <p><strong>Status:</strong> <span data-match-state-target="clockStatus">Stopped</span></p>
+          <p><strong>Match Position:</strong> <span data-match-state-target="matchPosition"></span></p>
+          <p><strong>Format:</strong> <span data-match-state-target="formatName"></span></p>
+          <div class="btn-group" style="margin-top: 10px;">
+            <button type="button" class="btn btn-success btn-sm" data-action="click->match-state#startClock">Start</button>
+            <button type="button" class="btn btn-danger btn-sm" data-action="click->match-state#stopClock">Stop</button>
+          </div>
+          <div style="margin-top: 10px;">
+            <strong>Adjust Match Clock</strong>
+            <div class="btn-group" style="margin-top: 8px;">
+              <button type="button" class="btn btn-default btn-sm" data-action="click->match-state#subtractMinute">-1m</button>
+              <button type="button" class="btn btn-default btn-sm" data-action="click->match-state#subtractSecond">-1s</button>
+              <button type="button" class="btn btn-default btn-sm" data-action="click->match-state#addSecond">+1s</button>
+              <button type="button" class="btn btn-default btn-sm" data-action="click->match-state#addMinute">+1m</button>
+            </div>
+          </div>
+          <div style="margin-top: 12px;">
+            <button type="button" class="btn btn-primary btn-sm" data-action="click->match-state#swapColors">Swap Red/Green</button>
+          </div>
+          <div style="margin-top: 12px;">
+            <strong>Match Period Navigation</strong>
+            <div class="text-muted">Use these to move between periods and choice periods.</div>
+            <div class="btn-group" style="margin-top: 8px;">
+              <button type="button" class="btn btn-default btn-sm" data-action="click->match-state#previousPhase">Previous Period</button>
+              <button type="button" class="btn btn-default btn-sm" data-action="click->match-state#nextPhase">Next Period</button>
+            </div>
+            <div style="margin-top: 8px;">
+              <strong>Match Time Accumulation:</strong>
+              <span data-match-state-target="accumulationClock">0:00</span>
+            </div>
+            <div style="margin-top: 12px;">
+              <button type="button" class="btn btn-warning btn-sm" data-action="click->match-state#resetMatch">Reset Match</button>
+            </div>
+          </div>
+          <div data-match-state-target="choiceActions" style="margin-top: 12px;"></div>
+          <hr>
+          <h4>Event Log</h4>
+          <div data-match-state-target="eventLog"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="panel panel-danger" data-match-state-target="redPanel">
+        <div class="panel-heading">
+          <strong data-match-state-target="redLabel">Red</strong> <span data-match-state-target="redName"><%= @wrestler2_name %></span>
+        </div>
+        <div class="panel-body">
+          <p class="text-muted" data-match-state-target="redSchool"><%= @wrestler2_school_name %></p>
+          <h2 data-match-state-target="redScore">0</h2>
+          <div data-match-state-target="redControls"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default" data-match-state-target="matchResultsPanel">
+    <div class="panel-heading">
+      <strong>Submit Match Results</strong>
+    </div>
+    <div class="panel-body">
+      <%= form_for(@match) do |f| %>
+        <%= f.hidden_field :w1_stat, data: { match_state_target: "w1StatField" } %>
+        <%= f.hidden_field :w2_stat, data: { match_state_target: "w2StatField" } %>
+        <%= render "matches/match_results_fields", f: f, redirect_path: @match_results_redirect_path, submit_label: "Update Match" %>
+      <% end %>
+    </div>
+  </div>
+</div>

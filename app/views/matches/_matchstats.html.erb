@@ -130,65 +130,6 @@
   <br>
   <br>
   <br>
-  <h4>Match Results</h4>
-  <br>
-  <div data-controller="match-score">
-    <div class="field">
-      <%= f.label "Win type" %><br>
-      <%= f.select :win_type, Match::WIN_TYPES, { include_blank: false }, { 
-        data: { 
-          match_score_target: "winType", 
-          action: "change->match-score#winTypeChanged" 
-        } 
-      } %>
-    </div>
-    <br>
-    <div class="field">
-      <%= f.label "Overtime Type" %> Leave blank if not overtime. For High School the 1st overtime is SV-1, second overtime is TB-1, third overtime is UTB.<br>
-      <%= f.select(:overtime_type, Match::OVERTIME_TYPES) %>
-    </div>
-    <br>
-    <div class="field">
-      <%= f.label "Winner" %> Please choose the winner<br>
-      <%= f.collection_select :winner_id, @wrestlers, :id, :name_with_school, 
-        { include_blank: true }, 
-        { 
-          data: { 
-            match_score_target: "winnerSelect", 
-            action: "change->match-score#winnerChanged" 
-          } 
-        } 
-      %>
-    </div>
-    <br>
-    <div class="field">
-      <%= f.label "Final Score" %>
-      <br>
-      <span id="score-help-text">
-        The input will adjust based on the selected win type.
-      </span>
-      <br>
-      <div id="dynamic-score-input" data-match-score-target="dynamicScoreInput"></div>
-      <p id="pin-time-tip" class="text-muted mt-2" style="display: none;" data-match-score-target="pinTimeTip">
-        <strong>Tip:</strong> Pin time is an accumulation over the match, not how much time was left in the current period. 
-        <br>For example, if all 3 periods are 2 minutes and a pin happened with 1:27 left in the second period, 
-        the pin time would be <strong>2:33</strong> (2 minutes for the first period + 33 seconds elapsed in the second period).
-      </p>
-      <div id="validation-alerts" class="text-danger mt-2" data-match-score-target="validationAlerts"></div>
-      <%= f.hidden_field :score, id: "final-score-field", data: { match_score_target: "finalScoreField" } %>
-      
-      <br>
-      <%= f.submit "Update Match", id: "update-match-btn", 
-        data: { 
-          match_score_target: "submitButton",
-          action: "click->match-score#confirmWinner" 
-        },
-        class: "btn btn-success" %>
-    </div>
-  </div><!-- End of match-score controller -->
+  <%= render "matches/match_results_fields", f: f, redirect_path: @match_results_redirect_path %>
 </div><!-- End of match-data controller div -->
-
-  <br>
-  <%= f.hidden_field :finished, :value => 1 %>
-  <%= f.hidden_field :round, :value => @match.round %>
 <% end %><!-- End of form_for -->

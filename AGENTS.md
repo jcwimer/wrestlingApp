@@ -1,0 +1,11 @@
+- I have two ways to run rails commands in the repo. Either use rvm with `rvm use 4.0.1; rvm gemset use wrestlingdev;` or use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
+  - If the docker image doesn't exist, use the build command: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
+  - If the Gemfile changes, you need to rebuild the docker image: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
+- Do not add unnecessary comments to the code where you remove things.
+- Write as little code as possible. I do not want crazy non standard rails implementations.
+- This project is using propshaft and importmap.
+- Stimulus is used for javascript.
+- Cypress tests are created for js tests. They can be found in cypress-tests/cypress
+- Cypress tests can be run with docker: bash cypress-tests/run-cypress-tests.sh
+- javascript tests are through vitest. See `vitest.config.js`. Run `npm run test:js`
+- importmap pins in `importmap.rb` and aliases in `vitest.config.js` need to match.

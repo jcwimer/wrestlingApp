@@ -2,25 +2,44 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "winType", "winnerSelect", "submitButton", "dynamicScoreInput", 
+    "winType", "overtimeSelect", "winnerSelect", "submitButton", "dynamicScoreInput",
     "finalScoreField", "validationAlerts", "pinTimeTip"
   ]
 
   static values = {
     winnerScore: { type: String, default: "0" },
-    loserScore: { type: String, default: "0" }
+    loserScore: { type: String, default: "0" },
+    pinMinutes: { type: String, default: "0" },
+    pinSeconds: { type: String, default: "00" },
+    manualOverride: { type: Boolean, default: false },
+    finished: { type: Boolean, default: false }
   }
 
   connect() {
     console.log("Match score controller connected")
-    // Use setTimeout to ensure the DOM is fully loaded
+    this.boundMarkManualOverride = this.markManualOverride.bind(this)
+    this.element.addEventListener("input", this.boundMarkManualOverride)
+    this.element.addEventListener("change", this.boundMarkManualOverride)
+    if (this.finishedValue) {
+      this.validateForm()
+      return
+    }
     setTimeout(() => {
       this.updateScoreInput()
       this.validateForm()
     }, 50)
   }
 
+  disconnect() {
+    this.element.removeEventListener("input", this.boundMarkManualOverride)
+    this.element.removeEventListener("change", this.boundMarkManualOverride)
+  }
+
   winTypeChanged() {
+    if (this.finishedValue) {
+      this.validateForm()
+      return
+    }
     this.updateScoreInput()
     this.validateForm()
   }
@@ -30,6 +49,7 @@ export default class extends Controller {
   }
 
   updateScoreInput() {
+    if (this.finishedValue) return
     const winType = this.winTypeTarget.value
     this.dynamicScoreInputTarget.innerHTML = ""
     
@@ -47,6 +67,9 @@ export default class extends Controller {
       
       this.dynamicScoreInputTarget.appendChild(minuteInput)
       this.dynamicScoreInputTarget.appendChild(secondInput)
+
+      minuteInput.querySelector("input").value = this.pinMinutesValue || "0"
+      secondInput.querySelector("input").value = this.pinSecondsValue || "00"
       
       // Add event listeners to the new inputs
       const inputs = this.dynamicScoreInputTarget.querySelectorAll("input")
@@ -109,6 +132,43 @@ export default class extends Controller {
     }
     
     this.validateForm()
+  }
+
+  applyDefaultResults(defaults = {}) {
+    if (this.manualOverrideValue || this.finishedValue) return
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "winnerId") && this.hasWinnerSelectTarget) {
+      this.winnerSelectTarget.value = defaults.winnerId ? String(defaults.winnerId) : ""
+    }
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "overtimeType") && this.hasOvertimeSelectTarget) {
+      const allowedValues = Array.from(this.overtimeSelectTarget.options).map((option) => option.value)
+      this.overtimeSelectTarget.value = allowedValues.includes(defaults.overtimeType) ? defaults.overtimeType : ""
+    }
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "winnerScore")) {
+      this.winnerScoreValue = String(defaults.winnerScore)
+    }
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "loserScore")) {
+      this.loserScoreValue = String(defaults.loserScore)
+    }
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "pinMinutes")) {
+      this.pinMinutesValue = String(defaults.pinMinutes)
+    }
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "pinSeconds")) {
+      this.pinSecondsValue = String(defaults.pinSeconds).padStart(2, "0")
+    }
+
+    this.updateScoreInput()
+    this.validateForm()
+  }
+
+  markManualOverride(event) {
+    if (!event.isTrusted) return
+    this.manualOverrideValue = true
   }
 
   updatePinTimeScore() {

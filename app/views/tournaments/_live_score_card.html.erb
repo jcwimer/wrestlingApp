@@ -1,0 +1,111 @@
+<%
+  match = local_assigns[:match]
+  mat = local_assigns[:mat]
+  tournament = local_assigns[:tournament]
+  source_mode = local_assigns.fetch(:source_mode, "mat_websocket")
+  show_mat_header = local_assigns.fetch(:show_mat_header, true)
+  show_details = local_assigns.fetch(:show_details, true)
+  dom_id_suffix = mat&.id || match&.id || "none"
+%>
+
+<div
+  data-controller="match-scoreboard"
+  data-match-scoreboard-source-mode-value="<%= source_mode %>"
+  data-match-scoreboard-display-mode-value="embedded"
+  data-match-scoreboard-match-id-value="<%= match&.id || 0 %>"
+  data-match-scoreboard-mat-id-value="<%= mat&.id || 0 %>"
+  data-match-scoreboard-tournament-id-value="<%= tournament.id %>"
+  data-match-scoreboard-initial-bout-number-value="<%= match&.bout_number || 0 %>">
+
+  <div class="panel panel-default" style="margin-bottom: 0;">
+    <% if show_mat_header %>
+      <div class="panel-heading">
+        <strong>Mat <%= mat&.name %></strong>
+      </div>
+    <% end %>
+
+    <table class="table table-bordered table-condensed" style="margin-bottom: 0; table-layout: fixed;">
+      <tr class="active">
+        <td>
+          <strong data-match-scoreboard-target="boutLabel">Bout <%= match&.bout_number || "" %></strong>
+          <span style="margin-left: 12px;" data-match-scoreboard-target="weightLabel">Weight <%= match&.weight&.max || "-" %></span>
+        </td>
+        <td class="text-right" style="white-space: nowrap;">
+          <span class="label label-default" data-match-scoreboard-target="clock">-</span>
+          <span class="label label-primary" data-match-scoreboard-target="periodLabel">No Match</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: middle;">
+          <div data-match-scoreboard-target="greenName" style="font-weight: 700; font-size: 1.15em;">NO MATCH</div>
+          <div class="text-muted" data-match-scoreboard-target="greenSchool"></div>
+          <div data-match-scoreboard-target="greenTimerIndicator" style="margin-top: 6px;"></div>
+        </td>
+        <td data-match-scoreboard-target="greenSection" class="text-center" style="background: #1cab2d; color: #fff; font-size: 2rem; font-weight: 700; vertical-align: middle; width: 110px;">
+          <span data-match-scoreboard-target="greenScore">0</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: middle;">
+          <div data-match-scoreboard-target="redName" style="font-weight: 700; font-size: 1.15em;">NO MATCH</div>
+          <div class="text-muted" data-match-scoreboard-target="redSchool"></div>
+          <div data-match-scoreboard-target="redTimerIndicator" style="margin-top: 6px;"></div>
+        </td>
+        <td data-match-scoreboard-target="redSection" class="text-center" style="background: #c91f1f; color: #fff; font-size: 2rem; font-weight: 700; vertical-align: middle; width: 110px;">
+          <span data-match-scoreboard-target="redScore">0</span>
+        </td>
+      </tr>
+      <% if show_details %>
+        <tr>
+          <td colspan="2" style="padding: 0;">
+            <div class="panel panel-default" style="margin: 10px;">
+              <div class="panel-heading">
+                <a data-toggle="collapse" href="#live-score-stats-<%= dom_id_suffix %>" aria-expanded="false" aria-controls="live-score-stats-<%= dom_id_suffix %>" style="display: flex; justify-content: space-between; align-items: center; color: #333; text-decoration: none; background: transparent; outline: none;">
+                  <strong>Stats</strong>
+                  <span class="text-muted" style="font-size: 0.9em;">Show/Hide</span>
+                </a>
+              </div>
+              <div id="live-score-stats-<%= dom_id_suffix %>" class="panel-collapse collapse">
+                <div class="panel-body" style="padding-bottom: 0;">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="label label-success" style="display: inline-block; margin-bottom: 8px;">Green</div>
+                      <pre data-match-scoreboard-target="greenStats" class="well well-sm" style="min-height: 100px; white-space: pre-wrap; overflow-wrap: anywhere; background: #fff;"></pre>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="label label-danger" style="display: inline-block; margin-bottom: 8px;">Red</div>
+                      <pre data-match-scoreboard-target="redStats" class="well well-sm" style="min-height: 100px; white-space: pre-wrap; overflow-wrap: anywhere; background: #fff;"></pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding: 0;">
+            <div class="panel panel-default" style="margin: 10px;">
+              <div class="panel-heading">
+                <a data-toggle="collapse" href="#live-score-last-result-<%= dom_id_suffix %>" aria-expanded="false" aria-controls="live-score-last-result-<%= dom_id_suffix %>" style="display: flex; justify-content: space-between; align-items: center; color: #333; text-decoration: none; background: transparent; outline: none;">
+                  <strong>Last Match Result</strong>
+                  <span class="text-muted" style="font-size: 0.9em;">Show/Hide</span>
+                </a>
+              </div>
+              <div id="live-score-last-result-<%= dom_id_suffix %>" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div data-match-scoreboard-target="lastMatchResult">-</div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+
+  <div data-match-scoreboard-target="emptyState" style="display: none;"></div>
+  <div data-match-scoreboard-target="centerSection" style="display: none;"></div>
+  <div data-match-scoreboard-target="timerBanner" style="display: none;"></div>
+  <div data-match-scoreboard-target="timerBannerLabel" style="display: none;"></div>
+  <div data-match-scoreboard-target="timerBannerClock" style="display: none;"></div>
+</div>

@@ -1,0 +1,70 @@
+<% submit_label = local_assigns.fetch(:submit_label, "Update Match") %>
+<% redirect_path = local_assigns[:redirect_path] %>
+
+<h4>Match Results</h4>
+<br>
+<div data-controller="match-score" data-match-score-finished-value="<%= @match.finished == 1 %>">
+  <div class="field">
+    <%= f.label "Win type" %><br>
+    <%= f.select :win_type, Match::WIN_TYPES, { include_blank: false }, {
+      data: {
+        match_score_target: "winType",
+        action: "change->match-score#winTypeChanged"
+      }
+    } %>
+  </div>
+  <br>
+  <div class="field">
+    <%= f.label "Overtime Type" %> Leave blank if not overtime. For High School the 1st overtime is SV-1, second overtime is TB-1, third overtime is UTB.<br>
+    <%= f.select(:overtime_type, Match::OVERTIME_TYPES, {}, {
+      data: {
+        match_score_target: "overtimeSelect"
+      }
+    }) %>
+  </div>
+  <br>
+  <div class="field">
+    <%= f.label "Winner" %> Please choose the winner<br>
+    <%= f.collection_select :winner_id, @wrestlers, :id, :name_with_school,
+      { include_blank: true },
+      {
+        data: {
+          match_score_target: "winnerSelect",
+          action: "change->match-score#winnerChanged"
+        }
+      }
+    %>
+  </div>
+  <br>
+  <div class="field">
+    <%= f.label "Final Score" %>
+    <br>
+    <% if @match.finished == 1 %>
+      <%= f.text_field :score, id: "final-score-field", data: { match_score_target: "finalScoreField" }, class: "form-control", style: "max-width: 220px;" %>
+    <% else %>
+      <span id="score-help-text">
+        The input will adjust based on the selected win type.
+      </span>
+      <br>
+      <div id="dynamic-score-input" data-match-score-target="dynamicScoreInput"></div>
+      <p id="pin-time-tip" class="text-muted mt-2" style="display: none;" data-match-score-target="pinTimeTip">
+        <strong>Tip:</strong> Pin time is an accumulation over the match, not how much time was left in the current period.
+        <br>For example, if all 3 periods are 2 minutes and a pin happened with 1:27 left in the second period,
+        the pin time would be <strong>2:33</strong> (2 minutes for the first period + 33 seconds elapsed in the second period).
+      </p>
+      <%= f.hidden_field :score, id: "final-score-field", data: { match_score_target: "finalScoreField" } %>
+    <% end %>
+    <div id="validation-alerts" class="text-danger mt-2" data-match-score-target="validationAlerts"></div>
+    <%= hidden_field_tag :redirect_to, redirect_path if redirect_path.present? %>
+    <%= f.hidden_field :finished, value: 1 %>
+    <%= f.hidden_field :round, value: @match.round %>
+
+    <br>
+    <%= f.submit submit_label, id: "update-match-btn",
+      data: {
+        match_score_target: "submitButton",
+        action: "click->match-score#confirmWinner"
+      },
+      class: "btn btn-success" %>
+  </div>
+</div>

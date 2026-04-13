@@ -129,13 +129,24 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th>Current Match</th>
         <th><%= link_to " New Mat" , "/mats/new?tournament=#{@tournament.id}", :class=>"fas fa-plus" %></th>
       </tr>
     </thead>
     <tbody>
       <% @mats.each do |mat| %>
+        <% current_match = mat.queue1_match %>
         <tr>
           <td><%= link_to "Mat #{mat.name}", mat %></td>
+          <td>
+            <% if current_match %>
+              <%= link_to "Stat Match", stat_match_path(current_match), class: "btn btn-primary btn-sm" %>
+              <%= link_to "State Match", state_mat_path(mat), class: "btn btn-success btn-sm" %>
+              <%= link_to "Scoreboard", scoreboard_mat_path(mat, print: true), class: "btn btn-warning btn-sm", target: "_blank", rel: "noopener" %>
+            <% else %>
+              <%= link_to "Scoreboard", scoreboard_mat_path(mat, print: true), class: "btn btn-warning btn-sm", target: "_blank", rel: "noopener" %>
+            <% end %>
+          </td>
             <% if can? :manage, @tournament %>
             <td>
             <%= link_to mat, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete Mat #{mat.name}?" }, class: "text-decoration-none" do %>

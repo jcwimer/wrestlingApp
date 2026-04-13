@@ -8,6 +8,7 @@ import "bootstrap";
 
 // Stimulus setup
 import { Application } from "@hotwired/stimulus";
+import { cleanupExpiredLocalStorage } from "match-state-transport";
 
 // Initialize Stimulus application
 const application = Application.start();
@@ -18,6 +19,9 @@ window.Stimulus = application;
 import WrestlerColorController from "controllers/wrestler_color_controller";
 import MatchScoreController from "controllers/match_score_controller";
 import MatchDataController from "controllers/match_data_controller";
+import MatchStateController from "controllers/match_state_controller";
+import MatchScoreboardController from "controllers/match_scoreboard_controller";
+import MatStateController from "controllers/mat_state_controller";
 import MatchSpectateController from "controllers/match_spectate_controller";
 import UpMatchesConnectionController from "controllers/up_matches_connection_controller";
 
@@ -25,8 +29,18 @@ import UpMatchesConnectionController from "controllers/up_matches_connection_con
 application.register("wrestler-color", WrestlerColorController);
 application.register("match-score", MatchScoreController);
 application.register("match-data", MatchDataController);
+application.register("match-state", MatchStateController);
+application.register("match-scoreboard", MatchScoreboardController);
+application.register("mat-state", MatStateController);
 application.register("match-spectate", MatchSpectateController);
 application.register("up-matches-connection", UpMatchesConnectionController);
+
+function cleanupWrestlingAppLocalStorage() {
+  cleanupExpiredLocalStorage(window.localStorage);
+}
+
+document.addEventListener("turbo:load", cleanupWrestlingAppLocalStorage);
+cleanupWrestlingAppLocalStorage();
 
 // Your existing Action Cable consumer setup
 (function() {

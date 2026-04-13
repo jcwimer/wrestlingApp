@@ -29,6 +29,7 @@
             </ul>
           </li>
           <li><%= link_to " Bout Board" , "/tournaments/#{@tournament.id}/up_matches", class: "fas fa-list-alt" %></li>
+          <li><%= link_to " Live Scores" , "/tournaments/#{@tournament.id}/live_scores", class: "fas fa-tv" %></li>
         <% end %>
         <% if can? :manage, @tournament %>
           <li class="dropdown">

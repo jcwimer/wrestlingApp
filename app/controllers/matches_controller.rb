@@ -1,6 +1,7 @@
 class MatchesController < ApplicationController
-  before_action :set_match, only: [:show, :edit, :update, :stat, :spectate, :edit_assignment, :update_assignment]
-  before_action :check_access, only: [:edit, :update, :stat, :edit_assignment, :update_assignment]
+  before_action :set_match, only: [:show, :edit, :update, :stat, :state, :spectate, :edit_assignment, :update_assignment]
+  before_action :check_access, only: [:edit, :update, :stat, :state, :edit_assignment, :update_assignment]
+  before_action :check_read_access, only: [:spectate]
 
   # GET /matches/1
   # GET /matches/1.json
@@ -22,49 +23,12 @@ class MatchesController < ApplicationController
   end
 
   def stat
-    # @show_next_bout_button = false
-    if params[:match]
-      @match = Match.where(:id => params[:match]).includes(:wrestlers).first
-    end
-    @wrestlers = []
-    if @match
-      if @match.w1
-        @wrestler1_name = @match.wrestler1.name
-        @wrestler1_school_name = @match.wrestler1.school.name
-        @wrestler1_last_match = @match.wrestler1.last_match
-        @wrestlers.push(@match.wrestler1)
-      else
-        @wrestler1_name = "Not assigned"
-        @wrestler1_school_name = "N/A"
-        @wrestler1_last_match = nil
-      end
-      if @match.w2
-        @wrestler2_name = @match.wrestler2.name
-        @wrestler2_school_name = @match.wrestler2.school.name
-        @wrestler2_last_match = @match.wrestler2.last_match
-        @wrestlers.push(@match.wrestler2)
-      else
-        @wrestler2_name = "Not assigned"
-        @wrestler2_school_name = "N/A"
-        @wrestler2_last_match = nil
-      end
-      @tournament = @match.tournament
-    end
-    if @match&.mat
-      @mat = @match.mat
-      queue_position = @mat.queue_position_for_match(@match)
-      @next_match = queue_position == 1 ? @mat.queue2_match : nil
-      @show_next_bout_button = queue_position == 1
-      if request.referer&.include?("/tournaments/#{@tournament.id}/matches")
-        session[:return_path] = "/tournaments/#{@tournament.id}/matches"
-      else
-        session[:return_path] = mat_path(@mat)
-      end
-      session[:error_return_path] = "/matches/#{@match.id}/stat"
-    else
-      session[:return_path] = "/tournaments/#{@tournament.id}/matches"
-      session[:error_return_path] = "/matches/#{@match.id}/stat"
-    end
+    load_match_stat_context
+  end
+
+  def state
+    load_match_stat_context
+    @match_state_ruleset = "folkstyle_usa"
   end
 
   # GET /matches/:id/spectate
@@ -142,26 +106,19 @@ class MatchesController < ApplicationController
             win_type: @match.win_type,
             winner_id: @match.winner_id,
             winner_name: @match.winner&.name,
-            finished: @match.finished
+            finished: @match.finished,
+            scoreboard_state: Rails.cache.read("tournament:#{@match.tournament_id}:match:#{@match.id}:scoreboard_state")
           }
         )
 
-        if session[:return_path]
-          sanitized_return_path = sanitize_return_path(session[:return_path])
-          format.html { redirect_to sanitized_return_path, notice: 'Match was successfully updated.' }
-          session.delete(:return_path) # Remove the session variable
-        else
-          format.html { redirect_to "/tournaments/#{@match.tournament.id}", notice: 'Match was successfully updated.' }
-        end
+        redirect_path = resolve_match_redirect_path(session[:return_path]) || "/tournaments/#{@match.tournament.id}"
+        format.html { redirect_to redirect_path, notice: 'Match was successfully updated.' }
+        session.delete(:return_path)
         format.json { head :no_content }
       else
-        if session[:error_return_path]
-          format.html { redirect_to session.delete(:error_return_path), alert: "Match did not save because: #{@match.errors.full_messages.to_s}" }
-          format.json { render json: @match.errors, status: :unprocessable_entity }
-        else
-          format.html { redirect_to "/tournaments/#{@match.tournament.id}", alert: "Match did not save because: #{@match.errors.full_messages.to_s}" }
-          format.json { render json: @match.errors, status: :unprocessable_entity }
-        end
+        error_path = resolve_match_redirect_path(session[:error_return_path]) || "/tournaments/#{@match.tournament.id}"
+        format.html { redirect_to error_path, alert: "Match did not save because: #{@match.errors.full_messages.to_s}" }
+        format.json { render json: @match.errors, status: :unprocessable_entity }
       end
     end
   end  
@@ -182,11 +139,66 @@ class MatchesController < ApplicationController
       authorize! :manage, @match.tournament
     end
 
-    def sanitize_return_path(path)
+    def check_read_access
+      authorize! :read, @match.tournament
+    end
+
+    def sanitize_redirect_path(path)
+      return nil if path.blank?
+
       uri = URI.parse(path)
-      params = Rack::Utils.parse_nested_query(uri.query)
-      params.delete("bout_number") # Remove the bout_number param
-      uri.query = params.to_query.presence # Rebuild the query string or set it to nil if empty
-      uri.to_s # Return the full path as a string
-    end    
+      return nil if uri.scheme.present? || uri.host.present?
+
+      uri.to_s
+    rescue URI::InvalidURIError
+      nil
+    end
+
+    def resolve_match_redirect_path(fallback_path)
+      sanitize_redirect_path(params[:redirect_to].presence) || sanitize_redirect_path(fallback_path)
+    end
+
+    def load_match_stat_context
+      if params[:match]
+        @match = Match.where(:id => params[:match]).includes(:wrestlers).first
+      end
+
+      @wrestlers = []
+      if @match
+        if @match.w1
+          @wrestler1_name = @match.wrestler1.name
+          @wrestler1_school_name = @match.wrestler1.school.name
+          @wrestler1_last_match = @match.wrestler1.last_match
+          @wrestlers.push(@match.wrestler1)
+        else
+          @wrestler1_name = "Not assigned"
+          @wrestler1_school_name = "N/A"
+          @wrestler1_last_match = nil
+        end
+
+        if @match.w2
+          @wrestler2_name = @match.wrestler2.name
+          @wrestler2_school_name = @match.wrestler2.school.name
+          @wrestler2_last_match = @match.wrestler2.last_match
+          @wrestlers.push(@match.wrestler2)
+        else
+          @wrestler2_name = "Not assigned"
+          @wrestler2_school_name = "N/A"
+          @wrestler2_last_match = nil
+        end
+
+        @tournament = @match.tournament
+      end
+
+      if @match&.mat
+        @mat = @match.mat
+        queue_position = @mat.queue_position_for_match(@match)
+        @next_match = queue_position == 1 ? @mat.queue2_match : nil
+        @show_next_bout_button = queue_position == 1
+      end
+
+      @match_results_redirect_path = sanitize_redirect_path(params[:redirect_to].presence) || "/tournaments/#{@tournament.id}/matches"
+      session[:return_path] = @match_results_redirect_path
+      session[:error_return_path] = request.original_fullpath
+    end
 end

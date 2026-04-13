@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "w1Stats", "w2Stats", "winner", "winType", 
-    "score", "finished", "statusIndicator"
+    "score", "finished", "statusIndicator", "scoreboardContainer"
   ]
 
   static values = {
@@ -134,6 +134,9 @@ export default class extends Controller {
     
     if (data.finished !== undefined && this.hasFinishedTarget) {
       this.finishedTarget.textContent = data.finished ? 'Yes' : 'No'
+      if (this.hasScoreboardContainerTarget) {
+        this.scoreboardContainerTarget.style.display = data.finished ? 'none' : 'block'
+      }
     }
   }
 } 

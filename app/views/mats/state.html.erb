@@ -1,0 +1,33 @@
+<% if @match %>
+  <div
+    data-controller="mat-state"
+    data-mat-state-tournament-id-value="<%= @tournament.id %>"
+    data-mat-state-mat-id-value="<%= @mat.id %>"
+    data-mat-state-bout-number-value="<%= @match.bout_number %>"
+    data-mat-state-match-id-value="<%= @match.id %>"
+    data-mat-state-select-match-url-value="<%= select_match_mat_path(@mat) %>"
+    data-mat-state-weight-label-value="<%= @match.weight&.max %>"
+    data-mat-state-w1-id-value="<%= @match.w1 || 0 %>"
+    data-mat-state-w2-id-value="<%= @match.w2 || 0 %>"
+    data-mat-state-w1-name-value="<%= @wrestler1_name %>"
+    data-mat-state-w2-name-value="<%= @wrestler2_name %>"
+    data-mat-state-w1-school-value="<%= @wrestler1_school_name %>"
+    data-mat-state-w2-school-value="<%= @wrestler2_school_name %>">
+    <h3>Mat <%= @mat.name %></h3>
+    <div style="margin-bottom: 10px;">
+      <% @queue_matches.each_with_index do |queue_match, index| %>
+        <% queue_label = "Queue #{index + 1}" %>
+        <% if queue_match %>
+          <% button_class = queue_match.id == @match.id ? "btn btn-success btn-sm" : "btn btn-primary btn-sm" %>
+          <%= link_to "#{queue_label}: Bout #{queue_match.bout_number}", state_mat_path(@mat, bout_number: queue_match.bout_number), class: button_class %>
+        <% else %>
+          <button type="button" class="btn btn-default btn-sm" disabled><%= "#{queue_label}: Not assigned" %></button>
+        <% end %>
+      <% end %>
+    </div>
+    <%= render template: "matches/state" %>
+  </div>
+<% else %>
+  <h3>Mat <%= @mat.name %></h3>
+  <p>No matches assigned to this mat.</p>
+<% end %>

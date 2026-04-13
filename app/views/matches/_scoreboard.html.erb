@@ -1,0 +1,113 @@
+<%
+  source_mode = local_assigns.fetch(:source_mode, "localstorage")
+  display_mode = local_assigns.fetch(:display_mode, "fullscreen")
+  show_mat_banner = local_assigns.fetch(:show_mat_banner, false)
+  show_stats = local_assigns.fetch(:show_stats, false)
+  mat = local_assigns[:mat]
+  match = local_assigns[:match]
+  tournament = local_assigns[:tournament] || match&.tournament
+
+  fullscreen = display_mode == "fullscreen"
+  root_style = if fullscreen
+    "min-height: 100vh; background: #000; color: #fff; display: flex; align-items: stretch; justify-content: stretch; padding: 0; margin: 0; position: relative;"
+  elsif show_stats
+    "background: #000; color: #fff; padding: 0; margin: 0; position: relative; width: 100%; border: 1px solid #222;"
+  else
+    "background: #000; color: #fff; display: flex; align-items: stretch; justify-content: stretch; padding: 0; margin: 0; position: relative; width: 100%; min-height: 260px; border: 1px solid #222;"
+  end
+  inner_style = if fullscreen
+    "display: grid; grid-template-rows: auto 1fr; width: 100vw; min-height: 100vh;"
+  elsif show_stats
+    "display: grid; grid-template-rows: auto auto auto; width: 100%;"
+  else
+    "display: grid; grid-template-rows: auto 1fr; width: 100%; min-height: 260px;"
+  end
+  board_style = fullscreen ? "display: grid; grid-template-columns: 1fr 1.3fr 1fr; width: 100%; min-height: 0;" : "display: grid; grid-template-columns: 1fr 1.2fr 1fr; width: 100%; min-height: 0; min-height: 260px;"
+  panel_padding = fullscreen ? "2vw" : "1rem"
+  name_size = fullscreen ? "clamp(2rem, 4vw, 4rem)" : "clamp(1rem, 2vw, 1.8rem)"
+  school_size = fullscreen ? "clamp(1rem, 2vw, 2rem)" : "clamp(0.85rem, 1.3vw, 1.1rem)"
+  score_size = fullscreen ? "clamp(8rem, 18vw, 16rem)" : "clamp(3rem, 8vw, 6rem)"
+  period_size = fullscreen ? "clamp(1.5rem, 3vw, 2.5rem)" : "clamp(1rem, 2vw, 1.5rem)"
+  clock_size = fullscreen ? "clamp(6rem, 16vw, 14rem)" : "clamp(3rem, 10vw, 5.5rem)"
+  banner_offset = fullscreen ? "6vw" : "2rem"
+  banner_border = fullscreen ? "0.45vw" : "4px"
+  center_border = fullscreen ? "1vw" : "6px"
+%>
+
+<div
+  data-controller="match-scoreboard"
+  data-match-scoreboard-source-mode-value="<%= source_mode %>"
+  data-match-scoreboard-display-mode-value="<%= display_mode %>"
+  data-match-scoreboard-match-id-value="<%= match&.id || 0 %>"
+  data-match-scoreboard-mat-id-value="<%= mat&.id || 0 %>"
+  data-match-scoreboard-tournament-id-value="<%= tournament&.id || 0 %>"
+  data-match-scoreboard-initial-bout-number-value="<%= match&.bout_number || 0 %>"
+  style="<%= root_style %>">
+  <div style="<%= inner_style %>">
+    <% if show_mat_banner %>
+      <div style="background: #111; color: #fff; text-align: center; padding: 1vh 2vw; border-bottom: 0.5vw solid #fff;">
+        <div style="font-size: clamp(1.5rem, 3vw, 3rem); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;">
+          Mat <%= mat&.name %>
+        </div>
+        <div data-match-scoreboard-target="boutLabel" style="font-size: clamp(1rem, 2vw, 1.75rem); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.95; margin-top: 0.3rem;">
+          Bout <%= match&.bout_number || "" %>
+        </div>
+      </div>
+    <% else %>
+      <div style="background: #111; color: #fff; text-align: center; padding: 0.35rem 1rem; border-bottom: 4px solid #fff;">
+        <div data-match-scoreboard-target="boutLabel" style="font-size: clamp(0.85rem, 1.3vw, 1.1rem); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.95;">
+          Bout <%= match&.bout_number || "" %>
+        </div>
+      </div>
+    <% end %>
+
+    <div style="<%= board_style %>">
+      <section data-match-scoreboard-target="redSection" style="background: #c91f1f; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: <%= panel_padding %>; text-align: center;">
+        <div data-match-scoreboard-target="redName" style="font-size: <%= name_size %>; font-weight: 700; line-height: 1;">NO MATCH</div>
+        <div data-match-scoreboard-target="redSchool" style="font-size: <%= school_size %>; margin-top: 0.75rem; opacity: 0.95;"></div>
+        <div data-match-scoreboard-target="redTimerIndicator" style="font-size: <%= school_size %>; margin-top: 0.75rem;"></div>
+        <div data-match-scoreboard-target="redScore" style="font-size: <%= score_size %>; font-weight: 800; line-height: 0.9; margin-top: 3vh;">0</div>
+      </section>
+
+      <section data-match-scoreboard-target="centerSection" style="background: #050505; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: <%= panel_padding %>; text-align: center; border-left: <%= center_border %> solid #fff; border-right: <%= center_border %> solid #fff;">
+        <div data-match-scoreboard-target="periodLabel" style="font-size: <%= period_size %>; font-weight: 700; margin-top: 2vh; text-transform: uppercase;">No Match</div>
+        <div data-match-scoreboard-target="clock" style="font-size: <%= clock_size %>; font-weight: 800; line-height: 0.9; margin-top: 3vh;">-</div>
+        <div data-match-scoreboard-target="emptyState" style="display: none; margin-top: 4vh; font-size: clamp(1.5rem, 3vw, 4rem); font-weight: 700; color: #fff;">No Match</div>
+      </section>
+
+      <section data-match-scoreboard-target="greenSection" style="background: #1cab2d; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: <%= panel_padding %>; text-align: center;">
+        <div data-match-scoreboard-target="greenName" style="font-size: <%= name_size %>; font-weight: 700; line-height: 1;">NO MATCH</div>
+        <div data-match-scoreboard-target="greenSchool" style="font-size: <%= school_size %>; margin-top: 0.75rem; opacity: 0.95;"></div>
+        <div data-match-scoreboard-target="greenTimerIndicator" style="font-size: <%= school_size %>; margin-top: 0.75rem;"></div>
+        <div data-match-scoreboard-target="greenScore" style="font-size: <%= score_size %>; font-weight: 800; line-height: 0.9; margin-top: 3vh;">0</div>
+      </section>
+    </div>
+
+    <% if show_stats %>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #fff; color: #111; padding: 12px;">
+        <section style="border: 1px solid #d9d9d9; padding: 12px; min-width: 0;">
+          <div style="font-weight: 700; margin-bottom: 8px;">Red Stats</div>
+          <pre data-match-scoreboard-target="redStats" style="margin: 0; background: #f7f7f7; border: 1px solid #ececec; padding: 10px; min-height: 120px; white-space: pre-wrap; overflow-wrap: anywhere;"></pre>
+        </section>
+
+        <section style="border: 1px solid #d9d9d9; padding: 12px; min-width: 0;">
+          <div style="font-weight: 700; margin-bottom: 8px;">Green Stats</div>
+          <pre data-match-scoreboard-target="greenStats" style="margin: 0; background: #f7f7f7; border: 1px solid #ececec; padding: 10px; min-height: 120px; white-space: pre-wrap; overflow-wrap: anywhere;"></pre>
+        </section>
+      </div>
+      <div style="background: #fff; color: #111; padding: 0 12px 12px;">
+        <section style="border: 1px solid #d9d9d9; padding: 12px;">
+          <div style="font-weight: 700; margin-bottom: 8px;">Last Match Result</div>
+          <div data-match-scoreboard-target="lastMatchResult">-</div>
+        </section>
+      </div>
+    <% end %>
+  </div>
+
+  <div
+    data-match-scoreboard-target="timerBanner"
+    style="display: none; position: absolute; left: <%= banner_offset %>; right: <%= banner_offset %>; top: 50%; transform: translateY(-50%); background: rgba(15, 15, 15, 0.96); border: <%= banner_border %> solid #fff; padding: 1.5vh 2vw; text-align: center; z-index: 20;">
+    <div data-match-scoreboard-target="timerBannerLabel" style="font-size: <%= fullscreen ? "clamp(1.3rem, 2.6vw, 2.6rem)" : "clamp(0.9rem, 1.6vw, 1.25rem)" %>; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;"></div>
+    <div data-match-scoreboard-target="timerBannerClock" style="font-size: <%= fullscreen ? "clamp(2.5rem, 6vw, 6rem)" : "clamp(1.6rem, 4vw, 3rem)" %>; font-weight: 800; line-height: 1; margin-top: 0.5vh;"></div>
+  </div>
+</div>

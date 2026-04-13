@@ -1,4 +1,6 @@
 class MatchChannel < ApplicationCable::Channel
+  SCOREBOARD_CACHE_TTL = 1.hours
+
   def subscribed
     @match = Match.find_by(id: params[:match_id])
     Rails.logger.info "[MatchChannel] Client subscribed with match_id: #{params[:match_id]}. Match found: #{@match.present?}"
@@ -9,6 +11,19 @@ class MatchChannel < ApplicationCable::Channel
       # You might want to reject the subscription if the match isn't found
       # reject
     end
+  end
+
+  def send_scoreboard(data)
+    unless @match
+      Rails.logger.error "[MatchChannel] Error: send_scoreboard called but @match is nil. Client params on sub: #{params[:match_id]}"
+      return
+    end
+
+    scoreboard_state = data["scoreboard_state"]
+    return if scoreboard_state.blank?
+
+    Rails.cache.write(scoreboard_cache_key, scoreboard_state, expires_in: SCOREBOARD_CACHE_TTL)
+    MatchChannel.broadcast_to(@match, { scoreboard_state: scoreboard_state })
   end
 
   def unsubscribed
@@ -75,7 +90,8 @@ class MatchChannel < ApplicationCable::Channel
       win_type: @match.win_type,
       winner_name: @match.winner&.name,
       winner_id: @match.winner_id,
-      finished: @match.finished
+      finished: @match.finished,
+      scoreboard_state: Rails.cache.read(scoreboard_cache_key)
     }.compact
 
     if payload.present?
@@ -84,5 +100,11 @@ class MatchChannel < ApplicationCable::Channel
     else
       Rails.logger.info "[MatchChannel] request_sync payload empty for match #{@match.id}, not transmitting."
     end
+  end
+
+  private
+
+  def scoreboard_cache_key
+    "tournament:#{@match.tournament_id}:match:#{@match.id}:scoreboard_state"
   end
 end

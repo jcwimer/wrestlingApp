@@ -3,12 +3,19 @@ Wrestling::Application.routes.draw do
   mount ActionCable.server => '/cable'
   mount MissionControl::Jobs::Engine, at: "/jobs"
 
-  resources :mats
+  resources :mats do
+    member do
+      get :state
+      get :scoreboard
+      post :select_match
+    end
+  end
   post "mats/:id/assign_next_match" => "mats#assign_next_match", :as => :assign_next_match
 
   resources :matches do
     member do
       get :stat
+      get :state
       get :spectate
       get :edit_assignment
       patch :update_assignment
@@ -74,6 +81,7 @@ Wrestling::Application.routes.draw do
   get 'tournaments/:id/no_matches' => 'tournaments#no_matches'
   get 'tournaments/:id/matches' => 'tournaments#matches'
   get 'tournaments/:id/qrcode' => 'tournaments#qrcode'
+  get 'tournaments/:id/live_scores' => 'tournaments#live_scores'
   get 'tournaments/:id/delegate' => 'tournaments#delegate', :as => :tournament_delegate
   post 'tournaments/:id/delegate' => 'tournaments#delegate', :as => :set_tournament_delegate
   delete 'tournaments/:id/:delegate/remove_delegate' => 'tournaments#remove_delegate', :as => :delete_delegate_path

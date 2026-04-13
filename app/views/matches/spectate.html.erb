@@ -10,6 +10,18 @@
        class="alert alert-secondary" 
        style="padding: 5px; margin-bottom: 10px; border-radius: 4px;"></div>
 
+  <% unless @match.finished %>
+    <div data-match-spectate-target="scoreboardContainer" style="margin-bottom: 20px;">
+      <%= render "tournaments/live_score_card",
+        source_mode: "websocket",
+        show_mat_header: false,
+        show_details: false,
+        mat: @match.mat,
+        match: @match,
+        tournament: @tournament %>
+    </div>
+  <% end %>
+
   <div class="match-details">
     <div class="wrestler-info wrestler1">
       <h4><%= @wrestler1_name %> (<%= @wrestler1_school_name %>)</h4>

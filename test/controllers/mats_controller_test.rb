@@ -31,6 +31,30 @@ class MatsControllerTest < ActionController::TestCase
     get :show,  params: { id: 1 }
   end
 
+  def get_state
+    get :state, params: { id: @mat.id }
+  end
+
+  def get_state_with_params(extra_params = {})
+    get :state, params: { id: @mat.id }.merge(extra_params)
+  end
+
+  def get_scoreboard
+    get :scoreboard, params: { id: @mat.id }
+  end
+
+  def get_scoreboard_with_params(extra_params = {})
+    get :scoreboard, params: { id: @mat.id }.merge(extra_params)
+  end
+
+  def post_select_match(extra_params = {})
+    post :select_match, params: { id: @mat.id, match_id: @match.id, bout_number: @match.bout_number }.merge(extra_params)
+  end
+
+  def post_select_match_with_params(extra_params = {})
+    post :select_match, params: { id: @mat.id }.merge(extra_params)
+  end
+
   def post_update
     patch :update, params: { id: @mat.id, mat: {name: @mat.name, tournament_id: @mat.tournament_id} }
   end
@@ -211,6 +235,18 @@ class MatsControllerTest < ActionController::TestCase
     show
     redirect 
   end 
+
+  test "logged in user should not get state mat page" do
+    sign_in_non_owner
+    get_state
+    redirect
+  end
+
+  test "logged in user should not get scoreboard mat page" do
+    sign_in_non_owner
+    get_scoreboard
+    redirect
+  end
   
   test "logged school delegate should not get show mat" do
     sign_in_school_delegate
@@ -218,16 +254,233 @@ class MatsControllerTest < ActionController::TestCase
     redirect 
   end
 
+  test "logged school delegate should not get state mat page" do
+    sign_in_school_delegate
+    get_state
+    redirect
+  end
+
+  test "logged school delegate should not get scoreboard mat page" do
+    sign_in_school_delegate
+    get_scoreboard
+    redirect
+  end
+
+  test "non logged in user should not get state mat page" do
+    get_state
+    redirect
+  end
+
+  test "non logged in user should not get scoreboard mat page" do
+    get_scoreboard
+    redirect
+  end
+
+  test "valid school permission key cannot get state mat page" do
+    school = @tournament.schools.first
+    school.update!(permission_key: "valid-school-key")
+
+    get_state_with_params(school_permission_key: "valid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "invalid school permission key cannot get state mat page" do
+    school = @tournament.schools.first
+    school.update!(permission_key: "valid-school-key")
+
+    get_state_with_params(school_permission_key: "invalid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "valid school permission key cannot get scoreboard mat page" do
+    school = @tournament.schools.first
+    school.update!(permission_key: "valid-school-key")
+
+    get_scoreboard_with_params(school_permission_key: "valid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "invalid school permission key cannot get scoreboard mat page" do
+    school = @tournament.schools.first
+    school.update!(permission_key: "valid-school-key")
+
+    get_scoreboard_with_params(school_permission_key: "invalid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "logged in user should not post select_match on mat" do
+    sign_in_non_owner
+    post_select_match
+    redirect
+  end
+
+  test "logged school delegate should not post select_match on mat" do
+    sign_in_school_delegate
+    post_select_match
+    redirect
+  end
+
+  test "non logged in user should not post select_match on mat" do
+    post_select_match
+    redirect
+  end
+
+  test "valid school permission key cannot post select_match on mat" do
+    school = @tournament.schools.first
+    school.update!(permission_key: "valid-school-key")
+
+    post_select_match_with_params(school_permission_key: "valid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
+  test "invalid school permission key cannot post select_match on mat" do
+    school = @tournament.schools.first
+    school.update!(permission_key: "valid-school-key")
+
+    post_select_match_with_params(school_permission_key: "invalid-school-key")
+    assert_redirected_to "/static_pages/not_allowed"
+  end
+
   test "logged in tournament owner should get show mat" do
     sign_in_owner
     show
     success
+  end
+
+  test "logged in tournament owner should get state mat page" do
+    sign_in_owner
+    get_state
+    success
+  end
+
+  test "logged in tournament owner should get scoreboard mat page" do
+    sign_in_owner
+    get_scoreboard
+    success
+  end
+
+  test "logged in tournament owner can post select_match on mat" do
+    sign_in_owner
+    post_select_match
+    assert_response :no_content
   end
   
   test "logged in tournament delegate should get show mat" do
     sign_in_tournament_delegate
     show
     success
+  end
+
+  test "logged in tournament delegate should get state mat page" do
+    sign_in_tournament_delegate
+    get_state
+    success
+  end
+
+  test "logged in tournament delegate should get scoreboard mat page" do
+    sign_in_tournament_delegate
+    get_scoreboard
+    success
+  end
+
+  test "state mat page renders queue buttons and mat-state controller" do
+    sign_in_owner
+    get_state
+
+    assert_response :success
+    assert_includes response.body, "data-controller=\"mat-state\""
+    assert_includes response.body, "Queue 1:"
+    assert_includes response.body, "Queue 2:"
+    assert_includes response.body, "Queue 3:"
+    assert_includes response.body, "Queue 4:"
+  end
+
+  test "scoreboard mat page renders match-scoreboard controller" do
+    sign_in_owner
+    get_scoreboard_with_params(print: true)
+
+    assert_response :success
+    assert_includes response.body, "data-controller=\"match-scoreboard\""
+    assert_includes response.body, "data-match-scoreboard-source-mode-value=\"localstorage\""
+  end
+
+  test "scoreboard mat page uses selected scoreboard match as initial bout" do
+    sign_in_owner
+    alternate_match = @mat.queue2_match
+    if alternate_match.nil?
+      alternate_match = @tournament.matches.where(mat_id: nil).first
+      @mat.assign_match_to_queue!(alternate_match, 2)
+      alternate_match = @mat.reload.queue2_match
+    end
+    @mat.set_selected_scoreboard_match!(alternate_match)
+
+    get_scoreboard
+
+    assert_response :success
+    assert_includes response.body, "data-match-scoreboard-initial-bout-number-value=\"#{alternate_match.bout_number}\""
+  end
+
+  test "state mat page renders no matches assigned when queue is empty" do
+    sign_in_owner
+    @mat.clear_queue!
+
+    get_state
+
+    assert_response :success
+    assert_includes response.body, "No matches assigned to this mat."
+  end
+
+  test "posting a match update from mat state redirects back to mat state" do
+    sign_in_owner
+    get :state, params: { id: @mat.id, bout_number: @match.bout_number }
+
+    old_controller = @controller
+    @controller = MatchesController.new
+    patch :update, params: { id: @match.id, match: { score: "3-1", win_type: "Decision", winner_id: @match.w1, finished: 1 } }
+    @controller = old_controller
+
+    assert_redirected_to "/mats/#{@mat.id}/state"
+  end
+
+  test "logged in tournament delegate can post select_match on mat" do
+    sign_in_tournament_delegate
+    post_select_match
+    assert_response :no_content
+  end
+
+  test "select_match updates selected scoreboard match" do
+    sign_in_owner
+    alternate_match = @mat.queue2_match
+    if alternate_match.nil?
+      alternate_match = @tournament.matches.where(mat_id: nil).first
+      @mat.assign_match_to_queue!(alternate_match, 2)
+      alternate_match = @mat.reload.queue2_match
+    end
+
+    post :select_match, params: { id: @mat.id, match_id: alternate_match.id, bout_number: alternate_match.bout_number }
+
+    assert_response :no_content
+    assert_equal alternate_match.id, @mat.selected_scoreboard_match&.id
+  end
+
+  test "select_match updates last match result without changing selected match" do
+    sign_in_owner
+    @mat.set_selected_scoreboard_match!(@match)
+
+    post :select_match, params: { id: @mat.id, last_match_result: "106 lbs - Winner Decision Loser 3-1" }
+
+    assert_response :no_content
+    assert_equal @match.id, @mat.selected_scoreboard_match&.id
+    assert_equal "106 lbs - Winner Decision Loser 3-1", @mat.last_match_result_text
+  end
+
+  test "select_match returns unprocessable entity for a non queued match without last result" do
+    sign_in_owner
+    non_queued_match = @tournament.matches.where(mat_id: nil).first
+
+    post :select_match, params: { id: @mat.id, match_id: non_queued_match.id, bout_number: non_queued_match.bout_number }
+
+    assert_response :unprocessable_entity
   end
 
   test "ads are hidden on mat show" do

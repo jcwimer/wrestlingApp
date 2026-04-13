@@ -43,6 +43,46 @@ To run a single test inside a file:
 To run tests in verbose mode (outputs the time for each test file and the test file name)
 `rails test -v`
 
+## JavaScript tests with Vitest
+
+Stimulus controllers and match-state JavaScript helpers are tested with Vitest. These tests live in `test/javascript`.
+
+Run all JavaScript tests:
+
+```bash
+npm install
+npm run test:js
+```
+
+Run one JavaScript test file:
+
+```bash
+npm run test:js -- test/javascript/match_state/engine.test.js
+```
+
+Run JavaScript tests in watch mode:
+
+```bash
+npm run test:js:watch
+```
+
+The full test runner also runs Vitest before Rails tests:
+
+```bash
+bash bin/run-all-tests.sh
+```
+
+Vitest currently covers client-side logic that is hard to test well with Minitest alone:
+
+* The match-state rules engine: scoring, control changes, period choices, event replay, deletion, swapping, timers, accumulated match time, result defaults, and scoreboard payload generation.
+* Stimulus controller behavior for the state page, legacy stat page, match result form, mat state page, scoreboard, spectate page, and live score updates.
+* LocalStorage behavior for state/stat persistence, tournament-scoped keys, expiration timestamps, and cleanup of expired app-owned keys.
+* Websocket payload handling at the JavaScript boundary, including deduped outbound state/stat messages and inbound scoreboard/spectate updates.
+
+Minitest still owns the Rails side: controllers, permissions, models, channels, redirects, rendered ERB, and database behavior. Vitest fills the gap for logic that runs entirely in the browser without needing Cypress or a full browser session.
+
+Cypress tests are deprecated for this project. Use Vitest for JavaScript unit coverage and Minitest for Rails behavior.
+
 ## Develop with rvm
 With rvm installed, run `rvm install ruby-3.2.0`
 Then, `cd ../; cd wrestlingApp`. This will load the gemset file in this repo.
@@ -117,11 +157,10 @@ The application uses Hotwired Stimulus for client-side JavaScript interactivity.
 
 ### Testing Stimulus Controllers
 
-The Stimulus controllers are tested using Cypress end-to-end tests:
+Stimulus controllers are tested with Vitest:
 
 ```bash
-# Run Cypress tests in headless mode
-bash cypress-tests/run-cypress-tests.sh
+npm run test:js
 ```
 
 # Deployment

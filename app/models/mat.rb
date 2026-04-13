@@ -7,6 +7,8 @@ class Mat < ApplicationRecord
 	validates :name, presence: true
 
 	QUEUE_SLOTS = %w[queue1 queue2 queue3 queue4].freeze
+	SCOREBOARD_SELECTION_CACHE_TTL = 1.hours
+	LAST_MATCH_RESULT_CACHE_TTL = 1.hours
 
 	after_save :clear_queue_matches_cache
 	after_commit :broadcast_up_matches_board, on: :update, if: :up_matches_queue_changed?
@@ -191,6 +193,56 @@ class Mat < ApplicationRecord
 		matches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
 	end
 
+	def scoreboard_payload
+		selected_match = selected_scoreboard_match
+		{
+			mat_id: id,
+			queue1_bout_number: queue1_match&.bout_number,
+			queue1_match_id: queue1_match&.id,
+			selected_bout_number: selected_match&.bout_number,
+			selected_match_id: selected_match&.id,
+			last_match_result: last_match_result_text
+		}
+	end
+
+	def set_selected_scoreboard_match!(match)
+		if match
+			Rails.cache.write(
+				scoreboard_selection_cache_key,
+				{ match_id: match.id, bout_number: match.bout_number },
+				expires_in: SCOREBOARD_SELECTION_CACHE_TTL
+			)
+		else
+			Rails.cache.delete(scoreboard_selection_cache_key)
+		end
+		broadcast_current_match
+	end
+
+	def selected_scoreboard_match
+		selection = Rails.cache.read(scoreboard_selection_cache_key)
+		return nil unless selection
+
+		match_id = selection[:match_id] || selection["match_id"]
+		selected_match = queue_matches.compact.find { |match| match.id == match_id }
+		return selected_match if selected_match
+
+		Rails.cache.delete(scoreboard_selection_cache_key)
+		nil
+	end
+
+	def set_last_match_result!(text)
+		if text.present?
+			Rails.cache.write(last_match_result_cache_key, text, expires_in: LAST_MATCH_RESULT_CACHE_TTL)
+		else
+			Rails.cache.delete(last_match_result_cache_key)
+		end
+		broadcast_current_match
+	end
+
+	def last_match_result_text
+		Rails.cache.read(last_match_result_cache_key)
+	end
+
 	private
 
 	def clear_queue_matches_cache
@@ -276,6 +328,15 @@ class Mat < ApplicationRecord
 				show_next_bout_button: true
 			}
 		)
+		MatScoreboardChannel.broadcast_to(self, scoreboard_payload)
+	end
+
+	def scoreboard_selection_cache_key
+		"tournament:#{tournament_id}:mat:#{id}:scoreboard_selection"
+	end
+
+	def last_match_result_cache_key
+		"tournament:#{tournament_id}:mat:#{id}:last_match_result"
 	end
 
 	def broadcast_up_matches_board

@@ -28,6 +28,10 @@ class TournamentsControllerTest < ActionController::TestCase
     get :up_matches, params: { id: 1 }
   end
 
+  def get_live_scores
+    get :live_scores, params: { id: 1 }
+  end
+
   def get_qrcode(params = {})
     get :qrcode, params: { id: 1 }.merge(params)
   end
@@ -590,6 +594,116 @@ class TournamentsControllerTest < ActionController::TestCase
     assert_not_includes response.body, "Show Bout Board in Full Screen"
   end
   # END UP MATCHES PAGE PERMISSIONS
+
+  # LIVE SCORES PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
+  test "logged in school delegate cannot get live scores page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_school_delegate
+    get_live_scores
+    redirect
+  end
+
+  test "logged in user cannot get live scores page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_non_owner
+    get_live_scores
+    redirect
+  end
+
+  test "logged in tournament delegate can get live scores page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_delegate
+    get_live_scores
+    success
+  end
+
+  test "logged in tournament owner can get live scores page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    sign_in_owner
+    get_live_scores
+    success
+  end
+
+  test "non logged in user cannot get live scores page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    get_live_scores
+    redirect
+  end
+
+  test "non logged in user with valid school permission key cannot get live scores page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    @school.update(permission_key: "valid-key")
+    get :live_scores, params: { id: @tournament.id, school_permission_key: "valid-key" }
+    redirect
+  end
+
+  test "non logged in user with invalid school permission key cannot get live scores page when tournament is not public" do
+    @tournament.is_public = false
+    @tournament.save
+    @school.update(permission_key: "valid-key")
+    get :live_scores, params: { id: @tournament.id, school_permission_key: "invalid-key" }
+    redirect
+  end
+
+  # LIVE SCORES PAGE PERMISSIONS WHEN TOURNAMENT IS PUBLIC
+  test "logged in school delegate can get live scores page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_school_delegate
+    get_live_scores
+    success
+  end
+
+  test "logged in user can get live scores page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_non_owner
+    get_live_scores
+    success
+  end
+
+  test "logged in tournament delegate can get live scores page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_delegate
+    get_live_scores
+    success
+  end
+
+  test "logged in tournament owner can get live scores page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    sign_in_owner
+    get_live_scores
+    success
+  end
+
+  test "non logged in user can get live scores page when tournament is public" do
+    @tournament.is_public = true
+    @tournament.save
+    get_live_scores
+    success
+  end
+
+  test "live scores page renders mat cards and scoreboard controller" do
+    @tournament.is_public = true
+    @tournament.save
+    get_live_scores
+    success
+    assert_includes response.body, "Live Scores"
+    assert_includes response.body, "data-controller=\"match-scoreboard\""
+    assert_includes response.body, "data-match-scoreboard-source-mode-value=\"mat_websocket\""
+    assert_includes response.body, "data-match-scoreboard-display-mode-value=\"embedded\""
+    assert_includes response.body, "Last Match Result"
+    assert_includes response.body, "Stats"
+    assert_not_includes response.body, "Result</h4>"
+  end
 
   # ALL_RESULTS PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
   test "logged in school delegate cannot get all_results page when tournament is not public" do
