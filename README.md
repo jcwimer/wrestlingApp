@@ -123,6 +123,7 @@ Whether you have a shell from docker or are using rvm you can now run normal rai
 * etc.
 * `rake finish_seed_tournaments` will complete all matches from the seed data. This command takes about 5 minutes to execute
 * `rake assets:clobber` - removes previously compiled assets stored in `public/assets` forcing Rails to recompile them from scratch the next time they are requested.
+* `bundle-audit check --update` - check for vulnerabilities in Gemfile.lock
 
 ## Testing Job Status
 
