@@ -27,17 +27,19 @@ spec:
       storage: 20Gi
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: wrestlingdev-mariadb
   labels:
     app: wrestlingdev
 spec:
+  replicas: 1
+  serviceName: wrestlingdev-mariadb
   selector:
     matchLabels:
       app: wrestlingdev
-  strategy:
-    type: Recreate
+  updateStrategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -227,25 +229,39 @@ metadata:
 data:
   70-mysettings.cnf: |
     [mariadb]
-    # Slow log
+    # Slow query log — records queries taking longer than long_query_time seconds
     slow_query_log=1
     #slow_query_log_file=/var/log/mariadb/slow.log
     slow_query_log_file=/var/lib/mysql/slow.log
     long_query_time=0.2
+
     # mysqltunner recommendations
+    # Max size for in-memory temp tables before spilling to disk
     tmp_table_size=32M
     max_heap_table_size=32M
+    # Collect detailed query/table statistics (required by some monitoring tools)
     performance_schema=ON
+    # Size of each InnoDB redo log file; increase for write-heavy workloads
     innodb_log_file_size=32M
+    # Number of open table handles to cache; reduces overhead of reopening tables
     table_open_cache=4000
+    # How many days to retain general error/slow logs
     expire_logs_days=7
 
-    # master slave
-    server_id=1                       # Unique server ID for the master
-    log_bin=mysql-bin                 # Enable binary logging
-    binlog_format=ROW                 # Recommended format for replication (ROW, STATEMENT, or MIXED)
-    log_slave_updates=ON              # Ensure any changes replicated to the master are also logged to the binary log (useful for multi-source replication)
-    sync_binlog=1                     # Ensures binary logs are synchronized with disk after each transaction for data safety
-    expire_logs_days=7                # Optional: Number of days to retain binary logs (helps with cleanup)
-    
-    # /etc/mysql/mariadb.conf.d/70-mysettings.cnf
+    # Replication (master)
+    # Unique ID for this server across the whole replication topology
+    server_id=1
+    # Enable binary logging — required for replication
+    log_bin=mysql-bin
+    # ROW format is safest: records exact row changes rather than SQL statements
+    binlog_format=ROW
+    # Include replicated events in this server's own binlog (needed for chained replicas)
+    log_slave_updates=ON
+    # Enforce GTID consistency — rejects transactions that would break GTID sequences
+    gtid_strict_mode=ON
+    # Flush binlog to disk on every commit; prevents binlog loss on crash
+    sync_binlog=1
+    # How many days to retain binary logs before automatic purge
+    expire_logs_days=7
+
+    # /etc/mysql/mariadb.conf.d/70-mysettings.cnf is included by the main config and will override any conflicting settings in the default config files. This allows us to customize settings without modifying the base image.

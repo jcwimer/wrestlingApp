@@ -27,17 +27,19 @@ spec:
       storage: 20Gi
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: wrestlingdev-mariadb
   labels:
     app: wrestlingdev
 spec:
+  replicas: 1
+  serviceName: wrestlingdev-mariadb
   selector:
     matchLabels:
       app: wrestlingdev
-  strategy:
-    type: Recreate
+  updateStrategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -47,6 +49,43 @@ spec:
         prometheus.io/port: "9125"
         prometheus.io/scrape: "true"
     spec:
+      initContainers:
+      - name: bootstrap
+        image: mariadb:10.3
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: dbpassword
+        - name: MASTER_HOST
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_host
+        command:
+        - bash
+        - -c
+        - |
+          if [ -d /var/lib/mysql/mysql ]; then
+            echo "Data directory already initialized, skipping bootstrap"
+            exit 0
+          fi
+          echo "Fresh data directory — bootstrapping replica from ${MASTER_HOST}"
+          DBS=$(mysql --protocol=TCP -h "$MASTER_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" \
+            -e "SHOW DATABASES;" --skip-column-names \
+            | grep -Ev '^(information_schema|performance_schema|mysql|sys)$' \
+            | tr '\n' ' ')
+          echo "Dumping databases: ${DBS}"
+          mysqldump --protocol=TCP -h "$MASTER_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" \
+            --single-transaction --master-data=2 --gtid --databases $DBS \
+            > /docker-entrypoint-initdb.d/dump.sql
+          echo "Bootstrap dump complete"
+        volumeMounts:
+        - name: wrestlingdev-mariadb-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
       containers:
       - image: mariadb:10.3
         name: mariadb
@@ -56,6 +95,48 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: dbpassword
+        - name: MASTER_HOST
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_host
+        - name: MYSQL_REPLICATION_USER
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_user
+        - name: MYSQL_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wrestlingdev-secrets
+              key: replication_password
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - bash
+              - -c
+              - |
+                for i in $(seq 1 60); do
+                  mysqladmin ping -uroot -p"$MARIADB_ROOT_PASSWORD" --protocol=TCP -h 127.0.0.1 --silent && break
+                  sleep 2
+                done
+                SLAVE_STATUS=$(mysql -uroot -p"$MARIADB_ROOT_PASSWORD" -e "SHOW SLAVE STATUS\G" 2>/dev/null)
+                SLAVE_IO=$(echo "$SLAVE_STATUS" | grep -m1 "Slave_IO_Running" | awk '{print $2}')
+                SLAVE_SQL=$(echo "$SLAVE_STATUS" | grep -m1 "Slave_SQL_Running" | awk '{print $2}')
+                if [ "${SLAVE_IO}" = "Yes" ] && [ "${SLAVE_SQL}" = "Yes" ]; then
+                  echo "Replication is already running"
+                  exit 0
+                fi
+                mysql -uroot -p"$MARIADB_ROOT_PASSWORD" -e "STOP SLAVE; RESET SLAVE ALL;"
+                if [ -f /docker-entrypoint-initdb.d/dump.sql ]; then
+                  GTID_POS=$(grep -m1 "SET GLOBAL gtid_slave_pos" /docker-entrypoint-initdb.d/dump.sql | sed "s/.*gtid_slave_pos='\([^']*\)'.*/\1/")
+                  echo "Setting gtid_slave_pos from dump: '${GTID_POS}'"
+                  mysql -uroot -p"$MARIADB_ROOT_PASSWORD" -e "SET GLOBAL gtid_slave_pos='${GTID_POS}';"
+                fi
+                mysql -uroot -p"$MARIADB_ROOT_PASSWORD" \
+                  -e "CHANGE MASTER TO MASTER_HOST='${MASTER_HOST}', MASTER_USER='${MYSQL_REPLICATION_USER}', MASTER_PASSWORD='${MYSQL_REPLICATION_PASSWORD}', MASTER_USE_GTID=slave_pos;" \
+                  -e "START SLAVE;"
         ports:
         - containerPort: 3306
           name: mariadb
@@ -64,6 +145,8 @@ spec:
           mountPath: /var/lib/mysql
         - name: mysettings-config-volume
           mountPath: /etc/mysql/mariadb.conf.d
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
         # resources:
         #   limits:
         #     memory: "512Mi"
@@ -180,6 +263,8 @@ spec:
       - name: mysettings-config-volume
         configMap:
           name: mariadb-mysettings
+      - name: init-scripts
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -191,29 +276,44 @@ metadata:
 data:
   70-mysettings.cnf: |
     [mariadb]
-    # Slow log
+    # Slow query log — records queries taking longer than long_query_time seconds
     slow_query_log=1
     #slow_query_log_file=/var/log/mariadb/slow.log
     slow_query_log_file=/var/lib/mysql/slow.log
     long_query_time=0.2
+
     # mysqltunner recommendations
+    # Max size for in-memory temp tables before spilling to disk
     tmp_table_size=32M
     max_heap_table_size=32M
+    # Collect detailed query/table statistics (required by some monitoring tools)
     performance_schema=ON
+    # Size of each InnoDB redo log file; increase for write-heavy workloads
     innodb_log_file_size=32M
+    # Number of open table handles to cache; reduces overhead of reopening tables
     table_open_cache=4000
-    # replica settings
-    server_id=2                                # Default server_id, can be overridden for master/slave
-    log_bin=mysql-bin                          # Enable binary logging
-    binlog_format=ROW                          # Recommended for replication
-    log_slave_updates=ON                       # Ensure slaves log updates (useful for multi-source replication)
-    sync_binlog=1                              # Flush binary logs after each transaction for safety
-    read_only=0                                # Default, will be managed by the init script
-    expire_logs_days=7                         # Retain binary logs for 7 days
 
-    # if you want to ignore dbs to replicate
-    # replicate-ignore-db=wrestlingtourney-queue
-    # if you only want to replicate certain dbs
+    # Replication (replica)
+    # Must be unique and different from the master's server_id
+    server_id=2
+    # Enable binary logging on the replica (required for log_slave_updates)
+    log_bin=mysql-bin
+    # ROW format is safest: records exact row changes rather than SQL statements
+    binlog_format=ROW
+    # Write replicated events into this replica's own binlog (needed for chained replicas)
+    log_slave_updates=ON
+    # Enforce GTID consistency — rejects transactions that would break GTID sequences
+    gtid_strict_mode=ON
+    # Flush binlog to disk on every commit; prevents binlog loss on crash
+    sync_binlog=1
+    # Prevent accidental writes directly to the replica
+    read_only=1
+    # How many days to retain binary logs before automatic purge
+    expire_logs_days=7
+
+    # Only replicate the application database — rails-specific: excludes the solid_queue DB so
+    # background job workers can run independently on the replica cluster
     replicate-do-db=wrestlingdev
-    
+    # replicate-ignore-db=wrestlingtourney-queue
+
     # /etc/mysql/mariadb.conf.d/70-mysettings.cnf
