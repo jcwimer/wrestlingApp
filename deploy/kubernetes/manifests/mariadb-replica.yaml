@@ -77,9 +77,11 @@ spec:
             | grep -Ev '^(information_schema|performance_schema|mysql|sys)$' \
             | tr '\n' ' ')
           echo "Dumping databases: ${DBS}"
-          mysqldump --protocol=TCP -h "$MASTER_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" \
-            --single-transaction --master-data=2 --gtid --databases $DBS \
-            > /docker-entrypoint-initdb.d/dump.sql
+          {
+            echo "SET SESSION sql_log_bin=0;"
+            mysqldump --protocol=TCP -h "$MASTER_HOST" -uroot -p"$MARIADB_ROOT_PASSWORD" \
+              --single-transaction --master-data=2 --gtid --databases $DBS
+          } > /docker-entrypoint-initdb.d/dump.sql
           echo "Bootstrap dump complete"
         volumeMounts:
         - name: wrestlingdev-mariadb-persistent-storage
@@ -296,6 +298,8 @@ data:
     # Replication (replica)
     # Must be unique and different from the master's server_id
     server_id=2
+    # Keep replica-local binlogged writes in a separate GTID domain from the master
+    gtid_domain_id=2
     # Enable binary logging on the replica (required for log_slave_updates)
     log_bin=mysql-bin
     # ROW format is safest: records exact row changes rather than SQL statements
