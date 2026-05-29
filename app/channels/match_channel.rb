@@ -4,13 +4,13 @@ class MatchChannel < ApplicationCable::Channel
   def subscribed
     @match = Match.find_by(id: params[:match_id])
     Rails.logger.info "[MatchChannel] Client subscribed with match_id: #{params[:match_id]}. Match found: #{@match.present?}"
-    if @match
-      stream_for @match
-    else
+    unless @match
       Rails.logger.warn "[MatchChannel] Match not found for ID: #{params[:match_id]}. Subscription may fail."
-      # You might want to reject the subscription if the match isn't found
-      # reject
+      reject
+      return
     end
+
+    stream_for @match
   end
 
   def send_scoreboard(data)
@@ -18,6 +18,8 @@ class MatchChannel < ApplicationCable::Channel
       Rails.logger.error "[MatchChannel] Error: send_scoreboard called but @match is nil. Client params on sub: #{params[:match_id]}"
       return
     end
+
+    return unless can_manage_match?
 
     scoreboard_state = data["scoreboard_state"]
     return if scoreboard_state.blank?
@@ -37,6 +39,8 @@ class MatchChannel < ApplicationCable::Channel
       Rails.logger.error "[MatchChannel] Error: send_stat called but @match is nil. Client params on sub: #{params[:match_id]}"
       return # Stop if no match context
     end
+
+    return unless can_manage_match?
 
     Rails.logger.info "[MatchChannel] Received send_stat for match #{@match.id} with data: #{data.inspect}"
     
@@ -106,5 +110,9 @@ class MatchChannel < ApplicationCable::Channel
 
   def scoreboard_cache_key
     "tournament:#{@match.tournament_id}:match:#{@match.id}:scoreboard_state"
+  end
+
+  def can_manage_match?
+    can?(:manage, @match.tournament)
   end
 end

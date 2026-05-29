@@ -35,6 +35,26 @@ class MatScoreboardChannelTest < ActionCable::Channel::TestCase
     assert subscription.rejected?
   end
 
+  test "allows anonymous subscription for a private tournament mat" do
+    @mat.tournament.update!(is_public: false)
+    stub_connection current_user: nil
+
+    subscribe(mat_id: @mat.id)
+
+    assert subscription.confirmed?
+    assert_has_stream_for @mat
+  end
+
+  test "allows tournament owner subscription for a private tournament mat" do
+    @mat.tournament.update!(is_public: false)
+    stub_connection current_user: users(:one)
+
+    subscribe(mat_id: @mat.id)
+
+    assert subscription.confirmed?
+    assert_has_stream_for @mat
+  end
+
   test "transmits payload with queue1 and no selected match" do
     @mat.set_selected_scoreboard_match!(nil)
 

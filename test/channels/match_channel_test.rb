@@ -3,6 +3,7 @@ require "test_helper"
 class MatchChannelTest < ActionCable::Channel::TestCase
   setup do
     @match = matches(:tournament_1_bout_1000)
+    stub_connection current_user: users(:one)
     Rails.cache.clear
   end
 
@@ -13,11 +14,109 @@ class MatchChannelTest < ActionCable::Channel::TestCase
     assert_has_stream_for @match
   end
 
-  test "invalid match subscription confirms but does not stream" do
+  test "invalid match subscription is rejected" do
     subscribe(match_id: -1)
 
+    assert subscription.rejected?
+  end
+
+  test "anonymous user can subscribe to a public match stream" do
+    stub_connection current_user: nil
+
+    subscribe(match_id: @match.id)
+
     assert subscription.confirmed?
-    assert_empty subscription.streams
+    assert_has_stream_for @match
+  end
+
+  test "anonymous user can subscribe to a private match stream" do
+    @match.tournament.update!(is_public: false)
+    stub_connection current_user: nil
+
+    subscribe(match_id: @match.id)
+
+    assert subscription.confirmed?
+    assert_has_stream_for @match
+  end
+
+  test "unauthorized user cannot mutate match stats" do
+    stub_connection current_user: nil
+    subscribe(match_id: @match.id)
+    stream = MatchChannel.broadcasting_for(@match)
+    ActionCable.server.pubsub.broadcasts(stream).clear
+
+    perform :send_stat, {
+      new_w1_stat: "T3",
+      new_w2_stat: "E1"
+    }
+
+    @match.reload
+    assert_nil @match.w1_stat
+    assert_nil @match.w2_stat
+    assert_empty ActionCable.server.pubsub.broadcasts(stream)
+  end
+
+  test "unauthorized user cannot mutate scoreboard state" do
+    stub_connection current_user: nil
+    subscribe(match_id: @match.id)
+    stream = MatchChannel.broadcasting_for(@match)
+    ActionCable.server.pubsub.broadcasts(stream).clear
+
+    perform :send_scoreboard, {
+      scoreboard_state: { "participantScores" => { "w1" => 2, "w2" => 0 } }
+    }
+
+    assert_nil Rails.cache.read("tournament:#{@match.tournament_id}:match:#{@match.id}:scoreboard_state")
+    assert_empty ActionCable.server.pubsub.broadcasts(stream)
+  end
+
+  test "logged in non delegate cannot mutate match stats" do
+    stub_connection current_user: users(:two)
+    subscribe(match_id: @match.id)
+    stream = MatchChannel.broadcasting_for(@match)
+    ActionCable.server.pubsub.broadcasts(stream).clear
+
+    perform :send_stat, {
+      new_w1_stat: "T3",
+      new_w2_stat: "E1"
+    }
+
+    @match.reload
+    assert_nil @match.w1_stat
+    assert_nil @match.w2_stat
+    assert_empty ActionCable.server.pubsub.broadcasts(stream)
+  end
+
+  test "tournament delegate can mutate match stats" do
+    stub_connection current_user: users(:three)
+    subscribe(match_id: @match.id)
+
+    assert_broadcast_on(@match, { w1_stat: "T3", w2_stat: "E1" }) do
+      perform :send_stat, {
+        new_w1_stat: "T3",
+        new_w2_stat: "E1"
+      }
+    end
+
+    @match.reload
+    assert_equal "T3", @match.w1_stat
+    assert_equal "E1", @match.w2_stat
+  end
+
+  test "tournament delegate can mutate scoreboard state" do
+    stub_connection current_user: users(:three)
+    subscribe(match_id: @match.id)
+    scoreboard_state = {
+      "participantScores" => { "w1" => 2, "w2" => 0 },
+      "metadata" => { "boutNumber" => @match.bout_number }
+    }
+
+    assert_broadcast_on(@match, { scoreboard_state: scoreboard_state }) do
+      perform :send_scoreboard, { scoreboard_state: scoreboard_state }
+    end
+
+    cached_state = Rails.cache.read("tournament:#{@match.tournament_id}:match:#{@match.id}:scoreboard_state")
+    assert_equal scoreboard_state, cached_state
   end
 
   test "send_stat updates the match and broadcasts stats" do
