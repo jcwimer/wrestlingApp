@@ -1,0 +1,68 @@
+pipeline {
+  agent any
+
+  options {
+    skipDefaultCheckout(true)
+  }
+
+  triggers {
+    cron('H 0 * * *')
+    pollSCM('H/5 * * * *')
+  }
+
+  stages {
+    stage('development-tests') {
+      steps {
+        deleteDir()
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: 'origin/development']],
+          userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
+          extensions: [
+            [$class: 'WipeWorkspace']
+          ]
+        ])
+
+        sh '''
+          set -o pipefail
+          docker build -t wrestlingdev:dev -f deploy/rails-prod-Dockerfile .
+          docker run --name wrestlingdev-development-tests --rm wrestlingdev:dev /bin/bash /rails/bin/run-all-tests.sh
+        '''
+      }
+    }
+
+    stage('deploy-test') {
+      steps {
+        sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
+          sh '''
+set -o pipefail
+test_host=wrestlingdev-test.home.wimer.cloud
+
+ssh -T -o StrictHostKeyChecking=no debian@${test_host} << ENDSSH
+rm -rf wrestlingApp
+git clone https://github.com/jcwimer/wrestlingApp.git
+cd wrestlingApp
+git reset --hard
+git checkout master
+git fetch
+git checkout origin/development
+
+bash deploy/deploy-test.sh
+
+ENDSSH
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    unstable {
+      mail(
+        to: 'jacob.wimer@gmail.com',
+        subject: "Unstable Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+        body: "The wrestlingdev Jenkins build is unstable: ${env.BUILD_URL}"
+      )
+    }
+  }
+}

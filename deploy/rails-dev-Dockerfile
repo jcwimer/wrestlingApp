@@ -9,6 +9,7 @@ RUN apt-get -qq update --fix-missing \
     build-essential \
     sqlite3 \
     nodejs \
+    npm \
     sudo \
   && apt-get -qq clean \
   && rm -rf \
