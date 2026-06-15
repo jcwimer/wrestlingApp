@@ -18,6 +18,7 @@ RUN apt-get -qq update --fix-missing \
     libyaml-dev \
     pkg-config \
     nodejs \
+    npm \
     tzdata \
     git \
   && apt-get -qq clean \

@@ -1,3 +1,4 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -21,3 +22,53 @@ spec:
     - hosts:
       - wrestlingdev.com
       secretName: letsencrypt-prod
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wrestlingdev-grafana-ingress-external
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    certmanager.k8s.io/acme-challenge-type: http01
+spec:
+  rules:
+  - host: grafana.wrestlingdev.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+  tls:
+    - hosts:
+      - grafana.wrestlingdev.com
+      secretName: letsencrypt-prod-grafana
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wrestlingdev-jaeger-ingress-external
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    certmanager.k8s.io/acme-challenge-type: http01
+    traefik.ingress.kubernetes.io/router.middlewares: default-wrestlingdev-jaeger-basic-auth@kubernetescrd
+spec:
+  rules:
+  - host: jaeger.wrestlingdev.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jaeger
+            port:
+              number: 16686
+  tls:
+    - hosts:
+      - jaeger.wrestlingdev.com
+      secretName: letsencrypt-prod-jaeger
+

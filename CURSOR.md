@@ -1,1 +1,1 @@
-Read`AGENTS.md` for instructions.
+See @AGENTS.md

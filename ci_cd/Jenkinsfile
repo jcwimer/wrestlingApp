@@ -1,0 +1,163 @@
+def buildsBranch(branchName) {
+  def branchNames = [branchName, "origin/${branchName}", "*/${branchName}"]
+
+  if (branchNames.contains(env.BRANCH_NAME) || branchNames.contains(env.GIT_BRANCH)) {
+    return true
+  }
+
+  if (binding.hasVariable('scm')) {
+    return scm.branches.any { branchNames.contains(it.name) }
+  }
+
+  return false
+}
+
+pipeline {
+  agent any
+
+  options {
+    skipDefaultCheckout(true)
+  }
+
+  triggers {
+    cron('H 0 * * *')
+    pollSCM('H/5 * * * *')
+  }
+
+  stages {
+    stage('development-tests') {
+      when {
+        expression { buildsBranch('development') }
+      }
+
+      steps {
+        deleteDir()
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: 'origin/development']],
+          userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
+          extensions: [
+            [$class: 'WipeWorkspace']
+          ]
+        ])
+
+        sh '''
+          set -o pipefail
+          docker build -t wrestlingdev:dev -f deploy/rails-prod-Dockerfile .
+          docker run --name wrestlingdev-development-tests --rm wrestlingdev:dev /bin/bash /rails/bin/run-all-tests.sh
+        '''
+      }
+    }
+
+    stage('deploy-test') {
+      when {
+        expression { buildsBranch('development') }
+      }
+
+      steps {
+        sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
+          sh '''
+set -o pipefail
+test_host=wrestlingdev-test.home.wimer.cloud
+
+ssh -T -o StrictHostKeyChecking=no debian@${test_host} << ENDSSH
+rm -rf wrestlingApp
+git clone https://github.com/jcwimer/wrestlingApp.git
+cd wrestlingApp
+git reset --hard
+git checkout master
+git fetch
+git checkout origin/development
+
+bash deploy/deploy-test.sh
+
+ENDSSH
+          '''
+        }
+      }
+    }
+
+    stage('deploy-production') {
+      when {
+        expression { buildsBranch('master') }
+      }
+
+      steps {
+        deleteDir()
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: 'origin/master']],
+          userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
+          extensions: [
+            [$class: 'WipeWorkspace']
+          ]
+        ])
+
+        withCredentials([string(credentialsId: 'DOCKERHUB_PASSWORD', variable: 'DOCKERHUB_PASSWORD')]) {
+          sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
+            sh '''SSH_OPTS="-T -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q"
+HETZNER="94.130.8.146" # hetzner1.home.wimer.cloud does not work?
+
+TAG=$(git rev-parse --verify HEAD)
+IMAGE_INTERNAL="10.0.0.221/wrestlingdev"
+IMAGE_EXTERNAL="jcwimer/wrestlingdev"
+
+#build image
+docker build -t ${IMAGE_INTERNAL}:${TAG} -f deploy/rails-prod-Dockerfile .
+
+#test image
+docker run --name wrestlingdev-production-tests --rm ${IMAGE_INTERNAL}:${TAG} /bin/bash /rails/bin/run-all-tests.sh
+
+#push to dockerhub
+set -a
+docker login --password "${DOCKERHUB_PASSWORD}" --username "jcwimer"
+set +a
+docker tag ${IMAGE_INTERNAL}:${TAG} ${IMAGE_EXTERNAL}:${TAG}
+docker tag ${IMAGE_EXTERNAL}:${TAG} ${IMAGE_EXTERNAL}:prod
+docker tag ${IMAGE_EXTERNAL}:${TAG} ${IMAGE_EXTERNAL}:latest
+docker push ${IMAGE_EXTERNAL}:${TAG}
+docker push ${IMAGE_EXTERNAL}:prod
+docker push ${IMAGE_EXTERNAL}:latest
+
+#deploy to prod hetzner
+ssh -T $SSH_OPTS root@${HETZNER} << ENDSSH
+cd apps/wrestlingdev
+rm -f deploy-prod.sh
+wget https://raw.githubusercontent.com/jcwimer/wrestlingApp/refs/heads/master/deploy/deploy-prod.sh
+bash deploy-prod.sh
+ENDSSH
+
+#deploy to home k3s
+ssh -T $SSH_OPTS debian@wrestlingdev-prod-dr.home.wimer.cloud << ENDSSH
+
+# apply base configs for my environment
+sudo kubectl apply -f https://raw.githubusercontent.com/jcwimer/wrestlingApp/master/deploy/kubernetes/manifests/wrestlingdev.yaml
+sudo kubectl apply -f https://raw.githubusercontent.com/jcwimer/wrestlingApp/master/deploy/kubernetes/manifests/telemetry.yaml
+sudo kubectl apply -f https://raw.githubusercontent.com/jcwimer/wrestlingApp/master/deploy/kubernetes/manifests/mariadb-replica.yaml
+# database, ingress, and secrets are special in https://git.home.wimermedia.com/cody/homelab-manifests/src/branch/master/manifests/wrestlingdev
+
+# update app and worker images with new image hash
+sudo kubectl --record statefulset.apps/wrestlingdev-app set image statefulset.v1.apps/wrestlingdev-app wrestlingdev-app=${IMAGE_EXTERNAL}:${TAG}
+
+# run migrations
+sudo kubectl delete job wrestlingdev-db-create-migrate
+sudo kubectl apply -f https://raw.githubusercontent.com/jcwimer/wrestlingApp/master/deploy/kubernetes/manifests/db-migration.yaml
+
+ENDSSH
+            '''
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    unstable {
+      mail(
+        to: 'jacob.wimer@gmail.com',
+        subject: "Unstable Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+        body: "The wrestlingdev Jenkins build is unstable: ${env.BUILD_URL}"
+      )
+    }
+  }
+}

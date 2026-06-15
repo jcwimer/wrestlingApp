@@ -1,0 +1,172 @@
+version: "3.3"
+networks:
+  database:
+  caching:
+  metrics:
+  traefik:
+    external:
+      name: shared_traefik
+  monitoring:
+    external:
+      name: shared_monitoring
+
+volumes:
+  grafana:
+  prometheus:
+
+services:
+  # This is used so plausible analytics aren't "external" to the app and get blocked
+  nginx-proxy:
+    image: nginx:stable-alpine
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx-entrypoint.sh:/nginx-entrypoint.sh
+    entrypoint: /nginx-entrypoint.sh
+    networks:
+      traefik:
+      caching:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx-proxy.entrypoints=web"
+      - "traefik.http.routers.nginx-proxy.rule=Host(`wrestlingdev.com`)"
+      - "traefik.http.middlewares.nginx-proxy-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.nginx-proxy.middlewares=nginx-proxy-https-redirect"
+      #- "traefik.http.middlewares.nginx-proxy-x-forwarded-for.headers.hostsProxyHeaders='X-Forwarded-For'"
+      #- "traefik.http.routers.nginx-proxy-secure.middlewares=nginx-proxy-x-forwarded-for"
+      #- "traefik.http.middlewares.nginx-proxy-x-forwarded-for.headers.sslProxyHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.nginx-proxy-secure.entrypoints=websecure"
+      - "traefik.http.routers.nginx-proxy-secure.rule=Host(`wrestlingdev.com`)"
+      - "traefik.http.routers.nginx-proxy-secure.tls=true"
+      - "traefik.http.routers.nginx-proxy-secure.tls.certresolver=mychallenge"
+      - "traefik.http.routers.nginx-proxy-secure.service=nginx-proxy"
+      - "traefik.http.services.nginx-proxy.loadbalancer.server.port=80"
+      - "traefik.docker.network=shared_traefik"
+
+  wrestlingdev:
+    image: jcwimer/wrestlingdev:prod
+    environment:
+      - RAILS_ENV=production
+      - WRESTLINGDEV_DB_NAME=wrestlingdev
+      - WRESTLINGDEV_DB_USR=root
+      - WRESTLINGDEV_DB_PWD=${MYSQL_PASSWORD}
+      - WRESTLINGDEV_DB_HOST=wrestlingdev_db
+      - WRESTLINGDEV_DB_PORT=3306
+      - WRESTLINGDEV_DEVISE_SECRET_KEY=${DEVISE_SECRET_KEY}
+      - WRESTLINGDEV_SECRET_KEY_BASE=${RAILS_SECRET_KEY}
+      - WRESTLINGDEV_EMAIL=jacob.wimer@gmail.com
+      - WRESTLINGDEV_EMAIL_PWD=${GMAIL_PASSWORD}
+      - WRESTLINGDEV_MISSION_CONTROL_USER=admin
+      - WRESTLINGDEV_MISSION_CONTROL_PASSWORD=${MISSION_CONTROL_PASSWORD}
+      - SOLID_QUEUE_IN_PUMA=true
+      - OTEL_SERVICE_NAME=wrestlingdev
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+
+    networks:
+      database:
+      caching:
+      metrics:
+      #traefik:
+    restart: always
+    healthcheck:
+      test: curl http://127.0.0.1/
+
+  wrestlingdev_db:
+    image: mariadb:10.10
+    ports:
+      - 10.147.17.240:3306:3306
+    volumes:
+      - ./mariadb/mysql-data:/var/lib/mysql
+      - ./mariadb/backups:/backups
+      - ./mariadb/70-mysettings.cnf:/etc/mysql/mariadb.conf.d/70-mysettings.cnf
+      - ./mariadb/var-log-mariadb:/var/log/mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+    restart: always
+    networks:
+      database:
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.153.0
+    command: ["--config=/etc/otelcol-contrib/config.yml"]
+    restart: always
+    depends_on:
+      - jaeger
+    networks:
+      metrics:
+      monitoring:
+    volumes:
+      - ./otel-collector-config.yml:/etc/otelcol-contrib/config.yml:ro
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    restart: always
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      metrics:
+      monitoring:
+      traefik:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jaeger.entrypoints=web"
+      - "traefik.http.routers.jaeger.rule=Host(`${JAEGER_HOST}`)"
+      - "traefik.http.middlewares.jaeger-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.jaeger.middlewares=jaeger-https-redirect"
+      - "traefik.http.routers.jaeger-secure.entrypoints=websecure"
+      - "traefik.http.routers.jaeger-secure.rule=Host(`${JAEGER_HOST}`)"
+      - "traefik.http.routers.jaeger-secure.tls=true"
+      - "traefik.http.routers.jaeger-secure.tls.certresolver=mychallenge"
+      - "traefik.http.routers.jaeger-secure.service=jaeger"
+      - "traefik.http.routers.jaeger-secure.middlewares=jaeger-auth"
+      - "traefik.http.middlewares.jaeger-auth.basicauth.users=${JAEGER_BASIC_AUTH_USERS}"
+      - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
+      - "traefik.docker.network=shared_traefik"
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle
+    restart: always
+    networks:
+      metrics:
+      monitoring:
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    restart: always
+    depends_on:
+      - prometheus
+      - jaeger
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      metrics:
+      monitoring:
+      traefik:
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.routers.grafana.rule=Host(`${GRAFANA_HOST}`)"
+      - "traefik.http.middlewares.grafana-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.grafana.middlewares=grafana-https-redirect"
+      - "traefik.http.routers.grafana-secure.entrypoints=websecure"
+      - "traefik.http.routers.grafana-secure.rule=Host(`${GRAFANA_HOST}`)"
+      - "traefik.http.routers.grafana-secure.tls=true"
+      - "traefik.http.routers.grafana-secure.tls.certresolver=mychallenge"
+      - "traefik.http.routers.grafana-secure.service=grafana"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.docker.network=shared_traefik"

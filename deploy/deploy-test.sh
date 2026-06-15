@@ -10,7 +10,7 @@ docker-compose -f ${project_dir}/deploy/docker-compose-test.yml build
 # Start the database service first and wait for it
 echo "Starting database service..."
 docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d db
-docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d influxdb
+docker-compose -f ${project_dir}/deploy/docker-compose-test.yml up -d otel-collector
 echo "Waiting for database to be ready..."
 sleep 15 # Adjust sleep time if needed
 

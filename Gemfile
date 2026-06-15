@@ -58,8 +58,10 @@ group :production do
 end
 
 gem 'solid_cache'
-  
-gem 'influxdb-rails'
+
+gem 'opentelemetry-sdk'
+gem 'opentelemetry-exporter-otlp'
+gem 'opentelemetry-instrumentation-rails'
 # Authentication
 # gem 'devise' # Removed - replaced with Rails built-in authentication
 

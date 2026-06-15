@@ -94,21 +94,10 @@ spec:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: gmailemail
-        - name: WRESTLINGDEV_INFLUXDB_DATABASE
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: influxdb_database
-        - name: WRESTLINGDEV_INFLUXDB_HOST
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: influxdb_hostname
-        - name: WRESTLINGDEV_INFLUXDB_PORT
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: influxdb_port
+        - name: OTEL_SERVICE_NAME
+          value: wrestlingdev
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://otel-collector:4318
         - name: WRESTLINGDEV_MISSION_CONTROL_USER
           valueFrom:
            secretKeyRef:
@@ -155,4 +144,3 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80  
-
