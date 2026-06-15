@@ -32,6 +32,56 @@ To deploy a full local version of the app `bash deploy/deploy-test.sh` (this req
 
 In development environments, background jobs run inline (synchronously) by default. In production and staging environments, jobs are processed asynchronously by separate worker processes.
 
+## Local tracing and performance dashboards
+
+The local docker compose deployment includes an OpenTelemetry-based tracing and metrics stack. Rails sends OTLP traces to the OpenTelemetry Collector, the collector sends traces to Jaeger, and the collector's `span_metrics` connector converts those spans into Prometheus metrics for Grafana dashboards.
+
+The local telemetry flow is:
+
+```text
+Rails
+  -> OTLP HTTP http://otel-collector:4318
+  -> OpenTelemetry Collector
+    -> Jaeger for trace search/drill-down
+    -> span_metrics connector
+      -> Prometheus
+        -> Grafana dashboards
+```
+
+Local URLs after running `bash deploy/deploy-test.sh`:
+
+* App: [http://localhost](http://localhost)
+* Grafana: [http://localhost:3000](http://localhost:3000)
+* Jaeger: [http://localhost:16686](http://localhost:16686)
+* Prometheus: [http://localhost:9090](http://localhost:9090)
+
+Grafana is configured with `admin` / `admin`, and anonymous admin access is enabled for the local dev stack. Dashboards are provisioned from `deploy/grafana/dashboards` into the `WrestlingDev` folder. The dashboards mirror the old `influxdb-rails` sample dashboard set:
+
+* Rails OpenTelemetry Overview
+* Rails OpenTelemetry Performance
+* Rails OpenTelemetry Requests
+* Rails OpenTelemetry ActiveJob
+* Rails OpenTelemetry Performance per Action
+* Rails OpenTelemetry Performance per Request
+* Rails OpenTelemetry Slowlog by Request
+* Rails OpenTelemetry Slowlog by Action
+* Rails OpenTelemetry Slowlog by SQL
+
+Use Grafana to find slow routes/actions/jobs and Jaeger to inspect one specific slow trace. For example, if Grafana shows `GET /tournaments/:id` has a high p95, open Jaeger, select service `wrestlingdev`, filter to operation `GET /tournaments/:id`, and inspect a slow trace. Model/query spans such as `Tournament query`, `Match query`, `render_partial.action_view`, and ActiveJob spans appear under the parent request/job trace so you can correlate expensive work back to the controller action.
+
+Important local telemetry files:
+
+* Rails OpenTelemetry initializer: `config/initializers/opentelemetry.rb`
+* Collector config: `deploy/otel-collector-config.yml`
+* Prometheus config: `deploy/prometheus.yml`
+* Grafana datasource provisioning: `deploy/grafana/provisioning/datasources/datasources.yml`
+* Grafana dashboard provisioning: `deploy/grafana/provisioning/dashboards/dashboards.yml`
+* Grafana dashboards: `deploy/grafana/dashboards/*.json`
+
+The span metrics exported to Prometheus are named `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`. Common labels include `service_name`, `span_kind`, `span_name`, `code_namespace`, `http_route`, `http_request_method`, and `http_response_status_code`.
+
+The production docker compose deployment uses the same collector, Jaeger, Prometheus, and Grafana setup. Grafana uses its built-in login, and Jaeger is protected at Traefik with basic auth because Jaeger does not provide its own login system.
+
 To run a single test file:
 1. Get a shell with ruby and rails: `bash bin/rails-dev-run.sh wrestlingdev-development`
 2. `rake test TEST=test/models/match_test.rb` OR `rails test test/models/match_test.rb`
@@ -168,6 +218,10 @@ npm run test:js
 
 The production version of this is currently deployed in Kubernetes (via K3s). See [Deploying with Kubernetes](deploy/kubernetes/README.md)
 
+## CI/CD
+
+The Jenkins pipeline definition for the `wrestlingdev` job lives in `ci_cd/Jenkinsfile`. On `development`, it checks out `origin/development`, rebuilds the production Docker image, runs `bin/run-all-tests.sh` inside the image in the `development-tests` stage, and deploys to the test host in the `deploy-test` stage after tests pass. On `master`, SCM-triggered builds run the `deploy-production` stage, map the `DOCKERHUB_PASSWORD` secret text credential into the `DOCKERHUB_PASSWORD` environment variable, push the production Docker image to Docker Hub, and deploy production. Timer-triggered `master` builds skip production deploys. Deploys use the Jenkins SSH credential used by the old freestyle job.
+
 I'm using a Hetzner dedicated server with an i7-8700, 500GB NVME (RAID1), and 64GB ECC RAM. I have a hot standby (SQL read only replication) in my homelab.
 
 ## Server Configuration
@@ -225,12 +279,16 @@ For the development environment, the user/password is dev/secret. For the produc
 * `CI` - Set in CI environments to enable eager loading in test environment
 * `WRESTLINGDEV_NEW_RELIC_LICENSE_KEY` - New Relic license key for monitoring
 
-### InfluxDB Configuration (all required if using InfluxDB)
-* `WRESTLINGDEV_INFLUXDB_DATABASE` - InfluxDB database name
-* `WRESTLINGDEV_INFLUXDB_HOST` - InfluxDB hostname
-* `WRESTLINGDEV_INFLUXDB_PORT` - InfluxDB port
-* `WRESTLINGDEV_INFLUXDB_USERNAME` - InfluxDB username (optional)
-* `WRESTLINGDEV_INFLUXDB_PASSWORD` - InfluxDB password (optional)
+### OpenTelemetry Configuration
+* `OTEL_SERVICE_NAME` - Service name used in Jaeger, Prometheus labels, and Grafana dashboards. The local compose stack uses `wrestlingdev`.
+* `OTEL_EXPORTER_OTLP_ENDPOINT` - OTLP endpoint for Rails traces. The local compose stack uses `http://otel-collector:4318`.
+* `GRAFANA_HOST` - Production hostname for Grafana when using `deploy/docker-compose-prod.yml`.
+* `GRAFANA_ADMIN_USER` - Production Grafana admin username.
+* `GRAFANA_ADMIN_PASSWORD` - Production Grafana admin password.
+* `JAEGER_HOST` - Production hostname for Jaeger when using `deploy/docker-compose-prod.yml`.
+* `JAEGER_BASIC_AUTH_USERS` - Traefik basic-auth users for production Jaeger in `htpasswd` format. Quote this value in `prod.env` when using hashes that contain `$`, for example `JAEGER_BASIC_AUTH_USERS='admin:$apr1$...'`.
+
+If `OTEL_EXPORTER_OTLP_ENDPOINT` is not set, the Rails OpenTelemetry initializer does not install tracing.
 
 This project provides multiple ways to develop and deploy, with Docker being the primary method.
 

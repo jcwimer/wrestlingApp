@@ -7,14 +7,28 @@
 ## Steps
 1. Fill out the secrets file in `deploy/kubernetes/secrets/secrets.yaml`
 2. Fill out the ingress `deploy/kubernetes/manifests/ingress.yaml` because I own wrestlingdev.com not you. Put your own domain in there.
-3. Run `kubectl apply -f deploy/kubernetes/secrets/`
-4. Run `kubectl apply -f deploy/kubernetes/manifests/`
+3. Fill out the telemetry ingress hostnames in `deploy/kubernetes/manifests/telemetry.yaml` for Grafana and Jaeger.
+4. Run `kubectl apply -f deploy/kubernetes/secrets/`
+5. Run `kubectl apply -f deploy/kubernetes/manifests/`
 
 ## What do I get?
 1. Wrestlingdev deployed with 2 replicas.
 2. Two workers are deployed to run background jobs
 3. A standalone mariadb that can back up to S3 compatable storage if you set the values in `deploy/kubernetes/secrets/secrets.yaml` and prometheus ready metrics
-4. A standalone memcahced.
+4. OpenTelemetry Collector, Jaeger, Prometheus, and Grafana for tracing and performance dashboards.
+
+## Tracing and dashboards
+
+Rails sends OTLP traces to `otel-collector:4318`. The collector exports traces to Jaeger and span metrics to Prometheus. Grafana is provisioned with the same dashboards used by the Docker Compose dev/prod tracing stack.
+
+Grafana uses the `grafana_admin_user` and `grafana_admin_password` values from `deploy/kubernetes/secrets/secrets.yaml`. Jaeger is protected with Traefik basic auth through the `wrestlingdev-jaeger-basic-auth` Secret. Generate the Jaeger value with `htpasswd -nbB admin 'your-password-here'` and put the full output in `stringData.users`.
+
+The telemetry ingress defaults to:
+
+* Grafana: `grafana.wrestlingdev.com`
+* Jaeger: `jaeger.wrestlingdev.com`
+
+If you deploy into a namespace other than `default`, update the Jaeger ingress middleware annotation from `default-wrestlingdev-jaeger-basic-auth@kubernetescrd` to match your namespace.
 
 ## How do I update the app?
 First, be sure your secrets.yaml has all envs up to date. Then, make sure you get all manifest changes

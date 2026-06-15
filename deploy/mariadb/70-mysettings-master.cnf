@@ -1,0 +1,19 @@
+[mariadb]
+# Slow log
+slow_query_log=1
+slow_query_log_file=/var/log/mariadb/slow.log
+long_query_time=0.2
+# mysqltunner recommendations
+tmp_table_size=32M
+max_heap_table_size=32M
+performance_schema=ON
+innodb_log_file_size=32M
+table_open_cache=4000
+# master slave
+server_id=1                       # Unique server ID for the master
+log_bin=mysql-bin                 # Enable binary logging
+binlog_format=ROW                 # Recommended format for replication (ROW, STATEMENT, or MIXED)
+log_slave_updates=ON              # Ensure any changes replicated to the master are also logged to the binary log (useful for multi-source replication)
+sync_binlog=1                     # Ensures binary logs are synchronized with disk after each transaction for data safety
+expire_logs_days=7                # Optional: Number of days to retain binary logs (helps with cleanup)
+gtid_strict_mode=ON               # Enforce GTID consistency — rejects transactions that would break GTID sequences
