@@ -79,14 +79,10 @@ ENDSSH
 
     stage('deploy-production') {
       when {
-<<<<<<< HEAD
-        expression { buildsBranch('master') }
-=======
         allOf {
           expression { buildsBranch('master') }
           triggeredBy 'SCMTrigger'
         }
->>>>>>> development
       }
 
       steps {
