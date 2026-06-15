@@ -81,7 +81,9 @@ ENDSSH
       when {
         allOf {
           expression { buildsBranch('master') }
-          triggeredBy 'SCMTrigger'
+          not {
+            triggeredBy 'TimerTrigger'
+          }
         }
       }
 

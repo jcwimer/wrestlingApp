@@ -40,7 +40,8 @@
   - The Jenkins job is named `wrestlingdev`.
   - The test stage is named `development-tests`.
   - The test deploy stage is named `deploy-test`.
-  - The production deploy stage is named `deploy-production` and only runs on SCM-triggered `master` builds.
+  - The production deploy stage is named `deploy-production` and runs on SCM-triggered or manually triggered `master` builds.
+  - Timer-triggered `master` builds skip production deploys.
   - Production deploy maps the Jenkins secret text credential `DOCKERHUB_PASSWORD` to the `DOCKERHUB_PASSWORD` environment variable.
   - Test and production deploy SSH use the Jenkins credential ID from the old freestyle job.
 
