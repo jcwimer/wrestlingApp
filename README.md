@@ -220,7 +220,11 @@ The production version of this is currently deployed in Kubernetes (via K3s). Se
 
 ## CI/CD
 
+<<<<<<< HEAD
 The Jenkins pipeline definition for the `wrestlingdev` job lives in `ci_cd/Jenkinsfile`. On `development`, it checks out `origin/development`, rebuilds the production Docker image, runs `bin/run-all-tests.sh` inside the image in the `development-tests` stage, and deploys to the test host in the `deploy-test` stage after tests pass. On `master`, it runs the `deploy-production` stage, maps the `DOCKERHUB_PASSWORD` secret text credential into the `DOCKERHUB_PASSWORD` environment variable, pushes the production Docker image to Docker Hub, and deploys production. Deploys use the Jenkins SSH credential used by the old freestyle job.
+=======
+The Jenkins pipeline definition for the `wrestlingdev` job lives in `ci_cd/Jenkinsfile`. On `development`, it checks out `origin/development`, rebuilds the production Docker image, runs `bin/run-all-tests.sh` inside the image in the `development-tests` stage, and deploys to the test host in the `deploy-test` stage after tests pass. On `master`, SCM-triggered builds run the `deploy-production` stage, map the `DOCKERHUB_PASSWORD` secret text credential into the `DOCKERHUB_PASSWORD` environment variable, push the production Docker image to Docker Hub, and deploy production. Timer-triggered `master` builds skip production deploys. Deploys use the Jenkins SSH credential used by the old freestyle job.
+>>>>>>> development
 
 I'm using a Hetzner dedicated server with an i7-8700, 500GB NVME (RAID1), and 64GB ECC RAM. I have a hot standby (SQL read only replication) in my homelab.
 
