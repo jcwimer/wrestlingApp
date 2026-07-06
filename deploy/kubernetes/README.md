@@ -21,6 +21,8 @@
 
 Rails sends OTLP traces to `otel-collector:4318`. The collector exports traces to Jaeger and span metrics to Prometheus. Grafana is provisioned with the same dashboards used by the Docker Compose dev/prod tracing stack.
 
+Jaeger all-in-one uses in-memory storage and is started with `--memory.max-traces=50000` so recent traces are available for drill-down without unbounded memory growth. Prometheus stores the dashboard span metrics separately.
+
 Grafana uses the `grafana_admin_user` and `grafana_admin_password` values from `deploy/kubernetes/secrets/secrets.yaml`. Jaeger is protected with Traefik basic auth through the `wrestlingdev-jaeger-basic-auth` Secret. Generate the Jaeger value with `htpasswd -nbB admin 'your-password-here'` and put the full output in `stringData.users`.
 
 The telemetry ingress defaults to:

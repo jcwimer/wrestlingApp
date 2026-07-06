@@ -34,6 +34,7 @@
   - Grafana datasource/dashboard provisioning lives under `deploy/grafana/provisioning`; dashboards live in `deploy/grafana/dashboards`.
   - Local URLs: Grafana `http://localhost:3000`, Jaeger `http://localhost:16686`, Prometheus `http://localhost:9090`.
   - Prometheus span metrics are `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`.
+  - Jaeger all-in-one uses in-memory storage and is capped with `--memory.max-traces=50000` in compose and Kubernetes manifests.
 
 # CI/CD
 - Jenkins CI/CD lives in `ci_cd/Jenkinsfile`.

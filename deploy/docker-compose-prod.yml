@@ -100,6 +100,8 @@ services:
 
   jaeger:
     image: jaegertracing/all-in-one:1.62.0
+    command:
+      - --memory.max-traces=50000
     restart: always
     environment:
       - COLLECTOR_OTLP_ENABLED=true

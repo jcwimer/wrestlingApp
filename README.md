@@ -80,6 +80,8 @@ Important local telemetry files:
 
 The span metrics exported to Prometheus are named `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`. Common labels include `service_name`, `span_kind`, `span_name`, `code_namespace`, `http_route`, `http_request_method`, and `http_response_status_code`.
 
+Jaeger all-in-one uses in-memory trace storage in the local, compose production, and Kubernetes telemetry stacks. It is started with `--memory.max-traces=50000` so trace drill-down remains available for recent requests without allowing unbounded memory growth. Prometheus keeps the dashboard time-series metrics separately.
+
 The production docker compose deployment uses the same collector, Jaeger, Prometheus, and Grafana setup. Grafana uses its built-in login, and Jaeger is protected at Traefik with basic auth because Jaeger does not provide its own login system.
 
 To run a single test file:
