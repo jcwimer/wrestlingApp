@@ -32,6 +32,7 @@
   - Kubernetes tracing is defined in `deploy/kubernetes/manifests/telemetry.yaml`; Rails pods in `deploy/kubernetes/manifests/wrestlingdev.yaml` export OTLP to `http://otel-collector:4318`.
   - Collector config lives in `deploy/otel-collector-config.yml`; Prometheus config lives in `deploy/prometheus.yml`.
   - Grafana datasource/dashboard provisioning lives under `deploy/grafana/provisioning`; dashboards live in `deploy/grafana/dashboards`.
+  - Kubernetes Grafana downloads dashboards from `deploy/grafana/dashboards` with an init container; do not embed dashboard JSON in the telemetry ConfigMap.
   - Local URLs: Grafana `http://localhost:3000`, Jaeger `http://localhost:16686`, Prometheus `http://localhost:9090`.
   - Prometheus span metrics are `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`.
   - Jaeger all-in-one uses in-memory storage and is capped with `--memory.max-traces=50000` in compose and Kubernetes manifests.
