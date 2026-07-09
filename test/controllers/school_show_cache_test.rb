@@ -103,6 +103,43 @@ class SchoolShowCacheTest < ActionController::TestCase
     assert_operator cache_writes(post_action_events), :>, 0, "Expected completed match to expire school show wrestler cell cache"
   end
 
+  test "assigning a mat expires school show wrestler cell caches" do
+    warm_events = cache_events_for_school_show do
+      get :show, params: { id: @school.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(warm_events), :>, 0, "Expected initial school show render to warm wrestler cell cache"
+
+    wrestler = @school.wrestlers.first
+    match = wrestler.unfinished_matches.first
+    mat = @tournament.mats.create!(name: "Cache Test Mat")
+
+    post_action_events = cache_events_for_school_show do
+      mat.assign_match_to_queue!(match, 1)
+      get :show, params: { id: @school.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(post_action_events), :>, 0, "Expected mat assignment to expire school show wrestler cell cache"
+  end
+
+  test "match stat update expires school stats cache" do
+    warm_events = cache_events_for_school_stats do
+      get :stats, params: { id: @school.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(warm_events), :>, 0, "Expected initial school stats render to warm cache"
+
+    wrestler = @school.wrestlers.first
+    match = wrestler.all_matches.first
+
+    post_action_events = cache_events_for_school_stats do
+      match.update!(w1_stat: "T2")
+      get :stats, params: { id: @school.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(post_action_events), :>, 0, "Expected match stat update to expire school stats cache"
+  end
+
   private
 
   def sign_out
@@ -111,11 +148,19 @@ class SchoolShowCacheTest < ActionController::TestCase
     @controller.instance_variable_set(:@current_ability, nil)
   end
 
-  def cache_events_for_school_show
+  def cache_events_for_school_show(&block)
+    cache_events_for("school_show_wrestler_cells", &block)
+  end
+
+  def cache_events_for_school_stats(&block)
+    cache_events_for("#{@school.id}_Stats", &block)
+  end
+
+  def cache_events_for(key_marker)
     events = []
     subscriber = lambda do |name, _start, _finish, _id, payload|
       key = payload[:key].to_s
-      next unless key.include?("school_show_wrestler_cells")
+      next unless key.include?(key_marker)
 
       events << { name: name, hit: payload[:hit] }
     end

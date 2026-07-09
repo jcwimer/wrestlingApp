@@ -67,6 +67,22 @@ class WeightShowCacheTest < ActionController::TestCase
     assert_no_match(/name="wrestler\[\d+\]\[original_seed\]"/, response.body)
   end
 
+  test "school update expires weight show readonly row cache" do
+    first_events = cache_events_for_weight_show do
+      get :show, params: { id: @weight.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(first_events), :>, 0, "Expected initial weight show render to write readonly row fragments"
+
+    school = @weight.wrestlers.first.school
+    second_events = cache_events_for_weight_show do
+      school.update!(name: "#{school.name} Updated")
+      get :show, params: { id: @weight.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(second_events), :>, 0, "Expected school update to invalidate weight show readonly row cache"
+  end
+
   private
 
   def sign_out

@@ -12,6 +12,7 @@ class Mat < ApplicationRecord
 
 	after_save :clear_queue_matches_cache
 	after_commit :broadcast_up_matches_board, on: :update, if: :up_matches_queue_changed?
+	after_commit :touch_assigned_match_wrestlers_for_cached_views, on: :update, if: :saved_change_to_name?
 
 	def assign_next_match
 		slot = first_empty_queue_slot
@@ -248,6 +249,11 @@ class Mat < ApplicationRecord
 	def clear_queue_matches_cache
 		@queue_matches = nil
 		@queue_match_slot_ids = nil
+	end
+
+	def touch_assigned_match_wrestlers_for_cached_views
+		wrestler_ids = matches.where(finished: [nil, 0]).pluck(:w1, :w2).flatten.compact.uniq
+		Wrestler.where(id: wrestler_ids).find_each(&:touch)
 	end
 
 	def queue_match_at(position)

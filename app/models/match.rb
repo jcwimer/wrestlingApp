@@ -18,6 +18,7 @@ class Match < ApplicationRecord
 	# this is done with a turbo stream
 	after_commit :broadcast_mat_assignment_change, if: :saved_change_to_mat_id?, on: [:create, :update]
 	after_commit :broadcast_up_matches_board, on: :update, if: :saved_change_to_mat_id?
+	after_commit :touch_wrestlers_for_cached_views, on: [:create, :update, :destroy]
 
 	# Enqueue advancement and related actions after the DB transaction has committed.
 	# Using after_commit ensures any background jobs enqueued inside these callbacks
@@ -349,6 +350,14 @@ class Match < ApplicationRecord
 	  if (changes['finished'] && changes['finished'][1] == 1) || (finished == 1 && finished_at.nil?)
 	    self.finished_at = Time.current.utc
 	  end
+	end
+
+	def touch_wrestlers_for_cached_views
+		wrestler_ids = [w1, w2]
+		wrestler_ids.concat(previous_changes["w1"] || [])
+		wrestler_ids.concat(previous_changes["w2"] || [])
+
+		Wrestler.where(id: wrestler_ids.compact.uniq).find_each(&:touch)
 	end
 
 	def broadcast_mat_assignment_change

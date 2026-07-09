@@ -76,7 +76,7 @@
         </tr>
       <% else %>
         <tr>
-          <% cache ["school_show_wrestler_cells", wrestler] do %>
+          <% cache ["school_show_wrestler_cells", wrestler, wrestler.weight] do %>
             <%= render "schools/wrestler_row_cells", wrestler: wrestler %>
           <% end %>
           <% if can? :manage, wrestler.school %>

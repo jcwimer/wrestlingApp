@@ -93,6 +93,24 @@ class TournamentPagesCacheTest < ActionController::TestCase
     assert_operator cache_hits(second_print_events), :>, 0, "Expected repeat print bracket render to hit cache"
   end
 
+  test "bracket cache does not leak director actions across users" do
+    owner_events = cache_events_for([@weight.id.to_s + "_bracket"]) do
+      get :bracket, params: { id: @tournament.id, weight: @weight.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(owner_events), :>, 0, "Expected owner request to warm bracket cache"
+    assert_includes response.body, "Tournament Director Bracket Actions"
+
+    sign_out
+
+    spectator_events = cache_events_for([@weight.id.to_s + "_bracket"]) do
+      get :bracket, params: { id: @tournament.id, weight: @weight.id }
+      assert_response :success
+    end
+    assert_operator cache_hits(spectator_events), :>, 0, "Expected spectator request to hit bracket cache warmed by owner"
+    assert_not_includes response.body, "Tournament Director Bracket Actions"
+  end
+
   test "completing a match expires team_scores and bracket caches" do
     team_warm_events = cache_events_for(%w[team_scores team_score_row]) do
       get :team_scores, params: { id: @tournament.id }
@@ -131,6 +149,12 @@ class TournamentPagesCacheTest < ActionController::TestCase
   end
 
   private
+
+  def sign_out
+    @request.session[:user_id] = nil
+    @controller.instance_variable_set(:@current_user, nil)
+    @controller.instance_variable_set(:@current_ability, nil)
+  end
 
   def cache_events_for(key_markers)
     events = []

@@ -1,4 +1,4 @@
-<% cache ["weight_show_wrestler_row", wrestler] do %>
+<% cache ["weight_show_wrestler_row", wrestler, wrestler.school] do %>
   <tr>
     <td><%= link_to wrestler.name, wrestler %></td>
     <td><%= wrestler.school.name %></td>

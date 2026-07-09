@@ -8,7 +8,7 @@
     <strong>Name:</strong>
     <%= @wrestler.name %> <% if can? :manage, @school %><%= link_to " Edit", edit_wrestler_path(@wrestler), :class=>"fas fa-edit" %><% end %>
   </p>
-<% cache ["#{@wrestler.id}", @wrestler] do %>
+<% cache ["wrestler_show", @wrestler, @wrestler.school, @wrestler.weight] do %>
   <p>
     <strong>School:</strong>
     <%= @wrestler.school.name %>
