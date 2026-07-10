@@ -5,6 +5,24 @@ class TournamentTest < ActiveSupport::TestCase
   test "the truth" do
      assert true
    end
+
+  test "Tournament sets date sort key from its date" do
+    tournament = Tournament.new(
+      name: "Date Sort Tournament",
+      address: "Some place",
+      director: "Some director",
+      director_email: "date-sort@example.com",
+      tournament_type: "Pool to bracket",
+      date: Date.new(2026, 7, 9)
+    )
+
+    assert tournament.valid?
+    assert_equal tournament.date.jd, tournament.date_sort_key
+
+    tournament.date = Date.new(2026, 7, 10)
+    assert tournament.valid?
+    assert_equal tournament.date.jd, tournament.date_sort_key
+  end
    
    test "Tournament validations" do
       tourney = Tournament.new

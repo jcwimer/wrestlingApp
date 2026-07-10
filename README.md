@@ -15,6 +15,8 @@ This application is being created to run a wrestling tournament.
 * Solid Cable -> MySQL/MariaDB for websocket channels
 * Hotwired Stimulus for client-side JavaScript
 
+The tournaments index stores each tournament date as a Julian-day integer so it can order by calendar-day distance from today and paginate in SQL on both SQLite and MariaDB.
+
 # Development
 
 ## Develop with docker
@@ -83,6 +85,8 @@ The span metrics exported to Prometheus are named `traces_span_metrics_calls_tot
 Jaeger all-in-one uses in-memory trace storage in the local, compose production, and Kubernetes telemetry stacks. It is started with `--memory.max-traces=50000` so trace drill-down remains available for recent requests without allowing unbounded memory growth. Prometheus keeps the dashboard time-series metrics separately.
 
 The production docker compose deployment uses the same collector, Jaeger, Prometheus, and Grafana setup. Grafana uses its built-in login, and Jaeger is protected at Traefik with basic auth because Jaeger does not provide its own login system.
+
+The Kubernetes Grafana deployment downloads the dashboard JSON files from `deploy/grafana/dashboards` with an init container instead of embedding them in the telemetry manifest ConfigMap. Keep dashboard changes in `deploy/grafana/dashboards` so Docker Compose and Kubernetes use the same source files.
 
 To run a single test file:
 1. Get a shell with ruby and rails: `bash bin/rails-dev-run.sh wrestlingdev-development`

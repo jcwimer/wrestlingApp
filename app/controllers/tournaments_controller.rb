@@ -295,26 +295,30 @@ class TournamentsController < ApplicationController
   end
 
   def index
-    # Simple manual pagination to avoid introducing a gem.
     per_page = 20
-    page = params[:page].to_i > 0 ? params[:page].to_i : 1
-    offset = (page - 1) * per_page
+    @page = params[:page].to_i > 0 ? params[:page].to_i : 1
+    offset = (@page - 1) * per_page
 
-    if params[:search].present?
-      tournaments = Tournament.search_date_name(params[:search]).to_a
+    tournaments = if params[:search].present?
+      Tournament.search_date_name(params[:search])
     else
-      tournaments = Tournament.all.to_a
+      Tournament.all
     end
 
-    # Sort by distance from today (closest first)
-    today = Date.today
-    tournaments.sort_by! { |t| (t.date - today).abs }
-
-    @total_count = tournaments.size
+    @total_count = tournaments.count
     @total_pages = (@total_count / per_page.to_f).ceil
-    @page = page
     @per_page = per_page
-    @tournaments = tournaments.slice(offset, per_page) || []
+
+    tournaments_table = Tournament.arel_table
+    date_distance = Arel::Nodes::NamedFunction.new(
+      "ABS",
+      [tournaments_table[:date_sort_key] - Date.current.jd]
+    )
+
+    @tournaments = tournaments
+      .order(date_distance.asc, tournaments_table[:date].asc, tournaments_table[:id].asc)
+      .offset(offset)
+      .limit(per_page)
   end
 
   def show

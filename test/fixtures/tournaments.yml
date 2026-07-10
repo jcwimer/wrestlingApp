@@ -9,6 +9,7 @@ one:
   tournament_type: Pool to bracket
   user_id: 1
   date: 2015-12-30
+  date_sort_key: 2457387
   is_public: true
 
 two:
@@ -20,4 +21,5 @@ two:
   tournament_type: Pool to bracket
   user_id: 1
   date: 2015-12-30
+  date_sort_key: 2457387
   is_public: true

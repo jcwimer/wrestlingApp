@@ -12,6 +12,7 @@ class Tournament < ApplicationRecord
 	has_many :tournament_job_statuses, dependent: :destroy
 	
 	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
+	before_validation :set_date_sort_key
 
 	attr_accessor :import_text
 
@@ -295,6 +296,10 @@ class Tournament < ApplicationRecord
 	end
 	
 	private
+
+	def set_date_sort_key
+		self.date_sort_key = date.jd if date
+	end
 	
 	def connection_adapter
 	  ActiveRecord::Base.connection.adapter_name

@@ -23,6 +23,7 @@
 - Stimulus is used for javascript.
 - javascript tests are through vitest. See `vitest.config.js`. Run `npm run test:js`
 - importmap pins in `importmap.rb` and aliases in `vitest.config.js` need to match.
+- Tournament index ordering uses `tournaments.date_sort_key` (`Date#jd`) so closest-date pagination remains database-neutral between SQLite and MariaDB.
 
 # Telemetry
 - Docker compose tracing uses OpenTelemetry, not InfluxDB.
