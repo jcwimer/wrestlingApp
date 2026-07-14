@@ -1,4 +1,4 @@
-FROM ruby:4.0.1
+FROM ruby:4.0.5
 
 # Accept build arguments for user/group IDs
 ARG USER_ID=1000

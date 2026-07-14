@@ -1,32 +1,22 @@
-FROM ruby:4.0.1-slim
+# Ruby 4.0.5; Chainguard's public registry only exposes this image through latest-dev.
+FROM cgr.dev/chainguard/ruby:latest-dev@sha256:8a3f04a5ca1cb89f2acfce2e41b843ef396f946d641a8554a8ae291a428c92af
 
 #HEALTHCHECK --start-period=60s CMD curl http://127.0.0.1/
 
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-
-RUN apt-get -qq update --fix-missing \
-  && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y \
-    build-essential \
+USER root
+RUN apk add --no-cache \
+    build-base \
     openssl \
     curl \
-    sqlite3 \
-    libsqlite3-dev \
-    wget \
-    default-libmysqlclient-dev \
-    libyaml-dev \
-    pkg-config \
+    sqlite \
+    sqlite-dev \
+    mariadb-connector-c-dev \
+    yaml-dev \
+    pkgconf \
     nodejs \
     npm \
     tzdata \
-    git \
-  && apt-get -qq clean \
-  && apt-get autoremove -y \
-  && rm -rf \
-    /var/lib/apt/lists/* \
-    /tmp/* \
-    /var/tmp/*
+    git
 
 RUN echo 'gem: --no-rdoc --no-ri' > /root/.gemrc
 RUN gem install bundler
@@ -55,11 +45,11 @@ RUN mkdir /ssl \
 EXPOSE 80
 EXPOSE 443
 
-# Tini solves the zombie PID problem
-ENTRYPOINT ["/tini", "--"]
-
 # Enable Solid Queue to run inside Puma
 ENV SOLID_QUEUE_IN_PUMA=true
 
+ENV MARIADB_TLS_DISABLE_PEER_VERIFICATION=1
+
 # Use rails server instead of Puma directly to ensure Rails environment is loaded
-CMD bundle exec rails server -e production -p 80 -b '0.0.0.0'
+ENTRYPOINT []
+CMD ["bundle", "exec", "rails", "server", "-e", "production", "-p", "80", "-b", "0.0.0.0"]
