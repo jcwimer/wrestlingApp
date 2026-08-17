@@ -14,7 +14,7 @@
   - Currently, I'm using docker compose for production and kubernetes for my DR environment. You can see this in `ci_cd/Jenkinsfile` on the deploy-production stage.
 
 # Development
-- I have two ways to run rails commands in the repo. Either use rvm with `rvm use 4.0.5; rvm gemset use wrestlingdev;` or use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
+- I use rbenv locally if that is not available use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
   - If the docker image doesn't exist, use the build command: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
   - If the Gemfile changes, you need to rebuild the docker image: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
 - Do not add unnecessary comments to the code where you remove things.

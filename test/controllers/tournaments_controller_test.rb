@@ -82,19 +82,19 @@ class TournamentsControllerTest < ActionController::TestCase
 
   test "logged in tournament owner can generate matches" do
     sign_in_owner
-    get :generate_matches, params: { id: 1 }
+    post :generate_matches, params: { id: 1 }
     success
   end
 
   test "logged in non tournament owner cannot generate matches" do
     sign_in_non_owner
-    get :generate_matches, params: { id: 1 }
+    post :generate_matches, params: { id: 1 }
     redirect
   end
   
   test "logged in school delegate cannot generate matches" do
     sign_in_school_delegate
-    get :generate_matches, params: { id: 1 }
+    post :generate_matches, params: { id: 1 }
     redirect
   end
 
@@ -803,7 +803,7 @@ class TournamentsControllerTest < ActionController::TestCase
   
   test "logged in tournament delegate can generate matches" do
     sign_in_delegate
-    get :generate_matches, params: { id: 1 }
+    post :generate_matches, params: { id: 1 }
     success
   end
 
@@ -1107,7 +1107,7 @@ class TournamentsControllerTest < ActionController::TestCase
     wrestler = @tournament.weights.first.wrestlers.first
     wrestler.original_seed = 15
     wrestler.save
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1118,7 +1118,7 @@ class TournamentsControllerTest < ActionController::TestCase
     @tournament.user_id = 1
     @tournament.save
     create_wrestlers_for_weight_for_double_elim(@tournament.weights.first, @tournament.schools.first, 1, 20)
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1129,7 +1129,7 @@ class TournamentsControllerTest < ActionController::TestCase
     @tournament.user_id = 1
     @tournament.save
     @tournament.weights.first.wrestlers.first.destroy
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1140,7 +1140,7 @@ class TournamentsControllerTest < ActionController::TestCase
     @tournament.user_id = 1
     @tournament.save
     create_wrestlers_for_weight_for_double_elim(@tournament.weights.first, @tournament.schools.first, 1, 20)
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1151,7 +1151,7 @@ class TournamentsControllerTest < ActionController::TestCase
     @tournament.user_id = 1
     @tournament.save
     @tournament.weights.first.wrestlers.first.destroy
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1162,7 +1162,7 @@ class TournamentsControllerTest < ActionController::TestCase
     @tournament.user_id = 1
     @tournament.save
     create_wrestlers_for_weight(@tournament.weights.first, @tournament.schools.first, 1, 20)
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1173,7 +1173,7 @@ class TournamentsControllerTest < ActionController::TestCase
     @tournament.user_id = 1
     @tournament.save
     @tournament.weights.first.wrestlers.first.destroy
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1186,7 +1186,7 @@ class TournamentsControllerTest < ActionController::TestCase
     wrestler = @tournament.weights.first.wrestlers.second
     wrestler.original_seed = 1
     wrestler.save
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1206,7 +1206,7 @@ class TournamentsControllerTest < ActionController::TestCase
     wrestlers[4].original_seed = nil # Unseeded wrestler
     wrestlers.each(&:save)
   
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     redirect_tournament_error
   end
 
@@ -1226,7 +1226,7 @@ class TournamentsControllerTest < ActionController::TestCase
     wrestlers[4].original_seed = nil # Unseeded wrestler
     wrestlers.each(&:save)
   
-    get :generate_matches, params: { id: @tournament.id }
+    post :generate_matches, params: { id: @tournament.id }
     success
   end
 

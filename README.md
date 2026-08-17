@@ -139,9 +139,8 @@ Minitest still owns the Rails side: controllers, permissions, models, channels, 
 
 Cypress tests are deprecated for this project. Use Vitest for JavaScript unit coverage and Minitest for Rails behavior.
 
-## Develop with rvm
-With rvm installed, run `rvm install ruby-3.2.0`
-Then, `cd ../; cd wrestlingApp`. This will load the gemset file in this repo.
+## Develop with rbenv
+I use rbenv locally. With rbenv installed, run `rbenv install RUBY_VERSION`
 
 ## Quick Rails Commands Without Local Installation
 You can run one-off Rails commands without installing Rails locally by using the development Docker image:

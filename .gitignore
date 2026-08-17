@@ -39,3 +39,4 @@ cypress-tests/cypress/videos
 .codex
 rvm-use.sh
 git.sh
+\$HOME

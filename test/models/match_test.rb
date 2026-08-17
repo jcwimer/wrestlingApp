@@ -108,6 +108,18 @@ class MatchTest < ActiveSupport::TestCase
      match.save
      assert !match.valid?
    end
+   test "Match should not be valid when the winner is not in the match" do
+     create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
+     match = @tournament.matches.reload.first
+     outsider = match.weight.wrestlers.find { |wrestler| ![match.w1, match.w2].include?(wrestler.id) }
+     match.winner_id = outsider.id
+     match.finished = 1
+     match.win_type = "Decision"
+     match.score = "1-0"
+
+     assert_not match.valid?
+     assert_includes match.errors[:winner_id], "must be one of the wrestlers in the match"
+   end
    test "Match should not be valid if an incorrect bracket position is given" do
      create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
      matches = @tournament.matches.reload

@@ -9,7 +9,7 @@ class Match < ApplicationRecord
 	belongs_to :wrestler2, class_name: 'Wrestler', foreign_key: 'w2', optional: true
 	has_many :wrestlers, :through => :weight
 	has_many :schools, :through => :wrestlers
-	validate :score_validation, :win_type_validation, :bracket_position_validation, :overtime_type_validation
+	validate :score_validation, :win_type_validation, :bracket_position_validation, :overtime_type_validation, :winner_validation
 	
 	# Callback to update finished_at when a match is finished
 	before_save :update_finished_at
@@ -79,6 +79,13 @@ class Match < ApplicationRecord
 	  	  errors.add(:win_type, "can only be one of the following #{WIN_TYPES.to_s}")
 	    end
 	  end
+	end
+
+	def winner_validation
+		return unless winner_id
+		return if [w1, w2].compact.include?(winner_id)
+
+		errors.add(:winner_id, "must be one of the wrestlers in the match")
 	end
 	
 	def overtime_type_validation

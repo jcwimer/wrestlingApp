@@ -29,9 +29,18 @@ class MatchChannelTest < ActionCable::Channel::TestCase
     assert_has_stream_for @match
   end
 
-  test "anonymous user can subscribe to a private match stream" do
+  test "anonymous user cannot subscribe to a private match stream" do
     @match.tournament.update!(is_public: false)
     stub_connection current_user: nil
+
+    subscribe(match_id: @match.id)
+
+    assert subscription.rejected?
+  end
+
+  test "tournament owner can subscribe to a private match stream" do
+    @match.tournament.update!(is_public: false)
+    stub_connection current_user: users(:one)
 
     subscribe(match_id: @match.id)
 

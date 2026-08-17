@@ -10,6 +10,11 @@ class MatchChannel < ApplicationCable::Channel
       return
     end
 
+    unless can?(:read, @match.tournament)
+      reject
+      return
+    end
+
     stream_for @match
   end
 
