@@ -12,9 +12,14 @@
     </thead>
 
     <tbody>
-      <% (local_assigns[:mats] || tournament.up_matches_mats).each do |m| %>
-        <%= render "tournaments/up_matches_mat_row", mat: m %>
-      <% end %>
+      <%= render partial: "tournaments/up_matches_mat_row",
+                 collection: (local_assigns[:mats] || tournament.up_matches_mats),
+                 as: :mat,
+                 cached: ->(mat) {
+                   queue_matches = mat.queue_matches
+                   dependencies = queue_matches.compact.flat_map { |match| [match, match.wrestler1, match.wrestler2] }
+                   ["up_matches_mat_row", mat, *dependencies]
+                 } %>
     </tbody>
   </table>
   <br>
@@ -31,7 +36,10 @@
     </thead>
 
     <tbody>
-      <%= render partial: "tournaments/up_matches_unassigned_row", collection: (local_assigns[:matches] || tournament.up_matches_unassigned_matches), as: :match %>
+      <%= render partial: "tournaments/up_matches_unassigned_row",
+                 collection: (local_assigns[:matches] || tournament.up_matches_unassigned_matches),
+                 as: :match,
+                 cached: ->(match) { ["up_matches_unassigned_row", match, match.wrestler1, match.wrestler2] } %>
     </tbody>
   </table>
   <br>

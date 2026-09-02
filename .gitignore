@@ -37,6 +37,11 @@ cypress-tests/cypress/videos
 
 /.ruby-lsp
 .codex
-rvm-use.sh
 git.sh
 \$HOME
+
+/import_jsons/*
+!/import_jsons/.keep
+
+/storage/*
+!/storage/.keep

@@ -137,6 +137,9 @@ Vitest currently covers client-side logic that is hard to test well with Minites
 
 Minitest still owns the Rails side: controllers, permissions, models, channels, redirects, rendered ERB, and database behavior. Vitest fills the gap for logic that runs entirely in the browser without needing Cypress or a full browser session.
 
+Prosopite scans controller actions in development and test. Development detections are written to the Rails log, while test detections fail the controller test. Inline jobs are excluded from a request's scan because they have a separate query lifecycle in production.
+Collection fragment caches use Rails collection rendering so Solid Cache reads and writes their entries in batches.
+
 Cypress tests are deprecated for this project. Use Vitest for JavaScript unit coverage and Minitest for Rails behavior.
 
 ## Develop with rbenv

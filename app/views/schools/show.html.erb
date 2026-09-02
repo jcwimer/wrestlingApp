@@ -52,8 +52,9 @@
   </thead>
 
   <tbody>
-    <% @wrestlers.sort_by { |w| w.weight.max }.each do |wrestler| %>
-      <% if params[:school_permission_key].present? %>
+    <% sorted_wrestlers = @wrestlers.sort_by { |w| w.weight.max } %>
+    <% if params[:school_permission_key].present? %>
+      <% sorted_wrestlers.each do |wrestler| %>
         <tr>
           <%= render "schools/wrestler_row_cells", wrestler: wrestler, school_permission_key: params[:school_permission_key] %>
 
@@ -74,23 +75,14 @@
             </td>
           <% end %>
         </tr>
-      <% else %>
-        <tr>
-          <% cache ["school_show_wrestler_cells", wrestler, wrestler.weight] do %>
-            <%= render "schools/wrestler_row_cells", wrestler: wrestler %>
-          <% end %>
-          <% if can? :manage, wrestler.school %>
-            <td>
-              <%= link_to edit_wrestler_path(wrestler), class: "text-decoration-none" do %>
-                <span class="fas fa-edit" aria-hidden="true"></span>
-              <% end %>
-              <%= link_to wrestler_path(wrestler), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "text-decoration-none" do %>
-                <span class="fas fa-trash-alt" aria-hidden="true"></span>
-              <% end %>
-            </td>
-          <% end %>
-        </tr>
       <% end %>
+    <% else %>
+      <% can_manage_school = can?(:manage, @school) %>
+      <%= render partial: "schools/wrestler_row",
+                 collection: sorted_wrestlers,
+                 as: :wrestler,
+                 locals: { can_manage_school: can_manage_school },
+                 cached: ->(wrestler) { ["school_show_wrestler_cells", wrestler, wrestler.weight, can_manage_school] } %>
     <% end %>
   </tbody>
 </table>

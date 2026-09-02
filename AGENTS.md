@@ -24,6 +24,9 @@
 - javascript tests are through vitest. See `vitest.config.js`. Run `npm run test:js`
 - importmap pins in `importmap.rb` and aliases in `vitest.config.js` need to match.
 - Tournament index ordering uses `tournaments.date_sort_key` (`Date#jd`) so closest-date pagination remains database-neutral between SQLite and MariaDB.
+- Prosopite scans controller actions in development and test. Development detections are logged, detections in controller tests raise errors, and inline jobs are excluded from the parent request scan.
+- SQLite prepared statements are disabled in development and test so Prosopite can fingerprint the SQL emitted by Rails 8.1. Production MariaDB configuration is unchanged.
+- Collection fragment caches use Rails collection rendering so Solid Cache reads and writes their entries in batches.
 
 # Telemetry
 - Docker compose tracing uses OpenTelemetry, not InfluxDB.

@@ -97,12 +97,12 @@ class WeightShowCacheTest < ActionController::TestCase
       key = payload[:key].to_s
       next unless key.include?("weight_show_wrestler_row")
 
-      events << { name: name, hit: payload[:hit] }
+      events << { name: name, hit: payload[:hit] || payload[:hits].present? }
     end
 
     ActiveSupport::Notifications.subscribed(
       subscriber,
-      /cache_(read|write|fetch_hit|generate)\.active_support/
+      /cache_(read|write|fetch_hit|generate)(?:_multi)?\.active_support/
     ) do
       yield
     end
@@ -111,13 +111,13 @@ class WeightShowCacheTest < ActionController::TestCase
   end
 
   def cache_writes(events)
-    events.count { |event| event[:name] == "cache_write.active_support" }
+    events.count { |event| event[:name].start_with?("cache_write") }
   end
 
   def cache_hits(events)
     events.count do |event|
       event[:name] == "cache_fetch_hit.active_support" ||
-        (event[:name] == "cache_read.active_support" && event[:hit])
+        (event[:name].start_with?("cache_read") && event[:hit])
     end
   end
 end

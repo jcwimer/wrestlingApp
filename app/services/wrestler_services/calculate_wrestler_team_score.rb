@@ -1,7 +1,7 @@
 class CalculateWrestlerTeamScore
     def initialize( wrestler )
       @wrestler = wrestler
-      @tournament = @wrestler.tournament
+      @tournament = @wrestler.weight.tournament
     end
 
     def totalScore

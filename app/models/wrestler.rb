@@ -6,14 +6,14 @@ class Wrestler < ApplicationRecord
 	## Matches association
 	# Rails associations expect only a single column so we cannot do a w1 OR w2
 	# So we have to create two associations and combine them with the all_matches method
-	has_many :matches_as_w1, ->(wrestler){ where(weight_id: wrestler.weight_id) }, class_name: 'Match', foreign_key: 'w1'
-	has_many :matches_as_w2, ->(wrestler){ where(weight_id: wrestler.weight_id) }, class_name: 'Match', foreign_key: 'w2'
+	has_many :matches_as_w1, class_name: 'Match', foreign_key: 'w1'
+	has_many :matches_as_w2, class_name: 'Match', foreign_key: 'w2'
 	##
 	attr_accessor :poolAdvancePoints, :originalId, :swapId
 	
 	validates :name, :weight_id, :school_id, presence: true
 
-	before_destroy do 
+	before_destroy unless: :destroyed_by_association do
 		self.tournament.destroy_all_matches
 	end
 
@@ -157,8 +157,7 @@ class Wrestler < ApplicationRecord
 	end
        
 	def pool_matches
-		all_weight_pool_matches = all_matches.select{|m| m.bracket_position == "Pool"}
-		all_weight_pool_matches.select{|m| m.pool_number == self.pool}
+		all_matches.select{|m| m.bracket_position == "Pool"}
 	end
 
 	def has_a_pool_bye
@@ -200,8 +199,7 @@ class Wrestler < ApplicationRecord
 	end
 	
 	def matches_won
-		# Revert, but keep using winner association check
-		all_matches.select{|m| m.winner == self}	
+		all_matches.select{|m| m.winner_id == id}
 	end
 	
 	def pool_wins

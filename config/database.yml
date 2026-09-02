@@ -18,23 +18,25 @@ default: &default
     end
   %>
   timeout: 5000
+  # prepared_statements: false is do to a limitaion of prosopite being able to handle prepared statements with ?
+  prepared_statements: false
 
 development:
   primary:
     <<: *default
-    database: db/development.sqlite3
+    database: storage/development.sqlite3
     migrations_paths: db/migrate
   queue:
     <<: *default
-    database: db/development-queue.sqlite3
+    database: storage/development-queue.sqlite3
     migrations_paths: db/queue/migrate
   cache:
     <<: *default
-    database: db/development-cache.sqlite3
+    database: storage/development-cache.sqlite3
     migrations_paths: db/cache/migrate
   cable:
     <<: *default
-    database: db/development-cable.sqlite3
+    database: storage/development-cable.sqlite3
     migrations_paths: db/cable/migrate
 
 # Warning: The database defined as "test" will be erased and
@@ -43,19 +45,19 @@ development:
 test:
   primary:
     <<: *default
-    database: db/test.sqlite3
+    database: storage/test.sqlite3
     migrations_paths: db/migrate
   queue:
     <<: *default
-    database: db/test-queue.sqlite3
+    database: storage/test-queue.sqlite3
     migrations_paths: db/queue/migrate
   cache:
     <<: *default
-    database: db/test-cache.sqlite3
+    database: storage/test-cache.sqlite3
     migrations_paths: db/cache/migrate
   cable:
     <<: *default
-    database: db/test-cable.sqlite3
+    database: storage/test-cable.sqlite3
     migrations_paths: db/cable/migrate
 
 production:
@@ -95,4 +97,3 @@ production:
     host: <%= ENV['WRESTLINGDEV_DB_HOST'] %>
     port: <%= ENV['WRESTLINGDEV_DB_PORT'] %>
     migrations_paths: db/cable/migrate
-

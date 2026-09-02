@@ -6,8 +6,17 @@ class WrestlersController < ApplicationController
   # GET /wrestlers/1
   # GET /wrestlers/1.json
   def show
+    wrestler_id = @wrestler.id
+    @tournament = Tournament.preload(
+      weights: {
+        wrestlers: [:school, :deductedPoints, :matches_as_w1, :matches_as_w2]
+      }
+    ).find(@wrestler.tournament.id)
+    @wrestler = @tournament.weights.flat_map(&:wrestlers).find { |wrestler| wrestler.id == wrestler_id }
     @school = @wrestler.school
-    @tournament = @wrestler.tournament
+    @matches = Match.where(w1: wrestler_id).or(Match.where(w2: wrestler_id))
+      .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+      .order(:bout_number)
     @wrestler_points_calc = CalculateWrestlerTeamScore.new(@wrestler)
   end
 

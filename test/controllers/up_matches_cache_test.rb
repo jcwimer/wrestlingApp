@@ -154,12 +154,12 @@ class UpMatchesCacheTest < ActionController::TestCase
       key = payload[:key].to_s
       next unless key_markers.any? { |marker| key.include?(marker) }
 
-      events << { name: name, hit: payload[:hit] }
+      events << { name: name, hit: payload[:hit] || payload[:hits].present? }
     end
 
     ActiveSupport::Notifications.subscribed(
       subscriber,
-      /cache_(read|write|fetch_hit|generate)\.active_support/
+      /cache_(read|write|fetch_hit|generate)(?:_multi)?\.active_support/
     ) do
       yield
     end
@@ -168,13 +168,13 @@ class UpMatchesCacheTest < ActionController::TestCase
   end
 
   def cache_writes(events)
-    events.count { |event| event[:name] == "cache_write.active_support" }
+    events.count { |event| event[:name].start_with?("cache_write") }
   end
 
   def cache_hits(events)
     events.count do |event|
       event[:name] == "cache_fetch_hit.active_support" ||
-        (event[:name] == "cache_read.active_support" && event[:hit])
+        (event[:name].start_with?("cache_read") && event[:hit])
     end
   end
 end

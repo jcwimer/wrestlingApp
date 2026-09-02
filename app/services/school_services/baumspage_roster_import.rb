@@ -1,14 +1,17 @@
 class BaumspageRosterImport
   def initialize( school, import_text )
       @school = school
-      @import_text = import_text 
+      @import_text = import_text
+      @tournament = school.tournament
+      @weights_by_max = @tournament.weights.index_by { |weight| weight.max.to_f.to_i.to_s }
   end
 
   def import_roster
-  	@school.wrestlers.each do |wrestler|
-  		wrestler.destroy
-  	end
-  	parse_import_text
+    @tournament.destroy_all_matches
+    wrestler_ids = @school.wrestler_ids
+    Teampointadjust.where(wrestler_id: wrestler_ids).delete_all
+    Wrestler.where(id: wrestler_ids).delete_all
+    parse_import_text
   end
 
   def parse_import_text
@@ -60,14 +63,14 @@ class BaumspageRosterImport
     if season_loss == ""
       season_loss = 0
     end
-    wrestler = Wrestler.new
-    wrestler.name = name
-    wrestler.school_id = @school.id
-    wrestler.weight_id = Weight.where("tournament_id = ? and max = ?", @school.tournament.id, weight).first.id
-    wrestler.criteria = criteria
-    wrestler.season_win = season_win
-    wrestler.season_loss = season_loss
-    wrestler.extra = extra
-    wrestler.save
+    Wrestler.new(
+      name: name,
+      school: @school,
+      weight: @weights_by_max.fetch(weight.to_f.to_i.to_s),
+      criteria: criteria,
+      season_win: season_win,
+      season_loss: season_loss,
+      extra: extra
+    ).save
   end
 end

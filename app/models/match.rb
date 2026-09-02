@@ -1,6 +1,16 @@
 class Match < ApplicationRecord
 	include ActionView::RecordIdentifier
 
+	def self.touch_cached_views_for_wrestlers(wrestler_ids, tournament_id)
+		wrestler_rows = Wrestler.where(id: wrestler_ids.compact.uniq).pluck(:id, :school_id, :weight_id)
+		timestamp = Time.current
+
+		Wrestler.where(id: wrestler_rows.map(&:first)).touch_all(time: timestamp)
+		School.where(id: wrestler_rows.map(&:second).compact.uniq).touch_all(time: timestamp)
+		Weight.where(id: wrestler_rows.map(&:third).compact.uniq).touch_all(time: timestamp)
+		Tournament.where(id: tournament_id).touch_all(time: timestamp)
+	end
+
 	belongs_to :tournament, touch: true
 	belongs_to :weight, touch: true
 	belongs_to :mat, touch: true, optional: true
@@ -34,12 +44,6 @@ class Match < ApplicationRecord
 	}
 
 	def after_finished_actions
-	  if self.w1
-		wrestler1.touch
-	  end
-	  if self.w2
-		wrestler2.touch
-	  end
 	  if self.finished == 1 && self.winner_id != nil
 		advance_wrestlers
 		if self.mat
@@ -363,8 +367,7 @@ class Match < ApplicationRecord
 		wrestler_ids = [w1, w2]
 		wrestler_ids.concat(previous_changes["w1"] || [])
 		wrestler_ids.concat(previous_changes["w2"] || [])
-
-		Wrestler.where(id: wrestler_ids.compact.uniq).find_each(&:touch)
+		self.class.touch_cached_views_for_wrestlers(wrestler_ids, tournament_id)
 	end
 
 	def broadcast_mat_assignment_change

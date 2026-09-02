@@ -38,11 +38,10 @@
           <% end %>
         <% end %>
       <% else %>
-        <% sorted_wrestlers.each do |wrestler| %>
-          <% if wrestler.weight_id == @weight.id %>
-            <%= render "weights/readonly_wrestler_row", wrestler: wrestler %>
-          <% end %>
-        <% end %>
+        <%= render partial: "weights/readonly_wrestler_row",
+                   collection: sorted_wrestlers.select { |wrestler| wrestler.weight_id == @weight.id },
+                   as: :wrestler,
+                   cached: ->(wrestler) { ["weight_show_wrestler_row", wrestler, wrestler.school] } %>
       <% end %>
     	</tbody>
   </table>

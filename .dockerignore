@@ -3,3 +3,5 @@ frontend/node_modules
 log
 .bundle
 node_modules
+/import_jsons
+/storage

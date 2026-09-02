@@ -52,11 +52,17 @@ class SchoolShowCacheTest < ActionController::TestCase
 
     sign_out
 
+    spectator_warm_events = cache_events_for_school_show do
+      get :show, params: { id: @school.id }
+      assert_response :success
+    end
+    assert_operator cache_writes(spectator_warm_events), :>, 0, "Expected spectator-safe wrestler rows to use a separate cache entry"
+
     spectator_events = cache_events_for_school_show do
       get :show, params: { id: @school.id }
       assert_response :success
     end
-    assert_operator cache_hits(spectator_events), :>, 0, "Expected spectator request to hit wrestler cell cache warmed by owner"
+    assert_operator cache_hits(spectator_events), :>, 0, "Expected repeat spectator request to hit the spectator-safe wrestler row cache"
     assert_not_includes response.body, "New Wrestler"
     assert_no_match(/fa-trash-alt/, response.body)
     assert_no_match(/fa-edit/, response.body)
@@ -162,12 +168,12 @@ class SchoolShowCacheTest < ActionController::TestCase
       key = payload[:key].to_s
       next unless key.include?(key_marker)
 
-      events << { name: name, hit: payload[:hit] }
+      events << { name: name, hit: payload[:hit] || payload[:hits].present? }
     end
 
     ActiveSupport::Notifications.subscribed(
       subscriber,
-      /cache_(read|write|fetch_hit|generate)\.active_support/
+      /cache_(read|write|fetch_hit|generate)(?:_multi)?\.active_support/
     ) do
       yield
     end
@@ -176,13 +182,13 @@ class SchoolShowCacheTest < ActionController::TestCase
   end
 
   def cache_writes(events)
-    events.count { |event| event[:name] == "cache_write.active_support" }
+    events.count { |event| event[:name].start_with?("cache_write") }
   end
 
   def cache_hits(events)
     events.count do |event|
       event[:name] == "cache_fetch_hit.active_support" ||
-        (event[:name] == "cache_read.active_support" && event[:hit])
+        (event[:name].start_with?("cache_read") && event[:hit])
     end
   end
 end

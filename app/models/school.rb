@@ -8,9 +8,7 @@ class School < ApplicationRecord
 
 	attr_accessor :baums_text
 
-	before_destroy do 
-		self.tournament.destroy_all_matches
-	end
+	before_destroy :prepare_dependents_for_destroy, prepend: true, unless: :destroyed_by_association
 
 	def abbreviation
       name_array = self.name.split(' ')
@@ -25,6 +23,28 @@ class School < ApplicationRecord
         return "#{name_array[0].chars.to_a[0..3].join('').upcase}"
       end
 	end
+
+	def destroy_with_dependents!
+		prepare_dependents_for_destroy
+		destroy!
+	end
+
+	private
+
+	def prepare_dependents_for_destroy
+		return if @dependents_prepared_for_destroy
+
+		@dependents_prepared_for_destroy = true
+		tournament.destroy_all_matches
+		wrestlers_to_delete = Wrestler.where(school_id: id)
+		weight_ids = wrestlers_to_delete.distinct.pluck(:weight_id)
+		Teampointadjust.where(wrestler_id: wrestlers_to_delete.select(:id)).delete_all
+		wrestlers_to_delete.delete_all
+		Weight.where(id: weight_ids).touch_all
+		wrestlers.reset
+	end
+
+	public
 	
 	#calculate score here
 	def page_score_string
@@ -37,18 +57,18 @@ class School < ApplicationRecord
 	
 	def calculate_score
 		# Use perform_later which will execute based on centralized adapter config
-		CalculateSchoolScoreJob.perform_later(self)
+		CalculateSchoolScoreJob.perform_later({ school_id: id, tournament_id: tournament_id })
 	end
 
-	def calculate_score_raw
-      newScore = total_points_scored_by_wrestlers - total_points_deducted
+	def calculate_score_raw(wrestlers: self.wrestlers)
+	  newScore = total_points_scored_by_wrestlers(wrestlers) - total_points_deducted
     	self.score = newScore
     	self.save
 	end
 	
-	def total_points_scored_by_wrestlers
+	def total_points_scored_by_wrestlers(wrestlers = self.wrestlers)
 		points = 0.0
-		self.wrestlers.each do |w|
+		wrestlers.each do |w|
 			points = points + w.total_team_points
 		end
 		points

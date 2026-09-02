@@ -15,9 +15,7 @@ class Weight < ApplicationRecord
 	MS_WEIGHT_CLASSES = "80,86,92,98,104,110,116,122,128,134,142,150,160,172,205,245"
 	MS_GIRLS_WEIGHT_CLASSES = "72,80,86,92,98,104,110,116,122,128,134,142,155,170,190,235"
 	
-	before_destroy do 
-		self.tournament.destroy_all_matches
-	end
+	before_destroy :prepare_dependents_for_destroy, prepend: true, unless: :destroyed_by_association
 
 	before_save do
 		# self.tournament.destroy_all_matches
@@ -36,13 +34,29 @@ class Weight < ApplicationRecord
 	end
 
 	def wrestlers_in_pool(pool_number)
-		#For some reason this does not work
-		# wrestlers.select{|w| w.pool == pool_number}
-
-		#This does...
-		weight_wrestlers = Wrestler.where(:weight_id => self.id)
-		weight_wrestlers.select{|w| w.pool == pool_number}
+		wrestlers.select{|w| w.pool == pool_number}
 	end
+
+	def destroy_with_dependents!
+		prepare_dependents_for_destroy
+		destroy!
+	end
+
+	private
+
+	def prepare_dependents_for_destroy
+		return if @dependents_prepared_for_destroy
+
+		@dependents_prepared_for_destroy = true
+		tournament.destroy_all_matches
+		wrestler_ids = Wrestler.where(weight_id: id).select(:id)
+		Teampointadjust.where(wrestler_id: wrestler_ids).delete_all
+		Wrestler.where(weight_id: id).delete_all
+		wrestlers.reset
+		matches.reset
+	end
+
+	public
 
 	def one_pool_empty
       (1..self.pools).each do |pool|

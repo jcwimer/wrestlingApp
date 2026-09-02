@@ -3,6 +3,7 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 
 class ActiveSupport::TestCase
+  parallelize(workers: :number_of_processors)
   ActiveRecord::Migration.check_all_pending!
 
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.

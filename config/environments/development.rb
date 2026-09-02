@@ -83,12 +83,8 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
   
-  # Restore Bullet configuration
   config.after_initialize do
-    #Bullet.enable = true
-    #Bullet.alert = true
-    #Bullet.console = true
-    #Bullet.bullet_logger = true
+    Prosopite.rails_logger = true
   end
 
   # Raise error on unpermitted parameters, because we want to be sure we're catching them all.

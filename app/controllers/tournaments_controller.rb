@@ -218,14 +218,17 @@ class TournamentsController < ApplicationController
     @schools = @schools.sort_by{|s| s.page_score_string}.reverse!
     @weights = @tournament.weights.includes(:matches, wrestlers: :school)
     all_matches = @tournament.matches.includes(:weight, { wrestler1: :school }, { wrestler2: :school })
-    all_wrestlers = @tournament.wrestlers.includes(:school, :weight)
+    all_wrestlers = @tournament.wrestlers.includes(:school, :weight, :matches_as_w1, :matches_as_w2)
     @matches_by_weight_id = all_matches.group_by(&:weight_id)
     @wrestlers_by_weight_id = all_wrestlers.group_by(&:weight_id)
   end
 
   def bracket
     if params[:weight]
-      @weight = Weight.includes(:matches, wrestlers: [:school, :matches_as_w1, :matches_as_w2]).find_by(id: params[:weight])
+      @weight = Weight.includes(
+        { matches: [{ wrestler1: :school }, { wrestler2: :school }] },
+        wrestlers: [:school, :matches_as_w1, :matches_as_w2]
+      ).find_by(id: params[:weight])
       @matches = @weight.matches
       @wrestlers = @weight.wrestlers
       
@@ -324,7 +327,7 @@ class TournamentsController < ApplicationController
   def show
     @tournament = Tournament.find(params[:id])
     @schools = @tournament.schools.includes(:delegates).sort_by{|school|school.name}
-    @weights = @tournament.weights.sort_by{|x|[x.max]}
+    @weights = @tournament.weights.includes(:wrestlers).sort_by{|x|[x.max]}
     @mats = @tournament.mats.sort_by{|mat|mat.name}
   end
 
@@ -366,7 +369,7 @@ class TournamentsController < ApplicationController
   end
 
   def destroy
-    @tournament.destroy
+    @tournament.destroy_with_dependents!
     respond_to do |format|
       format.html { redirect_to tournaments_url }
       format.json { head :no_content }
@@ -396,7 +399,7 @@ class TournamentsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_tournament
-      @tournament = Tournament.includes(:user, :mats, :schools, :weights, :matches, wrestlers: [:school, :weight, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
+      @tournament = Tournament.includes(:user, :delegates, :mats, :schools, :weights, :matches, wrestlers: [:school, :weight, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

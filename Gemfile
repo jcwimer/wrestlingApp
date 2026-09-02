@@ -83,7 +83,6 @@ gem "mission_control-jobs"
 
 group :development do
 #  gem 'rubocop'
- gem 'bullet'
  gem 'brakeman'
  gem 'bundler-audit'
  gem 'rubocop'
@@ -91,6 +90,8 @@ end
 
 group :development, :test do
   gem 'mocha'
+  gem 'pg_query'
+  gem 'prosopite'
   # rails-controller-testing is needed for assert_template
   gem 'rails-controller-testing'
 end

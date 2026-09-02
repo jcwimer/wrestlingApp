@@ -15,7 +15,10 @@ class WeightsController < ApplicationController
           ActionController::Parameters.new(attributes).permit(:original_seed)
         end
   
-        Wrestler.update(sanitized_wrestlers.keys, sanitized_wrestlers.values)
+        wrestlers_by_id = @weight.wrestlers.index_by { |wrestler| wrestler.id.to_s }
+        sanitized_wrestlers.each do |wrestler_id, attributes|
+          wrestlers_by_id.fetch(wrestler_id.to_s).update!(attributes)
+        end
         format.html { redirect_to @weight, notice: 'Seeds were successfully updated.' }
       end
     end
@@ -73,7 +76,7 @@ class WeightsController < ApplicationController
   # DELETE /weights/1.json
   def destroy
     @tournament = Tournament.find(@weight.tournament_id)
-    @weight.destroy
+    @weight.destroy_with_dependents!
     respond_to do |format|
         format.html { redirect_to @tournament }
         format.json { head :no_content }
@@ -99,7 +102,7 @@ class WeightsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_weight
       # Add nested includes for wrestlers
-      @weight = Weight.includes(:tournament, wrestlers: [:school, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
+      @weight = Weight.includes({ tournament: :delegates }, wrestlers: [:school, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

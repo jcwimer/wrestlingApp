@@ -1,7 +1,6 @@
 <div class="round">
 <% @round_matches.sort_by{|m| m.bracket_position_number}.each do |match| %>
-  <% cache ["bracket_round_match", match, match.wrestler1, match.wrestler2, params[:print].to_s] do %>
-	  <div class="game">
+	<div class="game">
 	    <div class="game-top "><%= match.w1_bracket_name.html_safe %> <span></span></div>
 	    <% if params[:print] %>
 		   <div class="bout-number"><%= match.bout_number %> <%= match.bracket_score_string %>&nbsp;</div>
@@ -11,7 +10,6 @@
 	    <div class="bout-number">Round <%= match.round %></div>
 	    <div class="bout-number"><%= match.bracket_position %></div>
 	    <div class="game-bottom "><%= match.w2_bracket_name.html_safe %><span></span></div>
-	  </div>
-  <% end %>
+	</div>
 <% end %>
 </div>

@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  around_action :detect_n_plus_one_queries unless Rails.env.production?
+
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery prepend: true, with: :exception
@@ -29,6 +31,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def detect_n_plus_one_queries(&block)
+    Prosopite.scan(&block)
+  end
 
   # In Rails 4.2 and above
   def verified_request?

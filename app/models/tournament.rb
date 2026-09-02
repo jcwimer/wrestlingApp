@@ -64,10 +64,43 @@ class Tournament < ApplicationRecord
 	end
 	
 	def create_pre_defined_weights(weight_classes)
-		weights.destroy_all
+		destroy_all_matches
+		weight_ids = weights.ids
+		wrestler_ids = Wrestler.where(weight_id: weight_ids).select(:id)
+		Teampointadjust.where(wrestler_id: wrestler_ids).delete_all
+		Wrestler.where(weight_id: weight_ids).delete_all
+		Weight.where(id: weight_ids).delete_all
+		weights.reset
+		wrestlers.reset
+		matches.reset
 		weight_classes.each do |w|
-			weights.create(max: w)
+			weights.create!(max: w)
 		end
+	end
+
+	def destroy_with_dependents!
+		school_ids = schools.ids
+		weight_ids = weights.ids
+		wrestler_ids = Wrestler.where(weight_id: weight_ids).select(:id)
+		adjustments = Teampointadjust.where(school_id: school_ids)
+			.or(Teampointadjust.where(wrestler_id: wrestler_ids))
+
+		matches.delete_all
+		adjustments.delete_all
+		SchoolDelegate.where(school_id: school_ids).delete_all
+		TournamentDelegate.where(tournament_id: id).delete_all
+		MatAssignmentRule.where(tournament_id: id).delete_all
+		TournamentBackup.where(tournament_id: id).delete_all
+		TournamentJobStatus.where(tournament_id: id).delete_all
+		Wrestler.where(weight_id: weight_ids).delete_all
+		School.where(id: school_ids).delete_all
+		Weight.where(id: weight_ids).delete_all
+		Mat.where(tournament_id: id).delete_all
+
+		%w[schools weights mats wrestlers matches delegates mat_assignment_rules tournament_backups tournament_job_statuses].each do |association_name|
+			association(association_name.to_sym).reset
+		end
+		destroy!
 	end
 
 	def up_matches_unassigned_matches
@@ -81,7 +114,13 @@ class Tournament < ApplicationRecord
 	end
 
 	def up_matches_mats
-		mats.includes(:matches)
+		mat_records = mats.to_a
+		match_ids = mat_records.flat_map(&:queue_match_ids).compact
+		matches_by_id = Match.where(id: match_ids)
+			.includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+			.index_by(&:id)
+		mat_records.each { |mat| mat.preload_queue_matches(matches_by_id) }
+		mat_records
 	end
 
 	def self.broadcast_up_matches_board(tournament_id)
@@ -97,8 +136,8 @@ class Tournament < ApplicationRecord
 	end
 
 	def destroy_all_matches
-		matches.destroy_all
-		mats.each(&:clear_queue!)
+		matches.delete_all
+		mats.reload.each(&:clear_queue!)
 	end
 
 	def matches_by_round(round)
@@ -110,18 +149,14 @@ class Tournament < ApplicationRecord
 		matches.maximum(:round) || 0  # Return 0 if no matches or max round is nil
 	end
 	
-	def reset_mats
-		matches.reload
-		mats.reload
-		matches_to_reset = matches.select{|m| m.mat_id != nil}
-		# matches_to_reset.update_all( {:mat_id => nil } )
-		matches_to_reset.each do |m|
-			m.mat_id = nil
-			m.save
+	def reset_mats(broadcast: true)
+		mat_records = mats.to_a
+		timestamp = Time.current
+		matches.where.not(mat_id: nil).update_all(mat_id: nil, updated_at: timestamp)
+		mat_records.each do |mat|
+			mat.update_columns(queue1: nil, queue2: nil, queue3: nil, queue4: nil, updated_at: timestamp)
 		end
-		mats.each do |mat|
-			mat.clear_queue!
-		end
+		broadcast_bout_board_changes(mat_records) if broadcast
 	end
 	
 	def pointAdjustments
@@ -243,26 +278,49 @@ class Tournament < ApplicationRecord
 	end	  
 
 	def reset_and_fill_bout_board
-		reset_mats
-		matches.reload
-		refill_open_bout_board_queues
+		reset_mats(broadcast: false)
+		refill_open_bout_board_queues(broadcast_all: true)
 	end
 
-	def refill_open_bout_board_queues
-		return unless mats.any?
+	def refill_open_bout_board_queues(broadcast_all: false)
+		mat_records = mats.includes(:mat_assignment_rules).order(:id).to_a
+		return if mat_records.empty?
 
-		loop do
-			assigned_any = false
-			# Fill in round-robin order by queue depth:
-			# all mats queue1 first, then queue2, then queue3, then queue4.
-			(1..4).each do |slot|
-				mats.reload.each do |mat|
-					next unless mat.public_send("queue#{slot}").nil?
-					assigned_any ||= mat.assign_next_match
-				end
+		available_matches = Mat.assignable_matches_for(id).to_a
+		assignments = Hash.new { |hash, mat| hash[mat] = [] }
+
+		(1..4).each do |slot|
+			mat_records.each do |mat|
+				next if mat.public_send("queue#{slot}").present?
+
+				match_index = available_matches.index { |match| mat.accepts_match?(match) }
+				next unless match_index
+
+				match = available_matches.delete_at(match_index)
+				mat.public_send("queue#{slot}=", match.id)
+				assignments[mat] << match
 			end
-			break unless assigned_any
 		end
+
+		timestamp = Time.current
+		self.class.transaction do
+			assignments.each do |mat, assigned_matches|
+				Match.where(id: assigned_matches.map(&:id)).update_all(mat_id: mat.id, updated_at: timestamp)
+				mat.update_columns(
+					queue1: mat.queue1,
+					queue2: mat.queue2,
+					queue3: mat.queue3,
+					queue4: mat.queue4,
+					updated_at: timestamp
+				)
+			end
+		end
+
+		assigned_matches = assignments.values.flatten
+		Match.touch_cached_views_for_wrestlers(assigned_matches.flat_map { |match| [match.w1, match.w2] }, id) if assigned_matches.any?
+		broadcast_bout_board_changes(broadcast_all ? mat_records : assignments.keys)
+		mats.reset
+		matches.reset
 	end
 
 	def create_backup()
@@ -296,6 +354,11 @@ class Tournament < ApplicationRecord
 	end
 	
 	private
+
+	def broadcast_bout_board_changes(mat_records)
+		mat_records.each(&:broadcast_queue_state)
+		self.class.broadcast_up_matches_board(id)
+	end
 
 	def set_date_sort_key
 		self.date_sort_key = date.jd if date

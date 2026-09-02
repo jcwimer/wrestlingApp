@@ -49,44 +49,41 @@ class Mat < ApplicationRecord
 	end
 
 	def next_eligible_match
-		# Start with all matches that are either unfinished (nil or 0), have a bout number, and are ordered by bout_number
-		filtered_matches = Match.where(tournament_id: tournament_id)
+		filtered_matches = self.class.assignable_matches_for(tournament_id)
+
+		mat_assignment_rules.each do |rule|
+			filtered_matches = filtered_matches.where(weight_id: rule.weight_classes) if rule.weight_classes.any?
+			filtered_matches = filtered_matches.where(bracket_position: rule.bracket_positions) if rule.bracket_positions.any?
+			filtered_matches = filtered_matches.where(round: rule.rounds) if rule.rounds.any?
+		end
+
+		filtered_matches.first
+	end
+
+	def self.assignable_matches_for(tournament_id)
+		Match.where(tournament_id: tournament_id)
 									  .where(finished: [nil, 0])  # finished is nil or 0
 									  .where(mat_id: nil)         # mat_id is nil
 									  .where.not(bout_number: nil) # bout_number is not nil
 									  .order(:bout_number)
-	  
-		# Filter out BYE matches
-		filtered_matches = filtered_matches
-							.where("loser1_name != ? OR loser1_name IS NULL", "BYE")
-							.where("loser2_name != ? OR loser2_name IS NULL", "BYE")
+									  .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
+									  .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
+									  .where.not(w1: nil)
+									  .where.not(w2: nil)
+	end
 
-		# Filter out matches without a wrestlers
-		filtered_matches = filtered_matches
-							.where("w1 IS NOT NULL")
-							.where("w2 IS NOT NULL")
-	  
-		# Apply mat assignment rules
-		mat_assignment_rules.each do |rule|
-		  if rule.weight_classes.any?
-			# Ensure weight_classes is treated as an array
-			filtered_matches = filtered_matches.where(weight_id: Array(rule.weight_classes).map(&:to_i))
-		  end
-	  
-		  if rule.bracket_positions.any?
-			# Ensure bracket_positions is treated as an array
-			filtered_matches = filtered_matches.where(bracket_position: Array(rule.bracket_positions).map(&:to_s))
-		  end
-	  
-		  if rule.rounds.any?
-			# Ensure rounds is treated as an array
-			filtered_matches = filtered_matches.where(round: Array(rule.rounds).map(&:to_i))
-		  end
+	def accepts_match?(match)
+		mat_assignment_rules.all? do |rule|
+			(rule.weight_classes.empty? || rule.weight_classes.include?(match.weight_id)) &&
+				(rule.bracket_positions.empty? || rule.bracket_positions.include?(match.bracket_position)) &&
+				(rule.rounds.empty? || rule.rounds.include?(match.round))
 		end
-	  
-		# Return the first match in filtered results, or nil if none are left
-		filtered_matches.first
-	end			
+	end
+
+	def broadcast_queue_state
+		clear_queue_matches_cache
+		broadcast_current_match
+	end
 	  
 	def queue_match_ids
 		QUEUE_SLOTS.map { |slot| public_send(slot) }
@@ -108,6 +105,12 @@ class Mat < ApplicationRecord
 			@queue_match_slot_ids = slot_ids
 		end
 		@queue_matches
+	end
+
+	def preload_queue_matches(matches_by_id)
+		slot_ids = queue_match_ids
+		@queue_matches = slot_ids.map { |match_id| matches_by_id[match_id] }
+		@queue_match_slot_ids = slot_ids
 	end
 
 	def queue1_match
@@ -253,7 +256,15 @@ class Mat < ApplicationRecord
 
 	def touch_assigned_match_wrestlers_for_cached_views
 		wrestler_ids = matches.where(finished: [nil, 0]).pluck(:w1, :w2).flatten.compact.uniq
-		Wrestler.where(id: wrestler_ids).find_each(&:touch)
+		wrestlers = Wrestler.where(id: wrestler_ids)
+		school_ids = wrestlers.distinct.pluck(:school_id)
+		weight_ids = wrestlers.distinct.pluck(:weight_id)
+		timestamp = Time.current
+
+		wrestlers.touch_all(time: timestamp)
+		School.where(id: school_ids).touch_all(time: timestamp)
+		Weight.where(id: weight_ids).touch_all(time: timestamp)
+		Tournament.where(id: tournament_id).touch_all(time: timestamp)
 	end
 
 	def queue_match_at(position)
@@ -278,27 +289,25 @@ class Mat < ApplicationRecord
 
 	def fill_queue_slots!
 		queue_ids = queue_match_ids
-		updated = false
+		empty_indexes = queue_ids.each_index.select { |index| queue_ids[index].nil? }
+		matches_to_assign = next_eligible_matches(empty_indexes.size)
+		return if matches_to_assign.empty?
 
-		QUEUE_SLOTS.each_with_index do |_slot, index|
-			next if queue_ids[index].present?
+		matches_to_assign.each_with_index { |match, index| queue_ids[empty_indexes[index]] = match.id }
+		timestamp = Time.current
+		Match.where(id: matches_to_assign.map(&:id)).update_all(mat_id: id, updated_at: timestamp)
+		Match.touch_cached_views_for_wrestlers(matches_to_assign.flat_map { |match| [match.w1, match.w2] }, tournament_id)
+		update!(queue1: queue_ids[0], queue2: queue_ids[1], queue3: queue_ids[2], queue4: queue_ids[3])
+	end
 
-			match = next_eligible_match
-			break unless match
-
-			queue_ids[index] = match.id
-			match.update!(mat_id: id)
-			updated = true
+	def next_eligible_matches(limit)
+		filtered_matches = self.class.assignable_matches_for(tournament_id)
+		mat_assignment_rules.each do |rule|
+			filtered_matches = filtered_matches.where(weight_id: rule.weight_classes) if rule.weight_classes.any?
+			filtered_matches = filtered_matches.where(bracket_position: rule.bracket_positions) if rule.bracket_positions.any?
+			filtered_matches = filtered_matches.where(round: rule.rounds) if rule.rounds.any?
 		end
-
-		if updated
-			update!(
-				queue1: queue_ids[0],
-				queue2: queue_ids[1],
-				queue3: queue_ids[2],
-				queue4: queue_ids[3]
-			)
-		end
+		filtered_matches.limit(limit).to_a
 	end
 
 	def remove_match_from_other_mats!(match_id)

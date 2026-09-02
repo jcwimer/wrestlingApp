@@ -1,6 +1,5 @@
 <% @final_match.each do |match| %> 
-  <% cache ["bracket_final_match", match, match.wrestler1, match.wrestler2, @winner_place, params[:print].to_s] do %>
-    <div class="round">
+  <div class="round">
   		<div class="game">
   		  <div class="game-top "><%= match.w1_bracket_name.html_safe %> <span></span></div>
   		  	  <% if params[:print] %>
@@ -10,6 +9,5 @@
   			<% end %>
   		  <div class="game-bottom "><%= match.w2_bracket_name.html_safe %><span></span></div>
   		</div>
-    </div>
-  <% end %>
+  </div>
 <% end %>

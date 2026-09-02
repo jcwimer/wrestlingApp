@@ -1,0 +1,13 @@
+<tr>
+  <%= render "schools/wrestler_row_cells", wrestler: wrestler %>
+  <% if can_manage_school %>
+    <td>
+      <%= link_to edit_wrestler_path(wrestler), class: "text-decoration-none" do %>
+        <span class="fas fa-edit" aria-hidden="true"></span>
+      <% end %>
+      <%= link_to wrestler_path(wrestler), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{wrestler.name}? This will delete all of his matches." }, class: "text-decoration-none" do %>
+        <span class="fas fa-trash-alt" aria-hidden="true"></span>
+      <% end %>
+    </td>
+  <% end %>
+</tr>

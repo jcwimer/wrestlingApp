@@ -1,7 +1,5 @@
 <% queue1_match, queue2_match, queue3_match, queue4_match = mat.queue_matches %>
-<% queue_match_dependencies = [queue1_match, queue2_match, queue3_match, queue4_match].compact.flat_map { |match| [match, match.wrestler1, match.wrestler2] } %>
-<% cache ["up_matches_mat_row", mat, *queue_match_dependencies] do %>
-  <tr>
+<tr>
     <td><%= mat.name %></td>
     <td>
       <% if queue1_match %><strong><%= queue1_match.bout_number %></strong> (<%= queue1_match.bracket_position %>)<br>
@@ -31,5 +29,4 @@
         <%= queue4_match.w2_bracket_name %>
       <% end %>
     </td>
-  </tr>
-<% end %>
+</tr>

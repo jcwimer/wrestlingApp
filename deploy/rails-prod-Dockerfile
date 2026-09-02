@@ -37,11 +37,6 @@ ENV WRESTLINGDEV_SECRET_KEY_BASE=077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e446
 RUN RAILS_ENV=production bundle exec rake assets:clobber
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
-#SSL
-RUN mkdir /ssl \
-  && openssl req -sha256 -subj '/CN=home/O=home LTD./C=US' \
-    -x509 -nodes -days 365 -newkey rsa:4096 -keyout /ssl/server.key -out /ssl/server.crt
-
 EXPOSE 80
 EXPOSE 443
 

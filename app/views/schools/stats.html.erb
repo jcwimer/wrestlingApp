@@ -2,7 +2,7 @@
 <% back_to_school_path += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
 
 <%= link_to "Back to #{@school.name}", back_to_school_path, class: "btn btn-default" %>
-<% cache ["#{@school.id}_Stats", @school, *@school.wrestlers.map(&:weight).uniq] do %>
+<% cache ["#{@school.id}_Stats", @school, *@wrestlers.map(&:weight).uniq] do %>
   <br>
   <br>
   <h2><%= @school.name %> Stats Summary</h2>
@@ -21,8 +21,8 @@
       </tr>
     </thead>
     <tbody>
-      <% @school.wrestlers.each do |wrestler| %>
-        <% wrestler.all_matches.each do |m| %>
+      <% @wrestlers.each do |wrestler| %>
+        <% @matches_by_wrestler_id[wrestler.id].sort_by(&:bout_number).each do |m| %>
           <tr>
             <td><%= wrestler.name %></td>
             <td><%= wrestler.weight.max %></td>
