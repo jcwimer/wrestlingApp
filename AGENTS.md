@@ -27,6 +27,7 @@
 - Prosopite scans controller actions in development and test. Development detections are logged, detections in controller tests raise errors, and inline jobs are excluded from the parent request scan.
 - SQLite prepared statements are disabled in development and test so Prosopite can fingerprint the SQL emitted by Rails 8.1. Production MariaDB configuration is unchanged.
 - Collection fragment caches use Rails collection rendering so Solid Cache reads and writes their entries in batches.
+- Dockerized load tests live in `loadtests/`. Gatling prepares seeded tournament 204, drives spectator traffic, verifies Action Cable subscriptions, follows mat-to-match subscription changes, and measures websocket sync round trips. Five staggered Playwright Chromium contexts execute the real state-page JavaScript for mat operators, and a browser observer records operator-action-to-live-score delivery and DOM latency. Preparation creates five named mats and regenerates matches before load begins. Target URL, ramp, websocket thresholds, and load parameters are environment-configurable; see `loadtests/README.md`.
 
 # Telemetry
 - Docker compose tracing uses OpenTelemetry, not InfluxDB.
