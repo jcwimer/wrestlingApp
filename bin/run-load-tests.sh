@@ -1,6 +1,6 @@
 #!/bin/bash
 set -o pipefail
-project_dir="$(dirname $( dirname $(readlink -f ${BASH_SOURCE[0]})))"
+project_dir="$(dirname $(readlink -f ${BASH_SOURCE[0]}))/.."
 
 cd ${project_dir}
 bash bin/deploy-test.sh

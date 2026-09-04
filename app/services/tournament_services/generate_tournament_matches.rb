@@ -17,6 +17,7 @@ class GenerateTournamentMatches
         persist_generation_rows(generation_context, match_rows)
         postMatchCreationActions
         advance_bye_matches_after_insert
+        TournamentCacheInvalidator.generation_completed(@tournament.id)
     end
 
     def standardStartingActions
@@ -149,9 +150,10 @@ class GenerateTournamentMatches
     end
 
     def advance_bye_matches_after_insert
-      Match.where(tournament_id: @tournament.id, finished: 1, win_type: "BYE")
-           .where.not(winner_id: nil)
-           .find_each(&:advance_wrestlers)
+      match_ids = Match.where(tournament_id: @tournament.id, finished: 1, win_type: "BYE")
+                       .where.not(winner_id: nil)
+                       .pluck(:id)
+      AdvanceWrestlerJob.perform_now(match_ids, @tournament.id) if match_ids.any?
     end
 
     def assignBouts

@@ -2,7 +2,7 @@
 <% back_to_school_path += "?school_permission_key=#{params[:school_permission_key]}" if params[:school_permission_key].present? %>
 
 <%= link_to "Back to #{@school.name}", back_to_school_path, class: "btn btn-default" %>
-<% cache ["#{@school.id}_Stats", @school, *@wrestlers.map(&:weight).uniq] do %>
+<% cache TournamentCacheInvalidator.school_stats_key(@school.id), skip_digest: true do %>
   <br>
   <br>
   <h2><%= @school.name %> Stats Summary</h2>
@@ -21,31 +21,29 @@
       </tr>
     </thead>
     <tbody>
-      <% @wrestlers.each do |wrestler| %>
-        <% @matches_by_wrestler_id[wrestler.id].sort_by(&:bout_number).each do |m| %>
+      <% @school_stats_rows.each do |row| %>
           <tr>
-            <td><%= wrestler.name %></td>
-            <td><%= wrestler.weight.max %></td>
-            <td><%= m.bout_number %></td>
-            <td><%= m.bracket_position %></td>
+            <td><%= row[:wrestler_name] %></td>
+            <td><%= row[:weight] %></td>
+            <td><%= row[:bout_number] %></td>
+            <td><%= row[:bracket_position] %></td>
             <td>
               <table class="table table-sm table-bordered">
                 
                 <tbody>
                   <tr>
-                    <td><%= m.w1_bracket_name.html_safe %></td>
-                    <td><%= m.w1_stat %></td>
+                    <td><%= row[:w1_name].html_safe %></td>
+                    <td><%= row[:w1_stat] %></td>
                   </tr>
                   <tr>
-                    <td><%= m.w2_bracket_name.html_safe %></td>
-                    <td><%= m.w2_stat %></td>
+                    <td><%= row[:w2_name].html_safe %></td>
+                    <td><%= row[:w2_stat] %></td>
                   </tr>
                 </tbody>
               </table>
             </td>
-            <td><%= wrestler.result_by_id(m.id) %>
+            <td><%= row[:result] %>
           </tr>
-        <% end %>
       <% end %>
     </tbody>
   </table>

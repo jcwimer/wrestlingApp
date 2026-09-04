@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -158,7 +159,7 @@ public class TournamentLoadSimulation extends Simulation {
           .get("/tournaments/" + TOURNAMENT_ID + "/live_scores")
           .check(status().is(200))
           .check(regex("data-match-scoreboard-mat-id-value=\"(\\d+)\"").findAll().saveAs("liveMatIds"))
-          .check(regex("data-match-scoreboard-match-id-value=\"([1-9]\\d*)\"").findAll().saveAs("liveMatchIds")))
+          .check(regex("data-match-scoreboard-match-id-value=\"(\\d+)\"").findAll().saveAs("liveMatchIds")))
       .exec(session -> {
         List<String> matIds = session.getList("liveMatIds");
         List<String> matchIds = session.getList("liveMatchIds");
@@ -166,7 +167,14 @@ public class TournamentLoadSimulation extends Simulation {
         for (int index = 0; index < matIds.size(); index++) {
           currentMatches.put(matIds.get(index), index < matchIds.size() ? matchIds.get(index) : "0");
         }
-        return session.set("currentMatchesByMat", currentMatches).set("probeIndex", 0);
+        List<String> activeMatchIds = currentMatches.values().stream()
+            .filter(matchId -> !"0".equals(matchId))
+            .distinct()
+            .toList();
+        return session.set("currentMatchesByMat", currentMatches)
+            .set("initialMatchIds", activeMatchIds)
+            .set("confirmedMatchIds", new LinkedHashSet<String>())
+            .set("probeIndex", 0);
       })
       .exec(ws("Live scores viewer - connect Action Cable").connect("/cable")
           .await(WS_RESPONSE_TIMEOUT).on(
@@ -179,12 +187,18 @@ public class TournamentLoadSimulation extends Simulation {
                   ws.checkTextMessage("Live scores viewer - confirm mat subscription")
                       .matching(substring("MatScoreboardChannel"), substring("confirm_subscription"))))
       )
-      .foreach("#{liveMatchIds}", "liveMatchId").on(
+      .foreach("#{initialMatchIds}", "liveMatchId").on(
           exec(ws("Live scores viewer - subscribe to match")
               .sendText(session -> subscribe("MatchChannel", "match_id", session.getString("liveMatchId")))
               .await(WS_RESPONSE_TIMEOUT).on(
                   ws.checkTextMessage("Live scores viewer - confirm match subscription")
                       .matching(substring("MatchChannel"), substring("confirm_subscription"))))
+              .exitHereIfFailed()
+              .exec(session -> {
+                Set<String> confirmed = new LinkedHashSet<>(session.getSet("confirmedMatchIds"));
+                confirmed.add(session.getString("liveMatchId"));
+                return session.set("confirmedMatchIds", confirmed);
+              })
       )
       .exec(session -> session.set("viewerDurationMillis", remainingWorkloadDuration().toMillis()))
       .during(session -> Duration.ofMillis(session.getLong("viewerDurationMillis"))).on(
@@ -243,7 +257,6 @@ public class TournamentLoadSimulation extends Simulation {
   private ChainBuilder followMatUpdates() {
     return exec(ws.processUnmatchedMessages((messages, session) -> {
       Map<String, String> currentMatches = new LinkedHashMap<>(session.getMap("currentMatchesByMat"));
-      List<String> changes = new ArrayList<>();
 
       for (WsInboundMessage inboundMessage : messages) {
         if (!(inboundMessage instanceof WsInboundMessage.Text textMessage)) continue;
@@ -255,33 +268,46 @@ public class TournamentLoadSimulation extends Simulation {
         String selectedMatchId = capture(SELECTED_MATCH_ID_PATTERN, body);
         String queueMatchId = capture(QUEUE_MATCH_ID_PATTERN, body);
         String nextMatchId = numericId(selectedMatchId) ? selectedMatchId : numericId(queueMatchId) ? queueMatchId : "0";
-        String oldMatchId = currentMatches.getOrDefault(matId, "0");
-        if (!oldMatchId.equals(nextMatchId)) {
-          changes.add(matId + ":" + oldMatchId + ":" + nextMatchId);
-          currentMatches.put(matId, nextMatchId);
-        }
+        currentMatches.put(matId, nextMatchId);
       }
 
-      return session.set("currentMatchesByMat", currentMatches).set("pendingMatchChanges", changes);
-    })).foreach("#{pendingMatchChanges}", "pendingMatchChange").on(
-        exec(session -> {
-          String[] parts = session.getString("pendingMatchChange").split(":", -1);
-          return session.set("changedMatId", parts[0]).set("oldMatchId", parts[1]).set("newMatchId", parts[2]);
-        }),
-        doIf(session -> !"0".equals(session.getString("oldMatchId"))).then(
-            exec(ws("Live scores viewer - unsubscribe from previous match")
-                .sendText(session -> unsubscribe("MatchChannel", "match_id", session.getString("oldMatchId"))))
-        ),
-        doIf(session -> !"0".equals(session.getString("newMatchId"))).then(
-            exec(ws("Live scores viewer - subscribe to replacement match")
-                .sendText(session -> subscribe("MatchChannel", "match_id", session.getString("newMatchId")))
-                .await(WS_RESPONSE_TIMEOUT).on(
-                    ws.checkTextMessage("Live scores viewer - confirm replacement match subscription")
-                        .matching(
-                            substring("MatchChannel"),
-                            substring("\\\"match_id\\\":#{newMatchId}"),
-                            substring("confirm_subscription"))))
-        )
+      Set<String> confirmedMatchIds = new LinkedHashSet<>(session.getSet("confirmedMatchIds"));
+      Set<String> desiredMatchIds = currentMatches.values().stream()
+          .filter(matchId -> !"0".equals(matchId))
+          .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+      List<String> unsubscribeIds = confirmedMatchIds.stream()
+          .filter(matchId -> !desiredMatchIds.contains(matchId))
+          .toList();
+      List<String> subscribeIds = desiredMatchIds.stream()
+          .filter(matchId -> !confirmedMatchIds.contains(matchId))
+          .toList();
+
+      return session.set("currentMatchesByMat", currentMatches)
+          .set("unsubscribeMatchIds", unsubscribeIds)
+          .set("subscribeMatchIds", subscribeIds);
+    })).foreach("#{unsubscribeMatchIds}", "oldMatchId").on(
+        exec(ws("Live scores viewer - unsubscribe from previous match")
+            .sendText(session -> unsubscribe("MatchChannel", "match_id", session.getString("oldMatchId"))))
+            .exec(session -> {
+              Set<String> confirmed = new LinkedHashSet<>(session.getSet("confirmedMatchIds"));
+              confirmed.remove(session.getString("oldMatchId"));
+              return session.set("confirmedMatchIds", confirmed);
+            })
+    ).foreach("#{subscribeMatchIds}", "newMatchId").on(
+        exec(ws("Live scores viewer - subscribe to replacement match")
+            .sendText(session -> subscribe("MatchChannel", "match_id", session.getString("newMatchId")))
+            .await(WS_RESPONSE_TIMEOUT).on(
+                ws.checkTextMessage("Live scores viewer - confirm replacement match subscription")
+                    .matching(
+                        substring("MatchChannel"),
+                        substring("\\\"match_id\\\":#{newMatchId}"),
+                        substring("confirm_subscription"))))
+            .exitHereIfFailed()
+            .exec(session -> {
+              Set<String> confirmed = new LinkedHashSet<>(session.getSet("confirmedMatchIds"));
+              confirmed.add(session.getString("newMatchId"));
+              return session.set("confirmedMatchIds", confirmed);
+            })
     );
   }
 

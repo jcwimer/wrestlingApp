@@ -1,3 +1,5 @@
+require "set"
+
 class AdvanceWrestler
     def initialize(wrestler, last_match)
       @wrestler = wrestler
@@ -6,15 +8,19 @@ class AdvanceWrestler
     end
     
     def advance
-      # Use perform_later which will execute based on centralized adapter config
-      # This will be converted to inline execution in test environment by ActiveJob
-      AdvanceWrestlerJob.perform_later(@wrestler, @last_match, @tournament.id)
+      AdvanceWrestlerJob.perform_later([@last_match.id], @tournament.id)
     end
 
-    def advance_raw
+    def advance_raw(tracker: nil, invalidate: true)
       @last_match = Match.find_by(id: @last_match&.id)
       @wrestler = Wrestler.includes(:school, :weight).find_by(id: @wrestler.id)
-      return unless @last_match && @wrestler && @last_match.finished?
+      return tracker unless @last_match && @wrestler && @last_match.finished?
+
+      tracker ||= { processed: Set.new, weight_ids: Set.new, wrestler_ids: Set.new }
+      processing_key = [@last_match.id, @wrestler.id]
+      return tracker if tracker[:processed].include?(processing_key)
+
+      tracker[:processed] << processing_key
 
       context = preload_advancement_context
       matches_to_advance = []
@@ -31,9 +37,12 @@ class AdvanceWrestler
         matches_to_advance.concat(service.matches_to_advance)
       end
 
-      persist_advancement_changes(context)
-      advance_pending_matches(matches_to_advance)
-      @wrestler.school.calculate_score
+      changed_wrestler_ids = persist_advancement_changes(context)
+      tracker[:weight_ids] << context[:weight].id
+      tracker[:wrestler_ids].merge(changed_wrestler_ids | [@wrestler.id])
+      advance_pending_matches(matches_to_advance, tracker)
+      TournamentCacheInvalidator.advancement_completed(tracker[:weight_ids].to_a, tracker[:wrestler_ids].to_a) if invalidate
+      tracker
     end
     
     def preload_advancement_context
@@ -86,11 +95,18 @@ class AdvanceWrestler
         }
       end
       Wrestler.upsert_all(updates) if updates.any?
+      updates.map { |row| row[:id] }
     end
 
-    def advance_pending_matches(matches_to_advance)
+    def advance_pending_matches(matches_to_advance, tracker)
       matches_to_advance.uniq(&:id).each do |match|
-        match.advance_wrestlers
+        current_match = Match.find_by(id: match.id)
+        next unless current_match
+
+        [current_match.w1, current_match.w2].compact.uniq.each do |wrestler_id|
+          wrestler = Wrestler.find_by(id: wrestler_id)
+          AdvanceWrestler.new(wrestler, current_match).advance_raw(tracker:, invalidate: false) if wrestler
+        end
       end
     end
 

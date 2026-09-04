@@ -283,4 +283,20 @@ class MatchChannelTest < ActionCable::Channel::TestCase
       "w2_stat" => "E1"
     }, transmissions.last)
   end
+
+  test "request_sync responds when match data and scoreboard cache are empty" do
+    @match.update_columns(
+      w1_stat: nil,
+      w2_stat: nil,
+      score: nil,
+      win_type: nil,
+      winner_id: nil,
+      finished: nil
+    )
+
+    subscribe(match_id: @match.id)
+    perform :request_sync
+
+    assert_equal({}, transmissions.last)
+  end
 end

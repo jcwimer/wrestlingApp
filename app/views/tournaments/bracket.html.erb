@@ -1,6 +1,7 @@
-<% cache ["#{@weight.id}_bracket", @weight, params[:print].to_s] do %>
-<%= render 'bracket_partial' %>
-<% end %>
+<%= render partial: "cached_bracket",
+           collection: [@weight],
+           as: :weight,
+           cached: ->(weight) { TournamentCacheInvalidator.bracket_key(weight.id, print: params[:print].present?) } %>
 <% if @tournament.tournament_type == "Pool to bracket" %> 
   <%= render 'pool_bracket_director_actions' %>
 <% elsif @tournament.tournament_type.include? "Modified 16 Man Double Elimination" or @tournament.tournament_type.include? "Regular Double Elimination" %>

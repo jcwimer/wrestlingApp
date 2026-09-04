@@ -1,11 +1,29 @@
 class SchoolsController < ApplicationController
-  before_action :set_school, only: [:import_baumspage_roster, :show, :edit, :update, :destroy, :stats]
+  before_action :set_school, only: [:show, :edit, :update, :destroy, :stats]
   before_action :check_access_director, only: [:new,:create,:destroy]
-  before_action :check_access_delegate, only: [:import_baumspage_roster, :update,:edit]
+  before_action :check_access_delegate, only: [:update,:edit]
   before_action :check_read_access, only: [:show, :stats]
 
   def stats
-    load_school_wrestlers
+    @tournament = @school.tournament
+    @school_stats_rows = Rails.cache.fetch(TournamentCacheInvalidator.school_stats_data_key(@school.id)) do
+      load_school_wrestlers
+      @wrestlers.flat_map do |wrestler|
+        @matches_by_wrestler_id[wrestler.id].sort_by(&:bout_number).map do |match|
+          {
+            wrestler_name: wrestler.name,
+            weight: wrestler.weight.max,
+            bout_number: match.bout_number,
+            bracket_position: match.bracket_position,
+            w1_name: match.w1_bracket_name,
+            w1_stat: match.w1_stat,
+            w2_name: match.w2_bracket_name,
+            w2_stat: match.w2_stat,
+            result: wrestler.result_by_id(match.id)
+          }
+        end
+      end
+    end
   end
 
   # GET /schools/1
@@ -64,35 +82,43 @@ class SchoolsController < ApplicationController
   def destroy
     @tournament = @school.tournament
     @school.destroy_with_dependents!
+    TournamentCacheInvalidator.generation_completed(@tournament.id)
     respond_to do |format|
       format.html { redirect_to @tournament }
       format.json { head :no_content }
     end
   end
 
-  def import_baumspage_roster
-    import_text = params[:school][:baums_text]
-    respond_to do |format|
-      if BaumspageRosterImport.new(@school,import_text).import_roster
-        format.html { redirect_to "/schools/#{@school.id}", notice: 'Import successful' }
-        format.json { render action: 'show', status: :created, location: @school }
-      end
-    end
-  end
-
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_school
-      @school = School.includes({ tournament: :delegates }, :delegates, :deductedPoints, wrestlers: [:weight, :deductedPoints, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
+      @school = if action_name == "stats"
+        School.includes({ tournament: :delegates }, :delegates).find_by(id: params[:id])
+      elsif action_name == "show"
+        School.includes({ tournament: :delegates }, :delegates, :deductedPoints).find_by(id: params[:id])
+      else
+        School.includes({ tournament: :delegates }, :delegates, :deductedPoints, wrestlers: [:weight, :deductedPoints, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
+      end
     end
 
     def load_school_wrestlers
-      @tournament = Tournament.preload(
-        weights: {
-          wrestlers: [:school, :deductedPoints, :matches_as_w1, :matches_as_w2]
-        }
-      ).find(@school.tournament_id)
-      @wrestlers = @tournament.weights.flat_map(&:wrestlers).select { |wrestler| wrestler.school_id == @school.id }
+      if @school.tournament.tournament_type == "Pool to bracket"
+        @tournament = Tournament.preload(
+          weights: {
+            wrestlers: [:school, :deductedPoints, :matches_as_w1, :matches_as_w2]
+          }
+        ).find(@school.tournament_id)
+        @wrestlers = @tournament.weights.flat_map(&:wrestlers).select { |wrestler| wrestler.school_id == @school.id }
+      else
+        @tournament = @school.tournament
+        @wrestlers = @school.wrestlers.includes(
+          :school,
+          :deductedPoints,
+          { weight: [:tournament, :matches] },
+          { matches_as_w1: [:mat, :winner, { wrestler1: :school }, { wrestler2: :school }] },
+          { matches_as_w2: [:mat, :winner, { wrestler1: :school }, { wrestler2: :school }] }
+        ).to_a
+      end
       wrestler_ids = @wrestlers.map(&:id)
       school_matches = Match.where(w1: wrestler_ids).or(Match.where(w2: wrestler_ids))
         .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
@@ -105,7 +131,7 @@ class SchoolsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def school_params
-      params.require(:school).permit(:name, :score, :tournament_id, :baums_text)
+      params.require(:school).permit(:name, :score, :tournament_id)
     end
 
     def check_access_director

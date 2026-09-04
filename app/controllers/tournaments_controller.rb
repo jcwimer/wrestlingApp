@@ -214,13 +214,16 @@ class TournamentsController < ApplicationController
 
 
   def all_brackets
-    @schools = @tournament.schools
-    @schools = @schools.sort_by{|s| s.page_score_string}.reverse!
+    @team_scores = cached_team_scores
     @weights = @tournament.weights.includes(:matches, wrestlers: :school)
     all_matches = @tournament.matches.includes(:weight, { wrestler1: :school }, { wrestler2: :school })
     all_wrestlers = @tournament.wrestlers.includes(:school, :weight, :matches_as_w1, :matches_as_w2)
     @matches_by_weight_id = all_matches.group_by(&:weight_id)
     @wrestlers_by_weight_id = all_wrestlers.group_by(&:weight_id)
+    @matches_by_weight_id.each_value do |matches|
+      first_round = matches.map(&:round).compact.min
+      matches.each { |match| match.instance_variable_set(:@first_round_for_weight, first_round) }
+    end
   end
 
   def bracket
@@ -274,8 +277,7 @@ class TournamentsController < ApplicationController
   end
 
   def team_scores
-    @schools = @tournament.schools
-    @schools = @schools.sort_by{|s| s.page_score_string}.reverse!
+    @team_scores = cached_team_scores
   end
 
 
@@ -421,8 +423,23 @@ class TournamentsController < ApplicationController
     def set_tournament
       @tournament = if action_name == "live_scores"
         Tournament.find_by(id: params[:id])
+      elsif %w[bracket all_brackets team_scores].include?(action_name)
+        Tournament.includes(:user, :delegates).find_by(id: params[:id])
       else
         Tournament.includes(:user, :delegates, :mats, :schools, :weights, :matches, wrestlers: [:school, :weight, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
+      end
+    end
+
+    def cached_team_scores
+      Rails.cache.fetch(TournamentCacheInvalidator.team_scores_data_key(@tournament.id)) do
+        @tournament.schools.map do |school|
+          {
+            id: school.id,
+            name: school.name,
+            abbreviation: school.abbreviation,
+            score: school.page_score_string
+          }
+        end.sort_by { |school| [-school[:score].to_f, school[:name]] }
       end
     end
 

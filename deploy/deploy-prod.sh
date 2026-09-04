@@ -41,12 +41,13 @@ set -a
 set +a
 docker-compose pull
 docker-compose down
-echo "Bringing up the new containers..."
-docker-compose up -d
 echo "Waiting for db to be up..."
+docker-compose up -d wrestlingdev_db
 sleep 30s
 echo "Running database migrations..."
 docker-compose run --rm wrestlingdev bin/rails db:migrate
 docker-compose run --rm wrestlingdev bin/rails db:migrate:cache
 docker-compose run --rm wrestlingdev bin/rails db:migrate:queue
 docker-compose run --rm wrestlingdev bin/rails db:migrate:cable
+echo "Bringing up the new containers..."
+docker-compose up -d

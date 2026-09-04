@@ -140,6 +140,8 @@ Minitest still owns the Rails side: controllers, permissions, models, channels, 
 Prosopite scans controller actions in development and test. Development detections are written to the Rails log, while test detections fail the controller test. Inline jobs are excluded from a request's scan because they have a separate query lifecycle in production.
 Collection fragment caches use Rails collection rendering so Solid Cache reads and writes their entries in batches.
 
+Popular read-only pages use deterministic domain cache keys with targeted deletion through `TournamentCacheInvalidator`; cache-only changes do not fan out through model timestamps. Weight brackets, tournament team scores, school stats, and wrestler roster/profile fragments invalidate independently. The all-brackets page composes the same per-weight fragments used by individual bracket pages, while team scores and school stats also cache their prepared data.
+
 Cypress tests are deprecated for this project. Use Vitest for JavaScript unit coverage and Minitest for Rails behavior.
 
 ## Develop with rbenv
@@ -236,20 +238,18 @@ I'm using a Hetzner dedicated server with an i7-8700, 500GB NVME (RAID1), and 64
 
 ### Puma and SolidQueue
 
-The application uses an intelligent auto-scaling configuration for Puma (the web server) and SolidQueue (background job processing):
+The application configures Puma (the web server) and SolidQueue (background job processing) through environment variables:
 
-- **Auto Detection**: The server automatically detects available CPU cores and memory, and scales accordingly.
-- **Worker Scaling**: In production, the number of Puma workers is calculated based on available memory (assuming ~400MB per worker) and CPU cores.
-- **Thread Configuration**: Each Puma worker uses 5-12 threads by default, optimized for mixed I/O and CPU workloads.
+- **Worker Scaling**: `WEB_CONCURRENCY` sets the Puma worker process count. The local deployment defaults to 2 and the production Compose deployment defaults to 4.
+- **Thread Configuration**: `RAILS_MIN_THREADS` and `RAILS_MAX_THREADS` set the per-worker thread range. Both Compose deployments default to 5 threads.
 - **SolidQueue Integration**: When `SOLID_QUEUE_IN_PUMA=true`, background jobs run within the Puma process.
-- **Database Connection Pool**: Automatically sized based on the maximum number of threads across all workers.
+- **Database Connection Pool**: The five-thread Compose defaults match Rails' default production connection pool size.
 
 All of these settings can be overridden with environment variables if needed.
 
 To see the current configuration in the logs, look for these lines on startup:
 ```
 Puma starting with X worker(s), Y-Z threads per worker
-Available system resources: X CPU(s), YMMMB RAM
 SolidQueue plugin enabled in Puma
 ```
 
@@ -273,9 +273,9 @@ For the development environment, the user/password is dev/secret. For the produc
 
 ### Optional Environment Variables
 * `SOLID_QUEUE_IN_PUMA` - Set to "true" to run Solid Queue workers inside Puma (default in development)
-* `WEB_CONCURRENCY` - Number of Puma workers (auto-detected based on CPU/memory if not specified)
-* `RAILS_MIN_THREADS` - Minimum number of threads per Puma worker (defaults to 5)
-* `RAILS_MAX_THREADS` - Maximum number of threads per Puma worker (defaults to 12)
+* `WEB_CONCURRENCY` - Number of Puma workers (defaults to 2 in the local Compose deployment and 4 in production Compose)
+* `RAILS_MIN_THREADS` - Minimum number of threads per Puma worker (defaults to 5 in Compose)
+* `RAILS_MAX_THREADS` - Maximum number of threads per Puma worker (defaults to 5 in Compose)
 * `DATABASE_POOL_SIZE` - Database connection pool size (auto-calculated if not specified)
 * `SOLID_QUEUE_WORKERS` - Number of SolidQueue workers (auto-calculated if not specified)
 * `SOLID_QUEUE_THREADS` - Number of threads per SolidQueue worker (auto-calculated if not specified)

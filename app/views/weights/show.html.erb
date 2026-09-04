@@ -38,10 +38,11 @@
           <% end %>
         <% end %>
       <% else %>
-        <%= render partial: "weights/readonly_wrestler_row",
-                   collection: sorted_wrestlers.select { |wrestler| wrestler.weight_id == @weight.id },
-                   as: :wrestler,
-                   cached: ->(wrestler) { ["weight_show_wrestler_row", wrestler, wrestler.school] } %>
+        <% cache TournamentCacheInvalidator.weight_roster_key(@weight.id), skip_digest: true do %>
+          <%= render partial: "weights/readonly_wrestler_row",
+                     collection: sorted_wrestlers.select { |wrestler| wrestler.weight_id == @weight.id },
+                     as: :wrestler %>
+        <% end %>
       <% end %>
     	</tbody>
   </table>

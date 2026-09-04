@@ -34,7 +34,7 @@ class WeightShowCacheTest < ActionController::TestCase
 
     wrestler = @weight.wrestlers.first
     third_events = cache_events_for_weight_show do
-      wrestler.touch
+      wrestler.update!(name: "#{wrestler.name} Updated")
       get :show, params: { id: @weight.id }
       assert_response :success
     end
@@ -95,7 +95,7 @@ class WeightShowCacheTest < ActionController::TestCase
     events = []
     subscriber = lambda do |name, _start, _finish, _id, payload|
       key = payload[:key].to_s
-      next unless key.include?("weight_show_wrestler_row")
+      next unless key.include?("weight_roster")
 
       events << { name: name, hit: payload[:hit] || payload[:hits].present? }
     end

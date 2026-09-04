@@ -1,6 +1,6 @@
 class Wrestler < ApplicationRecord
-	belongs_to :school, touch: true
-	belongs_to :weight, touch: true
+	belongs_to :school
+	belongs_to :weight
 	has_one :tournament, through: :weight
 	has_many :deductedPoints, class_name: "Teampointadjust", dependent: :destroy
 	## Matches association
@@ -12,6 +12,7 @@ class Wrestler < ApplicationRecord
 	attr_accessor :poolAdvancePoints, :originalId, :swapId
 	
 	validates :name, :weight_id, :school_id, presence: true
+	after_commit :invalidate_cached_views, on: [:create, :update]
 
 	before_destroy unless: :destroyed_by_association do
 		self.tournament.destroy_all_matches
@@ -20,6 +21,15 @@ class Wrestler < ApplicationRecord
 	before_create do
 		# self.tournament.destroy_all_matches
 	end
+
+	private
+
+	def invalidate_cached_views
+		changes = previous_changes.except("updated_at")
+		TournamentCacheInvalidator.wrestler_changed(self, changes) if changes.any?
+	end
+
+	public
 		
 
 	def last_finished_match

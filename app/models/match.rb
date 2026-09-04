@@ -2,6 +2,7 @@ class Match < ApplicationRecord
 	include ActionView::RecordIdentifier
 
 	RESULT_FIELDS = %w[finished winner_id win_type score overtime_type].freeze
+	STAT_FIELDS = %w[w1_stat w2_stat].freeze
 	STRUCTURAL_FIELDS = %w[w1 w2 weight_id tournament_id bout_number bracket_position bracket_position_number round loser1_name loser2_name].freeze
 
 	belongs_to :tournament
@@ -25,20 +26,15 @@ class Match < ApplicationRecord
 	after_commit :invalidate_created_or_destroyed_match, on: [:create, :destroy]
 	after_commit :invalidate_structural_caches, on: :update, if: :structural_fields_changed?
 	after_commit :handle_result_change, on: :update, if: :result_fields_changed?
+	after_commit :invalidate_finished_stat_caches, on: :update, if: :finished_stats_changed?
 
 	def finalize_once!
 		with_lock do
 			reload
 			return false unless finished == 1 && winner_id.present? && finalized_at.nil?
 
-			assigned_mat = mat
-			advance_wrestlers
-			if assigned_mat
-				MatQueueOperation.new(tournament).advance(assigned_mat, self)
-			else
-				tournament.refill_open_bout_board_queues
-			end
 			update_column(:finalized_at, Time.current)
+			advance_wrestlers
 		end
 		true
 	end
@@ -153,12 +149,10 @@ class Match < ApplicationRecord
 	end
 
 	def advance_wrestlers
-	   if self.w1
-		AdvanceWrestler.new(wrestler1, self).advance
-	   end
-	   if self.w2
-	   	AdvanceWrestler.new(wrestler2, self).advance
-       end
+		return false unless w1 || w2
+
+		AdvanceWrestlerJob.perform_later([id], tournament_id)
+		true
 	end
 
 
@@ -357,8 +351,11 @@ class Match < ApplicationRecord
 	def handle_result_change
 		winner_changed = previous_changes.key?("winner_id")
 		finalized_now = finalize_once! if finished == 1 && winner_id.present?
-		reconcile_finished_result!(winner_changed: winner_changed) if finished == 1 && finalized_at.present? && !finalized_now
-		invalidate_result_caches
+		advancement_queued = finalized_now
+		if finished == 1 && finalized_at.present? && !finalized_now
+			advancement_queued = reconcile_finished_result!(winner_changed: winner_changed)
+		end
+		invalidate_result_caches unless advancement_queued
 		broadcast_result_state
 	end
 
@@ -367,6 +364,7 @@ class Match < ApplicationRecord
 			ReconcileFinishedMatchResult.new(self).call
 		else
 			calculate_school_points
+			false
 		end
 	end
 
@@ -380,6 +378,14 @@ class Match < ApplicationRecord
 
 	def structural_fields_changed?
 		(previous_changes.keys & STRUCTURAL_FIELDS).any?
+	end
+
+	def finished_stats_changed?
+		finished == 1 && !result_fields_changed? && (previous_changes.keys & STAT_FIELDS).any?
+	end
+
+	def invalidate_finished_stat_caches
+		TournamentCacheInvalidator.finished_match_stats_changed([w1, w2])
 	end
 
 	def invalidate_created_or_destroyed_match
@@ -400,12 +406,11 @@ class Match < ApplicationRecord
 	end
 
 	def invalidate_cache_records(wrestler_ids, weight_ids: [weight_id], tournament_ids: [tournament_id])
-		rows = Wrestler.where(id: wrestler_ids.compact.uniq).pluck(:id, :school_id, :weight_id)
-		timestamp = Time.current
-		Wrestler.where(id: rows.map(&:first)).touch_all(time: timestamp)
-		School.where(id: rows.map(&:second).compact.uniq).touch_all(time: timestamp)
-		Weight.where(id: (rows.map(&:third) + weight_ids).compact.uniq).touch_all(time: timestamp)
-		Tournament.where(id: tournament_ids.compact.uniq).touch_all(time: timestamp)
+		TournamentCacheInvalidator.match_changed(
+			wrestler_ids: wrestler_ids,
+			weight_ids: weight_ids,
+			tournament_ids: tournament_ids
+		)
 	end
 
 	def broadcast_result_state
@@ -432,7 +437,7 @@ class Match < ApplicationRecord
 			mat.broadcast_legacy_mat_view
 			mat.broadcast_scoreboard_state
 		end
-		Wrestler.where(id: [w1, w2].compact).touch_all
+		TournamentCacheInvalidator.wrestler_listings([w1, w2])
 	end
 
 	def broadcast_up_matches_board

@@ -1,5 +1,4 @@
-<% team_scores_last_updated = @schools.map(&:updated_at).compact.max&.utc&.to_fs(:nsec) %>
-<% cache ["team_scores", @tournament.id, @schools.size, team_scores_last_updated] do %>
+<% cache TournamentCacheInvalidator.team_scores_key(@tournament.id), skip_digest: true do %>
   <table class="pagebreak table table-striped table-bordered">
   <h3>Team Scores</h3>
     <thead>
@@ -10,8 +9,11 @@
     </thead>
   
     <tbody>
-      <% @schools.each_with_index do |school, index| %>
-        <%= render "tournaments/team_score_row", school: school, rank: index + 1 %>
+      <% @team_scores.each_with_index do |school, index| %>
+        <tr>
+          <td><%= index + 1 %>. <%= school[:name] %> (<%= school[:abbreviation] %>)</td>
+          <td><%= school[:score] %></td>
+        </tr>
       <% end %>
     </tbody>
   </table>

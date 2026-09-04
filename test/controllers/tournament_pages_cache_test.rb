@@ -44,7 +44,7 @@ class TournamentPagesCacheTest < ActionController::TestCase
   end
 
   test "bracket cache hits on repeat render and rewrites after structural match update" do
-    key_markers = [@weight.id.to_s + "_bracket", "bracket_round_match", "bracket_final_match"]
+    key_markers = ["weight_bracket"]
 
     first_events = cache_events_for(key_markers) do
       get :bracket, params: { id: @tournament.id, weight: @weight.id }
@@ -69,7 +69,7 @@ class TournamentPagesCacheTest < ActionController::TestCase
   end
 
   test "bracket cache separates print and non-print variants" do
-    key_markers = [@weight.id.to_s + "_bracket"]
+    key_markers = ["weight_bracket"]
 
     non_print_events = cache_events_for(key_markers) do
       get :bracket, params: { id: @tournament.id, weight: @weight.id }
@@ -94,7 +94,7 @@ class TournamentPagesCacheTest < ActionController::TestCase
   end
 
   test "bracket cache does not leak director actions across users" do
-    owner_events = cache_events_for([@weight.id.to_s + "_bracket"]) do
+    owner_events = cache_events_for(["weight_bracket"]) do
       get :bracket, params: { id: @tournament.id, weight: @weight.id }
       assert_response :success
     end
@@ -103,7 +103,7 @@ class TournamentPagesCacheTest < ActionController::TestCase
 
     sign_out
 
-    spectator_events = cache_events_for([@weight.id.to_s + "_bracket"]) do
+    spectator_events = cache_events_for(["weight_bracket"]) do
       get :bracket, params: { id: @tournament.id, weight: @weight.id }
       assert_response :success
     end
@@ -111,14 +111,14 @@ class TournamentPagesCacheTest < ActionController::TestCase
     assert_not_includes response.body, "Tournament Director Bracket Actions"
   end
 
-  test "completing a match expires team_scores and bracket caches" do
+  test "completing a match expires its bracket and refreshes team scores" do
     team_warm_events = cache_events_for(%w[team_scores team_score_row]) do
       get :team_scores, params: { id: @tournament.id }
       assert_response :success
     end
     assert_operator cache_writes(team_warm_events), :>, 0, "Expected initial team_scores render to warm cache"
 
-    bracket_key_markers = [@weight.id.to_s + "_bracket", "bracket_round_match", "bracket_final_match"]
+    bracket_key_markers = ["weight_bracket"]
     bracket_warm_events = cache_events_for(bracket_key_markers) do
       get :bracket, params: { id: @tournament.id, weight: @weight.id }
       assert_response :success
@@ -139,13 +139,28 @@ class TournamentPagesCacheTest < ActionController::TestCase
       get :team_scores, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_operator cache_writes(team_post_events), :>, 0, "Expected completed match to expire team_scores cache"
+    assert_operator cache_writes(team_post_events), :>, 0, "Expected completed match to refresh team scores"
 
     bracket_post_events = cache_events_for(bracket_key_markers) do
       get :bracket, params: { id: @tournament.id, weight: @weight.id }
       assert_response :success
     end
     assert_operator cache_writes(bracket_post_events), :>, 0, "Expected completed match to expire bracket cache"
+  end
+
+  test "all_brackets reuses the individual weight bracket fragment" do
+    cache_events_for(["weight_bracket"]) do
+      get :bracket, params: { id: @tournament.id, weight: @weight.id, print: true }
+      assert_response :success
+    end
+
+    all_bracket_events = cache_events_for(["weight_bracket"]) do
+      get :all_brackets, params: { id: @tournament.id, print: true }
+      assert_response :success
+    end
+
+    assert_equal 0, cache_writes(all_bracket_events)
+    assert_operator cache_hits(all_bracket_events), :>, 0
   end
 
   private
@@ -162,12 +177,12 @@ class TournamentPagesCacheTest < ActionController::TestCase
       key = payload[:key].to_s
       next unless key_markers.any? { |marker| key.include?(marker) }
 
-      events << { name: name, hit: payload[:hit] }
+      events << { name: name, hit: payload[:hit] || payload[:hits].present? }
     end
 
     ActiveSupport::Notifications.subscribed(
       subscriber,
-      /cache_(read|write|fetch_hit|generate)\.active_support/
+      /cache_(read|write|fetch_hit|generate)(?:_multi)?\.active_support/
     ) do
       yield
     end
@@ -176,13 +191,13 @@ class TournamentPagesCacheTest < ActionController::TestCase
   end
 
   def cache_writes(events)
-    events.count { |event| event[:name] == "cache_write.active_support" }
+    events.count { |event| event[:name].start_with?("cache_write") }
   end
 
   def cache_hits(events)
     events.count do |event|
       event[:name] == "cache_fetch_hit.active_support" ||
-        (event[:name] == "cache_read.active_support" && event[:hit])
+        (event[:name].start_with?("cache_read") && event[:hit])
     end
   end
 end

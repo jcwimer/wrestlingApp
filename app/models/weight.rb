@@ -1,11 +1,12 @@
 class Weight < ApplicationRecord
-	belongs_to :tournament, touch: true
+	belongs_to :tournament
 	has_many :wrestlers, dependent: :destroy
 	has_many :matches, dependent: :destroy
 
 	attr_accessor :pools
 	
 	validates :max, presence: true
+	after_commit :invalidate_cached_views, on: [:create, :update]
 
     # passed via layouts/_tournament-navbar.html.erb
     # tournaments controller does a .split(',') on this string and creates an array via commas
@@ -43,6 +44,11 @@ class Weight < ApplicationRecord
 	end
 
 	private
+
+	def invalidate_cached_views
+		changes = previous_changes.except("updated_at").slice("max", "tournament_id")
+		TournamentCacheInvalidator.weight_changed(self, changes) if changes.any?
+	end
 
 	def prepare_dependents_for_destroy
 		return if @dependents_prepared_for_destroy

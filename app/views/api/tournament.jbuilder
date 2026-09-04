@@ -1,5 +1,5 @@
 
-json.cache! ["api_tournament", @tournament, *@mats] do 
+json.cache! ["api_tournament", @tournament.id, @api_cache_fingerprint, *@mats] do
     json.content(@tournament)
     json.(@tournament, :id, :name, :address, :director, :director_email, :tournament_type, :created_at, :updated_at, :user_id)
     

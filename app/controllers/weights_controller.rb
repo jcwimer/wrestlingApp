@@ -77,6 +77,7 @@ class WeightsController < ApplicationController
   def destroy
     @tournament = Tournament.find(@weight.tournament_id)
     @weight.destroy_with_dependents!
+    TournamentCacheInvalidator.generation_completed(@tournament.id)
     respond_to do |format|
         format.html { redirect_to @tournament }
         format.json { head :no_content }

@@ -100,7 +100,6 @@ Wrestling::Application.routes.draw do
   post "/wrestlers/update_pool" => "wrestlers#update_pool"
 
   get "schools/:id/stats" => "schools#stats"
-  post "/schools/:id/import_baumspage_roster" => "schools#import_baumspage_roster", :as => :import_baumspage_roster
   
   #API
   get "/api/tournaments" => "api#tournaments"

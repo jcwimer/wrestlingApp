@@ -45,10 +45,10 @@ class MatQueueOperation
     end
   end
 
-  def advance(mat, finished_match = nil)
+  def advance(mat, finished_match = nil, invalidate_cached_views: true, deferred_wrestler_ids: nil)
     affected_ids = @tournament.mats.pluck(:id)
     changed = false
-    mutate(affected_ids) do |mats|
+    mutate(affected_ids, invalidate_cached_views:, deferred_wrestler_ids:) do |mats|
       locked_mat = mats.find { |candidate| candidate.id == mat.id }
       if finished_match
         changed = locked_mat.queue_match_ids.include?(finished_match.id)
@@ -65,9 +65,9 @@ class MatQueueOperation
     changed || finished_match.nil?
   end
 
-  def refill
+  def refill(invalidate_cached_views: true, deferred_wrestler_ids: nil)
     mat_ids = @tournament.mats.pluck(:id)
-    mutate(mat_ids) { |mats| fill(mats) }
+    mutate(mat_ids, invalidate_cached_views:, deferred_wrestler_ids:) { |mats| fill(mats) }
   end
 
   def reset_and_fill
@@ -81,7 +81,7 @@ class MatQueueOperation
 
   private
 
-  def mutate(mat_ids)
+  def mutate(mat_ids, invalidate_cached_views: true, deferred_wrestler_ids: nil)
     return true if mat_ids.empty?
 
     affected_mats = []
@@ -100,9 +100,10 @@ class MatQueueOperation
       end
       wrestler_ids = Match.where(id: moved_match_ids).pluck(:w1, :w2).flatten.compact.uniq
     end
+    deferred_wrestler_ids&.merge(wrestler_ids)
 
     ActiveRecord.after_all_transactions_commit do
-      Wrestler.where(id: wrestler_ids).touch_all if wrestler_ids.any?
+      TournamentCacheInvalidator.wrestler_listings(wrestler_ids) if invalidate_cached_views
       changed_mats.each do |mat|
         mat.reload
         mat.broadcast_legacy_mat_view

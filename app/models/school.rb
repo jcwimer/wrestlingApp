@@ -1,12 +1,11 @@
 class School < ApplicationRecord
-	belongs_to :tournament, touch: true
+	belongs_to :tournament
 	has_many :wrestlers, dependent: :destroy
 	has_many :deductedPoints, class_name: "Teampointadjust", dependent: :destroy
 	has_many :delegates, class_name: "SchoolDelegate", dependent: :destroy
 	
 	validates :name, presence: true
-
-	attr_accessor :baums_text
+	after_commit :invalidate_cached_views, on: [:create, :update]
 
 	before_destroy :prepare_dependents_for_destroy, prepend: true, unless: :destroyed_by_association
 
@@ -31,16 +30,19 @@ class School < ApplicationRecord
 
 	private
 
+	def invalidate_cached_views
+		changes = previous_changes.except("updated_at")
+		TournamentCacheInvalidator.school_changed(self, changes) if changes.any?
+	end
+
 	def prepare_dependents_for_destroy
 		return if @dependents_prepared_for_destroy
 
 		@dependents_prepared_for_destroy = true
 		tournament.destroy_all_matches
 		wrestlers_to_delete = Wrestler.where(school_id: id)
-		weight_ids = wrestlers_to_delete.distinct.pluck(:weight_id)
 		Teampointadjust.where(wrestler_id: wrestlers_to_delete.select(:id)).delete_all
 		wrestlers_to_delete.delete_all
-		Weight.where(id: weight_ids).touch_all
 		wrestlers.reset
 	end
 

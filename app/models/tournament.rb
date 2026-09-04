@@ -13,8 +13,18 @@ class Tournament < ApplicationRecord
 	
 	validates :date, :name, :tournament_type, :address, :director, :director_email , presence: true
 	before_validation :set_date_sort_key
+	after_commit :invalidate_cached_views, on: :update
 
 	attr_accessor :import_text
+
+	private
+
+	def invalidate_cached_views
+		changes = previous_changes.except("updated_at")
+		TournamentCacheInvalidator.tournament_changed(self, changes) if changes.any?
+	end
+
+	public
 
 	def self.search_date_name(pattern)
 		if pattern.blank?  # blank? covers both nil and empty string
@@ -58,9 +68,7 @@ class Tournament < ApplicationRecord
 	end
 	
 	def calculate_all_team_scores
-		self.schools.each do |school|
-      school.calculate_score
-    end
+		CalculateTournamentTeamScoresJob.perform_later(id)
 	end
 	
 	def create_pre_defined_weights(weight_classes)
@@ -104,21 +112,24 @@ class Tournament < ApplicationRecord
 	end
 
 	def up_matches_unassigned_matches
-		matches
+		records = matches
 			.where("mat_id is NULL and (finished != 1 or finished is NULL)")
 			.where("loser1_name != ? OR loser1_name IS NULL", "BYE")
 			.where("loser2_name != ? OR loser2_name IS NULL", "BYE")
 			.order("bout_number ASC")
 			.limit(10)
-			.includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+			.includes({ wrestler1: :school }, { wrestler2: :school }, :weight)
+			.to_a
+		preload_up_matches_first_rounds(records)
 	end
 
 	def up_matches_mats
 		mat_records = mats.to_a
 		match_ids = mat_records.flat_map(&:queue_match_ids).compact
 		matches_by_id = Match.where(id: match_ids)
-			.includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+			.includes({ wrestler1: :school }, { wrestler2: :school }, :weight)
 			.index_by(&:id)
+		preload_up_matches_first_rounds(matches_by_id.values)
 		mat_records.each { |mat| mat.preload_queue_matches(matches_by_id) }
 		mat_records
 	end
@@ -281,8 +292,8 @@ class Tournament < ApplicationRecord
 		MatQueueOperation.new(self).reset_and_fill
 	end
 
-	def refill_open_bout_board_queues(broadcast_all: false)
-		MatQueueOperation.new(self).refill
+	def refill_open_bout_board_queues(broadcast_all: false, invalidate_cached_views: true)
+		MatQueueOperation.new(self).refill(invalidate_cached_views:)
 		mats.reset
 		matches.reset
 	end
@@ -318,6 +329,13 @@ class Tournament < ApplicationRecord
 	end
 	
 	private
+
+	def preload_up_matches_first_rounds(matches)
+		weight_ids = matches.map(&:weight_id).compact.uniq
+		first_rounds = Match.where(weight_id: weight_ids).group(:weight_id).minimum(:round)
+		matches.each { |match| match.instance_variable_set(:@first_round_for_weight, first_rounds[match.weight_id]) }
+		matches
+	end
 
 	def broadcast_bout_board_changes(mat_records)
 		mat_records.each(&:broadcast_queue_state)

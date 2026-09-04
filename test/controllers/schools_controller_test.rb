@@ -69,21 +69,6 @@ class SchoolsControllerTest < ActionController::TestCase
     assert_match(/blocked_message/, response.body)
   end
 
-  def baums_import
-    baums_text = "***** 2019-01-09 13:36:50 *****
-Some School
-Some Guy
-106,,,,,,,,,
-113,Guy,Another,9,,,,,5,7
-120,Guy2,Another,9,,,,,0,0
-126,Guy3,Another,10,,,,5@120,2,2
-******* Extra Wrestlers *******
-120,Guy4,Another,10,0,3
-126,Guy5,Another,9,,"
-
-    post :import_baumspage_roster, params: { id: @school.id, school: { baums_text: baums_text } }
-  end
-
   test "logged in tournament owner should get edit school page" do
     sign_in_owner
     get_edit
@@ -201,24 +186,6 @@ Some Guy
   test "view school" do
     get :show, params: { id: 1 }
     success
-  end
-
-  test "logged in school delegate can import baumspage roster" do
-    sign_in_school_delegate
-    baums_import
-    assert_redirected_to "/schools/#{@school.id}"
-  end
-
-  test "logged in tournament delegate can import baumspage roster" do
-    sign_in_tournament_delegate
-    baums_import
-    assert_redirected_to "/schools/#{@school.id}"
-  end
-
-  test "logged in user cannot import baumspage roster" do
-    sign_in_non_owner
-    baums_import
-    redirect
   end
 
   # SHOW PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC

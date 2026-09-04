@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_03_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_04_180000) do
   create_table "mat_assignment_rules", force: :cascade do |t|
     t.string "bracket_positions"
     t.datetime "created_at", null: false
@@ -47,6 +47,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_120000) do
     t.string "win_type"
     t.integer "winner_id"
     t.index ["mat_id"], name: "index_matches_on_mat_id"
+    t.index ["tournament_id", "mat_id", "bout_number"], name: "index_matches_on_tournament_mat_and_bout"
     t.index ["tournament_id"], name: "index_matches_on_tournament_id"
     t.index ["w1", "w2"], name: "index_matches_on_w1_and_w2"
     t.index ["weight_id"], name: "index_matches_on_weight_id"

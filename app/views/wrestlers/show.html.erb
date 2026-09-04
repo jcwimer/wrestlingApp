@@ -8,7 +8,7 @@
     <strong>Name:</strong>
     <%= @wrestler.name %> <% if can? :manage, @school %><%= link_to " Edit", edit_wrestler_path(@wrestler), :class=>"fas fa-edit" %><% end %>
   </p>
-<% cache ["wrestler_show", @wrestler, @wrestler.school, @wrestler.weight] do %>
+<% cache TournamentCacheInvalidator.wrestler_profile_key(@wrestler.id), skip_digest: true do %>
   <p>
     <strong>School:</strong>
     <%= @wrestler.school.name %>

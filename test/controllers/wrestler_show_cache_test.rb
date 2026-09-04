@@ -48,7 +48,7 @@ class WrestlerShowCacheTest < ActionController::TestCase
     events = []
     subscriber = lambda do |name, _start, _finish, _id, payload|
       key = payload[:key].to_s
-      next unless key.include?("wrestler_show")
+      next unless key.include?("wrestler_profile")
 
       events << { name: name, hit: payload[:hit] }
     end

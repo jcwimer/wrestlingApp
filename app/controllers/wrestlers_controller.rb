@@ -82,7 +82,9 @@ class WrestlersController < ApplicationController
   # DELETE /wrestlers/1
   def destroy
     @school = @wrestler.school
+    tournament_id = @school.tournament_id
     @wrestler.destroy
+    TournamentCacheInvalidator.generation_completed(tournament_id)
     message = "Wrestler was successfully deleted. This action has removed all matches. Please re-generate matches if you already had matches."
 
     respond_to do |format|

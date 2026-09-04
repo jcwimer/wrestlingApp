@@ -27,6 +27,8 @@
 - Prosopite scans controller actions in development and test. Development detections are logged, detections in controller tests raise errors, and inline jobs are excluded from the parent request scan.
 - SQLite prepared statements are disabled in development and test so Prosopite can fingerprint the SQL emitted by Rails 8.1. Production MariaDB configuration is unchanged.
 - Collection fragment caches use Rails collection rendering so Solid Cache reads and writes their entries in batches.
+- Popular read-only pages use deterministic domain keys and targeted `Rails.cache.delete_multi` calls instead of `updated_at` fan-out. Brackets are cached per weight, team scores per tournament, school stats per school, and wrestler roster/profile fragments independently. Cache invalidation is coordinated by `TournamentCacheInvalidator`; bulk generation and advancement must delete affected keys after persistence.
+- Completed matches enqueue one serialized advancement job. That job completes both wrestler branches and any cascading advancement synchronously, updates bout-board queues, calculates tournament scores once, and only then invalidates affected caches.
 - Live stat websocket writes use callback-free column updates and must not invalidate fragment cache versions. Match finalization is guarded by `matches.finalized_at`.
 - Queue assignment, movement, advancement, refill, and clearing go through `MatQueueOperation`, which locks mats by ID and publishes topology changes after commit. Scoreboard selection uses compact, idempotent cache-backed broadcasts and never renders the legacy mat partial.
 - Solid Cable uses its default automatic trimming behavior. Broadcast telemetry records per-stream message counts and payload sizes.
@@ -44,6 +46,7 @@
   - Local URLs: Grafana `http://localhost:3000`, Jaeger `http://localhost:16686`, Prometheus `http://localhost:9090`.
   - Prometheus span metrics are `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`.
   - Jaeger all-in-one uses in-memory storage and is capped with `--memory.max-traces=50000` in compose and Kubernetes manifests.
+  - Puma worker and thread counts come from `WEB_CONCURRENCY`, `RAILS_MIN_THREADS`, and `RAILS_MAX_THREADS`. Local Compose defaults to 2 workers with 5 threads; production Compose defaults to 4 workers with 5 threads.
 
 # CI/CD
 - Jenkins CI/CD lives in `ci_cd/Jenkinsfile`.

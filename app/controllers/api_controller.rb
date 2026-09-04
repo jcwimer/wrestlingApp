@@ -19,6 +19,13 @@ class ApiController < ApplicationController
         @weights = @tournament.weights.includes(wrestlers: [:school, :matches_as_w1, :matches_as_w2])
         @matches = @tournament.matches.includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
         @mats = @tournament.up_matches_mats
+        @api_cache_fingerprint = [
+          @tournament.updated_at,
+          @schools.maximum(:updated_at),
+          @weights.maximum(:updated_at),
+          @tournament.wrestlers.maximum(:updated_at),
+          @tournament.matches.maximum(:updated_at)
+        ]
     end
     
     def newTournament

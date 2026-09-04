@@ -64,6 +64,9 @@ class MatchChannel < ApplicationCable::Channel
       @match.update_columns(changed_attributes) if changed_attributes.any?
     end
 
+    if changed_attributes.any? && @match.finished == 1
+      TournamentCacheInvalidator.finished_match_stats_changed([@match.w1, @match.w2])
+    end
     MatchChannel.broadcast_to(@match, changed_attributes) if changed_attributes.any?
   rescue => e
     Rails.logger.error "[MatchChannel] Exception during match stat update for #{@match.id}: #{e.message}"
@@ -88,12 +91,8 @@ class MatchChannel < ApplicationCable::Channel
       scoreboard_state: Rails.cache.read(scoreboard_cache_key)
     }.compact
 
-    if payload.present?
-      Rails.logger.info "[MatchChannel] request_sync transmit for match #{@match.id} with payload: #{payload.inspect}"
-      transmit(payload)
-    else
-      Rails.logger.info "[MatchChannel] request_sync payload empty for match #{@match.id}, not transmitting."
-    end
+    Rails.logger.info { "[MatchChannel] request_sync transmit for match #{@match.id} (#{payload.to_json.bytesize} bytes)" }
+    transmit(payload)
   end
 
   private

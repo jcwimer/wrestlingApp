@@ -114,26 +114,16 @@
   window.addEventListener('beforeprint', scaleContent); // Scale before printing
 </script>
 
-<% cache ["#{@tournament.id}_all_brackets", @tournament] do %> 
-    <div class="page">
-      <div class="bracket-container">
-        <%= render :template => 'tournaments/team_scores' %>
-      </div>
-    </div>
-    <% @weights.sort_by{|w| w.max}.each do |weight| %>
-          <% if @tournament.tournament_type == "Pool to bracket" %>
-                <!-- Need to define what the tournaments#bracket controller defines -->
-                <% @matches = @matches_by_weight_id[weight.id] || [] %>
-                <% @wrestlers = @wrestlers_by_weight_id[weight.id] || [] %>
-                <% @pools = weight.pool_rounds(@matches) %>
-                <% @weight = weight %>
-                <%= render 'bracket_partial' %>
-          <% elsif @tournament.tournament_type.include? "Modified 16 Man Double Elimination" or @tournament.tournament_type.include? "Regular Double Elimination" %>
-            <!-- Need to define what the tournaments#bracket controller defines -->
-            <% @matches = @matches_by_weight_id[weight.id] || [] %>
-            <% @wrestlers = @wrestlers_by_weight_id[weight.id] || [] %>
-            <% @weight = weight %>
-            <%= render 'bracket_partial' %>
-          <% end %>
-    <% end %>
-<% end %>
+<div class="page">
+  <div class="bracket-container">
+    <%= render template: "tournaments/team_scores" %>
+  </div>
+</div>
+<%= render partial: "cached_bracket",
+           collection: @weights.sort_by(&:max),
+           as: :weight,
+           locals: {
+             matches_by_weight_id: @matches_by_weight_id,
+             wrestlers_by_weight_id: @wrestlers_by_weight_id
+           },
+           cached: ->(weight) { TournamentCacheInvalidator.bracket_key(weight.id, print: params[:print].present?) } %>

@@ -21,6 +21,7 @@ class SchoolShowCacheTest < ActionController::TestCase
   end
 
   test "school show wrestler cell fragments hit cache and invalidate after wrestler update" do
+    sign_out
     first_events = cache_events_for_school_show do
       get :show, params: { id: @school.id }
       assert_response :success
@@ -36,7 +37,7 @@ class SchoolShowCacheTest < ActionController::TestCase
 
     wrestler = @school.wrestlers.first
     third_events = cache_events_for_school_show do
-      wrestler.touch
+      wrestler.update!(name: "#{wrestler.name} Updated")
       get :show, params: { id: @school.id }
       assert_response :success
     end
@@ -82,6 +83,7 @@ class SchoolShowCacheTest < ActionController::TestCase
   end
 
   test "completing a match expires school show wrestler cell caches" do
+    sign_out
     warm_events = cache_events_for_school_show do
       get :show, params: { id: @school.id }
       assert_response :success
@@ -110,6 +112,7 @@ class SchoolShowCacheTest < ActionController::TestCase
   end
 
   test "assigning a mat expires school show wrestler cell caches" do
+    sign_out
     warm_events = cache_events_for_school_show do
       get :show, params: { id: @school.id }
       assert_response :success
@@ -147,6 +150,21 @@ class SchoolShowCacheTest < ActionController::TestCase
     assert_operator cache_hits(post_action_events), :>, 0, "Expected live stats to reuse the school stats cache"
   end
 
+  test "finished match stat correction expires both schools stats caches" do
+    wrestler = @school.wrestlers.first
+    match = wrestler.all_matches.first
+    match.update_columns(finished: 1, winner_id: match.w1 || match.w2, win_type: "Decision", score: "1-0")
+
+    cache_events_for_school_stats { get :stats, params: { id: @school.id } }
+    events = cache_events_for_school_stats do
+      match.update!(w1_stat: "T2")
+      get :stats, params: { id: @school.id }
+      assert_response :success
+    end
+
+    assert_operator cache_writes(events), :>, 0
+  end
+
   private
 
   def sign_out
@@ -156,11 +174,11 @@ class SchoolShowCacheTest < ActionController::TestCase
   end
 
   def cache_events_for_school_show(&block)
-    cache_events_for("school_show_wrestler_cells", &block)
+    cache_events_for("school_roster", &block)
   end
 
   def cache_events_for_school_stats(&block)
-    cache_events_for("#{@school.id}_Stats", &block)
+    cache_events_for("school_stats", &block)
   end
 
   def cache_events_for(key_marker)

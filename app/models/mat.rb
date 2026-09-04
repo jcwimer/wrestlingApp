@@ -215,15 +215,7 @@ class Mat < ApplicationRecord
 
 	def touch_assigned_match_wrestlers_for_cached_views
 		wrestler_ids = matches.where(finished: [nil, 0]).pluck(:w1, :w2).flatten.compact.uniq
-		wrestlers = Wrestler.where(id: wrestler_ids)
-		school_ids = wrestlers.distinct.pluck(:school_id)
-		weight_ids = wrestlers.distinct.pluck(:weight_id)
-		timestamp = Time.current
-
-		wrestlers.touch_all(time: timestamp)
-		School.where(id: school_ids).touch_all(time: timestamp)
-		Weight.where(id: weight_ids).touch_all(time: timestamp)
-		Tournament.where(id: tournament_id).touch_all(time: timestamp)
+		TournamentCacheInvalidator.wrestler_listings(wrestler_ids)
 	end
 
 	def queue_match_at(position)

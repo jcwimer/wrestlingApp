@@ -50,6 +50,15 @@ class UpMatchesCacheTest < ActionController::TestCase
     assert_operator cache_writes(third_events), :>, 0, "Expected queue change to invalidate and rewrite at least one row fragment"
   end
 
+  test "up_matches preloads first rounds without loading every weight match" do
+    matches = @tournament.up_matches_unassigned_matches
+
+    matches.each do |match|
+      assert_equal Match.where(weight_id: match.weight_id).minimum(:round), match.first_round_for_weight
+      assert_not match.weight.association(:matches).loaded?
+    end
+  end
+
   test "up_matches row fragments hit cache after queue clear rewrite" do
     first_events = cache_events_for_up_matches do
       get :up_matches, params: { id: @tournament.id }

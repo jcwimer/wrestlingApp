@@ -23,7 +23,7 @@ Gatling drives preparation and all spectator traffic. The same container starts 
 
 For a local Rails server, bind Rails to an address Docker can reach, for example `bin/rails server -b 0.0.0.0`. Do not set `BASE_URL` to `127.0.0.1`, which means the Gatling container itself; use the default `http://host.docker.internal:3000`. Reports are written to `loadtests/results/`.
 
-Gatling websocket timings include the Action Cable welcome, subscription confirmations, replacement-match confirmations, and periodic sync round trips. Unsolicited mat messages are buffered and drained between probes, then used to unsubscribe from the previous match and subscribe to the selected or queue-one replacement, matching the `live_scores` controller behavior. Gatling does not execute page JavaScript, so the separate Playwright observer correlates each operator takedown with its matching score broadcast and supplies both delivery and browser-side DOM metrics.
+Gatling websocket timings include the Action Cable welcome, subscription confirmations, replacement-match confirmations, and periodic sync round trips. Unsolicited mat messages are buffered and drained between probes, then coalesced to the latest topology before changing subscriptions. A replacement is only tracked after the server confirms its subscription, keeping sync measurements attached to matches the client can actually reach. This matches the `live_scores` controller behavior. Gatling does not execute page JavaScript, so the separate Playwright observer correlates each operator takedown with its matching score broadcast and supplies both delivery and browser-side DOM metrics.
 
 Configuration is supplied through environment variables:
 
