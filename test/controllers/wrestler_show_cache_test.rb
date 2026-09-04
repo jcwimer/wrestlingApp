@@ -18,7 +18,7 @@ class WrestlerShowCacheTest < ActionController::TestCase
     ActionController::Base.perform_caching = @original_perform_caching
   end
 
-  test "wrestler show cache hits and invalidates after match stat update" do
+  test "wrestler show cache hits and remains valid after match stat update" do
     first_events = cache_events_for_wrestler_show do
       get :show, params: { id: @wrestler.id }
       assert_response :success
@@ -38,7 +38,8 @@ class WrestlerShowCacheTest < ActionController::TestCase
       get :show, params: { id: @wrestler.id }
       assert_response :success
     end
-    assert_operator cache_writes(third_events), :>, 0, "Expected match stat update to invalidate wrestler show cache"
+    assert_equal 0, cache_writes(third_events), "Expected live stats not to invalidate the wrestler show cache"
+    assert_operator cache_hits(third_events), :>, 0, "Expected live stats to reuse the wrestler show cache"
   end
 
   private

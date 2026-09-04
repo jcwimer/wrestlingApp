@@ -53,13 +53,15 @@ export default class extends Controller {
     matchId: Number,
     matId: Number,
     tournamentId: Number,
-    initialBoutNumber: Number
+    initialBoutNumber: Number,
+    initialLastMatchResult: String
   }
 
   connect() {
     this.applyControllerContext(buildScoreboardContext({
       initialBoutNumber: this.initialBoutNumberValue,
-      matchId: this.matchIdValue
+      matchId: this.matchIdValue,
+      lastMatchResult: this.initialLastMatchResultValue
     }))
 
     const plan = connectionPlan(this.sourceModeValue, this.currentMatchId)

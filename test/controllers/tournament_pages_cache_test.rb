@@ -43,7 +43,7 @@ class TournamentPagesCacheTest < ActionController::TestCase
     assert_operator cache_writes(third_events), :>, 0, "Expected school score update to invalidate team_scores cache"
   end
 
-  test "bracket cache hits on repeat render and rewrites after match update" do
+  test "bracket cache hits on repeat render and rewrites after structural match update" do
     key_markers = [@weight.id.to_s + "_bracket", "bracket_round_match", "bracket_final_match"]
 
     first_events = cache_events_for(key_markers) do
@@ -61,11 +61,11 @@ class TournamentPagesCacheTest < ActionController::TestCase
 
     match = @weight.matches.first
     third_events = cache_events_for(key_markers) do
-      match.touch
+      match.update!(bout_number: match.bout_number + 10_000)
       get :bracket, params: { id: @tournament.id, weight: @weight.id }
       assert_response :success
     end
-    assert_operator cache_writes(third_events), :>, 0, "Expected match update to invalidate bracket cache"
+    assert_operator cache_writes(third_events), :>, 0, "Expected structural match update to invalidate bracket cache"
   end
 
   test "bracket cache separates print and non-print variants" do

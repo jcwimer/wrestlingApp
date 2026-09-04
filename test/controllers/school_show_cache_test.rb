@@ -128,7 +128,7 @@ class SchoolShowCacheTest < ActionController::TestCase
     assert_operator cache_writes(post_action_events), :>, 0, "Expected mat assignment to expire school show wrestler cell cache"
   end
 
-  test "match stat update expires school stats cache" do
+  test "match stat update reuses school stats cache" do
     warm_events = cache_events_for_school_stats do
       get :stats, params: { id: @school.id }
       assert_response :success
@@ -143,7 +143,8 @@ class SchoolShowCacheTest < ActionController::TestCase
       get :stats, params: { id: @school.id }
       assert_response :success
     end
-    assert_operator cache_writes(post_action_events), :>, 0, "Expected match stat update to expire school stats cache"
+    assert_equal 0, cache_writes(post_action_events), "Expected live stats not to invalidate the school stats cache"
+    assert_operator cache_hits(post_action_events), :>, 0, "Expected live stats to reuse the school stats cache"
   end
 
   private

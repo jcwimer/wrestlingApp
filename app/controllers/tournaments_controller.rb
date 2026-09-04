@@ -246,7 +246,27 @@ class TournamentsController < ApplicationController
   end
 
   def live_scores
-    @mats = @tournament.mats.sort_by(&:name)
+    @mats = Mat.where(tournament_id: @tournament.id).order(:name).to_a
+    keys = @mats.flat_map { |mat| [mat.scoreboard_selection_cache_key, mat.last_match_result_cache_key] }
+    cached = Rails.cache.read_multi(*keys)
+    selected_ids = @mats.filter_map do |mat|
+      selection = cached[mat.scoreboard_selection_cache_key]
+      match_id = selection && (selection[:match_id] || selection["match_id"])
+      match_id if mat.queue_match_ids.include?(match_id)
+    end
+    match_ids = (@mats.flat_map(&:queue_match_ids).compact | selected_ids)
+    matches_by_id = Match.where(id: match_ids)
+      .includes(:weight, { wrestler1: :school }, { wrestler2: :school })
+      .index_by(&:id)
+
+    @live_score_matches = {}
+    @live_score_results = {}
+    @mats.each do |mat|
+      selection = cached[mat.scoreboard_selection_cache_key]
+      selected_id = selection && (selection[:match_id] || selection["match_id"])
+      @live_score_matches[mat.id] = matches_by_id[selected_id] || matches_by_id[mat.queue1]
+      @live_score_results[mat.id] = cached[mat.last_match_result_cache_key]
+    end
   end
 
   def generate_matches
@@ -399,7 +419,11 @@ class TournamentsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_tournament
-      @tournament = Tournament.includes(:user, :delegates, :mats, :schools, :weights, :matches, wrestlers: [:school, :weight, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
+      @tournament = if action_name == "live_scores"
+        Tournament.find_by(id: params[:id])
+      else
+        Tournament.includes(:user, :delegates, :mats, :schools, :weights, :matches, wrestlers: [:school, :weight, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

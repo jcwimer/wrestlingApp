@@ -180,6 +180,32 @@ class MatchChannelTest < ActionCable::Channel::TestCase
     assert_empty ActionCable.server.pubsub.broadcasts(stream)
   end
 
+  test "send_stat with unchanged fields does not write or broadcast" do
+    @match.update_columns(w1_stat: "T3", w2_stat: "E1")
+    original_updated_at = @match.reload.updated_at
+    subscribe(match_id: @match.id)
+    stream = MatchChannel.broadcasting_for(@match)
+    ActionCable.server.pubsub.broadcasts(stream).clear
+
+    perform :send_stat, { new_w1_stat: "T3", new_w2_stat: "E1" }
+
+    assert_equal original_updated_at, @match.reload.updated_at
+    assert_empty ActionCable.server.pubsub.broadcasts(stream)
+  end
+
+  test "send_stat does not change fragment cache versions" do
+    wrestler_versions = [@match.wrestler1, @match.wrestler2].compact.to_h { |record| [record.id, record.cache_key_with_version] }
+    versions = [@match.tournament, @match.weight, @match.wrestler1&.school, @match.wrestler2&.school].compact.to_h do |record|
+      [[record.class.name, record.id], record.cache_key_with_version]
+    end
+    subscribe(match_id: @match.id)
+
+    perform :send_stat, { new_w1_stat: "T3", new_w2_stat: "E1" }
+
+    assert_equal wrestler_versions, [@match.wrestler1, @match.wrestler2].compact.to_h { |record| [record.id, record.reload.cache_key_with_version] }
+    assert_equal versions, [@match.tournament, @match.weight, @match.wrestler1&.school, @match.wrestler2&.school].compact.to_h { |record| [[record.class.name, record.id], record.reload.cache_key_with_version] }
+  end
+
   test "send_scoreboard caches and broadcasts scoreboard state" do
     subscribe(match_id: @match.id)
     scoreboard_state = {

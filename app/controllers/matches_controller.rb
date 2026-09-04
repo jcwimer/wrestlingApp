@@ -64,9 +64,7 @@ class MatchesController < ApplicationController
     queue_position = params.dig(:match, :queue_position)
 
     if mat_id.blank?
-      Mat.where("queue1 = :match_id OR queue2 = :match_id OR queue3 = :match_id OR queue4 = :match_id", match_id: @match.id)
-         .find_each { |mat| mat.remove_match_from_queue_and_collapse!(@match.id) }
-      @match.update(mat_id: nil)
+      MatQueueOperation.new(@tournament).remove(@match.id)
       redirect_to session.delete(:return_path) || "/tournaments/#{@tournament.id}/matches", notice: "Match assignment cleared."
       return
     end
@@ -96,20 +94,9 @@ class MatchesController < ApplicationController
   def update
     respond_to do |format|
       if @match.update(match_params)
-        # Broadcast the update
-        MatchChannel.broadcast_to(
-          @match,
-          {
-            w1_stat: @match.w1_stat,
-            w2_stat: @match.w2_stat,
-            score: @match.score,
-            win_type: @match.win_type,
-            winner_id: @match.winner_id,
-            winner_name: @match.winner&.name,
-            finished: @match.finished,
-            scoreboard_state: Rails.cache.read("tournament:#{@match.tournament_id}:match:#{@match.id}:scoreboard_state")
-          }
-        )
+        unless @match.result_changed_in_last_save?
+          MatchChannel.broadcast_to(@match, { w1_stat: @match.w1_stat, w2_stat: @match.w2_stat })
+        end
 
         redirect_path = resolve_match_redirect_path(session[:return_path]) || "/tournaments/#{@match.tournament.id}"
         format.html { redirect_to redirect_path, notice: 'Match was successfully updated.' }

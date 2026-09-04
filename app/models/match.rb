@@ -1,19 +1,12 @@
 class Match < ApplicationRecord
 	include ActionView::RecordIdentifier
 
-	def self.touch_cached_views_for_wrestlers(wrestler_ids, tournament_id)
-		wrestler_rows = Wrestler.where(id: wrestler_ids.compact.uniq).pluck(:id, :school_id, :weight_id)
-		timestamp = Time.current
+	RESULT_FIELDS = %w[finished winner_id win_type score overtime_type].freeze
+	STRUCTURAL_FIELDS = %w[w1 w2 weight_id tournament_id bout_number bracket_position bracket_position_number round loser1_name loser2_name].freeze
 
-		Wrestler.where(id: wrestler_rows.map(&:first)).touch_all(time: timestamp)
-		School.where(id: wrestler_rows.map(&:second).compact.uniq).touch_all(time: timestamp)
-		Weight.where(id: wrestler_rows.map(&:third).compact.uniq).touch_all(time: timestamp)
-		Tournament.where(id: tournament_id).touch_all(time: timestamp)
-	end
-
-	belongs_to :tournament, touch: true
-	belongs_to :weight, touch: true
-	belongs_to :mat, touch: true, optional: true
+	belongs_to :tournament
+	belongs_to :weight
+	belongs_to :mat, optional: true
 	belongs_to :winner, class_name: 'Wrestler', foreign_key: 'winner_id', optional: true
 	belongs_to :wrestler1, class_name: 'Wrestler', foreign_key: 'w1', optional: true
 	belongs_to :wrestler2, class_name: 'Wrestler', foreign_key: 'w2', optional: true
@@ -23,37 +16,35 @@ class Match < ApplicationRecord
 	
 	# Callback to update finished_at when a match is finished
 	before_save :update_finished_at
+	after_save :remember_result_change
 
 	# update mat show with correct match if bout board is reset
 	# this is done with a turbo stream
 	after_commit :broadcast_mat_assignment_change, if: :saved_change_to_mat_id?, on: [:create, :update]
 	after_commit :broadcast_up_matches_board, on: :update, if: :saved_change_to_mat_id?
-	after_commit :touch_wrestlers_for_cached_views, on: [:create, :update, :destroy]
+	after_commit :invalidate_created_or_destroyed_match, on: [:create, :destroy]
+	after_commit :invalidate_structural_caches, on: :update, if: :structural_fields_changed?
+	after_commit :handle_result_change, on: :update, if: :result_fields_changed?
 
-	# Enqueue advancement and related actions after the DB transaction has committed.
-	# Using after_commit ensures any background jobs enqueued inside these callbacks
-	# will see the committed state of the match (e.g. finished == 1). Enqueuing
-	# jobs from after_update can cause jobs to run before the transaction commits,
-	# which leads to jobs observing stale data and not performing advancement.
-	after_commit :after_finished_actions, on: :update, if: -> {
-	  saved_change_to_finished? ||
-	  saved_change_to_winner_id? ||
-	  saved_change_to_win_type? ||
-	  saved_change_to_score? ||
-	  saved_change_to_overtime_type?
-	}
+	def finalize_once!
+		with_lock do
+			reload
+			return false unless finished == 1 && winner_id.present? && finalized_at.nil?
 
-	def after_finished_actions
-	  if self.finished == 1 && self.winner_id != nil
-		advance_wrestlers
-		if self.mat
-			self.mat.advance_queue!(self)
+			assigned_mat = mat
+			advance_wrestlers
+			if assigned_mat
+				MatQueueOperation.new(tournament).advance(assigned_mat, self)
+			else
+				tournament.refill_open_bout_board_queues
+			end
+			update_column(:finalized_at, Time.current)
 		end
-		self.tournament.refill_open_bout_board_queues
-		# School point calculation has move to the end of advance wrestler
-		# calculate_school_points
-		self.update(mat_id: nil)
-	  end
+		true
+	end
+
+	def result_changed_in_last_save?
+		@result_fields_changed_on_save
 	end
     
     BRACKET_POSITIONS = ["Pool","1/2","3/4","5/6","7/8","Quarter","Semis","Conso Semis","Bracket","Conso", "Conso Quarter"]
@@ -363,11 +354,71 @@ class Match < ApplicationRecord
 	  end
 	end
 
-	def touch_wrestlers_for_cached_views
+	def handle_result_change
+		winner_changed = previous_changes.key?("winner_id")
+		finalized_now = finalize_once! if finished == 1 && winner_id.present?
+		reconcile_finished_result!(winner_changed: winner_changed) if finished == 1 && finalized_at.present? && !finalized_now
+		invalidate_result_caches
+		broadcast_result_state
+	end
+
+	def reconcile_finished_result!(winner_changed:)
+		if winner_changed
+			ReconcileFinishedMatchResult.new(self).call
+		else
+			calculate_school_points
+		end
+	end
+
+	def remember_result_change
+		@result_fields_changed_on_save = (saved_changes.keys & RESULT_FIELDS).any?
+	end
+
+	def result_fields_changed?
+		(previous_changes.keys & RESULT_FIELDS).any?
+	end
+
+	def structural_fields_changed?
+		(previous_changes.keys & STRUCTURAL_FIELDS).any?
+	end
+
+	def invalidate_created_or_destroyed_match
+		invalidate_result_caches
+	end
+
+	def invalidate_structural_caches
 		wrestler_ids = [w1, w2]
 		wrestler_ids.concat(previous_changes["w1"] || [])
 		wrestler_ids.concat(previous_changes["w2"] || [])
-		self.class.touch_cached_views_for_wrestlers(wrestler_ids, tournament_id)
+		weight_ids = [weight_id] + (previous_changes["weight_id"] || [])
+		tournament_ids = [tournament_id] + (previous_changes["tournament_id"] || [])
+		invalidate_cache_records(wrestler_ids, weight_ids: weight_ids, tournament_ids: tournament_ids)
+	end
+
+	def invalidate_result_caches
+		invalidate_cache_records([w1, w2])
+	end
+
+	def invalidate_cache_records(wrestler_ids, weight_ids: [weight_id], tournament_ids: [tournament_id])
+		rows = Wrestler.where(id: wrestler_ids.compact.uniq).pluck(:id, :school_id, :weight_id)
+		timestamp = Time.current
+		Wrestler.where(id: rows.map(&:first)).touch_all(time: timestamp)
+		School.where(id: rows.map(&:second).compact.uniq).touch_all(time: timestamp)
+		Weight.where(id: (rows.map(&:third) + weight_ids).compact.uniq).touch_all(time: timestamp)
+		Tournament.where(id: tournament_ids.compact.uniq).touch_all(time: timestamp)
+	end
+
+	def broadcast_result_state
+		MatchChannel.broadcast_to(self, {
+			w1_stat: w1_stat,
+			w2_stat: w2_stat,
+			score: score,
+			win_type: win_type,
+			winner_id: winner_id,
+			winner_name: winner&.name,
+			finished: finished,
+			scoreboard_state: Rails.cache.read("tournament:#{tournament_id}:match:#{id}:scoreboard_state")
+		})
 	end
 
 	def broadcast_mat_assignment_change
@@ -378,18 +429,10 @@ class Match < ApplicationRecord
 			mat = Mat.find_by(id: mat_id)
 			next unless mat
 
-			Turbo::StreamsChannel.broadcast_update_to(
-					mat,
-					target: dom_id(mat, :current_match),
-					partial: "mats/current_match",
-					locals: {
-						mat: mat,
-					match: mat.queue1_match,
-					next_match: mat.queue2_match,
-					show_next_bout_button: true
-				}
-			)
+			mat.broadcast_legacy_mat_view
+			mat.broadcast_scoreboard_state
 		end
+		Wrestler.where(id: [w1, w2].compact).touch_all
 	end
 
 	def broadcast_up_matches_board

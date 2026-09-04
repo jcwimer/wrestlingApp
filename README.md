@@ -328,3 +328,5 @@ The importmap configuration in `config/importmap.rb` handles the loading of all 
 # Gatling Load Tests
 
 Dockerized load tests for seeded tournament `204` live in `loadtests/`. Gatling prepares five mats, drives spectator load, follows live-score Action Cable subscription changes, and measures websocket round trips. Staggered Playwright sessions execute the real mat-operator JavaScript, while a browser observer records operator-action-to-live-score delivery and DOM latency. See `loadtests/README.md` for execution, thresholds, and environment configuration.
+
+Live stat websocket writes update only changed stat columns without callbacks or cache invalidation. Mat queue mutations are committed through `MatQueueOperation` and publish one legacy mat update, one compact scoreboard state, and one bout-board update after the transaction. Solid Cable uses its default automatic trimming behavior. Broadcast telemetry records per-stream message counts and payload sizes.

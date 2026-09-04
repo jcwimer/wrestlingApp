@@ -705,6 +705,20 @@ class TournamentsControllerTest < ActionController::TestCase
     assert_not_includes response.body, "Result</h4>"
   end
 
+  test "live scores page stays within its query budget" do
+    @tournament.update!(is_public: true)
+    queries = []
+    subscriber = lambda do |_name, _start, _finish, _id, payload|
+      next if payload[:name] == "SCHEMA" || payload[:cached]
+      queries << payload[:sql] unless payload[:sql].match?(/\A(?:BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE)/)
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { get_live_scores }
+
+    assert_response :success
+    assert_operator queries.size, :<=, 9, "Expected live_scores to use at most 9 queries, got #{queries.size}:\n#{queries.join("\n")}"
+  end
+
   # ALL_RESULTS PAGE PERMISSIONS WHEN TOURNAMENT IS NOT PUBLIC
   test "logged in school delegate cannot get all_results page when tournament is not public" do
     @tournament.is_public = false

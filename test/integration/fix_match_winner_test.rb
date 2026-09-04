@@ -13,24 +13,27 @@ class FixMatchWinner < ActionDispatch::IntegrationTest
         match.save
     end
     
-    test "Double elimination advance wrestler should run if the winner changes" do
+    test "changing a finished match winner corrects both bracket destinations without refinalizing" do
         create_double_elim_tournament_single_weight(4, "Regular Double Elimination 1-8")
         
         round1 = @tournament.reload.matches.select{|m| m.round == 1}
-        winner_by_name("Test1", round1.select{|m| m.bracket_position_number == 1}.first)
+        corrected_match = round1.select{|m| m.bracket_position_number == 1}.first
+        winner_by_name("Test1", corrected_match)
+        finalized_at = corrected_match.reload.finalized_at
+        assert_not_nil finalized_at
         winner_by_name("Test2", round1.select{|m| m.bracket_position_number == 2}.first)
 
-        round1 = @tournament.reload.matches.select{|m| m.round == 1}
-        winner_by_name("Test4", round1.select{|m| m.bracket_position_number == 1}.first)
+        winner_by_name("Test4", corrected_match)
+        assert_equal finalized_at, corrected_match.reload.finalized_at
 
         first_finals = @tournament.reload.matches.select{|m| m.bracket_position == "1/2"}.first
         third_finals = @tournament.reload.matches.select{|m| m.bracket_position == "3/4"}.first
         
-        assert first_finals.wrestler1.name == "Test4"
-        assert first_finals.wrestler2.name == "Test2"
+        assert_equal "Test4", first_finals.wrestler1.name
+        assert_equal "Test2", first_finals.wrestler2.name
 
-        assert third_finals.wrestler1.name == "Test1"
-        assert third_finals.wrestler2.name == "Test3"
+        assert_equal "Test1", third_finals.wrestler1.name
+        assert_equal "Test3", third_finals.wrestler2.name
     end
 
     test "Pool to bracket pool order should run if the winner changes" do

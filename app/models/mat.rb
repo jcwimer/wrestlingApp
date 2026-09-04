@@ -15,37 +15,11 @@ class Mat < ApplicationRecord
 	after_commit :touch_assigned_match_wrestlers_for_cached_views, on: :update, if: :saved_change_to_name?
 
 	def assign_next_match
-		slot = first_empty_queue_slot
-		return true unless slot
-
-		match = next_eligible_match
-		return false unless match
-
-		place_match_in_empty_slot!(match, slot)
-		true
+		MatQueueOperation.new(tournament).advance(self).tap { reload }
 	end
 
 	def advance_queue!(finished_match = nil)
-		self.class.transaction do
-			if finished_match
-				position = queue_position_for_match(finished_match)
-				if position == 1
-					shift_queue_forward!
-					fill_queue_slots!
-				elsif position
-					remove_match_from_queue_and_collapse!(finished_match.id)
-				else
-					fill_queue_slots!
-				end
-			else
-				if queue1_match&.finished == 1
-					shift_queue_forward!
-				end
-				fill_queue_slots!
-			end
-		end
-		broadcast_current_match
-		true
+		MatQueueOperation.new(tournament).advance(self, finished_match).tap { reload }
 	end
 
 	def next_eligible_match
@@ -139,58 +113,15 @@ class Mat < ApplicationRecord
 	end
 
 	def remove_match_from_queue_and_collapse!(match_id)
-		queue_ids = queue_match_ids
-		return if queue_ids.none? { |id| id == match_id }
-
-		queue_ids.map! { |id| id == match_id ? nil : id }
-		queue_ids = queue_ids.compact
-		queue_ids += [nil] * (4 - queue_ids.size)
-
-		update!(
-			queue1: queue_ids[0],
-			queue2: queue_ids[1],
-			queue3: queue_ids[2],
-			queue4: queue_ids[3]
-		)
-
-		fill_queue_slots!
-		broadcast_current_match
+		MatQueueOperation.new(tournament).remove(match_id).tap { reload }
 	end
 
 	def assign_match_to_queue!(match, position)
-		position = position.to_i
-		raise ArgumentError, "Queue position must be 1-4" unless (1..4).cover?(position)
-
-		self.class.transaction do
-			match.update!(mat_id: id)
-			remove_match_from_other_mats!(match.id)
-
-			queue_ids = queue_match_ids.map { |id| id == match.id ? nil : id }
-			queue_ids = queue_ids.compact
-
-			queue_ids.insert(position - 1, match.id)
-			bumped_match_id = queue_ids.length > 4 ? queue_ids.pop : nil
-
-			queue_ids += [nil] * (4 - queue_ids.length)
-
-			update!(
-				queue1: queue_ids[0],
-				queue2: queue_ids[1],
-				queue3: queue_ids[2],
-				queue4: queue_ids[3]
-			)
-
-			bumped_match = Match.find_by(id: bumped_match_id)
-			if bumped_match && bumped_match.finished != 1
-				bumped_match.update!(mat_id: nil)
-			end
-		end
-		broadcast_current_match
+		MatQueueOperation.new(tournament).assign(match, self, position).tap { reload }
 	end
 
 	def clear_queue!
-		update!(queue1: nil, queue2: nil, queue3: nil, queue4: nil)
-		broadcast_current_match
+		MatQueueOperation.new(tournament).clear(self).tap { reload }
 	end
 
 	def unfinished_matches
@@ -209,17 +140,32 @@ class Mat < ApplicationRecord
 		}
 	end
 
-	def set_selected_scoreboard_match!(match)
-		if match
-			Rails.cache.write(
-				scoreboard_selection_cache_key,
-				{ match_id: match.id, bout_number: match.bout_number },
-				expires_in: SCOREBOARD_SELECTION_CACHE_TTL
-			)
-		else
-			Rails.cache.delete(scoreboard_selection_cache_key)
+	def update_scoreboard_state!(match: nil, update_selection: false, last_match_result: nil, update_result: false)
+		current_selection = Rails.cache.read(scoreboard_selection_cache_key)
+		current_match_id = current_selection && (current_selection[:match_id] || current_selection["match_id"])
+		requested_match_id = match&.id
+		selection_changed = update_selection && current_match_id != requested_match_id
+		result_changed = update_result && last_match_result_text != last_match_result.presence
+		return false unless selection_changed || result_changed
+
+		if selection_changed
+			if match
+				Rails.cache.write(scoreboard_selection_cache_key, { match_id: match.id, bout_number: match.bout_number }, expires_in: SCOREBOARD_SELECTION_CACHE_TTL)
+			else
+				Rails.cache.delete(scoreboard_selection_cache_key)
+			end
 		end
-		broadcast_current_match
+
+		if result_changed
+			last_match_result.present? ? Rails.cache.write(last_match_result_cache_key, last_match_result, expires_in: LAST_MATCH_RESULT_CACHE_TTL) : Rails.cache.delete(last_match_result_cache_key)
+		end
+
+		broadcast_scoreboard_state
+		true
+	end
+
+	def set_selected_scoreboard_match!(match)
+		update_scoreboard_state!(match: match, update_selection: true)
 	end
 
 	def selected_scoreboard_match
@@ -235,16 +181,29 @@ class Mat < ApplicationRecord
 	end
 
 	def set_last_match_result!(text)
-		if text.present?
-			Rails.cache.write(last_match_result_cache_key, text, expires_in: LAST_MATCH_RESULT_CACHE_TTL)
-		else
-			Rails.cache.delete(last_match_result_cache_key)
-		end
-		broadcast_current_match
+		update_scoreboard_state!(last_match_result: text, update_result: true)
 	end
 
 	def last_match_result_text
 		Rails.cache.read(last_match_result_cache_key)
+	end
+
+	def broadcast_legacy_mat_view
+		Turbo::StreamsChannel.broadcast_update_to(
+			self,
+			target: dom_id(self, :current_match),
+			partial: "mats/current_match",
+			locals: { mat: self, match: queue1_match, next_match: queue2_match, show_next_bout_button: true }
+		)
+	end
+
+	def broadcast_scoreboard_state
+		MatScoreboardChannel.broadcast_to(self, scoreboard_payload)
+	end
+
+	def broadcast_current_match
+		broadcast_legacy_mat_view
+		broadcast_scoreboard_state
 	end
 
 	private
@@ -271,81 +230,6 @@ class Mat < ApplicationRecord
 		queue_matches[position - 1]
 	end
 
-	def first_empty_queue_slot
-		QUEUE_SLOTS.each_with_index do |slot, index|
-			return index + 1 if public_send(slot).nil?
-		end
-		nil
-	end
-
-	def shift_queue_forward!
-		update!(
-			queue1: queue2,
-			queue2: queue3,
-			queue3: queue4,
-			queue4: nil
-		)
-	end
-
-	def fill_queue_slots!
-		queue_ids = queue_match_ids
-		empty_indexes = queue_ids.each_index.select { |index| queue_ids[index].nil? }
-		matches_to_assign = next_eligible_matches(empty_indexes.size)
-		return if matches_to_assign.empty?
-
-		matches_to_assign.each_with_index { |match, index| queue_ids[empty_indexes[index]] = match.id }
-		timestamp = Time.current
-		Match.where(id: matches_to_assign.map(&:id)).update_all(mat_id: id, updated_at: timestamp)
-		Match.touch_cached_views_for_wrestlers(matches_to_assign.flat_map { |match| [match.w1, match.w2] }, tournament_id)
-		update!(queue1: queue_ids[0], queue2: queue_ids[1], queue3: queue_ids[2], queue4: queue_ids[3])
-	end
-
-	def next_eligible_matches(limit)
-		filtered_matches = self.class.assignable_matches_for(tournament_id)
-		mat_assignment_rules.each do |rule|
-			filtered_matches = filtered_matches.where(weight_id: rule.weight_classes) if rule.weight_classes.any?
-			filtered_matches = filtered_matches.where(bracket_position: rule.bracket_positions) if rule.bracket_positions.any?
-			filtered_matches = filtered_matches.where(round: rule.rounds) if rule.rounds.any?
-		end
-		filtered_matches.limit(limit).to_a
-	end
-
-	def remove_match_from_other_mats!(match_id)
-		self.class.where.not(id: id)
-				  .where("queue1 = :match_id OR queue2 = :match_id OR queue3 = :match_id OR queue4 = :match_id", match_id: match_id)
-				  .find_each do |mat|
-			mat.remove_match_from_queue_and_collapse!(match_id)
-		end
-	end
-
-	def place_match_in_empty_slot!(match, slot)
-		self.class.transaction do
-			match.update!(mat_id: id)
-			remove_match_from_other_mats!(match.id)
-			update!(slot_key(slot) => match.id)
-		end
-		broadcast_current_match
-	end
-
-	def slot_key(slot)
-		"queue#{slot}"
-	end
-
-	def broadcast_current_match
-		Turbo::StreamsChannel.broadcast_update_to(
-			self,
-			target: dom_id(self, :current_match),
-			partial: "mats/current_match",
-			locals: {
-				mat: self,
-				match: queue1_match,
-				next_match: queue2_match,
-				show_next_bout_button: true
-			}
-		)
-		MatScoreboardChannel.broadcast_to(self, scoreboard_payload)
-	end
-
 	def scoreboard_selection_cache_key
 		"tournament:#{tournament_id}:mat:#{id}:scoreboard_selection"
 	end
@@ -361,5 +245,7 @@ class Mat < ApplicationRecord
 	def up_matches_queue_changed?
 		saved_change_to_queue1? || saved_change_to_queue2? || saved_change_to_queue3? || saved_change_to_queue4?
 	end
+
+	public :scoreboard_selection_cache_key, :last_match_result_cache_key
 
 end

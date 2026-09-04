@@ -91,7 +91,20 @@ class BoutBoardTest < ActionDispatch::IntegrationTest
 
     mat2_q4_original_match = Match.find(mat2_q4.id)
 
+    tournament_stream = Turbo::StreamsChannel.send(:stream_name_from, [@tournament])
+    mat1_stream = Turbo::StreamsChannel.send(:stream_name_from, [mat1])
+    mat2_stream = Turbo::StreamsChannel.send(:stream_name_from, [mat2])
+    mat1_scoreboard_stream = MatScoreboardChannel.broadcasting_for(mat1)
+    mat2_scoreboard_stream = MatScoreboardChannel.broadcasting_for(mat2)
+    ActionCable.server.pubsub.clear
+
     mat2.assign_match_to_queue!(mat1_q2, 2)
+
+    assert_equal 1, ActionCable.server.pubsub.broadcasts(tournament_stream).size
+    assert_equal 1, ActionCable.server.pubsub.broadcasts(mat1_stream).size
+    assert_equal 1, ActionCable.server.pubsub.broadcasts(mat2_stream).size
+    assert_equal 1, ActionCable.server.pubsub.broadcasts(mat1_scoreboard_stream).size
+    assert_equal 1, ActionCable.server.pubsub.broadcasts(mat2_scoreboard_stream).size
 
     mat1.reload
     mat2.reload

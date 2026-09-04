@@ -66,6 +66,7 @@ class AdvanceWrestler
           loser1_name: m.loser1_name,
           loser2_name: m.loser2_name,
           finished_at: m.finished_at,
+          finalized_at: m.finished == 1 ? (m.finalized_at || timestamp) : m.finalized_at,
           updated_at: timestamp
         }
       end

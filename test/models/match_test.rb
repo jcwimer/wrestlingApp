@@ -1,6 +1,21 @@
 require 'test_helper'
 
 class MatchTest < ActiveSupport::TestCase
+   test "finished score correction does not finalize twice" do
+     match = matches(:tournament_1_bout_1000)
+     match.update_columns(mat_id: nil, finalized_at: nil)
+     advances = 0
+     match.define_singleton_method(:advance_wrestlers) { advances += 1 }
+
+     match.update!(winner_id: match.w1, win_type: "Decision", score: "3-1", finished: 1)
+
+     assert_equal 1, advances
+     assert_not_nil match.reload.finalized_at
+
+     match.update!(score: "4-1")
+
+     assert_equal 1, advances
+   end
    test "Match should not be valid if win type is a pin and a score is provided" do
      create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
      matches = @tournament.matches.reload

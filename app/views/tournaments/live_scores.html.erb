@@ -3,8 +3,11 @@
 <% if @mats.any? %>
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); gap: 20px; align-items: start;">
     <% @mats.each do |mat| %>
-      <% match = mat.selected_scoreboard_match || mat.queue1_match %>
-      <%= render "tournaments/live_score_card", mat: mat, match: match, tournament: @tournament %>
+      <%= render "tournaments/live_score_card",
+        mat: mat,
+        match: @live_score_matches[mat.id],
+        last_match_result: @live_score_results[mat.id],
+        tournament: @tournament %>
     <% end %>
   </div>
 <% else %>

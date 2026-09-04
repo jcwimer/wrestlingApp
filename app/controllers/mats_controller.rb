@@ -66,8 +66,12 @@ class MatsController < ApplicationController
 
     return head :unprocessable_entity unless selected_match || params[:last_match_result].present?
 
-    @mat.set_selected_scoreboard_match!(selected_match) if selected_match
-    @mat.set_last_match_result!(params[:last_match_result]) if params.key?(:last_match_result)
+    @mat.update_scoreboard_state!(
+      match: selected_match,
+      update_selection: selected_match.present?,
+      last_match_result: params[:last_match_result],
+      update_result: params.key?(:last_match_result)
+    )
     head :no_content
   end
 

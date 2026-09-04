@@ -278,47 +278,11 @@ class Tournament < ApplicationRecord
 	end	  
 
 	def reset_and_fill_bout_board
-		reset_mats(broadcast: false)
-		refill_open_bout_board_queues(broadcast_all: true)
+		MatQueueOperation.new(self).reset_and_fill
 	end
 
 	def refill_open_bout_board_queues(broadcast_all: false)
-		mat_records = mats.includes(:mat_assignment_rules).order(:id).to_a
-		return if mat_records.empty?
-
-		available_matches = Mat.assignable_matches_for(id).to_a
-		assignments = Hash.new { |hash, mat| hash[mat] = [] }
-
-		(1..4).each do |slot|
-			mat_records.each do |mat|
-				next if mat.public_send("queue#{slot}").present?
-
-				match_index = available_matches.index { |match| mat.accepts_match?(match) }
-				next unless match_index
-
-				match = available_matches.delete_at(match_index)
-				mat.public_send("queue#{slot}=", match.id)
-				assignments[mat] << match
-			end
-		end
-
-		timestamp = Time.current
-		self.class.transaction do
-			assignments.each do |mat, assigned_matches|
-				Match.where(id: assigned_matches.map(&:id)).update_all(mat_id: mat.id, updated_at: timestamp)
-				mat.update_columns(
-					queue1: mat.queue1,
-					queue2: mat.queue2,
-					queue3: mat.queue3,
-					queue4: mat.queue4,
-					updated_at: timestamp
-				)
-			end
-		end
-
-		assigned_matches = assignments.values.flatten
-		Match.touch_cached_views_for_wrestlers(assigned_matches.flat_map { |match| [match.w1, match.w2] }, id) if assigned_matches.any?
-		broadcast_bout_board_changes(broadcast_all ? mat_records : assignments.keys)
+		MatQueueOperation.new(self).refill
 		mats.reset
 		matches.reset
 	end

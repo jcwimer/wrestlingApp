@@ -29,6 +29,8 @@ class MatchChannel < ApplicationCable::Channel
     scoreboard_state = data["scoreboard_state"]
     return if scoreboard_state.blank?
 
+    return if Rails.cache.read(scoreboard_cache_key) == scoreboard_state
+
     Rails.cache.write(scoreboard_cache_key, scoreboard_state, expires_in: SCOREBOARD_CACHE_TTL)
     MatchChannel.broadcast_to(@match, { scoreboard_state: scoreboard_state })
   end
@@ -47,42 +49,25 @@ class MatchChannel < ApplicationCable::Channel
 
     return unless can_manage_match?
 
-    Rails.logger.info "[MatchChannel] Received send_stat for match #{@match.id} with data: #{data.inspect}"
-    
-    # Prepare attributes to update
     attributes_to_update = {}
     attributes_to_update[:w1_stat] = data['new_w1_stat'] if data.key?('new_w1_stat')
     attributes_to_update[:w2_stat] = data['new_w2_stat'] if data.key?('new_w2_stat')
 
-    if attributes_to_update.present?
-      # Persist the changes to the database
-      # Note: Consider background job or throttling for very high frequency updates
-      begin
-        if @match.update(attributes_to_update)
-          Rails.logger.info "[MatchChannel] Updated match #{@match.id} stats in DB: #{attributes_to_update.keys.join(', ')}"
-          
-          # Prepare payload for broadcast (using potentially updated values from @match)
-          payload = {
-            w1_stat: @match.w1_stat,
-            w2_stat: @match.w2_stat
-          }.compact
+    return if attributes_to_update.empty?
 
-          if payload.present?
-            Rails.logger.info "[MatchChannel] Broadcasting DB-persisted stats to match #{@match.id} with payload: #{payload.inspect}"
-            MatchChannel.broadcast_to(@match, payload)
-          else
-            Rails.logger.info "[MatchChannel] Payload empty after DB update for match #{@match.id}, not broadcasting."
-          end
-        else
-          Rails.logger.error "[MatchChannel] Failed to update match #{@match.id} stats in DB: #{@match.errors.full_messages.join(', ')}"
-        end
-      rescue => e
-        Rails.logger.error "[MatchChannel] Exception during match update for #{@match.id}: #{e.message}"
-        Rails.logger.error e.backtrace.join("\n")
+    changed_attributes = {}
+    @match.with_lock do
+      @match.reload
+      changed_attributes = attributes_to_update.reject do |attribute, value|
+        @match.public_send(attribute) == value
       end
-    else
-       Rails.logger.info "[MatchChannel] No new stat data provided in send_stat for match #{@match.id}, not updating DB or broadcasting."
+      @match.update_columns(changed_attributes) if changed_attributes.any?
     end
+
+    MatchChannel.broadcast_to(@match, changed_attributes) if changed_attributes.any?
+  rescue => e
+    Rails.logger.error "[MatchChannel] Exception during match stat update for #{@match.id}: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
   end
 
   # Called when client wants the latest stats immediately after reconnect

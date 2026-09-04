@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_09_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_03_120000) do
   create_table "mat_assignment_rules", force: :cascade do |t|
     t.string "bracket_positions"
     t.datetime "created_at", null: false
@@ -28,6 +28,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_120000) do
     t.string "bracket_position"
     t.integer "bracket_position_number"
     t.datetime "created_at", precision: nil
+    t.datetime "finalized_at"
     t.integer "finished"
     t.datetime "finished_at"
     t.string "loser1_name"

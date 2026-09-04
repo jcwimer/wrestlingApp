@@ -5,6 +5,7 @@
   source_mode = local_assigns.fetch(:source_mode, "mat_websocket")
   show_mat_header = local_assigns.fetch(:show_mat_header, true)
   show_details = local_assigns.fetch(:show_details, true)
+  last_match_result = local_assigns[:last_match_result]
   dom_id_suffix = mat&.id || match&.id || "none"
 %>
 
@@ -15,7 +16,8 @@
   data-match-scoreboard-match-id-value="<%= match&.id || 0 %>"
   data-match-scoreboard-mat-id-value="<%= mat&.id || 0 %>"
   data-match-scoreboard-tournament-id-value="<%= tournament.id %>"
-  data-match-scoreboard-initial-bout-number-value="<%= match&.bout_number || 0 %>">
+  data-match-scoreboard-initial-bout-number-value="<%= match&.bout_number || 0 %>"
+  data-match-scoreboard-initial-last-match-result-value="<%= last_match_result %>">
 
   <div class="panel panel-default" style="margin-bottom: 0;">
     <% if show_mat_header %>

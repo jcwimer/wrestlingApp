@@ -37,6 +37,30 @@ class MatScoreboardStateTest < ActiveSupport::TestCase
     assert_equal @queue2_match.bout_number, payload[:selected_bout_number]
   end
 
+  test "repeating the same scoreboard state does not write or broadcast" do
+    turbo_stream = Turbo::StreamsChannel.send(:stream_name_from, [@mat])
+    ActionCable.server.pubsub.broadcasts(turbo_stream).clear
+    @mat.update_scoreboard_state!(
+      match: @queue2_match,
+      update_selection: true,
+      last_match_result: "Last result",
+      update_result: true
+    )
+    assert_empty ActionCable.server.pubsub.broadcasts(turbo_stream)
+    stream = MatScoreboardChannel.broadcasting_for(@mat)
+    ActionCable.server.pubsub.broadcasts(stream).clear
+
+    changed = @mat.update_scoreboard_state!(
+      match: @queue2_match,
+      update_selection: true,
+      last_match_result: "Last result",
+      update_result: true
+    )
+
+    assert_equal false, changed
+    assert_empty ActionCable.server.pubsub.broadcasts(stream)
+  end
+
   test "scoreboard_payload includes last match result when present" do
     @mat.set_last_match_result!("106 lbs - Winner Decision Loser 3-1")
 

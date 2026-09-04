@@ -57,6 +57,17 @@ describe("mat state controller", () => {
     expect(controller.element.addEventListener).toHaveBeenCalledWith("submit", controller.boundHandleSubmit)
   })
 
+  it("keeps the local selection when server synchronization fails", async () => {
+    const controller = buildController()
+    fetch.mockRejectedValueOnce(new Error("offline"))
+
+    controller.connect()
+    await Promise.resolve()
+
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(1)
+    expect(fetch).toHaveBeenCalledTimes(1)
+  })
+
   it("saves the selected bout in tournament-scoped localStorage", () => {
     const controller = buildController()
 

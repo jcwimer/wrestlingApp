@@ -1,6 +1,6 @@
 import { buildStorageKey } from "match-state-serializers"
 
-export function buildScoreboardContext({ initialBoutNumber, matchId }) {
+export function buildScoreboardContext({ initialBoutNumber, matchId, lastMatchResult = "" }) {
   const currentQueueBoutNumber = initialBoutNumber > 0 ? initialBoutNumber : null
 
   return {
@@ -8,7 +8,7 @@ export function buildScoreboardContext({ initialBoutNumber, matchId }) {
     currentBoutNumber: currentQueueBoutNumber,
     currentMatchId: matchId || null,
     liveMatchData: {},
-    lastMatchResult: "",
+    lastMatchResult,
     state: null,
     finished: false,
     timerBannerState: null,

@@ -8,4 +8,4 @@ development:
   tournament_cleanup_job:
     class: TournamentCleanupJob
     schedule: every day at 3am
-    queue: default 
+    queue: default
