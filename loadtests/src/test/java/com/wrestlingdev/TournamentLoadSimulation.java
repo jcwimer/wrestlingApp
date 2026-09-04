@@ -186,7 +186,8 @@ public class TournamentLoadSimulation extends Simulation {
                   ws.checkTextMessage("Live scores viewer - confirm match subscription")
                       .matching(substring("MatchChannel"), substring("confirm_subscription"))))
       )
-      .during(session -> remainingWorkloadDuration()).on(
+      .exec(session -> session.set("viewerDurationMillis", remainingWorkloadDuration().toMillis()))
+      .during(session -> Duration.ofMillis(session.getLong("viewerDurationMillis"))).on(
           pause(WS_PROBE_INTERVAL),
           followMatUpdates(),
           exec(session -> {
