@@ -68,6 +68,8 @@ Grafana is configured with `admin` / `admin`, and anonymous admin access is enab
 * Rails OpenTelemetry Slowlog by Request
 * Rails OpenTelemetry Slowlog by Action
 * Rails OpenTelemetry Slowlog by SQL
+* Host / Node Exporter (CPU, memory, load, disks, and filesystem space)
+* MariaDB / Exporter (availability, connections, queries, buffer pool reads, locks, and traffic)
 
 Use Grafana to find slow routes/actions/jobs and Jaeger to inspect one specific slow trace. For example, if Grafana shows `GET /tournaments/:id` has a high p95, open Jaeger, select service `wrestlingdev`, filter to operation `GET /tournaments/:id`, and inspect a slow trace. Model/query spans such as `Tournament query`, `Match query`, `render_partial.action_view`, and ActiveJob spans appear under the parent request/job trace so you can correlate expensive work back to the controller action.
 
@@ -82,7 +84,13 @@ Important local telemetry files:
 
 The span metrics exported to Prometheus are named `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`. Common labels include `service_name`, `span_kind`, `span_name`, `code_namespace`, `http_route`, `http_request_method`, and `http_response_status_code`.
 
-Jaeger all-in-one uses in-memory trace storage in the local, compose production, and Kubernetes telemetry stacks. It is started with `--memory.max-traces=50000` so trace drill-down remains available for recent requests without allowing unbounded memory growth. Prometheus keeps the dashboard time-series metrics separately.
+Both Docker Compose stacks persist Jaeger traces in the `jaeger` named Docker volume using Badger with seven-day retention (`--badger.span-store-ttl=168h`). A one-shot storage initializer sets volume ownership so Jaeger runs as its default non-root user; no host filesystem setup is needed. Prometheus stores metrics in its own Docker volume with seven-day retention (`--storage.tsdb.retention.time=7d`). Retention is time-based, not a hard disk-size limit, and expired data is reclaimed during background cleanup. Kubernetes also uses seven-day retention for both services, with a 15Gi Jaeger PVC and the existing 10Gi Prometheus PVC. Kubernetes includes a node-exporter DaemonSet, MariaDB exporter sidecars in both database variants, cluster-internal scrape endpoints, and the same node/MariaDB dashboards.
+
+The collector filters successful Solid Queue polling queries and their polling transaction spans under 100 ms before trace export and span-metric aggregation. Slow polling, error spans, and ActiveJob execution spans remain visible.
+
+Both stacks run node-exporter and mariadb-exporter on an `internal: true` Docker network called `exporters`, with no published exporter ports. Prometheus joins this network to scrape `node-exporter:9100` and `mariadb-exporter:9104`; MariaDB also joins it for the database exporter. Node-exporter reads the host root, proc, and sys filesystems read-only and shares the host PID namespace. Its dashboard uses host CPU/memory/disk metrics; network counters remain scoped to its private network namespace. Restart node-exporter after adding host mounts so those mounts are visible through its read-only bind.
+
+Set `MYSQLD_EXPORTER_PASSWORD` in production `prod.env` (local default: `exporter-local`). The one-shot `mariadb-exporter-init` service creates or updates a dedicated `exporter` database user, limits it to three connections, and grants the read/monitor privileges required by the exporter. It runs after the database passes an authenticated `SELECT 1` health check, including on existing database volumes. After changing the password, rerun the init service before recreating the exporter. Exporter init uses the existing database root credential; the exporter itself never uses root.
 
 The production docker compose deployment uses the same collector, Jaeger, Prometheus, and Grafana setup. Grafana uses its built-in login, and Jaeger is protected at Traefik with basic auth because Jaeger does not provide its own login system.
 

@@ -24,6 +24,7 @@ wget -O nginx/nginx-entrypoint.sh ${githubraw_url}/deploy/nginx/nginx-entrypoint
 wget -O mariadb/70-mysettings.cnf ${githubraw_url}/deploy/mariadb/70-mysettings-master.cnf
 wget -O otel-collector-config.yml ${githubraw_url}/deploy/otel-collector-config.yml
 wget -O prometheus.yml ${githubraw_url}/deploy/prometheus.yml
+wget -O mariadb/init-exporter.sh ${githubraw_url}/deploy/mariadb/init-exporter.sh
 wget -O grafana/provisioning/dashboards/dashboards.yml ${githubraw_url}/deploy/grafana/provisioning/dashboards/dashboards.yml
 wget -O grafana/provisioning/datasources/datasources.yml ${githubraw_url}/deploy/grafana/provisioning/datasources/datasources.yml
 wget -O grafana/dashboards/rails-otel-activejob.json ${githubraw_url}/deploy/grafana/dashboards/rails-otel-activejob.json
@@ -35,10 +36,13 @@ wget -O grafana/dashboards/rails-otel-requests.json ${githubraw_url}/deploy/graf
 wget -O grafana/dashboards/rails-otel-slowlog-by-action.json ${githubraw_url}/deploy/grafana/dashboards/rails-otel-slowlog-by-action.json
 wget -O grafana/dashboards/rails-otel-slowlog-by-request.json ${githubraw_url}/deploy/grafana/dashboards/rails-otel-slowlog-by-request.json
 wget -O grafana/dashboards/rails-otel-slowlog-by-sql.json ${githubraw_url}/deploy/grafana/dashboards/rails-otel-slowlog-by-sql.json
+wget -O grafana/dashboards/node-exporter.json ${githubraw_url}/deploy/grafana/dashboards/node-exporter.json
+wget -O grafana/dashboards/mariadb-exporter.json ${githubraw_url}/deploy/grafana/dashboards/mariadb-exporter.json
 
 set -a
 . prod.env
 set +a
+: "${MYSQLD_EXPORTER_PASSWORD:?Set MYSQLD_EXPORTER_PASSWORD in prod.env}"
 docker-compose pull
 docker-compose down
 echo "Waiting for db to be up..."

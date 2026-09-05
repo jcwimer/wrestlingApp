@@ -1,7 +1,3 @@
 <% @weight = weight %>
-<% if local_assigns[:matches_by_weight_id] %>
-  <% @matches = matches_by_weight_id[weight.id] || [] %>
-  <% @wrestlers = wrestlers_by_weight_id[weight.id] || [] %>
-  <% @pools = weight.pool_rounds(@matches) if @tournament.tournament_type == "Pool to bracket" %>
-<% end %>
+<% load_bracket(weight) %>
 <%= render "bracket_partial" %>

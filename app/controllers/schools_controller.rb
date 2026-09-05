@@ -30,7 +30,7 @@ class SchoolsController < ApplicationController
   # GET /schools/1.json
   def show
     session.delete(:return_path)
-    load_school_wrestlers
+    @tournament = @school.tournament
   end
 
   # GET /schools/new
@@ -102,31 +102,11 @@ class SchoolsController < ApplicationController
     end
 
     def load_school_wrestlers
-      if @school.tournament.tournament_type == "Pool to bracket"
-        @tournament = Tournament.preload(
-          weights: {
-            wrestlers: [:school, :deductedPoints, :matches_as_w1, :matches_as_w2]
-          }
-        ).find(@school.tournament_id)
-        @wrestlers = @tournament.weights.flat_map(&:wrestlers).select { |wrestler| wrestler.school_id == @school.id }
-      else
-        @tournament = @school.tournament
-        @wrestlers = @school.wrestlers.includes(
-          :school,
-          :deductedPoints,
-          { weight: [:tournament, :matches] },
-          { matches_as_w1: [:mat, :winner, { wrestler1: :school }, { wrestler2: :school }] },
-          { matches_as_w2: [:mat, :winner, { wrestler1: :school }, { wrestler2: :school }] }
-        ).to_a
-      end
-      wrestler_ids = @wrestlers.map(&:id)
-      school_matches = Match.where(w1: wrestler_ids).or(Match.where(w2: wrestler_ids))
-        .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
-      @matches_by_wrestler_id = Hash.new { |hash, wrestler_id| hash[wrestler_id] = [] }
-      school_matches.each do |match|
-        @matches_by_wrestler_id[match.w1] << match if wrestler_ids.include?(match.w1)
-        @matches_by_wrestler_id[match.w2] << match if wrestler_ids.include?(match.w2) && match.w2 != match.w1
-      end
+      match_associations = [:winner, { wrestler1: :school }, { wrestler2: :school }, { weight: :matches }]
+      @wrestlers = @school.wrestlers.includes(
+        :weight, matches_as_w1: match_associations, matches_as_w2: match_associations
+      ).to_a
+      @matches_by_wrestler_id = @wrestlers.to_h { |wrestler| [wrestler.id, wrestler.all_matches] }
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

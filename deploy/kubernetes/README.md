@@ -9,7 +9,7 @@
 2. Fill out the ingress `deploy/kubernetes/manifests/ingress.yaml` because I own wrestlingdev.com not you. Put your own domain in there.
 3. Fill out the telemetry ingress hostnames in `deploy/kubernetes/manifests/telemetry.yaml` for Grafana and Jaeger.
 4. Run `kubectl apply -f deploy/kubernetes/secrets/`
-5. Run `kubectl apply -f deploy/kubernetes/manifests/`
+5. Apply either `mariadb-standalone.yaml` or `mariadb-replica.yaml`, not both; they define the same database resources. Apply the remaining files in `deploy/kubernetes/manifests/`, including `telemetry.yaml`.
 
 ## What do I get?
 1. Wrestlingdev deployed with 2 replicas.
@@ -23,7 +23,9 @@ Rails sends OTLP traces to `otel-collector:4318`. The collector exports traces t
 
 The Grafana deployment uses an init container to download dashboard JSON files from `deploy/grafana/dashboards` on the `master` branch into `/var/lib/grafana/dashboards`. Keep dashboard edits in `deploy/grafana/dashboards`; the Kubernetes manifest only keeps the datasource and dashboard provider provisioning config.
 
-Jaeger all-in-one uses in-memory storage and is started with `--memory.max-traces=50000` so recent traces are available for drill-down without unbounded memory growth. Prometheus stores the dashboard span metrics separately.
+Jaeger uses Badger storage on the `jaeger-pv-claim` PVC (15Gi requested from the default StorageClass) with seven-day retention (`--badger.span-store-ttl=168h`). Pod volume permissions allow Jaeger to run as UID 10001. Jaeger and Prometheus use `Recreate` deployments to avoid concurrent writers to their single-instance storage. Prometheus retains seven days (`--storage.tsdb.retention.time=7d`) on its existing 10Gi PVC. Retention cleanup is asynchronous; PVC capacity enforcement depends on the storage provisioner, so monitor free space.
+
+Node exporter runs as a DaemonSet with read-only host filesystem access and host PID visibility, but no host-network port. Prometheus discovers every node-exporter pod through its headless Service. MariaDB exporter is upgraded in both database variants and is scraped through the cluster-internal `mariadb-exporter:9104` Service. It continues using the existing `dbusername`/`dbpassword` Secret keys (currently root); no new credentials are required. Neither exporter has an Ingress or NodePort. The node and MariaDB dashboards are downloaded alongside the Rails dashboards; their JSON files must exist on `master` before deploying the updated Grafana manifest.
 
 Grafana uses the `grafana_admin_user` and `grafana_admin_password` values from `deploy/kubernetes/secrets/secrets.yaml`. Jaeger is protected with Traefik basic auth through the `wrestlingdev-jaeger-basic-auth` Secret. Generate the Jaeger value with `htpasswd -nbB admin 'your-password-here'` and put the full output in `stringData.users`.
 

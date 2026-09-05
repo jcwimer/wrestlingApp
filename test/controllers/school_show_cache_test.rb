@@ -165,6 +165,32 @@ class SchoolShowCacheTest < ActionController::TestCase
     assert_operator cache_writes(events), :>, 0
   end
 
+  test "warm spectator roster does not instantiate wrestlers or matches" do
+    sign_out
+    get :show, params: { id: @school.id }
+    assert_response :success
+    loaded = []
+    subscriber = ->(_name, _start, _finish, _id, payload) { loaded << payload[:class_name] }
+    ActiveSupport::Notifications.subscribed(subscriber, "instantiation.active_record") do
+      get :show, params: { id: @school.id }
+      assert_response :success
+    end
+    assert_empty loaded & %w[Match Wrestler]
+  end
+
+  test "pool school roster and stats render with batched associations" do
+    create_pool_tournament
+    GenerateTournamentMatches.new(@tournament).generate
+    sign_out
+    @tournament.schools.each do |school|
+      get :show, params: { id: school.id }
+      assert_response :success
+      school.wrestlers.each { |wrestler| assert_includes response.body, wrestler.name }
+      get :stats, params: { id: school.id }
+      assert_response :success
+    end
+  end
+
   private
 
   def sign_out

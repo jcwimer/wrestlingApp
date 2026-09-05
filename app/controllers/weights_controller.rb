@@ -102,8 +102,9 @@ class WeightsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_weight
-      # Add nested includes for wrestlers
-      @weight = Weight.includes({ tournament: :delegates }, wrestlers: [:school, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
+      scope = Weight.includes(tournament: :delegates)
+      scope = scope.includes(wrestlers: [:school, :matches_as_w1, :matches_as_w2]) unless action_name == "show"
+      @weight = scope.find_by(id: params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

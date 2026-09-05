@@ -83,6 +83,19 @@ class WeightShowCacheTest < ActionController::TestCase
     assert_operator cache_writes(second_events), :>, 0, "Expected school update to invalidate weight show readonly row cache"
   end
 
+  test "warm spectator roster does not instantiate wrestlers or matches" do
+    sign_out
+    get :show, params: { id: @weight.id }
+    assert_response :success
+    loaded = []
+    subscriber = ->(_name, _start, _finish, _id, payload) { loaded << payload[:class_name] }
+    ActiveSupport::Notifications.subscribed(subscriber, "instantiation.active_record") do
+      get :show, params: { id: @weight.id }
+      assert_response :success
+    end
+    assert_empty loaded & %w[Match Wrestler]
+  end
+
   private
 
   def sign_out

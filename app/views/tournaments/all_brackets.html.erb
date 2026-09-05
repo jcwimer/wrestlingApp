@@ -122,8 +122,4 @@
 <%= render partial: "cached_bracket",
            collection: @weights.sort_by(&:max),
            as: :weight,
-           locals: {
-             matches_by_weight_id: @matches_by_weight_id,
-             wrestlers_by_weight_id: @wrestlers_by_weight_id
-           },
            cached: ->(weight) { TournamentCacheInvalidator.bracket_key(weight.id, print: params[:print].present?) } %>

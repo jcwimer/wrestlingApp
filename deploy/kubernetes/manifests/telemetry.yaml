@@ -114,6 +114,20 @@ spec:
     port: 8889
     targetPort: metrics
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jaeger-pv-claim
+  labels:
+    app: wrestlingdev
+    component: telemetry
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 15Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -123,6 +137,8 @@ metadata:
     component: telemetry
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: wrestlingdev
@@ -133,12 +149,22 @@ spec:
         app: wrestlingdev
         component: jaeger
     spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 0
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: jaeger
         image: jaegertracing/all-in-one:1.62.0
         args:
-        - --memory.max-traces=50000
+        - --badger.ephemeral=false
+        - --badger.directory-key=/badger/keys
+        - --badger.directory-value=/badger/values
+        - --badger.span-store-ttl=168h
         env:
+        - name: SPAN_STORAGE_TYPE
+          value: badger
         - name: COLLECTOR_OTLP_ENABLED
           value: "true"
         ports:
@@ -148,6 +174,13 @@ spec:
           name: otlp-grpc
         - containerPort: 4318
           name: otlp-http
+        volumeMounts:
+        - name: jaeger-storage
+          mountPath: /badger
+      volumes:
+      - name: jaeger-storage
+        persistentVolumeClaim:
+          claimName: jaeger-pv-claim
 ---
 apiVersion: v1
 kind: Service
@@ -171,6 +204,81 @@ spec:
     port: 4318
     targetPort: otlp-http
 ---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  labels:
+    app: wrestlingdev
+    component: telemetry
+spec:
+  selector:
+    matchLabels:
+      app: wrestlingdev
+      component: node-exporter
+  template:
+    metadata:
+      labels:
+        app: wrestlingdev
+        component: node-exporter
+    spec:
+      hostPID: true
+      automountServiceAccountToken: false
+      tolerations:
+      - operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: node-exporter
+        image: prom/node-exporter:v1.9.1
+        args:
+        - --path.rootfs=/host
+        - --path.procfs=/host/proc
+        - --path.sysfs=/host/sys
+        - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)
+        ports:
+        - name: metrics
+          containerPort: 9100
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: host-root
+          mountPath: /host
+          readOnly: true
+          mountPropagation: HostToContainer
+      volumes:
+      - name: host-root
+        hostPath:
+          path: /
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter
+spec:
+  clusterIP: None
+  selector:
+    app: wrestlingdev
+    component: node-exporter
+  ports:
+  - name: metrics
+    port: 9100
+    targetPort: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-exporter
+spec:
+  selector:
+    app: wrestlingdev
+    tier: mariadb
+  ports:
+  - name: metrics
+    port: 9104
+    targetPort: metrics
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -188,6 +296,14 @@ data:
       - job_name: otel-collector
         static_configs:
           - targets: ["otel-collector:8889"]
+      - job_name: node
+        dns_sd_configs:
+          - names: ["node-exporter"]
+            type: A
+            port: 9100
+      - job_name: mariadb
+        static_configs:
+          - targets: ["mariadb-exporter:9104"]
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -217,6 +333,8 @@ spec:
     matchLabels:
       app: wrestlingdev
       component: prometheus
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -229,7 +347,7 @@ spec:
         args:
           - --config.file=/etc/prometheus/prometheus.yml
           - --storage.tsdb.path=/prometheus
-          - --storage.tsdb.retention.time=30d
+          - --storage.tsdb.retention.time=7d
           - --web.enable-lifecycle
         ports:
         - containerPort: 9090
@@ -348,6 +466,8 @@ spec:
           set -eu
           githubraw_url=https://raw.githubusercontent.com/jcwimer/wrestlingApp/refs/heads/master
           for dashboard in \
+            node-exporter.json \
+            mariadb-exporter.json \
             rails-otel-activejob.json \
             rails-otel-overview.json \
             rails-otel-performance-per-action.json \

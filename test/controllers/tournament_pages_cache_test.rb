@@ -163,6 +163,22 @@ class TournamentPagesCacheTest < ActionController::TestCase
     assert_operator cache_hits(all_bracket_events), :>, 0
   end
 
+  test "warm spectator brackets do not instantiate wrestlers or matches" do
+    sign_out
+    [:bracket, :all_brackets].each do |action|
+      parameters = { id: @tournament.id, weight: @weight.id, print: true }
+      get action, params: parameters
+      assert_response :success
+      loaded = []
+      subscriber = ->(_name, _start, _finish, _id, payload) { loaded << payload[:class_name] }
+      ActiveSupport::Notifications.subscribed(subscriber, "instantiation.active_record") do
+        get action, params: parameters
+        assert_response :success
+      end
+      assert_empty loaded & %w[Match Wrestler], "#{action} loaded cached bracket data"
+    end
+  end
+
   private
 
   def sign_out

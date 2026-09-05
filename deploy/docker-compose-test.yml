@@ -2,8 +2,11 @@ networks:
   database:
   caching:
   metrics:
+  exporters:
+    internal: true
 
 volumes:
+  jaeger:
   mysql:
   prometheus:
   grafana:
@@ -58,8 +61,9 @@ services:
     restart: always
     networks:
       database:
+      exporters:
     healthcheck:
-      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_PASSWORD
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mariadb -h 127.0.0.1 -u root -e 'SELECT 1' >/dev/null"]
       start_period: 5s
       interval: 5s
       timeout: 5s
@@ -80,11 +84,28 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
 
+  jaeger-storage-init:
+    image: jaegertracing/all-in-one:1.62.0
+    user: "0:0"
+    entrypoint: ["chown", "10001:0", "/badger"]
+    network_mode: none
+    volumes:
+      - jaeger:/badger
+
   jaeger:
     image: jaegertracing/all-in-one:1.62.0
     command:
-      - --memory.max-traces=50000
+      - --badger.ephemeral=false
+      - --badger.directory-key=/badger/keys
+      - --badger.directory-value=/badger/values
+      - --badger.span-store-ttl=168h
+    depends_on:
+      jaeger-storage-init:
+        condition: service_completed_successfully
+    volumes:
+      - jaeger:/badger
     environment:
+      - SPAN_STORAGE_TYPE=badger
       - COLLECTOR_OTLP_ENABLED=true
     ports:
       - "16686:16686"
@@ -96,14 +117,57 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
       - --web.enable-lifecycle
     ports:
       - "9090:9090"
     networks:
       metrics:
+      exporters:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus:/prometheus
+
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    command:
+      - --path.rootfs=/host
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/containers/storage/.+)($$|/)
+    pid: host
+    restart: always
+    volumes:
+      - /:/host:ro
+    networks:
+      exporters:
+
+  mariadb-exporter-init:
+    image: mariadb:10.10
+    entrypoint: ["bash", "/init-exporter.sh"]
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PWD: password
+      MYSQLD_EXPORTER_PASSWORD: ${MYSQLD_EXPORTER_PASSWORD:-exporter-local}
+    volumes:
+      - ./mariadb/init-exporter.sh:/init-exporter.sh:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      exporters:
+
+  mariadb-exporter:
+    image: prom/mysqld-exporter:v0.17.2
+    command: ["--mysqld.address=db:3306", "--mysqld.username=exporter", "--config.my-cnf=/dev/null"]
+    environment:
+      MYSQLD_EXPORTER_PASSWORD: ${MYSQLD_EXPORTER_PASSWORD:-exporter-local}
+    restart: always
+    depends_on:
+      mariadb-exporter-init:
+        condition: service_completed_successfully
+    networks:
+      exporters:
 
   grafana:
     image: grafana/grafana:12.1.1

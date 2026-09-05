@@ -26,6 +26,3 @@ pin "match-state-presenters", to: "lib/match_state/presenters.js"
 pin "match-state-transport", to: "lib/match_state/transport.js"
 pin "match-state-scoreboard-presenters", to: "lib/match_state/scoreboard_presenters.js"
 pin "match-state-scoreboard-state", to: "lib/match_state/scoreboard_state.js"
-
-# Pin all JS files from app/assets/javascripts directory
-pin_all_from "app/assets/javascripts", under: "assets/javascripts" 

@@ -7,6 +7,12 @@ receivers:
         endpoint: 0.0.0.0:4318
 
 processors:
+  filter/queue-polling:
+    error_mode: ignore
+    traces:
+      span:
+        - 'status.code != STATUS_CODE_ERROR and end_time_unix_nano - start_time_unix_nano < 100000000 and IsMatch(name, "^SolidQueue::(ReadyExecution|ScheduledExecution|Process|Semaphore|BlockedExecution) query$")'
+        - 'status.code != STATUS_CODE_ERROR and end_time_unix_nano - start_time_unix_nano < 100000000 and name == "ActiveRecord.transaction" and IsMatch(attributes["code.namespace"], "^SolidQueue::(ReadyExecution|ScheduledExecution|Process)$")'
   batch:
 
 connectors:
@@ -35,7 +41,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: [filter/queue-polling, batch]
       exporters: [otlp_http/jaeger, span_metrics]
     metrics:
       receivers: [span_metrics]

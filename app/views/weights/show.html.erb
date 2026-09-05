@@ -14,8 +14,8 @@
   		</tr>
   	</thead>
   	<tbody>
-      <% sorted_wrestlers = @wrestlers.sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]} %>
       <% if can? :manage, @tournament %>
+        <% sorted_wrestlers = @wrestlers.includes(:school).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]} %>
         <% sorted_wrestlers.each do |wrestler| %>
           <% if wrestler.weight_id == @weight.id %>
             <tr>
@@ -39,6 +39,7 @@
         <% end %>
       <% else %>
         <% cache TournamentCacheInvalidator.weight_roster_key(@weight.id), skip_digest: true do %>
+          <% sorted_wrestlers = @wrestlers.includes(:school).sort_by{|w| [w.original_seed ? 0 : 1, w.original_seed || 0]} %>
           <%= render partial: "weights/readonly_wrestler_row",
                      collection: sorted_wrestlers.select { |wrestler| wrestler.weight_id == @weight.id },
                      as: :wrestler %>

@@ -39,10 +39,9 @@
   </thead>
 
   <tbody>
-    <% sorted_wrestlers = @wrestlers.sort_by { |w| w.weight.max } %>
     <% can_manage_school = can?(:manage, @school) %>
     <% if params[:school_permission_key].present? || can_manage_school %>
-      <% sorted_wrestlers.each do |wrestler| %>
+      <% school_roster.each do |wrestler| %>
         <tr>
           <%= render "schools/wrestler_row_cells", wrestler: wrestler, school_permission_key: params[:school_permission_key] %>
 
@@ -67,7 +66,7 @@
     <% else %>
       <% cache TournamentCacheInvalidator.school_roster_key(@school.id), skip_digest: true do %>
         <%= render partial: "schools/wrestler_row",
-                   collection: sorted_wrestlers,
+                   collection: school_roster,
                    as: :wrestler,
                    locals: { can_manage_school: false } %>
       <% end %>

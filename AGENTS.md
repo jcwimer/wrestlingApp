@@ -27,6 +27,7 @@
 - Prosopite scans controller actions in development and test. Development detections are logged, detections in controller tests raise errors, and inline jobs are excluded from the parent request scan.
 - SQLite prepared statements are disabled in development and test so Prosopite can fingerprint the SQL emitted by Rails 8.1. Production MariaDB configuration is unchanged.
 - Collection fragment caches use Rails collection rendering so Solid Cache reads and writes their entries in batches.
+- Tournament show and bout-board requests use action-specific preloads. Bracket data is loaded inside the cached partial; all-brackets loads its associations in one batch on the first miss. School and weight roster data is loaded inside spectator fragment blocks, with uncached director/key views retaining their controls. School roster and stats use separate preload graphs.
 - Popular read-only pages use deterministic domain keys and targeted `Rails.cache.delete_multi` calls instead of `updated_at` fan-out. Brackets are cached per weight, team scores per tournament, school stats per school, and wrestler roster/profile fragments independently. Cache invalidation is coordinated by `TournamentCacheInvalidator`; bulk generation and advancement must delete affected keys after persistence.
 - Completed matches enqueue one serialized advancement job. That job completes both wrestler branches and any cascading advancement synchronously, updates bout-board queues, calculates tournament scores once, and only then invalidates affected caches.
 - Live stat websocket writes use callback-free column updates and must not invalidate fragment cache versions. Match finalization is guarded by `matches.finalized_at`.
@@ -45,7 +46,11 @@
   - Kubernetes Grafana downloads dashboards from `deploy/grafana/dashboards` with an init container; do not embed dashboard JSON in the telemetry ConfigMap.
   - Local URLs: Grafana `http://localhost:3000`, Jaeger `http://localhost:16686`, Prometheus `http://localhost:9090`.
   - Prometheus span metrics are `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`.
-  - Jaeger all-in-one uses in-memory storage and is capped with `--memory.max-traces=50000` in compose and Kubernetes manifests.
+  - Compose and Kubernetes persist Jaeger Badger storage with seven-day retention (`--badger.span-store-ttl=168h`); Prometheus also retains seven days (`--storage.tsdb.retention.time=7d`). Compose uses a named volume and ownership initializer; Kubernetes uses a 15Gi PVC with fsGroup permissions and a Recreate deployment. No host filesystem setup is required.
+  - Kubernetes node-exporter uses a DaemonSet and headless Service for per-node Prometheus discovery. Both alternative MariaDB manifests use the exporter sidecar and existing database Secret credentials, scraped through the internal mariadb-exporter Service. Grafana downloads the node and MariaDB dashboards with the Rails dashboards. Deploy only one MariaDB variant.
+  - The collector filters successful Solid Queue polling queries/transactions under 100 ms while retaining slow polling, errors, and job execution spans.
+  - Both Compose stacks include node-exporter and mariadb-exporter on the private internal `exporters` network with no published ports. Prometheus scrapes jobs `node` and `mariadb`; dashboards are `node-exporter.json` and `mariadb-exporter.json`. Host network counters are not provided by the private-network node exporter.
+  - `mariadb-exporter-init` provisions the read/monitor database user on existing or new volumes. Production requires `MYSQLD_EXPORTER_PASSWORD` in `prod.env`; the local default is `exporter-local`. Database health checks execute an authenticated `SELECT 1` using `MYSQL_ROOT_PASSWORD`.
   - Puma worker and thread counts come from `WEB_CONCURRENCY`, `RAILS_MIN_THREADS`, and `RAILS_MAX_THREADS`. Local Compose defaults to 2 workers with 5 threads; production Compose defaults to 4 workers with 5 threads.
 
 # CI/CD
