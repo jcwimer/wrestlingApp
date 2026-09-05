@@ -20,6 +20,8 @@ The tournaments index stores each tournament date as a Julian-day integer so it 
 
 # Development
 
+The [Bootstrap to Tailwind migration plan](BOOTSTRAP_TO_TAILWIND.md) documents how to preserve the current appearance while replacing Bootstrap. It is a plan; the migration has not been implemented.
+
 ## Develop with docker
 All dependencies are wrapped in docker. Tests can be run with `bash bin/run-tests-with-docker.sh`. That is the same command used in CI.
 

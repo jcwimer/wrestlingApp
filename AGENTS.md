@@ -14,6 +14,7 @@
   - Currently, I'm using docker compose for production and kubernetes for my DR environment. You can see this in `ci_cd/Jenkinsfile` on the deploy-production stage.
 
 # Development
+- `BOOTSTRAP_TO_TAILWIND.md` documents the planned Bootstrap-to-Tailwind migration and visual parity checks; it does not describe an already completed migration.
 - Rails is pinned to 8.1.3.1 in `Gemfile` and `Gemfile.lock`.
 - I use rbenv locally if that is not available use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
   - If the docker image doesn't exist, use the build command: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
@@ -72,3 +73,19 @@ Cypress tests have been mostly deprecated in favor of vitest but they still exis
 - Cypress tests can be run with docker: bash cypress-tests/run-cypress-tests.sh
 
 Please keep README.md and AGENTS.md up to date when making changes.
+
+# Model Choices
+Default to these model choices:
+- Use Luna Medium for repository exploration, searching files, reading logs, running commands, gathering test output, and other simple support work.
+- Use Terra Medium for normal coding tasks, bug fixes, tests, refactors, configuration changes, and straightforward implementation.
+- Use Terra High when normal coding requires more careful reasoning or spans several interacting components.
+- Use Sol Medium for difficult implementation, difficult debugging, complicated architecture, or when Terra has made a serious unsuccessful attempt.
+- Use Sol High only for exceptionally difficult reasoning or when Sol Medium is struggling.
+- Use Astra Low only for very difficult problems, subtle architectural decisions, or when Sol has made a serious attempt and still cannot solve the problem.
+- Do not use Astra for routine coding, repository exploration, shell commands, tests, or straightforward implementation.
+- Do not escalate just because a task is large. Large but straightforward work should stay on Luna or Terra.
+- Prefer escalating because of reasoning difficulty or demonstrated failure.
+- Before escalating, make sure the problem is not simply missing information or insufficient repository exploration.
+- Delegate mechanical or investigative work to cheaper subagents whenever practical.
+- Stronger models should focus only on the portions of the task that require stronger reasoning.
+- After a stronger model solves the difficult part, delegate routine implementation, testing, and verification back to Terra or Luna when appropriate.
