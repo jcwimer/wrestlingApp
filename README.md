@@ -8,7 +8,8 @@ This application is being created to run a wrestling tournament.
 
 **App Info**
 * Ruby 4.0.5
-* Rails 8.1.2
+* Rails 8.1.3.1
+* Node.js 24 in the Rails Docker images; Vitest 5 requires Node.js 22.12+, 24, or 26+
 * DB MySQL/MariaDB
 * Solid Cache -> MySQL/MariaDB for html partial caching
 * Solid Queue -> MySQL/MariaDB for background job processing
@@ -109,7 +110,7 @@ To run tests in verbose mode (outputs the time for each test file and the test f
 
 ## JavaScript tests with Vitest
 
-Stimulus controllers and match-state JavaScript helpers are tested with Vitest. These tests live in `test/javascript`.
+Stimulus controllers and match-state JavaScript helpers are tested with Vitest 5. These tests live in `test/javascript`.
 
 Run all JavaScript tests:
 

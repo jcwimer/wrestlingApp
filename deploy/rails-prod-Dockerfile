@@ -1,9 +1,15 @@
+FROM node:24-bookworm-slim AS node
 # Ruby 4.0.5; Chainguard's public registry only exposes this image through latest-dev.
 FROM cgr.dev/chainguard/ruby:latest-dev@sha256:8a3f04a5ca1cb89f2acfce2e41b843ef396f946d641a8554a8ae291a428c92af
 
 #HEALTHCHECK --start-period=60s CMD curl http://127.0.0.1/
 
 USER root
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
 RUN apk add --no-cache \
     build-base \
     openssl \
@@ -13,8 +19,6 @@ RUN apk add --no-cache \
     mariadb-connector-c-dev \
     yaml-dev \
     pkgconf \
-    nodejs \
-    npm \
     tzdata \
     git
 

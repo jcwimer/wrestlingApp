@@ -2,6 +2,8 @@
 
 This Dockerized Gatling suite prepares seeded tournament `204`, then runs the load for 10 minutes by default.
 
+The browser operators use Playwright 1.63.0. Keep the version in `package.json` and `package-lock.json` matched to the Playwright image in `Dockerfile`; Docker installs the locked dependencies with `npm ci`.
+
 The preparation user logs in as `test@test.com`, idempotently creates five mats named `Load Test 1` through `Load Test 5`, regenerates the tournament matches, and polls the mat state page until a newly generated match is available. The measured load starts only after preparation succeeds.
 
 The measured workload contains:

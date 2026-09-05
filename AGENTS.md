@@ -14,6 +14,7 @@
   - Currently, I'm using docker compose for production and kubernetes for my DR environment. You can see this in `ci_cd/Jenkinsfile` on the deploy-production stage.
 
 # Development
+- Rails is pinned to 8.1.3.1 in `Gemfile` and `Gemfile.lock`.
 - I use rbenv locally if that is not available use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
   - If the docker image doesn't exist, use the build command: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
   - If the Gemfile changes, you need to rebuild the docker image: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
@@ -22,6 +23,8 @@
 - This project is using propshaft and importmap.
 - Stimulus is used for javascript.
 - javascript tests are through vitest. See `vitest.config.js`. Run `npm run test:js`
+- Vitest 5 requires Node.js 22.12+, 24, or 26+; both Rails Docker images use Node.js 24 from the official Node image.
+- Load-test Playwright is pinned to 1.63.0, matching `loadtests/Dockerfile`. Keep its package lockfile current; the image installs dependencies with `npm ci`.
 - importmap pins in `importmap.rb` and aliases in `vitest.config.js` need to match.
 - Tournament index ordering uses `tournaments.date_sort_key` (`Date#jd`) so closest-date pagination remains database-neutral between SQLite and MariaDB.
 - Prosopite scans controller actions in development and test. Development detections are logged, detections in controller tests raise errors, and inline jobs are excluded from the parent request scan.
