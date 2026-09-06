@@ -71,6 +71,7 @@ Grafana is configured with `admin` / `admin`, and anonymous admin access is enab
 * Rails OpenTelemetry Slowlog by Request
 * Rails OpenTelemetry Slowlog by Action
 * Rails OpenTelemetry Slowlog by SQL
+* Action Cable / WebSockets (broadcasts, transmits, inbound channel actions, and broadcast duration)
 * Host / Node Exporter (CPU, memory, load, disks, and filesystem space)
 * MariaDB / Exporter (availability, connections, queries, buffer pool reads, locks, and traffic)
 
@@ -86,6 +87,8 @@ Important local telemetry files:
 * Grafana dashboards: `deploy/grafana/dashboards/*.json`
 
 The span metrics exported to Prometheus are named `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`. Common labels include `service_name`, `span_kind`, `span_name`, `code_namespace`, `http_route`, `http_request_method`, and `http_response_status_code`.
+
+Action Cable broadcasts, transmits, and inbound channel actions are emitted as OpenTelemetry spans for the WebSockets dashboard. Active connection counts are not available from the current trace-only telemetry pipeline.
 
 Both Docker Compose stacks persist Jaeger traces in the `jaeger` named Docker volume using Badger with seven-day retention (`--badger.span-store-ttl=168h`). A one-shot storage initializer sets volume ownership so Jaeger runs as its default non-root user; no host filesystem setup is needed. Prometheus stores metrics in its own Docker volume with seven-day retention (`--storage.tsdb.retention.time=7d`). Retention is time-based, not a hard disk-size limit, and expired data is reclaimed during background cleanup. Kubernetes also uses seven-day retention for both services, with a 15Gi Jaeger PVC and the existing 10Gi Prometheus PVC. Kubernetes includes a node-exporter DaemonSet, MariaDB exporter sidecars in both database variants, cluster-internal scrape endpoints, and the same node/MariaDB dashboards.
 

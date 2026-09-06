@@ -50,6 +50,7 @@
   - Kubernetes Grafana downloads dashboards from `deploy/grafana/dashboards` with an init container; do not embed dashboard JSON in the telemetry ConfigMap.
   - Local URLs: Grafana `http://localhost:3000`, Jaeger `http://localhost:16686`, Prometheus `http://localhost:9090`.
   - Prometheus span metrics are `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`.
+  - The `Action Cable / WebSockets` dashboard uses OpenTelemetry spans for broadcasts, transmits, and channel actions. The current trace-only telemetry pipeline does not provide active connection counts.
   - Compose and Kubernetes persist Jaeger Badger storage with seven-day retention (`--badger.span-store-ttl=168h`); Prometheus also retains seven days (`--storage.tsdb.retention.time=7d`). Compose uses a named volume and ownership initializer; Kubernetes uses a 15Gi PVC with fsGroup permissions and a Recreate deployment. No host filesystem setup is required.
   - Kubernetes node-exporter uses a DaemonSet and headless Service for per-node Prometheus discovery. Both alternative MariaDB manifests use the exporter sidecar and existing database Secret credentials, scraped through the internal mariadb-exporter Service. Grafana downloads the node and MariaDB dashboards with the Rails dashboards. Deploy only one MariaDB variant.
   - The collector filters successful Solid Queue polling queries/transactions under 100 ms while retaining slow polling, errors, and job execution spans.
@@ -73,19 +74,3 @@ Cypress tests have been mostly deprecated in favor of vitest but they still exis
 - Cypress tests can be run with docker: bash cypress-tests/run-cypress-tests.sh
 
 Please keep README.md and AGENTS.md up to date when making changes.
-
-# Model Choices
-Default to these model choices:
-- Use Luna Medium for repository exploration, searching files, reading logs, running commands, gathering test output, and other simple support work.
-- Use Terra Medium for normal coding tasks, bug fixes, tests, refactors, configuration changes, and straightforward implementation.
-- Use Terra High when normal coding requires more careful reasoning or spans several interacting components.
-- Use Sol Medium for difficult implementation, difficult debugging, complicated architecture, or when Terra has made a serious unsuccessful attempt.
-- Use Sol High only for exceptionally difficult reasoning or when Sol Medium is struggling.
-- Use Astra Low only for very difficult problems, subtle architectural decisions, or when Sol has made a serious attempt and still cannot solve the problem.
-- Do not use Astra for routine coding, repository exploration, shell commands, tests, or straightforward implementation.
-- Do not escalate just because a task is large. Large but straightforward work should stay on Luna or Terra.
-- Prefer escalating because of reasoning difficulty or demonstrated failure.
-- Before escalating, make sure the problem is not simply missing information or insufficient repository exploration.
-- Delegate mechanical or investigative work to cheaper subagents whenever practical.
-- Stronger models should focus only on the portions of the task that require stronger reasoning.
-- After a stronger model solves the difficult part, delegate routine implementation, testing, and verification back to Terra or Luna when appropriate.

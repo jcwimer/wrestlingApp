@@ -26,6 +26,8 @@ connectors:
       - name: http.response.status_code
       - name: db.system
       - name: code.namespace
+      - name: channel_class
+      - name: action
     exemplars:
       enabled: true
     aggregation_temporality: AGGREGATION_TEMPORALITY_CUMULATIVE

@@ -11,4 +11,6 @@ if ENV['OTEL_EXPORTER_OTLP_ENDPOINT']
 
   cable_tracer = OpenTelemetry.tracer_provider.tracer('wrestlingdev.cable')
   OpenTelemetry::Instrumentation::ActiveSupport.subscribe(cable_tracer, 'cable.broadcast.wrestlingdev')
+  OpenTelemetry::Instrumentation::ActiveSupport.subscribe(cable_tracer, 'perform_action.action_cable')
+  OpenTelemetry::Instrumentation::ActiveSupport.subscribe(cable_tracer, 'transmit.action_cable')
 end
