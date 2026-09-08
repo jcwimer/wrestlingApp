@@ -5,6 +5,7 @@ Wrestling::Application.routes.draw do
 
   resources :mats do
     member do
+      get :stat
       get :state
       get :scoreboard
       post :select_match

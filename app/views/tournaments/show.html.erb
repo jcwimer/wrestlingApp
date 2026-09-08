@@ -140,7 +140,7 @@
           <td><%= link_to "Mat #{mat.name}", mat %></td>
           <td>
             <% if current_match %>
-              <%= link_to "Stat Match", stat_match_path(current_match), class: "btn btn-primary btn-sm" %>
+              <%= link_to "Stat Match", stat_mat_path(mat), class: "btn btn-primary btn-sm" %>
               <%= link_to "State Match", state_mat_path(mat), class: "btn btn-success btn-sm" %>
               <%= link_to "Scoreboard", scoreboard_mat_path(mat, print: true), class: "btn btn-warning btn-sm", target: "_blank", rel: "noopener" %>
             <% else %>

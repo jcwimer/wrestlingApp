@@ -1,53 +1,17 @@
 class MatsController < ApplicationController
-  before_action :set_mat, only: [:show, :state, :scoreboard, :edit, :update, :destroy, :assign_next_match, :select_match]
-  before_action :check_access, only: [:new,:create,:update,:destroy,:edit,:show, :state, :scoreboard, :assign_next_match, :select_match]
+  before_action :set_mat, only: [:show, :stat, :state, :scoreboard, :edit, :update, :destroy, :assign_next_match, :select_match]
+  before_action :check_access, only: [:new,:create,:update,:destroy,:edit,:show, :stat, :state, :scoreboard, :assign_next_match, :select_match]
 
   # GET /mats/1
   # GET /mats/1.json
   def show
-    bout_number_param = params[:bout_number]
-    @queue_matches = @mat.queue_matches
-    @match = if bout_number_param
-      @queue_matches.compact.find { |m| m.bout_number == bout_number_param.to_i }
-    else
-      @queue_matches[0]
-    end
-    # If a requested bout is no longer queued, fall back to queue1.
-    @match ||= @queue_matches[0]
-    @next_match = @queue_matches[1]
-    @show_next_bout_button = false
-  
-    @wrestlers = []
-    if @match
-      if @match.w1
-        @wrestler1_name = @match.wrestler1.name
-        @wrestler1_school_name = @match.wrestler1.school.name
-        @wrestler1_last_match = @match.wrestler1.last_match
-        @wrestlers.push(@match.wrestler1)
-      else
-        @wrestler1_name = "Not assigned"
-        @wrestler1_school_name = "N/A"
-        @wrestler1_last_match = nil
-      end
-  
-      if @match.w2
-        @wrestler2_name = @match.wrestler2.name
-        @wrestler2_school_name = @match.wrestler2.school.name
-        @wrestler2_last_match = @match.wrestler2.last_match
-        @wrestlers.push(@match.wrestler2)
-      else
-        @wrestler2_name = "Not assigned"
-        @wrestler2_school_name = "N/A"
-        @wrestler2_last_match = nil
-      end
-  
-      @tournament = @match.tournament
-    end
-  
-    @match_results_redirect_path = sanitize_mat_redirect_path(params[:redirect_to].presence || request.original_fullpath)
-    session[:return_path] = @match_results_redirect_path
-    session[:error_return_path] = request.original_fullpath
-  end  
+    load_mat_match_context
+  end
+
+  def stat
+    load_mat_match_context
+    render :show
+  end
 
   def scoreboard
     @match = @mat.selected_scoreboard_match || @mat.queue1_match
@@ -181,6 +145,14 @@ class MatsController < ApplicationController
       nil
     end
 
+    def mat_queue_page_path
+      case action_name
+      when "stat" then stat_mat_path(@mat)
+      when "state" then state_mat_path(@mat)
+      else mat_path(@mat)
+      end
+    end
+
     def load_mat_match_context
       bout_number_param = params[:bout_number]
       @queue_matches = @mat.queue_matches
@@ -223,6 +195,7 @@ class MatsController < ApplicationController
       end
 
       @match_results_redirect_path = sanitize_mat_redirect_path(params[:redirect_to].presence || request.original_fullpath)
+      @mat_queue_page_path = mat_queue_page_path
       session[:return_path] = @match_results_redirect_path
       session[:error_return_path] = request.original_fullpath
     end

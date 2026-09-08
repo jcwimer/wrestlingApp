@@ -35,6 +35,10 @@ class MatsControllerTest < ActionController::TestCase
     get :state, params: { id: @mat.id }
   end
 
+  def get_stat
+    get :stat, params: { id: @mat.id }
+  end
+
   def get_state_with_params(extra_params = {})
     get :state, params: { id: @mat.id }.merge(extra_params)
   end
@@ -428,6 +432,25 @@ class MatsControllerTest < ActionController::TestCase
 
     assert_response :success
     assert_includes response.body, "No matches assigned to this mat."
+  end
+
+  test "logged in tournament owner should get stat mat page" do
+    sign_in_owner
+    get_stat
+    assert_response :success
+    assert_includes response.body, "data-controller=\"match-data\""
+  end
+
+  test "posting a match update from mat stat redirects back to mat stat" do
+    sign_in_owner
+    get :stat, params: { id: @mat.id, bout_number: @match.bout_number }
+
+    old_controller = @controller
+    @controller = MatchesController.new
+    patch :update, params: { id: @match.id, match: { score: "3-1", win_type: "Decision", winner_id: @match.w1, finished: 1 } }
+    @controller = old_controller
+
+    assert_redirected_to "/mats/#{@mat.id}/stat"
   end
 
   test "posting a match update from mat state redirects back to mat state" do

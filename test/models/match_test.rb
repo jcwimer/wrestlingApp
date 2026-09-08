@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class MatchTest < ActiveSupport::TestCase
-   test "finished score correction does not finalize twice" do
+  test "finished score correction does not finalize twice" do
      match = matches(:tournament_1_bout_1000)
      match.update_columns(mat_id: nil, finalized_at: nil)
      advances = 0
@@ -16,6 +16,24 @@ class MatchTest < ActiveSupport::TestCase
 
      assert_equal 1, advances
    end
+
+   test "finalizing a queued match advances the mat queue before the background job runs" do
+     mat = mats(:one)
+     queue1_match = matches(:tournament_1_bout_1000)
+     queue2_match = matches(:tournament_1_bout_1001)
+     mat.update!(queue1: queue1_match.id, queue2: queue2_match.id, queue3: nil, queue4: nil)
+     queue1_match.update_columns(mat_id: mat.id, finalized_at: nil, finished: nil, winner_id: nil, win_type: nil, score: nil)
+     queue2_match.update_columns(mat_id: mat.id)
+     enqueued_jobs = 0
+     queue1_match.define_singleton_method(:advance_wrestlers) { enqueued_jobs += 1 }
+
+     queue1_match.update!(winner_id: queue1_match.w1, win_type: "Decision", score: "3-1", finished: 1)
+
+     assert_equal queue2_match.id, mat.reload.queue1
+     assert_nil queue1_match.reload.mat_id
+     assert_equal 1, enqueued_jobs
+   end
+
    test "Match should not be valid if win type is a pin and a score is provided" do
      create_double_elim_tournament_single_weight(14, "Regular Double Elimination 1-8")
      matches = @tournament.matches.reload

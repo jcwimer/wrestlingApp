@@ -410,10 +410,21 @@ class MatchesControllerTest < ActionController::TestCase
     assert_redirected_to "/tournaments/#{@tournament.id}/matches" 
   end
 
-  test "should redirect to all matches when posting a match update from match stat" do
+  test "should redirect to mat stat when posting a match update from match stat for a queued mat match" do
     sign_in_owner
+    mat = @match.mat || mats(:one)
+    @mat = mat
+    @mat.assign_match_to_queue!(@match, 1) if @mat.queue_position_for_match(@match).nil?
     post_update_from_match_stat
-    assert_redirected_to "/tournaments/#{@tournament.id}/matches" 
+    assert_redirected_to "/mats/#{mat.id}/stat"
+  end
+
+  test "should redirect to all matches when posting a match update from match stat without a mat" do
+    sign_in_owner
+    @match.update_column(:mat_id, nil)
+    MatQueueOperation.new(@tournament).remove(@match.id)
+    post_update_from_match_stat
+    assert_redirected_to "/tournaments/#{@tournament.id}/matches"
   end
 
   test "stats page should load if a match does not have finished_at" do

@@ -66,6 +66,36 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to state_mat_path(@mat)
   end
 
+  test "mat state redirect shows next queued match before background job runs" do
+    queue2_match = matches(:tournament_1_bout_1001)
+    @mat.update!(queue1: @match.id, queue2: queue2_match.id, queue3: nil, queue4: nil)
+    @match.update_columns(mat_id: @mat.id, finalized_at: nil)
+    queue2_match.update_columns(mat_id: @mat.id)
+    ActiveJob::Base.queue_adapter = :test
+
+    log_in(@owner)
+    get state_mat_path(@mat, bout_number: @match.bout_number)
+
+    assert_enqueued_with(job: AdvanceWrestlerJob) do
+      patch match_path(@match), params: {
+        match: {
+          score: "3-1",
+          win_type: "Decision",
+          winner_id: @match.w1,
+          finished: 1
+        }
+      }
+    end
+
+    follow_redirect!
+
+    assert_equal queue2_match.id, @mat.reload.queue1
+    assert_includes response.body, "Bout #{queue2_match.bout_number}"
+  ensure
+    ActiveJob::Base.queue_adapter.enqueued_jobs.clear if ActiveJob::Base.queue_adapter.respond_to?(:enqueued_jobs)
+    ActiveJob::Base.queue_adapter = :inline
+  end
+
   private
 
   def ensure_login_password(user)

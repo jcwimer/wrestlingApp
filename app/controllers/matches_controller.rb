@@ -179,12 +179,18 @@ class MatchesController < ApplicationController
 
       if @match&.mat
         @mat = @match.mat
+        @mat_queue_page_path = stat_mat_path(@mat) if action_name == "stat"
         queue_position = @mat.queue_position_for_match(@match)
         @next_match = queue_position == 1 ? @mat.queue2_match : nil
         @show_next_bout_button = queue_position == 1
       end
 
-      @match_results_redirect_path = sanitize_redirect_path(params[:redirect_to].presence) || "/tournaments/#{@tournament.id}/matches"
+      default_redirect_path = if action_name == "stat" && @mat
+        stat_mat_path(@mat)
+      else
+        "/tournaments/#{@tournament.id}/matches"
+      end
+      @match_results_redirect_path = sanitize_redirect_path(params[:redirect_to].presence) || default_redirect_path
       session[:return_path] = @match_results_redirect_path
       session[:error_return_path] = request.original_fullpath
     end

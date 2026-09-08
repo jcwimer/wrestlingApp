@@ -62,6 +62,6 @@ Preparation is intentionally non-destructive to unrelated mats. Repeated runs re
 
 ## Run full end to end tests preserving otel traces, prometheus metrics, and application logs for analysis:
 ```sh
-docker-compose -f deploy/docker-compose-test.yml down; docker volume rm $(docker volume ls -a); bash deploy/deploy-test.sh
+docker-compose -f deploy/docker-compose-test.yml down; docker volume rm $(docker volume ls -q); bash deploy/deploy-test.sh
 sudo rm -rf loadtests/results/*; cd loadtests; BASE_URL=http://host.docker.internal TEST_DURATION_SECONDS=900 docker-compose run --rm gatling; cd ..;
 ```

@@ -33,7 +33,9 @@ class Match < ApplicationRecord
 			reload
 			return false unless finished == 1 && winner_id.present? && finalized_at.nil?
 
+			assigned_mat = mat
 			update_column(:finalized_at, Time.current)
+			advance_mat_queue_for_finalized_match!(assigned_mat)
 			advance_wrestlers
 		end
 		true
@@ -337,6 +339,14 @@ class Match < ApplicationRecord
         end
 	
 	private
+
+	def advance_mat_queue_for_finalized_match!(assigned_mat)
+		if assigned_mat
+			MatQueueOperation.new(tournament).advance(assigned_mat, self, invalidate_cached_views: false)
+		else
+			tournament.refill_open_bout_board_queues(invalidate_cached_views: false)
+		end
+	end
 
 	def update_finished_at
 	  # Get the changes that will be persisted
