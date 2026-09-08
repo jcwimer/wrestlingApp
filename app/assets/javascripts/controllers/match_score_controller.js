@@ -20,10 +20,6 @@ export default class extends Controller {
     this.boundMarkManualOverride = this.markManualOverride.bind(this)
     this.element.addEventListener("input", this.boundMarkManualOverride)
     this.element.addEventListener("change", this.boundMarkManualOverride)
-    if (this.finishedValue) {
-      this.validateForm()
-      return
-    }
     setTimeout(() => {
       this.updateScoreInput()
       this.validateForm()
@@ -36,9 +32,8 @@ export default class extends Controller {
   }
 
   winTypeChanged() {
-    if (this.finishedValue) {
-      this.validateForm()
-      return
+    if (this.finishedValue && !this.manualOverrideValue) {
+      this.applyWinTypeDefaults()
     }
     this.updateScoreInput()
     this.validateForm()
@@ -49,7 +44,6 @@ export default class extends Controller {
   }
 
   updateScoreInput() {
-    if (this.finishedValue) return
     const winType = this.winTypeTarget.value
     this.dynamicScoreInputTarget.innerHTML = ""
     
@@ -132,6 +126,42 @@ export default class extends Controller {
     }
     
     this.validateForm()
+  }
+
+  applyWinTypeDefaults() {
+    const defaults = this.defaultScoresForWinType(this.winTypeTarget.value)
+    if (!defaults) return
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "winnerScore")) {
+      this.winnerScoreValue = String(defaults.winnerScore)
+    }
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "loserScore")) {
+      this.loserScoreValue = String(defaults.loserScore)
+    }
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "pinMinutes")) {
+      this.pinMinutesValue = String(defaults.pinMinutes)
+    }
+
+    if (Object.prototype.hasOwnProperty.call(defaults, "pinSeconds")) {
+      this.pinSecondsValue = String(defaults.pinSeconds).padStart(2, "0")
+    }
+  }
+
+  defaultScoresForWinType(winType) {
+    switch (winType) {
+      case "Decision":
+        return { winnerScore: "3", loserScore: "0" }
+      case "Major":
+        return { winnerScore: "10", loserScore: "2" }
+      case "Tech Fall":
+        return { winnerScore: "17", loserScore: "2" }
+      case "Pin":
+        return { pinMinutes: "0", pinSeconds: "00" }
+      default:
+        return null
+    }
   }
 
   applyDefaultResults(defaults = {}) {

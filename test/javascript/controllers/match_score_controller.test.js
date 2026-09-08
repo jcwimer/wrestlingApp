@@ -115,15 +115,21 @@ describe("match score controller", () => {
     expect(controller.validateForm).toHaveBeenCalledTimes(1)
   })
 
-  it("connect skips score initialization for finished forms", () => {
+  it("connect initializes finished forms with dynamic score inputs", () => {
     const controller = buildController()
     controller.finishedValue = true
+    controller.winnerScoreValue = "3"
+    controller.loserScoreValue = "1"
     controller.updateScoreInput = vi.fn()
     controller.validateForm = vi.fn()
+    vi.spyOn(globalThis, "setTimeout").mockImplementation((fn) => {
+      fn()
+      return 1
+    })
 
     controller.connect()
 
-    expect(controller.updateScoreInput).not.toHaveBeenCalled()
+    expect(controller.updateScoreInput).toHaveBeenCalledTimes(1)
     expect(controller.validateForm).toHaveBeenCalledTimes(1)
   })
 
@@ -202,6 +208,47 @@ describe("match score controller", () => {
 
     controller.winnerChanged()
     expect(controller.validateForm).toHaveBeenCalledTimes(2)
+  })
+
+  it("winTypeChanged autopopulates defaults for finished forms", () => {
+    const controller = buildController()
+    controller.finishedValue = true
+    controller.winTypeTarget.value = "Major"
+    controller.updateScoreInput = vi.fn()
+    controller.validateForm = vi.fn()
+
+    controller.winTypeChanged()
+
+    expect(controller.winnerScoreValue).toBe("10")
+    expect(controller.loserScoreValue).toBe("2")
+    expect(controller.updateScoreInput).toHaveBeenCalledTimes(1)
+    expect(controller.validateForm).toHaveBeenCalledTimes(1)
+  })
+
+  it("winTypeChanged preserves manual overrides on finished forms", () => {
+    const controller = buildController()
+    controller.finishedValue = true
+    controller.manualOverrideValue = true
+    controller.winnerScoreValue = "5"
+    controller.loserScoreValue = "1"
+    controller.winTypeTarget.value = "Major"
+    controller.updateScoreInput = vi.fn()
+    controller.validateForm = vi.fn()
+
+    controller.winTypeChanged()
+
+    expect(controller.winnerScoreValue).toBe("5")
+    expect(controller.loserScoreValue).toBe("1")
+  })
+
+  it("defaultScoresForWinType returns valid defaults for score-based win types", () => {
+    const controller = buildController()
+
+    expect(controller.defaultScoresForWinType("Decision")).toEqual({ winnerScore: "3", loserScore: "0" })
+    expect(controller.defaultScoresForWinType("Major")).toEqual({ winnerScore: "10", loserScore: "2" })
+    expect(controller.defaultScoresForWinType("Tech Fall")).toEqual({ winnerScore: "17", loserScore: "2" })
+    expect(controller.defaultScoresForWinType("Pin")).toEqual({ pinMinutes: "0", pinSeconds: "00" })
+    expect(controller.defaultScoresForWinType("Forfeit")).toBeNull()
   })
 
   it("updateScoreInput builds pin inputs and writes pin time score", () => {

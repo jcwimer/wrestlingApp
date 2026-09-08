@@ -187,7 +187,7 @@ class MatchesControllerTest < ActionController::TestCase
     success
   end
 
-  test "stat match page renders basic score field when match is finished" do
+  test "stat match page renders dynamic score inputs when match is finished" do
     sign_in_owner
     @match.update!(finished: 1, winner_id: @match.w1, win_type: "Decision", score: "3-1")
 
@@ -195,9 +195,12 @@ class MatchesControllerTest < ActionController::TestCase
 
     assert_response :success
     assert_includes response.body, "data-match-score-finished-value=\"true\""
-    assert_includes response.body, "type=\"text\""
+    assert_includes response.body, "data-match-score-winner-score-value=\"3\""
+    assert_includes response.body, "data-match-score-loser-score-value=\"1\""
+    assert_includes response.body, "id=\"dynamic-score-input\""
+    assert_includes response.body, "type=\"hidden\""
     assert_includes response.body, "name=\"match[score]\""
-    assert_not_includes response.body, "id=\"dynamic-score-input\""
+    assert_not_includes response.body, "Enter the winner's score"
   end
 
   test "logged in tournament owner should get state match page" do
