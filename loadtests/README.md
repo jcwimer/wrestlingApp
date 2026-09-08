@@ -59,3 +59,9 @@ BASE_URL=https://test.example.com TEST_DURATION_SECONDS=900 docker-compose run -
 ```
 
 Preparation is intentionally non-destructive to unrelated mats. Repeated runs reuse the five named load-test mats but regenerate all matches, matching the application's existing Generate Brackets behavior. Run this against an environment where replacing tournament `204` matches is safe.
+
+## Run full end to end tests preserving otel traces, prometheus metrics, and application logs for analysis:
+```sh
+docker-compose -f deploy/docker-compose-test.yml down; docker volume rm $(docker volume ls -a); bash deploy/deploy-test.sh
+sudo rm -rf loadtests/results/*; cd loadtests; BASE_URL=http://host.docker.internal TEST_DURATION_SECONDS=900 docker-compose run --rm gatling; cd ..;
+```

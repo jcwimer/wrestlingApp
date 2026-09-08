@@ -35,6 +35,9 @@
         <groupId>io.gatling</groupId>
         <artifactId>gatling-maven-plugin</artifactId>
         <version>${gatling.maven.plugin.version}</version>
+        <configuration>
+          <resultsFolder>${project.basedir}/results</resultsFolder>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -16,7 +16,6 @@ trap cleanup EXIT INT TERM
 set +e
 mvn -B gatling:test \
   -Dgatling.simulationClass=com.wrestlingdev.TournamentLoadSimulation \
-  -Dgatling.resultsFolder=/loadtests/results \
   -DbaseUrl="${BASE_URL:-http://host.docker.internal:3000}" \
   -DwsUrl="${WS_URL:-}" \
   -DtournamentId="${TOURNAMENT_ID:-204}" \
