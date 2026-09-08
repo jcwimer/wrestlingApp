@@ -45,3 +45,6 @@ git.sh
 
 /storage/*
 !/storage/.keep
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

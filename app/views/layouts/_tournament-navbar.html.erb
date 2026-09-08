@@ -1,71 +1,72 @@
 <% if @tournament and @tournament.id %>
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="tournament-navbar">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#tournament-navbar-collapse" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
+<nav class="wd-navbar wd-navbar--default wd-navbar--fixed-top" role="navigation" id="tournament-navbar" data-controller="navbar-collapse">
+  <div class="wd-container">
+    <div class="wd-navbar__header">
+      <button type="button" class="wd-navbar__toggle" data-navbar-collapse-target="toggle" data-action="navbar-collapse#toggle" aria-expanded="false" aria-controls="tournament-navbar-collapse">
+        <span class="wd-sr-only">Toggle navigation</span>
+        <span class="wd-navbar__icon-bar"></span>
+        <span class="wd-navbar__icon-bar"></span>
+        <span class="wd-navbar__icon-bar"></span>
       </button>
-      <%= link_to "Tournament Menu", "/tournaments/#{@tournament.id}", class: "navbar-brand" %>
+      <%= link_to "Tournament Menu", "/tournaments/#{@tournament.id}", class: "wd-navbar__brand" %>
     </div>
-    <div id="tournament-navbar-collapse" class="collapse navbar-collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><%= link_to " Home" , "/tournaments/#{@tournament.id}", class: "fas fa-home" %></li>
+    <div id="tournament-navbar-collapse" class="wd-navbar__collapse wd-collapse" data-navbar-collapse-target="panel">
+      <ul class="wd-navbar__nav wd-navbar__nav--right">
+        <li><%= link_to " Home", "/tournaments/#{@tournament.id}", class: "wd-navbar__link fas fa-home" %></li>
         <% if can? :read, @tournament %>
-          <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-poll-h"> Results/Brackets</i>
-            <span class="caret"></span></a>
-            <ul class="dropdown-menu">
+          <li class="wd-dropdown" data-controller="dropdown">
+            <a class="wd-navbar__link wd-dropdown__toggle" data-dropdown-target="toggle" data-action="click->dropdown#toggle" href="#" aria-expanded="false"><i class="fas fa-poll-h"> Results/Brackets</i>
+            <span class="wd-caret"></span></a>
+            <ul class="wd-dropdown__menu">
               <li><strong>Results</strong></li>
-              <li><%= link_to "Team Scores" , "/tournaments/#{@tournament.id}/team_scores" %></li>
-              <li><%= link_to "All Match Results" , "/tournaments/#{@tournament.id}/all_results" %></li>
+              <li><%= link_to "Team Scores", "/tournaments/#{@tournament.id}/team_scores" %></li>
+              <li><%= link_to "All Match Results", "/tournaments/#{@tournament.id}/all_results" %></li>
               <li><strong>Brackets</strong></li>
               <% @tournament.weights.sort_by{|weight| weight.max }.each do |weight| %>
-                <li><%= link_to "#{weight.max}" , "/tournaments/#{@tournament.id}/brackets/#{weight.id}" %></li>
+                <li><%= link_to "#{weight.max}", "/tournaments/#{@tournament.id}/brackets/#{weight.id}" %></li>
               <% end %>
               <li><%= link_to "All Brackets (Printable)", "/tournaments/#{@tournament.id}/all_brackets?print=true", target: :_blank %></li>
             </ul>
           </li>
-          <li><%= link_to " Bout Board" , "/tournaments/#{@tournament.id}/up_matches", class: "fas fa-list-alt" %></li>
-          <li><%= link_to " Live Scores" , "/tournaments/#{@tournament.id}/live_scores", class: "fas fa-tv" %></li>
+          <li><%= link_to " Bout Board", "/tournaments/#{@tournament.id}/up_matches", class: "wd-navbar__link fas fa-list-alt" %></li>
+          <li><%= link_to " Live Scores", "/tournaments/#{@tournament.id}/live_scores", class: "wd-navbar__link fas fa-tv" %></li>
         <% end %>
         <% if can? :manage, @tournament %>
-          <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#director"><i class="fas fa-tools"> Director Links</i>
-            <span class="caret"></span></a>
-            <ul class="dropdown-menu">
+          <li class="wd-dropdown" data-controller="dropdown">
+            <a class="wd-navbar__link wd-dropdown__toggle" data-dropdown-target="toggle" data-action="click->dropdown#toggle" href="#director" aria-expanded="false"><i class="fas fa-tools"> Director Links</i>
+            <span class="wd-caret"></span></a>
+            <ul class="wd-dropdown__menu">
               <li><strong>Pages</strong></li>
-              <li></span> <%= link_to "Edit Tournament Info", edit_tournament_path(@tournament) %></li>
-              <li><%= link_to "Weigh In Page" , "/tournaments/#{@tournament.id}/weigh_in" %></li>
-              <li><%= link_to "All Matches" , "/tournaments/#{@tournament.id}/matches" %></li>
-              <li><%= link_to "Full Screen Bout Board" , "/tournaments/#{@tournament.id}/up_matches?print=true" , target: :_blank  %></li>
-              <li><%= link_to "QR Code (Full Screen)" , "/tournaments/#{@tournament.id}/qrcode?print=true" , target: :_blank  %></li>
-              <li><%= link_to "Deduct Team Points" , "/tournaments/#{@tournament.id}/teampointadjust" %></li>
+              <li><%= link_to "Edit Tournament Info", edit_tournament_path(@tournament) %></li>
+              <li><%= link_to "Weigh In Page", "/tournaments/#{@tournament.id}/weigh_in" %></li>
+              <li><%= link_to "All Matches", "/tournaments/#{@tournament.id}/matches" %></li>
+              <li><%= link_to "Full Screen Bout Board", "/tournaments/#{@tournament.id}/up_matches?print=true", target: :_blank %></li>
+              <li><%= link_to "QR Code (Full Screen)", "/tournaments/#{@tournament.id}/qrcode?print=true", target: :_blank %></li>
+              <li><%= link_to "Deduct Team Points", "/tournaments/#{@tournament.id}/teampointadjust" %></li>
               <li><%= link_to "View All Mat Assignment Rules", tournament_mat_assignment_rules_path(@tournament) %></li>
               <li><%= link_to 'Manage Backups', tournament_tournament_backups_path(@tournament) %></li>
               <li><%= link_to "Reset Bout Board", reset_bout_board_tournament_path(@tournament), data: { turbo_method: :post, turbo_confirm: "Are you sure you want to reset the bout board?" } %></li>
               <% if can? :destroy, @tournament %>
-                <li><%= link_to "Tournament Delegation" , "/tournaments/#{@tournament.id}/delegate" %></li>
+                <li><%= link_to "Tournament Delegation", "/tournaments/#{@tournament.id}/delegate" %></li>
               <% end %>
-              <li><%= link_to "School Delegation" , "/tournaments/#{@tournament.id}/school_delegate"%></li>
+              <li><%= link_to "School Delegation", "/tournaments/#{@tournament.id}/school_delegate" %></li>
               <% if @tournament.total_rounds > 0 %>
                 <li><strong>Printable Bout Sheets</strong></li>
                 <% 1.upto(@tournament.total_rounds) do |round| %>
-                  <li><%= link_to "Print Round #{round}" , "/tournaments/#{@tournament.id}/bout_sheets?round=#{round}&print=true" , target: :_blank  %></li>
+                  <li><%= link_to "Print Round #{round}", "/tournaments/#{@tournament.id}/bout_sheets?round=#{round}&print=true", target: :_blank %></li>
                 <% end %>
               <% end %>
               <li><strong>Time Savers</strong></li>
-              <li><%= link_to "Create Boys High School Weights (106-285)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::HS_WEIGHT_CLASSES}",data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>
-              <li><%= link_to "Create Girls High School Weights (100-235)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::HS_GIRLS_WEIGHT_CLASSES}",data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>
-              <li><%= link_to "Create Boys Middle School Weights (80-245)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::MS_WEIGHT_CLASSES}",data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>
-              <li><%= link_to "Create Girls Middle School Weights (72-235)" , "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::MS_GIRLS_WEIGHT_CLASSES}",data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>
+              <li><%= link_to "Create Boys High School Weights (106-285)", "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::HS_WEIGHT_CLASSES}", data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>
+              <li><%= link_to "Create Girls High School Weights (100-235)", "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::HS_GIRLS_WEIGHT_CLASSES}", data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>
+              <li><%= link_to "Create Boys Middle School Weights (80-245)", "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::MS_WEIGHT_CLASSES}", data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>
+              <li><%= link_to "Create Girls Middle School Weights (72-235)", "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::MS_GIRLS_WEIGHT_CLASSES}", data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>
               <li><strong>Tournament Actions</strong></li>
-              <li><%= link_to "Calculate Team Scores" , "/tournaments/#{@tournament.id}/calculate_team_scores", data: { turbo_method: :put } %></li>
-              <li><%= link_to "Generate Brackets" , "/tournaments/#{@tournament.id}/generate_matches", data: { turbo_method: :post, turbo_confirm: 'Are you sure? This will delete all current matches.' } %></li>
-              <li><%= link_to "Export Data" , "/tournaments/#{@tournament.id}/export?print=true", target: :_blank %></li>
+              <li><%= link_to "Calculate Team Scores", "/tournaments/#{@tournament.id}/calculate_team_scores", data: { turbo_method: :put } %></li>
+              <li><%= link_to "Generate Brackets", "/tournaments/#{@tournament.id}/generate_matches", data: { turbo_method: :post, turbo_confirm: 'Are you sure? This will delete all current matches.' } %></li>
+              <li><%= link_to "Export Data", "/tournaments/#{@tournament.id}/export?print=true", target: :_blank %></li>
             </ul>
+          </li>
         <% end %>
       </ul>
     </div>

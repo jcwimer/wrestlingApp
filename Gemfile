@@ -95,3 +95,6 @@ group :development, :test do
   # rails-controller-testing is needed for assert_template
   gem 'rails-controller-testing'
 end
+
+gem "tailwindcss-rails", "~> 4.6"
+gem "tailwindcss-ruby", "4.3.3"

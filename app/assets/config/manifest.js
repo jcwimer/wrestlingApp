@@ -9,3 +9,4 @@
 //= link_tree ../../../vendor/assets/stylesheets .css
 
 //= link_tree ../../../vendor/assets/webfonts
+//= link_tree ../builds

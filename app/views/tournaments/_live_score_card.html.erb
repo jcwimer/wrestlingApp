@@ -60,14 +60,14 @@
       <% if show_details %>
         <tr>
           <td colspan="2" style="padding: 0;">
-            <div class="panel panel-default" style="margin: 10px;">
+            <div class="panel panel-default" style="margin: 10px;" data-controller="collapse">
               <div class="panel-heading">
-                <a data-toggle="collapse" href="#live-score-stats-<%= dom_id_suffix %>" aria-expanded="false" aria-controls="live-score-stats-<%= dom_id_suffix %>" style="display: flex; justify-content: space-between; align-items: center; color: #333; text-decoration: none; background: transparent; outline: none;">
+                <a data-collapse-target="toggle" data-action="collapse#toggle" href="#live-score-stats-<%= dom_id_suffix %>" aria-expanded="false" aria-controls="live-score-stats-<%= dom_id_suffix %>" style="display: flex; justify-content: space-between; align-items: center; color: #333; text-decoration: none; background: transparent; outline: none;">
                   <strong>Stats</strong>
                   <span class="text-muted" style="font-size: 0.9em;">Show/Hide</span>
                 </a>
               </div>
-              <div id="live-score-stats-<%= dom_id_suffix %>" class="panel-collapse collapse">
+              <div id="live-score-stats-<%= dom_id_suffix %>" class="panel-collapse wd-collapse" data-collapse-target="panel">
                 <div class="panel-body" style="padding-bottom: 0;">
                   <div class="row">
                     <div class="col-sm-6">
@@ -86,14 +86,14 @@
         </tr>
         <tr>
           <td colspan="2" style="padding: 0;">
-            <div class="panel panel-default" style="margin: 10px;">
+            <div class="panel panel-default" style="margin: 10px;" data-controller="collapse">
               <div class="panel-heading">
-                <a data-toggle="collapse" href="#live-score-last-result-<%= dom_id_suffix %>" aria-expanded="false" aria-controls="live-score-last-result-<%= dom_id_suffix %>" style="display: flex; justify-content: space-between; align-items: center; color: #333; text-decoration: none; background: transparent; outline: none;">
+                <a data-collapse-target="toggle" data-action="collapse#toggle" href="#live-score-last-result-<%= dom_id_suffix %>" aria-expanded="false" aria-controls="live-score-last-result-<%= dom_id_suffix %>" style="display: flex; justify-content: space-between; align-items: center; color: #333; text-decoration: none; background: transparent; outline: none;">
                   <strong>Last Match Result</strong>
                   <span class="text-muted" style="font-size: 0.9em;">Show/Hide</span>
                 </a>
               </div>
-              <div id="live-score-last-result-<%= dom_id_suffix %>" class="panel-collapse collapse">
+              <div id="live-score-last-result-<%= dom_id_suffix %>" class="panel-collapse wd-collapse" data-collapse-target="panel">
                 <div class="panel-body">
                   <div data-match-scoreboard-target="lastMatchResult">-</div>
                 </div>

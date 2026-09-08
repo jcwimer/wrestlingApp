@@ -5,6 +5,7 @@
         <%= csrf_meta_tags %>
         <%= action_cable_meta_tag %>
         <title>WrestlingDev</title>
+        <%= stylesheet_link_tag "tailwind", media: "all", "data-turbo-track": "reload" %>
         <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
         <%= javascript_importmap_tags %>
         <%= render 'layouts/cdn' %>
@@ -21,6 +22,7 @@
           <% if Rails.env.production? %>
             <%= render 'layouts/analytics' %>
           <% end %>
+          <%= stylesheet_link_tag "tailwind", media: "all", "data-turbo-track": "reload" %>
           <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
           <%= javascript_importmap_tags %>
           <%= csrf_meta_tags %>
@@ -45,10 +47,16 @@
                     <div class="row no-margin">
                         <div class="col-md-12" style="padding-left: 2%;">
                           <% if notice %>
-                            <p id="notice" class="alert alert-success alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><%= notice %></p>
+                            <p id="notice" class="wd-alert wd-alert--success wd-alert--dismissible" data-controller="dismiss">
+                              <button type="button" class="wd-alert__close" data-action="dismiss#dismiss" aria-label="close">&times;</button>
+                              <%= notice %>
+                            </p>
                           <% end %>
                           <% if alert %>
-                            <p id="alert" class="alert alert-danger alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><%= alert %></p>
+                            <p id="alert" class="wd-alert wd-alert--danger wd-alert--dismissible" data-controller="dismiss">
+                              <button type="button" class="wd-alert__close" data-action="dismiss#dismiss" aria-label="close">&times;</button>
+                              <%= alert %>
+                            </p>
                           <% end %>
                           <div id="view" style="overflow-x: auto; overflow-y: hidden;"> <%# Horizontal scroll only %>
                             <br><br>

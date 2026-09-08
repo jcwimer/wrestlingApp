@@ -1,17 +1,56 @@
-.navbar-inverse.navbar-fixed-top {
-  z-index: 1040; /* Ensure main navbar is above tournament navbar */
+.navbar-inverse.navbar-fixed-top,
+.wd-navbar.wd-navbar--inverse.wd-navbar--fixed-top {
+  z-index: 1040;
+}
+
+.wd-navbar--inverse .wd-navbar__brand,
+.wd-navbar--inverse .wd-navbar__link,
+.wd-navbar--inverse .wd-navbar__link:visited {
+  color: #fff;
+}
+
+.wd-navbar--inverse .wd-navbar__brand:hover,
+.wd-navbar--inverse .wd-navbar__brand:focus,
+.wd-navbar--inverse .wd-navbar__brand:active,
+.wd-navbar--inverse .wd-navbar__link:hover,
+.wd-navbar--inverse .wd-navbar__link:focus,
+.wd-navbar--inverse .wd-navbar__link:active {
+  color: #fff;
+  background-color: transparent;
+}
+
+.wd-navbar--default .wd-navbar__brand,
+.wd-navbar--default .wd-navbar__link,
+.wd-navbar--default .wd-navbar__link:visited {
+  color: #777;
+}
+
+.wd-navbar--default .wd-navbar__brand:hover,
+.wd-navbar--default .wd-navbar__brand:focus,
+.wd-navbar--default .wd-navbar__brand:active,
+.wd-navbar--default .wd-navbar__link:hover,
+.wd-navbar--default .wd-navbar__link:focus,
+.wd-navbar--default .wd-navbar__link:active {
+  color: #333;
+  background-color: transparent;
+}
+
+.wd-dropdown__menu > li > a:hover,
+.wd-dropdown__menu > li > a:focus,
+.wd-dropdown__menu > li > a:active {
+  color: #262626;
+  background-color: #f5f5f5;
 }
 
 #tournament-navbar {
-  top: 50px; /* Position below the first fixed navbar */
-  z-index: 1030; /* Explicitly set standard fixed navbar z-index */
-} 
+  top: 50px;
+  z-index: 1030;
+}
 
-/* Make desktop navbar dropdowns scrollable if they overflow */
 @media (min-width: 768px) {
-  /* Target dropdowns in main nav and tournament nav specifically */
-  .navbar-fixed-top .dropdown-menu {
-    max-height: 70vh; /* Adjust as needed - 70% of viewport height */
+  .navbar-fixed-top .dropdown-menu,
+  .wd-navbar--fixed-top .wd-dropdown__menu {
+    max-height: 70vh;
     overflow-y: auto;
   }
 }

@@ -1,33 +1,33 @@
-<nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/">WrestlingDev</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><%= link_to "Browse Tournaments", "/tournaments/" %></li>
-            <li><%= link_to "About", "/static_pages/about" %></li>
-            <li><%= link_to "Tutorials", "/static_pages/tutorials" %></li>
-            <% if user_signed_in? %>
-                <li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"><%= current_user.email %>
-                  <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><%= button_to "Log out", logout_path, method: :delete, class: 'btn btn-link', form: { class: 'navbar-logout-form' } %></li>
-                    <li><%= link_to "Edit profile", edit_user_path(current_user) %></li>
-                    <li><%= link_to "My tournaments and schools", "/static_pages/my_tournaments" %></li>
-                  </ul>
-                </li>
-            <% else %>
-                <li><%= link_to "Log In", login_path %></li>
-            <% end %>
-        </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+<nav class="wd-navbar wd-navbar--inverse wd-navbar--fixed-top" style="z-index: 1040;" data-controller="navbar-collapse">
+  <div class="wd-container">
+    <div class="wd-navbar__header">
+      <button type="button" class="wd-navbar__toggle" data-navbar-collapse-target="toggle" data-action="navbar-collapse#toggle" aria-expanded="false" aria-controls="navbar">
+        <span class="wd-sr-only">Toggle navigation</span>
+        <span class="wd-navbar__icon-bar"></span>
+        <span class="wd-navbar__icon-bar"></span>
+        <span class="wd-navbar__icon-bar"></span>
+      </button>
+      <a class="wd-navbar__brand" href="/">WrestlingDev</a>
+    </div>
+    <div id="navbar" class="wd-navbar__collapse wd-collapse" data-navbar-collapse-target="panel">
+      <ul class="wd-navbar__nav wd-navbar__nav--right">
+        <li><%= link_to "Browse Tournaments", "/tournaments/", class: "wd-navbar__link" %></li>
+        <li><%= link_to "About", "/static_pages/about", class: "wd-navbar__link" %></li>
+        <li><%= link_to "Tutorials", "/static_pages/tutorials", class: "wd-navbar__link" %></li>
+        <% if user_signed_in? %>
+          <li class="wd-dropdown" data-controller="dropdown">
+            <a class="wd-navbar__link wd-dropdown__toggle" data-dropdown-target="toggle" data-action="click->dropdown#toggle" href="#" aria-expanded="false"><%= current_user.email %>
+            <span class="wd-caret"></span></a>
+            <ul class="wd-dropdown__menu">
+              <li><%= button_to "Log out", logout_path, method: :delete, class: 'btn btn-link', form: { class: 'wd-navbar__logout-form' } %></li>
+              <li><%= link_to "Edit profile", edit_user_path(current_user) %></li>
+              <li><%= link_to "My tournaments and schools", "/static_pages/my_tournaments" %></li>
+            </ul>
+          </li>
+        <% else %>
+          <li><%= link_to "Log In", login_path, class: "wd-navbar__link" %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</nav>

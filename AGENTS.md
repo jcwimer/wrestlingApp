@@ -14,7 +14,8 @@
   - Currently, I'm using docker compose for production and kubernetes for my DR environment. You can see this in `ci_cd/Jenkinsfile` on the deploy-production stage.
 
 # Development
-- `BOOTSTRAP_TO_TAILWIND.md` documents the planned Bootstrap-to-Tailwind migration and visual parity checks; it does not describe an already completed migration.
+- `BOOTSTRAP_TO_TAILWIND.md` documents the Bootstrap-to-Tailwind migration; Tailwind CSS 4.3.3 is installed via `tailwindcss-rails` with prefixed utilities (`tw:`) while Bootstrap remains loaded for unmigrated pages.
+- Tailwind input is `app/assets/tailwind/application.css`; compiled output is `app/assets/builds/tailwind.css`. Run `bin/rails tailwindcss:build` before asset checks, or use `bin/dev` (Foreman) to run the Rails server and `tailwindcss:watch` together.
 - Rails is pinned to 8.1.3.1 in `Gemfile` and `Gemfile.lock`.
 - I use rbenv locally if that is not available use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
   - If the docker image doesn't exist, use the build command: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`

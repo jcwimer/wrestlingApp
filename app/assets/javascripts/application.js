@@ -24,6 +24,10 @@ import MatchScoreboardController from "controllers/match_scoreboard_controller";
 import MatStateController from "controllers/mat_state_controller";
 import MatchSpectateController from "controllers/match_spectate_controller";
 import UpMatchesConnectionController from "controllers/up_matches_connection_controller";
+import NavbarCollapseController from "controllers/navbar_collapse_controller";
+import DropdownController from "controllers/dropdown_controller";
+import DismissController from "controllers/dismiss_controller";
+import CollapseController from "controllers/collapse_controller";
 
 // Register controllers
 application.register("wrestler-color", WrestlerColorController);
@@ -34,6 +38,10 @@ application.register("match-scoreboard", MatchScoreboardController);
 application.register("mat-state", MatStateController);
 application.register("match-spectate", MatchSpectateController);
 application.register("up-matches-connection", UpMatchesConnectionController);
+application.register("navbar-collapse", NavbarCollapseController);
+application.register("dropdown", DropdownController);
+application.register("dismiss", DismissController);
+application.register("collapse", CollapseController);
 
 function cleanupWrestlingAppLocalStorage() {
   cleanupExpiredLocalStorage(window.localStorage);
