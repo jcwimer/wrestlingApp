@@ -128,15 +128,15 @@ class Mat < ApplicationRecord
 		matches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
 	end
 
-	def scoreboard_payload
-		selected_match = selected_scoreboard_match
+	def scoreboard_payload(selection: :read, last_match_result: :read)
+		selected_match = selected_scoreboard_match(selection:)
 		{
 			mat_id: id,
 			queue1_bout_number: queue1_match&.bout_number,
 			queue1_match_id: queue1_match&.id,
 			selected_bout_number: selected_match&.bout_number,
 			selected_match_id: selected_match&.id,
-			last_match_result: last_match_result_text
+			last_match_result: last_match_result_text(value: last_match_result)
 		}
 	end
 
@@ -168,8 +168,8 @@ class Mat < ApplicationRecord
 		update_scoreboard_state!(match: match, update_selection: true)
 	end
 
-	def selected_scoreboard_match
-		selection = Rails.cache.read(scoreboard_selection_cache_key)
+	def selected_scoreboard_match(selection: :read)
+		selection = Rails.cache.read(scoreboard_selection_cache_key) if selection == :read
 		return nil unless selection
 
 		match_id = selection[:match_id] || selection["match_id"]
@@ -184,8 +184,8 @@ class Mat < ApplicationRecord
 		update_scoreboard_state!(last_match_result: text, update_result: true)
 	end
 
-	def last_match_result_text
-		Rails.cache.read(last_match_result_cache_key)
+	def last_match_result_text(value: :read)
+		value == :read ? Rails.cache.read(last_match_result_cache_key) : value
 	end
 
 	def broadcast_legacy_mat_view
@@ -197,8 +197,8 @@ class Mat < ApplicationRecord
 		)
 	end
 
-	def broadcast_scoreboard_state
-		MatScoreboardChannel.broadcast_to(self, scoreboard_payload)
+	def broadcast_scoreboard_state(selection: :read, last_match_result: :read)
+		MatScoreboardChannel.broadcast_to(self, scoreboard_payload(selection:, last_match_result:))
 	end
 
 	def broadcast_current_match

@@ -77,14 +77,16 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
     get state_mat_path(@mat, bout_number: @match.bout_number)
 
     assert_enqueued_with(job: AdvanceWrestlerJob) do
-      patch match_path(@match), params: {
-        match: {
-          score: "3-1",
-          win_type: "Decision",
-          winner_id: @match.w1,
-          finished: 1
+      assert_enqueued_with(job: FillBoutBoardJob) do
+        patch match_path(@match), params: {
+          match: {
+            score: "3-1",
+            win_type: "Decision",
+            winner_id: @match.w1,
+            finished: 1
+          }
         }
-      }
+      end
     end
 
     follow_redirect!

@@ -1,4 +1,4 @@
-class CalculateSchoolScore
+class SchoolServices::CalculateSchoolScore
   def initialize(school)
     @school = school
   end
@@ -36,7 +36,7 @@ class CalculateSchoolScore
   end
 
   def total_points_scored_by_wrestlers(school)
-    school.wrestlers.sum { |wrestler| CalculateWrestlerTeamScore.new(wrestler).totalScore }
+    school.wrestlers.sum { |wrestler| WrestlerServices::CalculateWrestlerTeamScore.new(wrestler).totalScore }
   end
 
   def total_points_deducted(school)

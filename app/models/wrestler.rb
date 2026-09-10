@@ -10,7 +10,7 @@ class Wrestler < ApplicationRecord
 	has_many :matches_as_w2, class_name: 'Match', foreign_key: 'w2'
 	##
 	attr_accessor :poolAdvancePoints, :originalId, :swapId
-	
+
 	validates :name, :weight_id, :school_id, presence: true
 	after_commit :invalidate_cached_views, on: [:create, :update]
 
@@ -30,57 +30,57 @@ class Wrestler < ApplicationRecord
 	end
 
 	public
-		
+
 
 	def last_finished_match
 		all_matches.select{|m| m.finished == 1}.sort_by{|m| m.finished_at}.last
 	end
 
 	def total_team_points
-		CalculateWrestlerTeamScore.new(self).totalScore
+		WrestlerServices::CalculateWrestlerTeamScore.new(self).totalScore
 	end
-	
+
 	def team_points_earned
-		CalculateWrestlerTeamScore.new(self).earnedPoints
+		WrestlerServices::CalculateWrestlerTeamScore.new(self).earnedPoints
 	end
-	
+
 	def placement_points
-		CalculateWrestlerTeamScore.new(self).placement_points	
+		WrestlerServices::CalculateWrestlerTeamScore.new(self).placement_points
 	end
 
 	def total_points_deducted
-		CalculateWrestlerTeamScore.new(self).deductedPoints
+		WrestlerServices::CalculateWrestlerTeamScore.new(self).deductedPoints
 	end
 
 	def total_pool_points_for_pool_order
-      CalculateWrestlerTeamScore.new(self).poolPoints + CalculateWrestlerTeamScore.new(self).pool_bonus_points
+      WrestlerServices::CalculateWrestlerTeamScore.new(self).poolPoints + WrestlerServices::CalculateWrestlerTeamScore.new(self).pool_bonus_points
 	end
 
 	def unfinished_pool_matches
       unfinished_matches.select{|match| match.finished != 1}
 	end
-	
+
 	def next_match
 		unfinished_matches.first
 	end
-	
+
 	def next_match_position_number
 		pos = last_match.bracket_position_number
-		return (pos/2.0)	
+		return (pos/2.0)
 	end
-	
+
 	def last_match
 		finished_matches.sort_by{|m| m.round}.reverse.first
 	end
-	
+
 	def winner_of_last_match?
 		if last_match && last_match.winner == self # Keep winner association change
 			return true
-		else 
+		else
 			return false
 		end
 	end
-	
+
 	def next_match_bout_number
 		if next_match
 			next_match.bout_number
@@ -88,7 +88,7 @@ class Wrestler < ApplicationRecord
 			""
 		end
 	end
-	
+
 	def next_match_mat_name
 		if next_match
 			next_match.mat_assigned
@@ -100,7 +100,7 @@ class Wrestler < ApplicationRecord
 	def unfinished_matches
 		all_matches.select{|m| m.finished != 1}.sort_by{|m| m.bout_number}
 	end
-	
+
 	def result_by_bout(bout)
 	   bout_match_results = all_matches.select{|m| m.bout_number == bout and m.finished == 1}
 	   if bout_match_results.empty?
@@ -136,7 +136,7 @@ class Wrestler < ApplicationRecord
 			return false
 		else
 			# Original logic checked blank?, not specific round. Reverting to that.
-			return true 
+			return true
 		end
 	end
 
@@ -148,7 +148,7 @@ class Wrestler < ApplicationRecord
 			return round_match.bout_number
 		end
 	end
-	
+
 	def match_id_by_round(round)
 		round_match = all_matches.select{|m| m.round == round}.first
 		if round_match.blank?
@@ -160,12 +160,12 @@ class Wrestler < ApplicationRecord
 
 	# Restore all_matches method
 	def all_matches
-		# Combine the two specific associations. 
+		# Combine the two specific associations.
     # This returns an Array, similar to the previous select method.
     # Add .uniq for safety and sort for consistent order.
 		(matches_as_w1 + matches_as_w2).uniq.sort_by(&:bout_number)
 	end
-       
+
 	def pool_matches
 		all_matches.select{|m| m.bracket_position == "Pool"}
 	end
@@ -173,65 +173,65 @@ class Wrestler < ApplicationRecord
 	def has_a_pool_bye
 		# Revert back to using all_matches here too? Seems complex.
 		# Sticking with original: uses `matches` (all weight) and `pool_matches` (derived from all_matches)
-		if weight.pool_rounds(all_matches) > pool_matches.size 
+		if weight.pool_rounds(all_matches) > pool_matches.size
 			return true
 		else
 			return false
 		end
 	end
-	
+
 	def championship_advancement_wins
 		matches_won.select{|m| (m.bracket_position == "Quarter" or m.bracket_position == "Semis" or m.bracket_position.include? "Bracket") and m.win_type != "BYE"}
 	end
-	
+
 	def consolation_advancement_wins
 		matches_won.select{|m| (m.bracket_position.include? "Conso") and m.win_type != "BYE"}
 	end
-	
+
 	def championship_byes
 		matches_won.select{|m| (m.bracket_position == "Quarter" or m.bracket_position == "Semis" or m.bracket_position.include? "Bracket") and m.win_type == "BYE"}
 	end
-	
+
 	def consolation_byes
 		matches_won.select{|m| (m.bracket_position.include? "Conso") and m.win_type == "BYE"}
 	end
-	
+
 	def finished_matches
 		all_matches.select{|m| m.finished == 1}
 	end
 
 	def finished_bracket_matches
 		finished_matches.select{|m| m.bracket_position != "Pool"}
-	end	
+	end
 
 	def finished_pool_matches
 		finished_matches.select{|m| m.bracket_position == "Pool"}
 	end
-	
+
 	def matches_won
 		all_matches.select{|m| m.winner_id == id}
 	end
-	
+
 	def pool_wins
 		matches_won.select{|m| m.bracket_position == "Pool" and m.win_type != "BYE"}
 	end
-	
+
 	def pin_wins
 		matches_won.select{|m| m.win_type == "Pin" ||  m.win_type == "Forfeit" ||  m.win_type == "Injury Default" ||  m.win_type == "Default" ||  m.win_type == "DQ"}
 	end
-	
+
 	def tech_wins
 		matches_won.select{|m| m.win_type == "Tech Fall" }
 	end
-	
+
 	def major_wins
 		matches_won.select{|m| m.win_type == "Major" }
 	end
-	
+
 	def decision_wins
 		matches_won.select{|m| m.win_type == "Decision" }
 	end
-	
+
 	def decision_points_scored
 		points_scored = 0
 		decision_wins.each do |m|
@@ -246,7 +246,7 @@ class Wrestler < ApplicationRecord
 		end
 		points_scored
 	end
-	
+
 	def decision_points_scored_pool
 		points_scored = 0
 		decision_wins.select{|m| m.bracket_position == "Pool"}.each do |m|
@@ -261,11 +261,11 @@ class Wrestler < ApplicationRecord
 		end
 		points_scored
 	end
-	
+
 	def fastest_pin
 		pin_wins.sort_by{|m| m.pin_time_in_seconds}.first
 	end
-	
+
 	def fastest_pin_pool
 		pin_wins.select{|m| m.bracket_position == "Pool"}.sort_by{|m| m.pin_time_in_seconds}.first
 	end
@@ -277,7 +277,7 @@ class Wrestler < ApplicationRecord
       end
       time
 	end
-	
+
 	def pin_time_pool
       time = 0
       pin_wins.select{|m| m.bracket_position == "Pool"}.each do | m |
@@ -285,7 +285,7 @@ class Wrestler < ApplicationRecord
       end
       time
 	end
-	
+
 	def season_win_percentage
 		win = self.season_win.to_f
 		loss = self.season_loss.to_f
@@ -298,7 +298,7 @@ class Wrestler < ApplicationRecord
 				return percentage.to_i
 			else
 				# Avoid division by zero if somehow win > 0 but total <= 0
-				return 0 
+				return 0
 			end
 		elsif self.season_win == 0
 			return 0

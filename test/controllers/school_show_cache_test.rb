@@ -97,12 +97,14 @@ class SchoolShowCacheTest < ActionController::TestCase
 
     winner_id = match.w1 || match.w2
     assert winner_id, "Expected match to have at least one wrestler slot"
-    match.update!(
-      finished: 1,
-      winner_id: winner_id,
-      win_type: "Decision",
-      score: "1-0"
-    )
+    perform_enqueued_jobs do
+      match.update!(
+        finished: 1,
+        winner_id: winner_id,
+        win_type: "Decision",
+        score: "1-0"
+      )
+    end
 
     post_action_events = cache_events_for_school_show do
       get :show, params: { id: @school.id }
@@ -180,7 +182,7 @@ class SchoolShowCacheTest < ActionController::TestCase
 
   test "pool school roster and stats render with batched associations" do
     create_pool_tournament
-    GenerateTournamentMatches.new(@tournament).generate
+    generate_tournament_matches(@tournament)
     sign_out
     @tournament.schools.each do |school|
       get :show, params: { id: school.id }

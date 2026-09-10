@@ -5,8 +5,6 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery prepend: true, with: :exception
 
-  after_action :set_csrf_cookie_for_ng
-  
   # Add helpers for authentication (replacing Devise)
   helper_method :current_user, :user_signed_in?
   
@@ -22,10 +20,6 @@ class ApplicationController < ActionController::Base
     redirect_to login_path, alert: "Please log in to access this page" unless user_signed_in?
   end
   
-  def set_csrf_cookie_for_ng
-    cookies['XSRF-TOKEN'] = form_authenticity_token if protect_against_forgery?
-  end
-  
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to '/static_pages/not_allowed'
   end
@@ -34,11 +28,6 @@ class ApplicationController < ActionController::Base
 
   def detect_n_plus_one_queries(&block)
     Prosopite.scan(&block)
-  end
-
-  # In Rails 4.2 and above
-  def verified_request?
-    super || valid_authenticity_token?(session, request.headers['X-XSRF-TOKEN'])
   end
 
   # Override current_ability to pass school_permission_key

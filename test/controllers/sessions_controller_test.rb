@@ -32,14 +32,14 @@ class SessionsControllerTest < ActionController::TestCase
     post :create, params: { session: { email: 'wrong@example.com', password: 'password' } }
     assert_template 'new'
     assert_nil session[:user_id]
-    assert_select 'div.alert'
+    assert_select '#alert.wd-alert--danger', text: /Invalid email\/password combination/
   end
 
   test "should not create session with invalid password" do
     post :create, params: { session: { email: @user.email, password: 'wrongpassword' } }
     assert_template 'new'
     assert_nil session[:user_id]
-    assert_select 'div.alert'
+    assert_select '#alert.wd-alert--danger', text: /Invalid email\/password combination/
   end
 
   test "should destroy session" do
@@ -56,4 +56,4 @@ class SessionsControllerTest < ActionController::TestCase
     post :create, params: { session: { email: @user.email, password: 'password' } }
     assert_redirected_to root_path
   end
-end 
+end

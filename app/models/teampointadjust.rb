@@ -18,7 +18,7 @@ class Teampointadjust < ApplicationRecord
 
             #In case this affects pool order
             if wrestler.last_match
-                AdvanceWrestler.new(wrestler, wrestler.last_match).advance
+                BracketAdvancement::AdvanceWrestler.new(wrestler, wrestler.last_match).advance
             else
                 TournamentCacheInvalidator.wrestler_profiles([wrestler_id])
                 TournamentCacheInvalidator.wrestler_listings([wrestler_id])

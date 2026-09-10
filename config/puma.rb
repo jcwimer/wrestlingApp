@@ -55,9 +55,11 @@ worker_boot_timeout 60
 # Preload the application to reduce memory footprint in production
 preload_app! if ENV["RAILS_ENV"] == "production"
 
-# When using preload_app, ensure that connections are properly handled
-on_worker_boot do
-  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+# When using preload_app, disconnect inherited connections so each worker opens its own.
+before_worker_boot do
+  if defined?(ActiveRecord::Base)
+    ActiveRecord::Base.connection_handler.connection_pool_list.each(&:disconnect!)
+  end
 end
 
 # Log the configuration

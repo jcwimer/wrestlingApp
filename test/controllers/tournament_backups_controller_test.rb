@@ -6,7 +6,7 @@ class TournamentBackupsControllerTest < ActionController::TestCase
 
   setup do
     @tournament = Tournament.find(1)
-    TournamentBackupService.new(@tournament, 'Manual backup').create_backup
+    create_tournament_backup(@tournament, 'Manual backup')
     @backup = @tournament.tournament_backups.first
   end
 

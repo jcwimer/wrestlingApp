@@ -1,4 +1,4 @@
-class PoolAdvance
+class BracketAdvancement::PoolAdvance
 
  attr_reader :matches_to_advance
 

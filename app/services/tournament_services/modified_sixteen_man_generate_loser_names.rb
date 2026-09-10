@@ -1,4 +1,4 @@
-class ModifiedSixteenManGenerateLoserNames
+class TournamentServices::ModifiedSixteenManGenerateLoserNames
   def initialize(tournament)
     @tournament = tournament
   end

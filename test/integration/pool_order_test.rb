@@ -445,7 +445,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     # Setup
     Wrestler.find(translate_name_to_id("Test5")).destroy
     Wrestler.find(translate_name_to_id("Test6")).destroy
-    GenerateTournamentMatches.new(Wrestler.find(translate_name_to_id("Test1")).tournament).generate
+    generate_tournament_matches(Wrestler.find(translate_name_to_id("Test1")).tournament)
     weight = Wrestler.find(translate_name_to_id("Test1")).weight
     
     # Match results
@@ -475,7 +475,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     Wrestler.find(translate_name_to_id("Test4")).destroy
     Wrestler.find(translate_name_to_id("Test5")).destroy
     Wrestler.find(translate_name_to_id("Test6")).destroy
-    GenerateTournamentMatches.new(Wrestler.find(translate_name_to_id("Test1")).tournament).generate
+    generate_tournament_matches(Wrestler.find(translate_name_to_id("Test1")).tournament)
     weight = Wrestler.find(translate_name_to_id("Test1")).weight
     
     # Match results

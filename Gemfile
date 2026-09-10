@@ -36,9 +36,6 @@ gem 'jbuilder'
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', :group => :doc
 
-# Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-gem 'spring', :group => :development
-
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 
@@ -53,7 +50,6 @@ gem 'bcrypt', '~> 3.1.7'
 
 #Installed by me
 group :production do
-  gem 'rails_12factor'
   gem 'mysql2'
 end
 
@@ -76,7 +72,6 @@ gem 'solid_queue'
 gem 'solid_cable'
 gem 'puma'
 gem 'tzinfo-data'
-gem 'daemons'
 # Solid Queue UI
 gem "mission_control-jobs"
 
@@ -92,6 +87,7 @@ group :development, :test do
   gem 'mocha'
   gem 'pg_query'
   gem 'prosopite'
+  gem 'simplecov', require: false
   # rails-controller-testing is needed for assert_template
   gem 'rails-controller-testing'
 end

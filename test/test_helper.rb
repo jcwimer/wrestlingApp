@@ -1,8 +1,26 @@
+if ENV["COVERAGE"]
+  require "simplecov"
+  SimpleCov.start "rails" do
+    enable_coverage :branch
+    skip "/test/"
+    skip "/config/"
+    skip "/vendor/"
+  end
+end
+
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 
 class ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
+  self.test_order = :random
+
+  parallelize_setup do |worker|
+    SimpleCov.command_name "#{SimpleCov.command_name}-#{worker}" if defined?(SimpleCov)
+  end
+
   parallelize(workers: :number_of_processors)
   ActiveRecord::Migration.check_all_pending!
 
@@ -36,7 +54,25 @@ class ActiveSupport::TestCase
       @request.session[:user_id] = user.id
     end
   end
-  
+
+  def generate_tournament_matches(tournament)
+    perform_enqueued_jobs do
+      TournamentServices::GenerateTournamentMatches.new(tournament).generate
+    end
+  end
+
+  def create_tournament_backup(tournament, reason)
+    perform_enqueued_jobs do
+      TournamentServices::TournamentBackupService.new(tournament, reason).create_backup
+    end
+  end
+
+  def import_tournament_backup(tournament, backup)
+    perform_enqueued_jobs do
+      TournamentServices::WrestlingdevImporter.new(tournament, backup).import
+    end
+  end
+
   def create_a_tournament_with_single_weight(tournament_type, number_of_wrestlers)
     @tournament = Tournament.new
     @tournament.name = "Test Tournament"
@@ -78,7 +114,7 @@ class ActiveSupport::TestCase
     @weight.tournament_id = @tournament.id
     @weight.save
     create_wrestlers_for_weight(@weight, @school, number_of_wrestlers, 1)
-    GenerateTournamentMatches.new(@tournament).generate
+    generate_tournament_matches(@tournament)
     return @tournament
   end
 
@@ -101,7 +137,7 @@ class ActiveSupport::TestCase
     @weight.tournament_id = @tournament.id
     @weight.save
     create_wrestlers_for_weight_for_double_elim(@weight, @school, number_of_wrestlers, 1)
-    GenerateTournamentMatches.new(@tournament).generate
+    generate_tournament_matches(@tournament)
     return @tournament
   end
   
@@ -124,7 +160,7 @@ class ActiveSupport::TestCase
     @weight.tournament_id = @tournament.id
     @weight.save
     create_wrestlers_for_weight_for_double_elim(@weight, @school, number_of_wrestlers, 1)
-    GenerateTournamentMatches.new(@tournament).generate
+    generate_tournament_matches(@tournament)
     return @tournament
   end
 
@@ -161,7 +197,7 @@ class ActiveSupport::TestCase
       create_wrestlers_for_weight_for_double_elim(weight, @school, number_of_wrestlers, 1)
     end
 
-    GenerateTournamentMatches.new(@tournament).generate
+    generate_tournament_matches(@tournament)
     return @tournament
   end
 
@@ -249,7 +285,7 @@ class ActiveSupport::TestCase
     weight.save
     create_wrestlers_for_weight(weight, @tournament.schools.sample, 8, 69)
 
-    GenerateTournamentMatches.new(@tournament).generate
+    generate_tournament_matches(@tournament)
   end
 
   def team_point_adjusts_for_wrestler(wrestler_name, points)
@@ -325,8 +361,8 @@ class ActiveSupport::TestCase
   def save_match(match,winner)
     match.finished = 1
     match.winner_id = translate_name_to_id(winner)
-    
-    match.save!
+
+    perform_enqueued_jobs { match.save! }
   end
   
   def translate_name_to_id(wrestler)
@@ -342,16 +378,18 @@ class ActiveSupport::TestCase
   end
 
   def finish_matches_through_round(tournament, max_round)
-    tournament.matches.reload.select { |match| match.round && match.round <= max_round }.each do |match|
-      next if match.finished == 1
-      winner_id = match.w1 || match.w2
-      next unless winner_id
-      match.update!(
-        finished: 1,
-        winner_id: winner_id,
-        win_type: "Decision",
-        score: "1-0"
-      )
+    perform_enqueued_jobs do
+      tournament.matches.reload.select { |match| match.round && match.round <= max_round }.each do |match|
+        next if match.finished == 1
+        winner_id = match.w1 || match.w2
+        next unless winner_id
+        match.update!(
+          finished: 1,
+          winner_id: winner_id,
+          win_type: "Decision",
+          score: "1-0"
+        )
+      end
     end
   end
 

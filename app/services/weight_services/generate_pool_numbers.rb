@@ -1,4 +1,4 @@
-class GeneratePoolNumbers
+class WeightServices::GeneratePoolNumbers
 	def initialize( weight )
       @weight = weight
     end

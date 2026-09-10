@@ -1,4 +1,4 @@
-class GenerateTournamentMatches
+class TournamentServices::GenerateTournamentMatches
     def initialize( tournament )
       @tournament = tournament
     end
@@ -23,7 +23,7 @@ class GenerateTournamentMatches
     def standardStartingActions
         @tournament.curently_generating_matches = 1
         @tournament.save
-        WipeTournamentMatches.new(@tournament).setUpMatchGeneration
+        TournamentServices::WipeTournamentMatches.new(@tournament).setUpMatchGeneration
     end
 
     def preload_generation_context
@@ -37,19 +37,19 @@ class GenerateTournamentMatches
     end
 
     def seed_wrestlers_in_memory(generation_context)
-      TournamentSeeding.new(@tournament).set_seeds(weights: generation_context[:weights], persist: false)
+      TournamentServices::TournamentSeeding.new(@tournament).set_seeds(weights: generation_context[:weights], persist: false)
     end
 
     def build_match_rows(generation_context)
-      return PoolToBracketMatchGeneration.new(
+      return TournamentServices::PoolToBracketMatchGeneration.new(
         @tournament,
         weights: generation_context[:weights],
         wrestlers_by_weight_id: generation_context[:wrestlers_by_weight_id]
       ).generatePoolToBracketMatches if @tournament.tournament_type == "Pool to bracket"
 
-      return ModifiedSixteenManMatchGeneration.new(@tournament, weights: generation_context[:weights]).generate_matches if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
+      return TournamentServices::ModifiedSixteenManMatchGeneration.new(@tournament, weights: generation_context[:weights]).generate_matches if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
 
-      return DoubleEliminationMatchGeneration.new(@tournament, weights: generation_context[:weights]).generate_matches if @tournament.tournament_type.include? "Regular Double Elimination"
+      return TournamentServices::DoubleEliminationMatchGeneration.new(@tournament, weights: generation_context[:weights]).generate_matches if @tournament.tournament_type.include? "Regular Double Elimination"
 
       []
     end
@@ -128,23 +128,23 @@ class GenerateTournamentMatches
 
     def assign_loser_names_in_memory(generation_context, match_rows)
       if @tournament.tournament_type == "Pool to bracket"
-        service = PoolToBracketGenerateLoserNames.new(@tournament)
+        service = TournamentServices::PoolToBracketGenerateLoserNames.new(@tournament)
         generation_context[:weights].each { |weight| service.assign_loser_names_in_memory(weight, match_rows) }
       elsif @tournament.tournament_type.include?("Modified 16 Man Double Elimination")
-        service = ModifiedSixteenManGenerateLoserNames.new(@tournament)
+        service = TournamentServices::ModifiedSixteenManGenerateLoserNames.new(@tournament)
         generation_context[:weights].each { |weight| service.assign_loser_names_in_memory(weight, match_rows) }
       elsif @tournament.tournament_type.include?("Regular Double Elimination")
-        service = DoubleEliminationGenerateLoserNames.new(@tournament)
+        service = TournamentServices::DoubleEliminationGenerateLoserNames.new(@tournament)
         generation_context[:weights].each { |weight| service.assign_loser_names_in_memory(weight, match_rows) }
       end
     end
 
     def assign_bye_outcomes_in_memory(generation_context, match_rows)
       if @tournament.tournament_type.include?("Modified 16 Man Double Elimination")
-        service = ModifiedSixteenManGenerateLoserNames.new(@tournament)
+        service = TournamentServices::ModifiedSixteenManGenerateLoserNames.new(@tournament)
         generation_context[:weights].each { |weight| service.assign_bye_outcomes_in_memory(weight, match_rows) }
       elsif @tournament.tournament_type.include?("Regular Double Elimination")
-        service = DoubleEliminationGenerateLoserNames.new(@tournament)
+        service = TournamentServices::DoubleEliminationGenerateLoserNames.new(@tournament)
         generation_context[:weights].each { |weight| service.assign_bye_outcomes_in_memory(weight, match_rows) }
       end
     end
@@ -153,7 +153,10 @@ class GenerateTournamentMatches
       match_ids = Match.where(tournament_id: @tournament.id, finished: 1, win_type: "BYE")
                        .where.not(winner_id: nil)
                        .pluck(:id)
-      AdvanceWrestlerJob.perform_now(match_ids, @tournament.id) if match_ids.any?
+      if match_ids.any?
+        AdvanceWrestlerJob.perform_now(match_ids, @tournament.id)
+        FillBoutBoardJob.perform_now(@tournament.id)
+      end
     end
 
     def assignBouts

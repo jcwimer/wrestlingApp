@@ -93,8 +93,10 @@ Rails.application.configure do
   # Dump the schema after migrations
   config.active_record.dump_schema_after_migration = true
 
- # Nobuild in development
- config.assets.build_assets = false
+  config.secret_key_base = ENV.fetch(
+    "SECRET_KEY_BASE",
+    "077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e4463d851c444c10a5611829a2290b253da78339427f131571fac9a42c83d960b2d25ecc10a4a0a7ce1a2"
+  )
 
   MissionControl::Jobs.http_basic_auth_user = "dev"
   MissionControl::Jobs.http_basic_auth_password = "secret"

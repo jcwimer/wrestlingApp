@@ -5,11 +5,16 @@
   "engines": {
     "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
   },
+  "volta": {
+    "node": "24.21.0"
+  },
   "scripts": {
     "test:js": "vitest run",
+    "test:js:coverage": "vitest run --coverage",
     "test:js:watch": "vitest"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.0",
     "vitest": "^5.0.0"
   }
 }

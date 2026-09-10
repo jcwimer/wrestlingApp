@@ -48,7 +48,7 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", quarter)
     wrestle_other_match_in_round(round1, conso: false)
     winner_by_name("Test1", semi)
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
     assert wrestler_points_calc.byePoints == 2
   end
   
@@ -61,7 +61,7 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", quarter)
     wrestle_other_match_in_round(conso_r8_1, conso: true)
     winner_by_name("Test1", semi)
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
     assert wrestler_points_calc.byePoints == 1
   end
   
@@ -75,7 +75,7 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", quarter)
     winner_by_name_by_bye("Test1", semi)
     winner_by_name_by_bye("Test1", final)
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
     assert wrestler_points_calc.byePoints == 0
   end
   
@@ -89,7 +89,7 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", quarter)
     winner_by_name_by_bye("Test1", semi)
     winner_by_name_by_bye("Test1", final)
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
     assert wrestler_points_calc.byePoints == 0
   end
   
@@ -103,7 +103,7 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", quarter)
     winner_by_name_by_bye("Test1", semi)
     winner_by_name("Test1", final)
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
     assert wrestler_points_calc.byePoints == 0
   end
 
@@ -115,7 +115,7 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", round1)
     winner_by_name_by_bye("Test1", quarter)
     winner_by_name("Test1", semi)
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
     assert wrestler_points_calc.byePoints == 0
   end
   
@@ -129,7 +129,7 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", quarter)
     winner_by_name_by_bye("Test1", semi)
     winner_by_name("Test1", final)
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
     assert wrestler_points_calc.byePoints == 0
   end
 
@@ -143,7 +143,7 @@ class DoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
     winner_by_name_by_bye("Test1", quarter)
     winner_by_name_by_bye("Test1", semi)
     winner_by_name("Test1", final)
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
     assert wrestler_points_calc.byePoints == 0
   end
 end

@@ -10,7 +10,7 @@ class FixMatchWinner < ActionDispatch::IntegrationTest
         match.finished = 1
         match.win_type = "Decision"
         match.score = "1-0"
-        match.save
+        perform_enqueued_jobs { match.save }
     end
     
     test "changing a finished match winner corrects both bracket destinations without refinalizing" do

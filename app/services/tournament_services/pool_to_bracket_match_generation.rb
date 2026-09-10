@@ -1,32 +1,32 @@
-class PoolToBracketMatchGeneration
+class TournamentServices::PoolToBracketMatchGeneration
    def initialize(tournament, weights: nil, wrestlers_by_weight_id: nil)
       @tournament = tournament
       @weights = weights
       @wrestlers_by_weight_id = wrestlers_by_weight_id
     end
-	
+
 	def generatePoolToBracketMatches
         rows = []
         generation_weights.each do |weight|
           wrestlers = wrestlers_for_weight(weight)
-          pool_rows = PoolGeneration.new(weight, wrestlers: wrestlers).generatePools
+          pool_rows = TournamentServices::PoolGeneration.new(weight, wrestlers: wrestlers).generatePools
           rows.concat(pool_rows)
 
           highest_round = pool_rows.map { |row| row[:round] }.max || 0
-          bracket_rows = PoolBracketGeneration.new(weight, highest_round).generateBracketMatches
+          bracket_rows = TournamentServices::PoolBracketGeneration.new(weight, highest_round).generateBracketMatches
           rows.concat(bracket_rows)
         end
 
         movePoolSeedsToFinalPoolRound(rows)
         rows
     end
-    
+
     def movePoolSeedsToFinalPoolRound(match_rows)
 	    generation_weights.each do |w|
 	      setOriginalSeedsToWrestleLastPoolRound(w, match_rows)
 	    end
   	end
-    
+
     def setOriginalSeedsToWrestleLastPoolRound(weight, match_rows)
 		pool = 1
     wrestlers = wrestlers_for_weight(weight)
@@ -48,7 +48,7 @@ class PoolToBracketMatchGeneration
 			end
 		    pool += 1
 		end
-	end 
+	end
 
   def swap_wrestlers_in_memory(match_rows, wrestlers, wrestler1_id, wrestler2_id)
     w1 = wrestlers.find { |w| w.id == wrestler1_id }
@@ -68,7 +68,7 @@ class PoolToBracketMatchGeneration
       row[:w2] = swap_id(row[:w2], wrestler1_id, wrestler2_id)
       row[:winner_id] = swap_id(row[:winner_id], wrestler1_id, wrestler2_id)
     end
-  end 
+  end
 
   def swap_id(value, wrestler1_id, wrestler2_id)
     return wrestler2_id if value == wrestler1_id
@@ -86,7 +86,7 @@ class PoolToBracketMatchGeneration
   end
 
 	def assignLoserNames
-		PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNames	
+		TournamentServices::PoolToBracketGenerateLoserNames.new(@tournament).assignLoserNames
 	end
-	
+
 end

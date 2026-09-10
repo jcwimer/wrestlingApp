@@ -1,4 +1,4 @@
-class PlacementPoints
+class WrestlerServices::PlacementPoints
 	def initialize(number_of_placers)
 		@number_of_placers = number_of_placers
     end

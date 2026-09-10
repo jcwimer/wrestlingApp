@@ -1,4 +1,4 @@
-class ModifiedSixteenManMatchGeneration
+class TournamentServices::ModifiedSixteenManMatchGeneration
     def initialize( tournament, weights: nil )
       @tournament = tournament
       @number_of_placers = @tournament.number_of_placers

@@ -17,7 +17,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
   test "finished match explicitly deletes bracket stats and wrestler views and refreshes team scores" do
     seed_cache_entries
 
-    @match.update!(finished: 1, winner_id: @match.w1, win_type: "Decision", score: "1-0")
+    perform_enqueued_jobs { @match.update!(finished: 1, winner_id: @match.w1, win_type: "Decision", score: "1-0") }
 
     assert_brackets_deleted
     assert_school_stats_deleted
@@ -153,7 +153,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     @match.update_columns(finished: 1, winner_id: @match.w1, win_type: "Decision", score: "1-0")
     seed_cache_entries
 
-    AdvanceWrestler.new(@match.wrestler1, @match).advance_raw
+    BracketAdvancement::AdvanceWrestler.new(@match.wrestler1, @match).advance_raw
 
     assert_brackets_deleted
   end
@@ -161,7 +161,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
   test "match generation explicitly deletes all page domains after bulk persistence" do
     seed_cache_entries
 
-    GenerateTournamentMatches.new(@tournament).generate_raw
+    TournamentServices::GenerateTournamentMatches.new(@tournament).generate_raw
 
     assert_brackets_deleted
     assert_school_stats_deleted

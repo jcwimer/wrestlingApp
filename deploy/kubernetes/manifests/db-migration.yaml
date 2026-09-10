@@ -29,18 +29,11 @@ spec:
              key: dbpassword
         - name: WRESTLINGDEV_DB_PORT
           value: "3306"
-        - name: MEMCACHIER_SERVERS
-          value: wrestlingdev-memcached:11211
         - name: WRESTLINGDEV_DB_HOST
           valueFrom:
            secretKeyRef:
              name: wrestlingdev-secrets
              key: dbhost
-        - name: WRESTLINGDEV_DEVISE_SECRET_KEY
-          valueFrom:
-           secretKeyRef:
-             name: wrestlingdev-secrets
-             key: devisesecretkey
         - name: WRESTLINGDEV_SECRET_KEY_BASE
           valueFrom:
            secretKeyRef:

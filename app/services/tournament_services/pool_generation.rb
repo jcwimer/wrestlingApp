@@ -1,4 +1,4 @@
-class PoolGeneration
+class TournamentServices::PoolGeneration
 	def initialize(weight, wrestlers: nil)
 		@weight = weight
 		@tournament = @weight.tournament
@@ -7,7 +7,7 @@ class PoolGeneration
 	end
 
 	def generatePools
-		GeneratePoolNumbers.new(@weight).savePoolNumbers(wrestlers: wrestlers_for_weight, persist: false)
+		WeightServices::GeneratePoolNumbers.new(@weight).savePoolNumbers(wrestlers: wrestlers_for_weight, persist: false)
 		rows = []
 		pools = @weight.pools
 		while @pool <= pools

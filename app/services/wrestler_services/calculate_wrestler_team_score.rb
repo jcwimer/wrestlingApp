@@ -1,4 +1,4 @@
-class CalculateWrestlerTeamScore
+class WrestlerServices::CalculateWrestlerTeamScore
     def initialize( wrestler )
       @wrestler = wrestler
       @tournament = @wrestler.weight.tournament
@@ -25,9 +25,9 @@ class CalculateWrestlerTeamScore
     end
 
     def placement_points
-        return PoolBracketPlacementPoints.new(@wrestler).calcPoints if @tournament.tournament_type == "Pool to bracket"
-        return ModifiedSixteenManPlacementPoints.new(@wrestler).calc_points if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
-        return DoubleEliminationPlacementPoints.new(@wrestler).calc_points if @tournament.tournament_type.include? "Regular Double Elimination"
+        return WrestlerServices::PoolBracketPlacementPoints.new(@wrestler).calcPoints if @tournament.tournament_type == "Pool to bracket"
+        return WrestlerServices::ModifiedSixteenManPlacementPoints.new(@wrestler).calc_points if @tournament.tournament_type.include? "Modified 16 Man Double Elimination"
+        return WrestlerServices::DoubleEliminationPlacementPoints.new(@wrestler).calc_points if @tournament.tournament_type.include? "Regular Double Elimination"
         return 0
     end
 

@@ -22,7 +22,7 @@ class TournamentsController < ApplicationController
   def swap
     @wrestler = Wrestler.find(params[:wrestler][:originalId])
     respond_to do |format|
-      if SwapWrestlers.new.swap_wrestlers_bracket_lines(params[:wrestler][:originalId], params[:wrestler][:swapId])
+      if WrestlerServices::SwapWrestlers.new.swap_wrestlers_bracket_lines(params[:wrestler][:originalId], params[:wrestler][:swapId])
         format.html { redirect_to "/tournaments/#{@wrestler.tournament.id}/brackets/#{@wrestler.weight.id}", notice: 'Wrestlers successfully swapped.' }
         format.json { render action: 'show', status: :created, location: @wrestler }
       end
@@ -255,7 +255,7 @@ class TournamentsController < ApplicationController
   end
 
   def generate_matches
-    GenerateTournamentMatches.new(@tournament).generate
+    TournamentServices::GenerateTournamentMatches.new(@tournament).generate
   end
 
   def team_scores

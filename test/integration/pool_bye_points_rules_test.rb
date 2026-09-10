@@ -18,7 +18,7 @@ class PoolByePointsRulesTest < ActionDispatch::IntegrationTest
     wrestler = @tournament.weights.first.wrestlers.first
     finish_pool_match_for_wrestler(wrestler)
 
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(wrestler)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(wrestler)
     assert_equal 0, wrestler_points_calc.byePoints
   end
 
@@ -27,7 +27,7 @@ class PoolByePointsRulesTest < ActionDispatch::IntegrationTest
     wrestler = @tournament.weights.first.wrestlers.first
     finish_pool_match_for_wrestler(wrestler)
 
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(wrestler)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(wrestler)
     assert_equal 0, wrestler_points_calc.byePoints
   end
 
@@ -40,7 +40,7 @@ class PoolByePointsRulesTest < ActionDispatch::IntegrationTest
     finish_pool_match_for_wrestler(wrestler)
     finish_pool_match_for_wrestler(wrestler)
 
-    wrestler_points_calc = CalculateWrestlerTeamScore.new(wrestler)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(wrestler)
     assert_equal 2, wrestler_points_calc.byePoints
   end
 end

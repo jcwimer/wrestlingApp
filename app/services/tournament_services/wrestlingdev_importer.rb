@@ -1,4 +1,4 @@
-class WrestlingdevImporter
+class TournamentServices::WrestlingdevImporter
   ##### Note, the json contains id's for each row in the tables as well as its associations
   ##### this ignores those ids and uses this tournament id and then looks up associations based on name
   ##### and this tournament id
@@ -31,18 +31,20 @@ class WrestlingdevImporter
   end
 
   def destroy_all
-    # These depend directly on @tournament and will cascade deletes
-    # due to `dependent: :destroy` in the Tournament model
-    @tournament.schools.destroy_all # Cascades to Wrestlers, Teampointadjusts, SchoolDelegates
-    @tournament.weights.destroy_all # Cascades to Wrestlers, Matches
-    @tournament.mats.destroy_all    # Cascades to Matches, MatAssignmentRules
-    # Explicitly destroy matches again just in case some aren't linked via mats/weights? Unlikely but safe.
-    # Also handles matches linked directly to tournament if that's possible.
-    @tournament.matches.destroy_all
-    @tournament.mat_assignment_rules.destroy_all # Explicitly destroy rules (might be redundant if Mat cascades)
-    @tournament.delegates.destroy_all
-    @tournament.tournament_job_statuses.destroy_all
-    # Note: Teampointadjusts are deleted via School/Wrestler cascade
+    weight_ids = @tournament.weights.select(:id)
+    school_ids = @tournament.schools.select(:id)
+    wrestler_ids = Wrestler.where(weight_id: weight_ids).select(:id)
+
+    Match.where(tournament_id: @tournament.id).delete_all
+    Teampointadjust.where(wrestler_id: wrestler_ids).or(Teampointadjust.where(school_id: school_ids)).delete_all
+    Wrestler.where(id: wrestler_ids).delete_all
+    SchoolDelegate.where(school_id: school_ids).delete_all
+    MatAssignmentRule.where(tournament_id: @tournament.id).delete_all
+    @tournament.delegates.delete_all
+    @tournament.tournament_job_statuses.delete_all
+    @tournament.mats.delete_all
+    @tournament.weights.delete_all
+    @tournament.schools.delete_all
   end
 
   def parse_data
@@ -54,6 +56,7 @@ class WrestlingdevImporter
     parse_matches(@import_data["tournament"]["matches"])
     apply_mat_queues
     parse_mat_assignment_rules(@import_data["tournament"]["mat_assignment_rules"])
+    TournamentCacheInvalidator.generation_completed(@tournament.id)
   end
 
   def parse_tournament(attributes)
@@ -66,39 +69,44 @@ class WrestlingdevImporter
       school_attributes.except!("id")
       School.create(school_attributes.merge(tournament_id: @tournament.id))
     end
+    @schools_by_name = School.where(tournament_id: @tournament.id).index_by(&:name)
   end
 
   def parse_weights(weights)
-    weights.each do |weight_attributes|
+    rows = weights.map do |weight_attributes|
       weight_attributes.except!("id")
-      Weight.create(weight_attributes.merge(tournament_id: @tournament.id))
+      weight_attributes.merge(tournament_id: @tournament.id)
     end
+    Weight.insert_all!(rows) if rows.any?
+    @weights_by_max = Weight.where(tournament_id: @tournament.id).index_by { |weight| weight.max.to_f }
   end
 
   def parse_mats(mats)
     @mat_queue_bout_numbers = {}
-    mats.each do |mat_attributes|
+    rows = mats.map do |mat_attributes|
       mat_name = mat_attributes["name"]
       queue_bout_numbers = mat_attributes["queue_bout_numbers"]
       mat_attributes.except!("id", "queue1", "queue2", "queue3", "queue4", "queue_bout_numbers", "tournament_id")
-      Mat.create(mat_attributes.merge(tournament_id: @tournament.id))
       if mat_name && queue_bout_numbers
         @mat_queue_bout_numbers[mat_name] = queue_bout_numbers
       end
+      mat_attributes.merge(tournament_id: @tournament.id)
     end
+    Mat.insert_all!(rows) if rows.any?
+    @mats_by_name = Mat.where(tournament_id: @tournament.id).index_by(&:name)
   end
 
   def parse_mat_assignment_rules(mat_assignment_rules)
     mat_assignment_rules.each do |rule_attributes|
       mat_name = rule_attributes.dig("mat", "name")
-      mat = Mat.find_by(name: mat_name, tournament_id: @tournament.id)
+      mat = @mats_by_name[mat_name]
   
       # Prefer the new "weight_class_maxes" key emitted by backups (human-readable
       # max values). If not present, fall back to the legacy "weight_classes"
       # value which may be a comma-separated string or an array of IDs.
       if rule_attributes.key?("weight_class_maxes") && rule_attributes["weight_class_maxes"].respond_to?(:map)
         new_weight_classes = rule_attributes["weight_class_maxes"].map do |max_value|
-          Weight.find_by(max: max_value, tournament_id: @tournament.id)&.id
+          @weights_by_max[max_value.to_f]&.id
         end.compact
       elsif rule_attributes["weight_classes"].is_a?(Array)
         # Already an array of IDs
@@ -130,46 +138,50 @@ class WrestlingdevImporter
   end
 
   def parse_wrestlers(wrestlers)
-    wrestlers.each do |wrestler_attributes|
-      school = School.find_by(name: wrestler_attributes["school"]["name"], tournament_id: @tournament.id)
-      weight = Weight.find_by(max: wrestler_attributes["weight"]["max"], tournament_id: @tournament.id)
+    rows = wrestlers.map do |wrestler_attributes|
+      school = @schools_by_name[wrestler_attributes["school"]["name"]]
+      weight = @weights_by_max[wrestler_attributes["weight"]["max"].to_f]
       wrestler_attributes.except!("id", "school", "weight")
-      Wrestler.create(wrestler_attributes.merge(
+      wrestler_attributes.merge(
         school_id: school&.id,
         weight_id: weight&.id
-      ))
+      )
     end
+    Wrestler.insert_all!(rows) if rows.any?
+    @wrestlers_by_weight_and_name = Wrestler.where(weight_id: @weights_by_max.values.map(&:id)).index_by { |wrestler| [wrestler.weight_id, wrestler.name] }
   end
 
   def parse_matches(matches)
-    matches.each do |match_attributes|
+    rows = matches.filter_map do |match_attributes|
       next unless match_attributes # Skip if match_attributes is nil
 
-      weight = Weight.find_by(max: match_attributes.dig("weight", "max"), tournament_id: @tournament.id)
-      mat = Mat.find_by(name: match_attributes.dig("mat", "name"), tournament_id: @tournament.id)
+      weight = @weights_by_max[match_attributes.dig("weight", "max").to_f]
+      mat = @mats_by_name[match_attributes.dig("mat", "name")]
 
-      w1 = Wrestler.find_by(name: match_attributes["w1_name"], weight_id: weight&.id) if match_attributes["w1_name"]
-      w2 = Wrestler.find_by(name: match_attributes["w2_name"], weight_id: weight&.id) if match_attributes["w2_name"]
-      winner = Wrestler.find_by(name: match_attributes["winner_name"], weight_id: weight&.id) if match_attributes["winner_name"]
+      w1 = @wrestlers_by_weight_and_name[[weight&.id, match_attributes["w1_name"]]] if match_attributes["w1_name"]
+      w2 = @wrestlers_by_weight_and_name[[weight&.id, match_attributes["w2_name"]]] if match_attributes["w2_name"]
+      winner = @wrestlers_by_weight_and_name[[weight&.id, match_attributes["winner_name"]]] if match_attributes["winner_name"]
 
       match_attributes.except!("id", "weight", "mat", "w1_name", "w2_name", "winner_name", "tournament_id")
 
-      Match.create(match_attributes.merge(
+      match_attributes.merge(
         tournament_id: @tournament.id,
         weight_id: weight&.id,
         mat_id: mat&.id,
         w1: w1&.id,
         w2: w2&.id,
         winner_id: winner&.id
-      ))
+      )
     end
+    Match.insert_all!(rows) if rows.any?
+    @matches_by_bout_number = Match.where(tournament_id: @tournament.id).index_by(&:bout_number)
   end
 
   def apply_mat_queues
     if @mat_queue_bout_numbers.blank?
       Mat.where(tournament_id: @tournament.id).find_each do |mat|
         match_ids = mat.matches.where(finished: [nil, 0]).order(:bout_number).limit(4).pluck(:id)
-        mat.update(
+        mat.update_columns(
           queue1: match_ids[0],
           queue2: match_ids[1],
           queue3: match_ids[2],
@@ -180,14 +192,14 @@ class WrestlingdevImporter
     end
 
     @mat_queue_bout_numbers.each do |mat_name, bout_numbers|
-      mat = Mat.find_by(name: mat_name, tournament_id: @tournament.id)
+      mat = @mats_by_name[mat_name]
       next unless mat
 
       matches = Array(bout_numbers).map do |bout_number|
-        Match.find_by(bout_number: bout_number, tournament_id: @tournament.id)
+        @matches_by_bout_number[bout_number]
       end
 
-      mat.update(
+      mat.update_columns(
         queue1: matches[0]&.id,
         queue2: matches[1]&.id,
         queue3: matches[2]&.id,
@@ -203,7 +215,7 @@ class WrestlingdevImporter
        .where(queue1: nil, queue2: nil, queue3: nil, queue4: nil)
        .find_each do |mat|
       match_ids = mat.matches.where(finished: [nil, 0]).order(:bout_number).limit(4).pluck(:id)
-      mat.update(
+      mat.update_columns(
         queue1: match_ids[0],
         queue2: match_ids[1],
         queue3: match_ids[2],

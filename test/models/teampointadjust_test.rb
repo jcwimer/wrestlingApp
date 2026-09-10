@@ -30,9 +30,11 @@ class TeampointadjustTest < ActiveSupport::TestCase
     )
     Rails.cache.write(summary_key, "cached")
 
-    Teampointadjust.transaction do
-      Teampointadjust.create!(school: school, points: 1)
-      assert Rails.cache.exist?(summary_key)
+    perform_enqueued_jobs do
+      Teampointadjust.transaction do
+        Teampointadjust.create!(school: school, points: 1)
+        assert Rails.cache.exist?(summary_key)
+      end
     end
 
     assert_not Rails.cache.exist?(summary_key)

@@ -1,4 +1,4 @@
-class PoolOrder
+class BracketAdvancement::PoolOrder
 	def initialize(wrestlers)
 		@wrestlers = wrestlers
 	end

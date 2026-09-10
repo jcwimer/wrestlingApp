@@ -7,7 +7,7 @@ class CalculateTournamentTeamScoresJob < ApplicationJob
       { schools: :deductedPoints },
       weights: [
         :matches,
-        { wrestlers: [:deductedPoints, :matches_as_w1, :matches_as_w2] }
+        { wrestlers: [:deductedPoints, :matches_as_w1, :matches_as_w2, { weight: :tournament }] }
       ]
     ).find(tournament_id)
     wrestlers_by_school = tournament.weights.flat_map(&:wrestlers).group_by(&:school_id)

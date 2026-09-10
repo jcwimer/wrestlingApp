@@ -10,7 +10,7 @@ class DoubleEliminationAutoByes < ActionDispatch::IntegrationTest
     match.finished = 1
     match.win_type = "Decision"
     match.score = "0-0"
-    match.save
+    perform_enqueued_jobs { match.save }
   end
 
   test "8 man double elimination bracket with only 6 guys deletes one guy and auto advances byes and matches with a bye never get assigned to a mat" do
@@ -18,7 +18,7 @@ class DoubleEliminationAutoByes < ActionDispatch::IntegrationTest
     mat = Mat.create!(name: "Mat 1", tournament_id: @tournament.id)
     test3_wrestler = @tournament.weights.first.wrestlers.select{|w| w.name == "Test6"}.first.destroy
 
-    GenerateTournamentMatches.new(@tournament.reload).generate
+    generate_tournament_matches(@tournament.reload)
     matches = @tournament.matches.reload
 
     round1 = matches.select{|m| m.round == 1}

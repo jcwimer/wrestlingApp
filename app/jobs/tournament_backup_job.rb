@@ -17,7 +17,7 @@ class TournamentBackupJob < ApplicationJob
     
     begin
       # Execute the backup
-      service = TournamentBackupService.new(tournament, reason)
+      service = TournamentServices::TournamentBackupService.new(tournament, reason)
       service.create_backup_raw
       
       # Remove the job status record on success

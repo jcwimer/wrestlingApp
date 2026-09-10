@@ -1,4 +1,4 @@
-class TournamentSeeding
+class TournamentServices::TournamentSeeding
     def initialize( tournament )
       @tournament = tournament
     end

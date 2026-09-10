@@ -22,20 +22,27 @@ default: &default
   prepared_statements: false
 
 development:
-  primary:
+  primary: &development_sqlite
     <<: *default
+    timeout: 30000
+    pragmas:
+      journal_mode: wal
+      synchronous: normal
+      temp_store: memory
+      cache_size: -8000
+      locking_mode: normal
     database: storage/development.sqlite3
     migrations_paths: db/migrate
   queue:
-    <<: *default
+    <<: *development_sqlite
     database: storage/development-queue.sqlite3
     migrations_paths: db/queue/migrate
   cache:
-    <<: *default
+    <<: *development_sqlite
     database: storage/development-cache.sqlite3
     migrations_paths: db/cache/migrate
   cable:
-    <<: *default
+    <<: *development_sqlite
     database: storage/development-cable.sqlite3
     migrations_paths: db/cable/migrate
 

@@ -44,14 +44,6 @@ module Wrestling
     # config.middleware.use Rack::Deflater # Temporarily commented out for debugging asset 404s
     
     config.active_job.queue_adapter = :solid_queue
-    
-    # Add all folders under app/services to the autoload paths
-    config.autoload_paths += Dir[Rails.root.join('app', 'services', '**', '*')]
-    # config.add_autoload_paths_to_load_path = false
-
-    # Set cache format version to a value supported by Rails 8.0
-    # Valid values are 7.0 or 7.1
-    config.active_support.cache_format_version = 7.1
 
     config.load_defaults 8.1
   end

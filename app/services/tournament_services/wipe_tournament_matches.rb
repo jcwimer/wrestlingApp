@@ -1,4 +1,4 @@
-class WipeTournamentMatches
+class TournamentServices::WipeTournamentMatches
     
     def initialize( tournament )
       @tournament = tournament

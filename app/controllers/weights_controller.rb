@@ -87,7 +87,7 @@ class WeightsController < ApplicationController
   def pool_order
     pool = params[:pool_to_order].to_i
     if @weight.all_pool_matches_finished(pool)
-      PoolOrder.new(@weight.wrestlers_in_pool(pool)).getPoolOrder
+      BracketAdvancement::PoolOrder.new(@weight.wrestlers_in_pool(pool)).getPoolOrder
       respond_to do |format|
         format.html { redirect_to @tournament, notice: "Pool #{pool} placing is updating for weight class #{@weight.max}." }
       end

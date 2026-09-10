@@ -13,7 +13,7 @@ class BoutBoardTest < ActionDispatch::IntegrationTest
 
     assert_empty mat.queue_match_ids.compact, "No matches should be assigned when w1 is missing"
 
-    GenerateTournamentMatches.new(@tournament).generate
+    generate_tournament_matches(@tournament)
     @tournament.reload
     @tournament.matches.reload
 
@@ -38,7 +38,7 @@ class BoutBoardTest < ActionDispatch::IntegrationTest
 
     assert_empty mat.queue_match_ids.compact, "No matches should be assigned when loser1_name is BYE"
 
-    GenerateTournamentMatches.new(@tournament).generate
+    generate_tournament_matches(@tournament)
     @tournament.reload
     @tournament.matches.reload
 
@@ -185,12 +185,14 @@ class BoutBoardTest < ActionDispatch::IntegrationTest
       next_match = next_queued_finishable_match(@tournament)
       break unless next_match
 
-      next_match.update!(
-        winner_id: next_match.w1,
-        win_type: "Decision",
-        score: "1-0",
-        finished: 1
-      )
+      perform_enqueued_jobs do
+        next_match.update!(
+          winner_id: next_match.w1,
+          win_type: "Decision",
+          score: "1-0",
+          finished: 1
+        )
+      end
 
       assert_nil next_match.reload.mat_id, "The match should have a null mat_id after it is finished"
 

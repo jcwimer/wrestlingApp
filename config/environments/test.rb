@@ -63,8 +63,10 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
-  # Set test order to random as in previous configuration
-  config.active_support.test_order = :random
+  config.secret_key_base = ENV.fetch(
+    "SECRET_KEY_BASE",
+    "077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e4463d851c444c10a5611829a2290b253da78339427f131571fac9a42c83d960b2d25ecc10a4a0a7ce1a2"
+  )
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true

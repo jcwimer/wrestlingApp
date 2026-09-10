@@ -65,9 +65,33 @@ class MatQueueOperation
     changed || finished_match.nil?
   end
 
+  def promote_after_queue1_finish!(mat, finished_match)
+    mutate([mat.id], broadcast_changes: false) do |mats|
+      locked_mat = mats.first
+      collapse(locked_mat, finished_match.id)
+      set_match_mat(finished_match.id, nil)
+    end
+  end
+
   def refill(invalidate_cached_views: true, deferred_wrestler_ids: nil)
     mat_ids = @tournament.mats.pluck(:id)
     mutate(mat_ids, invalidate_cached_views:, deferred_wrestler_ids:) { |mats| fill(mats) }
+  end
+
+  def refresh_bout_board!(invalidate_cached_views: true, deferred_wrestler_ids: nil)
+    mat_ids = @tournament.mats.pluck(:id)
+    mutate(mat_ids, invalidate_cached_views:, deferred_wrestler_ids:) do |mats|
+      finished_ids = Match.where(id: mats.flat_map(&:queue_match_ids).compact, finished: 1).pluck(:id)
+      mats.each do |mat|
+        mat.queue_match_ids.compact.each do |match_id|
+          next unless finished_ids.include?(match_id)
+
+          collapse(mat, match_id)
+          set_match_mat(match_id, nil)
+        end
+      end
+      fill(mats)
+    end
   end
 
   def reset_and_fill
@@ -81,7 +105,7 @@ class MatQueueOperation
 
   private
 
-  def mutate(mat_ids, invalidate_cached_views: true, deferred_wrestler_ids: nil)
+  def mutate(mat_ids, invalidate_cached_views: true, deferred_wrestler_ids: nil, broadcast_changes: true)
     return true if mat_ids.empty?
 
     affected_mats = []
@@ -89,10 +113,10 @@ class MatQueueOperation
     changed_mats = []
     Mat.transaction do
       affected_mats = Mat.where(id: mat_ids).order(:id).lock.to_a
+      ActiveRecord::Associations::Preloader.new(records: affected_mats, associations: :mat_assignment_rules).call
       before_queues = affected_mats.to_h { |mat| [mat.id, mat.queue_match_ids] }
       before_locations = queue_locations(affected_mats)
       yield affected_mats
-      affected_mats.each(&:reload)
       changed_mats = affected_mats.select { |mat| before_queues[mat.id] != mat.queue_match_ids }
       after_locations = queue_locations(affected_mats)
       moved_match_ids = (before_locations.keys | after_locations.keys).select do |match_id|
@@ -102,12 +126,21 @@ class MatQueueOperation
     end
     deferred_wrestler_ids&.merge(wrestler_ids)
 
+    return true unless broadcast_changes
+
     ActiveRecord.after_all_transactions_commit do
       TournamentCacheInvalidator.wrestler_listings(wrestler_ids) if invalidate_cached_views
-      changed_mats.each do |mat|
-        mat.reload
+      mats_for_broadcast = Mat.where(id: changed_mats.map(&:id)).order(:id).to_a
+      preload_broadcast_matches(mats_for_broadcast)
+      scoreboard_cache_values = Rails.cache.read_multi(*mats_for_broadcast.flat_map { |mat|
+        [mat.scoreboard_selection_cache_key, mat.last_match_result_cache_key]
+      })
+      mats_for_broadcast.each do |mat|
         mat.broadcast_legacy_mat_view
-        mat.broadcast_scoreboard_state
+        mat.broadcast_scoreboard_state(
+          selection: scoreboard_cache_values[mat.scoreboard_selection_cache_key],
+          last_match_result: scoreboard_cache_values[mat.last_match_result_cache_key]
+        )
       end
       Tournament.broadcast_up_matches_board(@tournament.id) if changed_mats.any?
     end
@@ -135,7 +168,7 @@ class MatQueueOperation
     mat.update_columns(
       queue1: queue[0], queue2: queue[1], queue3: queue[2], queue4: queue[3], updated_at: Time.current
     )
-    mat.reload
+    Mat::QUEUE_SLOTS.zip(queue).each { |slot, match_id| mat.public_send("#{slot}=", match_id) }
   end
 
   def set_match_mat(match_id, mat_id)
@@ -160,5 +193,15 @@ class MatQueueOperation
       end
     end
     changed
+  end
+
+  def preload_broadcast_matches(mats)
+    match_ids = mats.flat_map(&:queue_match_ids).compact.uniq
+    matches_by_id = Match.where(id: match_ids).includes(
+      :tournament,
+      { wrestler1: [:school, :matches_as_w1, :matches_as_w2] },
+      { wrestler2: [:school, :matches_as_w1, :matches_as_w2] }
+    ).index_by(&:id)
+    mats.each { |mat| mat.preload_queue_matches(matches_by_id) }
   end
 end

@@ -111,29 +111,44 @@
 		wrestler_name_number += number_of_wrestlers
 	end
 	
-	# Regular Double Elimination 1-8
-	tournament = Tournament.create(id: 204, name: 'Regular Double Elimination 1-8', address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-8', user_id: 1, date: future_date, is_public: true)
-	create_schools(tournament, 64)
-	weight_classes=Weight::HS_WEIGHT_CLASSES.split(",")
-	tournament.create_pre_defined_weights(weight_classes)
-	wrestler_name_number = 1
-	tournament.weights.each_with_index do |weight, index|
-		if index == 0
-		  number_of_wrestlers = 4
-		elsif index == 1
-		  number_of_wrestlers = 8
-		elsif index == 2
-			number_of_wrestlers = 32
-		elsif index == 3
-			number_of_wrestlers = 17
-		elsif index == 4
-			number_of_wrestlers = 62
-		else
-		  number_of_wrestlers = 16
-		end
-		
-		create_wrestlers_for_weight(weight, tournament, number_of_wrestlers, wrestler_name_number)
-		wrestler_name_number += number_of_wrestlers
+	def create_regular_double_elimination_1_8_tournament(id:, name:, date: 1.month.from_now.to_date)
+	  tournament = Tournament.create(id: id, name: name, address: 'some place', director: 'some guy', director_email: 'their@email.com', tournament_type: 'Regular Double Elimination 1-8', user_id: 1, date: date, is_public: true)
+	  create_schools(tournament, 64)
+	  weight_classes = Weight::HS_WEIGHT_CLASSES.split(",")
+	  tournament.create_pre_defined_weights(weight_classes)
+	  wrestler_name_number = 1
+	  tournament.weights.each_with_index do |weight, index|
+	    if index == 0
+	      number_of_wrestlers = 4
+	    elsif index == 1
+	      number_of_wrestlers = 8
+	    elsif index == 2
+	      number_of_wrestlers = 32
+	    elsif index == 3
+	      number_of_wrestlers = 17
+	    elsif index == 4
+	      number_of_wrestlers = 62
+	    else
+	      number_of_wrestlers = 16
+	    end
+
+	    create_wrestlers_for_weight(weight, tournament, number_of_wrestlers, wrestler_name_number)
+	    wrestler_name_number += number_of_wrestlers
+	  end
+	  tournament
+	end
+
+	def create_load_test_mats(tournament)
+	  (1..5).each do |number|
+	    Mat.create!(name: "Load Test #{number}", tournament_id: tournament.id)
+	  end
+	end
+
+	create_regular_double_elimination_1_8_tournament(id: 204, name: 'Regular Double Elimination 1-8', date: future_date)
+
+	(1..10).each do |number|
+	  tournament = create_regular_double_elimination_1_8_tournament(id: 204 + number, name: "Load Test Tournament #{number}", date: future_date)
+	  create_load_test_mats(tournament)
 	end
 #end
 

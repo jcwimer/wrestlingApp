@@ -14,7 +14,7 @@ class RandomSeedingTest < ActionDispatch::IntegrationTest
       wrestler.bracket_line = nil
       wrestler.save
     end
-    GenerateTournamentMatches.new(tournament).generate
+    generate_tournament_matches(tournament)
   end
 
   test "There are no double byes in a double elimination tournament round 1" do

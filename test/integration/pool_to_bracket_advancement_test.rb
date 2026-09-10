@@ -18,7 +18,7 @@ class PoolToBracketAdvancementTest < ActionDispatch::IntegrationTest
       match.finished = 1
       match.win_type = "Decision"
       match.score = "2-1"
-      match.save
+      perform_enqueued_jobs { match.save }
     end
   end
 

@@ -1,4 +1,4 @@
-class DoubleEliminationMatchGeneration
+class TournamentServices::DoubleEliminationMatchGeneration
   def initialize(tournament, weights: nil)
     @tournament = tournament
     @weights = weights

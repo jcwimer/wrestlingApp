@@ -1,5 +1,5 @@
 class ApplicationJob < ActiveJob::Base
-  around_perform :pause_request_query_scan unless Rails.env.production?
+  around_perform :detect_n_plus_one_queries unless Rails.env.production?
 
   # Automatically retry jobs that encountered a deadlock
   # retry_on ActiveRecord::Deadlocked
@@ -9,9 +9,9 @@ class ApplicationJob < ActiveJob::Base
 
   private
 
-  def pause_request_query_scan(&block)
-    return block.call unless Prosopite.scan?
+  def detect_n_plus_one_queries(&block)
+    return Prosopite.pause(&block) if Prosopite.scan?
 
-    Prosopite.pause(&block)
+    Prosopite.scan(&block)
   end
 end

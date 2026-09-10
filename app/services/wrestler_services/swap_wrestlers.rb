@@ -1,4 +1,4 @@
-class SwapWrestlers
+class WrestlerServices::SwapWrestlers
     attr_accessor :wrestler1_id, :wrestler2_id
 
     

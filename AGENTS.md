@@ -1,63 +1,30 @@
-# Deployment
-
-- The only rails envs I use are TEST DEVELOPMENT and PRODUCTION.
-  - test is obviously to run tests locally and uses sqlite
-  - development is for running the application locally and uses sqlite
-  - production is for all of my SDLC environments and uses mariadb
-    - this is to make sure my dev environment and production environments are the same
-    - I utilize docker images for my dev and production environments you can see these in `deploy/`
-    - I often test this setup locally too with `deploy/deploy-test.sh`
-- My SDLC is as follows:
-  - I develop on the development branch
-  - When things are pushed to the branch, I run all tests and run `deploy/deploy-test.sh` on my dev server
-  - To release to production, I rebase development with master to make sure everything is good to go. Then I merge the development branch with master and push to master.
-  - Currently, I'm using docker compose for production and kubernetes for my DR environment. You can see this in `ci_cd/Jenkinsfile` on the deploy-production stage.
-
 # Development
-- `BOOTSTRAP_TO_TAILWIND.md` documents the Bootstrap-to-Tailwind migration; Tailwind CSS 4.3.3 is installed via `tailwindcss-rails` with prefixed utilities (`tw:`) while Bootstrap remains loaded for unmigrated pages.
-- Tailwind input is `app/assets/tailwind/application.css`; compiled output is `app/assets/builds/tailwind.css`. Run `bin/rails tailwindcss:build` before asset checks, or use `bin/dev` (Foreman) to run the Rails server and `tailwindcss:watch` together.
-- Rails is pinned to 8.1.3.1 in `Gemfile` and `Gemfile.lock`.
 - I use rbenv locally if that is not available use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
   - If the docker image doesn't exist, use the build command: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
-  - If the Gemfile changes, you need to rebuild the docker image: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
 - Do not add unnecessary comments to the code where you remove things.
-- Write as little code as possible. I do not want crazy non standard rails implementations.
-- This project is using propshaft and importmap.
-- Stimulus is used for javascript.
-- javascript tests are through vitest. See `vitest.config.js`. Run `npm run test:js`
-- Vitest 5 requires Node.js 22.12+, 24, or 26+; both Rails Docker images use Node.js 24 from the official Node image.
-- Load-test Playwright is pinned to 1.63.0, matching `loadtests/Dockerfile`. Keep its package lockfile current; the image installs dependencies with `npm ci`.
+- Write as little code as possible. I do not want a bunch of crazy non standard or non supported rails implementations or patterns. This will make rails upgrades in the future easier.
+- javascript tests are through vitest. See `vitest.config.js`. Run `npm run test:js` or `npm run test:js:coverage`
+- Ruby test coverage uses SimpleCov. Run `COVERAGE=true bin/rails test` (enabled automatically in `bin/run-all-tests.sh`)
+- Load-tests are in `loadtests/` using gatling and playwright. They simulate traffic analyzed from my largest tournament to date.
 - importmap pins in `importmap.rb` and aliases in `vitest.config.js` need to match.
-- Tournament index ordering uses `tournaments.date_sort_key` (`Date#jd`) so closest-date pagination remains database-neutral between SQLite and MariaDB.
-- Prosopite scans controller actions in development and test. Development detections are logged, detections in controller tests raise errors, and inline jobs are excluded from the parent request scan.
-- SQLite prepared statements are disabled in development and test so Prosopite can fingerprint the SQL emitted by Rails 8.1. Production MariaDB configuration is unchanged.
-- Collection fragment caches use Rails collection rendering so Solid Cache reads and writes their entries in batches.
-- Tournament show and bout-board requests use action-specific preloads. Bracket data is loaded inside the cached partial; all-brackets loads its associations in one batch on the first miss. School and weight roster data is loaded inside spectator fragment blocks, with uncached director/key views retaining their controls. School roster and stats use separate preload graphs.
-- Popular read-only pages use deterministic domain keys and targeted `Rails.cache.delete_multi` calls instead of `updated_at` fan-out. Brackets are cached per weight, team scores per tournament, school stats per school, and wrestler roster/profile fragments independently. Cache invalidation is coordinated by `TournamentCacheInvalidator`; bulk generation and advancement must delete affected keys after persistence.
-- Completed matches enqueue one serialized advancement job. That job completes both wrestler branches and any cascading advancement synchronously, updates bout-board queues, calculates tournament scores once, and only then invalidates affected caches.
-- Live stat websocket writes use callback-free column updates and must not invalidate fragment cache versions. Match finalization is guarded by `matches.finalized_at`.
-- Queue assignment, movement, advancement, refill, and clearing go through `MatQueueOperation`, which locks mats by ID and publishes topology changes after commit. Scoreboard selection uses compact, idempotent cache-backed broadcasts and never renders the legacy mat partial.
-- Solid Cable uses its default automatic trimming behavior. Broadcast telemetry records per-stream message counts and payload sizes.
-- Dockerized load tests live in `loadtests/`. Gatling prepares seeded tournament 204, drives spectator traffic, verifies Action Cable subscriptions, follows mat-to-match subscription changes, and measures websocket sync round trips. Five staggered Playwright Chromium contexts execute the real state-page JavaScript for mat operators, and a browser observer records operator-action-to-live-score delivery and DOM latency. Preparation creates five named mats and regenerates matches before load begins. Target URL, ramp, websocket thresholds, and load parameters are environment-configurable; see `loadtests/README.md`.
+- Unless explicitly told, tests should not be removed. If you need to remove a test because of a rewrite or any other reason you need to ask before you do so.
+- Do not write junk tests that don't actually test for things. 
+- Adhear to DRY and KISS principles
+- CSS layouts should be responsive for mobile browsers
+- When the db schema changes, always be cognizant of the tournament backup and import service. Continue to make sure these work.
+
+# Accepted non standard and non supported rails or gem patterns and implementations
+Keep this section updated whenever there's an accepted non standard or non supported rails or gem pattern. Be sure to check the versions of rails or gems when considering things that are non standard or non supported.
+
+- Prepared statements are disabled locally and in test. This is specifically to let Prosopite fingerprint emitted SQL, which changes normal Active Record SQLite query behavior. This is required for prosopite to work with sqlite.
+- Development Puma starts Solid Queue internally by default. Rather than requiring a separate bin/jobs worker process, the Puma process loads the Solid Queue plugin unless explicitly disabled. This is how I want to run the app for the time being until I need to scale workers separately.
+- SQLite connection configuration: WAL, busy timeout, and related PRAGMAs are applied through `database.yml` to all SQLite databases in development (primary, queue, cache, cable).
+- `secret_key_base` is set in `config/environments/*` (production uses `WRESTLINGDEV_SECRET_KEY_BASE`), not Rails credentials.
 
 # Telemetry
-- Docker compose tracing uses OpenTelemetry, not InfluxDB.
-  - Rails tracing is enabled by `config/initializers/opentelemetry.rb` only when `OTEL_EXPORTER_OTLP_ENDPOINT` is set.
-  - `deploy/docker-compose-test.yml` runs `otel-collector`, `jaeger`, `prometheus`, and `grafana`.
-  - `deploy/docker-compose-prod.yml` also runs `otel-collector`, `jaeger`, `prometheus`, and `grafana`; production Grafana uses its built-in login and production Jaeger is protected by Traefik basic auth.
-  - Kubernetes tracing is defined in `deploy/kubernetes/manifests/telemetry.yaml`; Rails pods in `deploy/kubernetes/manifests/wrestlingdev.yaml` export OTLP to `http://otel-collector:4318`.
-  - Collector config lives in `deploy/otel-collector-config.yml`; Prometheus config lives in `deploy/prometheus.yml`.
-  - Grafana datasource/dashboard provisioning lives under `deploy/grafana/provisioning`; dashboards live in `deploy/grafana/dashboards`.
-  - Kubernetes Grafana downloads dashboards from `deploy/grafana/dashboards` with an init container; do not embed dashboard JSON in the telemetry ConfigMap.
-  - Local URLs: Grafana `http://localhost:3000`, Jaeger `http://localhost:16686`, Prometheus `http://localhost:9090`.
-  - Prometheus span metrics are `traces_span_metrics_calls_total` and `traces_span_metrics_duration_milliseconds_*`.
-  - The `Action Cable / WebSockets` dashboard uses OpenTelemetry spans for broadcasts, transmits, and channel actions. The current trace-only telemetry pipeline does not provide active connection counts.
-  - Compose and Kubernetes persist Jaeger Badger storage with seven-day retention (`--badger.span-store-ttl=168h`); Prometheus also retains seven days (`--storage.tsdb.retention.time=7d`). Compose uses a named volume and ownership initializer; Kubernetes uses a 15Gi PVC with fsGroup permissions and a Recreate deployment. No host filesystem setup is required.
-  - Kubernetes node-exporter uses a DaemonSet and headless Service for per-node Prometheus discovery. Both alternative MariaDB manifests use the exporter sidecar and existing database Secret credentials, scraped through the internal mariadb-exporter Service. Grafana downloads the node and MariaDB dashboards with the Rails dashboards. Deploy only one MariaDB variant.
-  - The collector filters successful Solid Queue polling queries/transactions under 100 ms while retaining slow polling, errors, and job execution spans.
-  - Both Compose stacks include node-exporter and mariadb-exporter on the private internal `exporters` network with no published ports. Prometheus scrapes jobs `node` and `mariadb`; dashboards are `node-exporter.json` and `mariadb-exporter.json`. Host network counters are not provided by the private-network node exporter.
-  - `mariadb-exporter-init` provisions the read/monitor database user on existing or new volumes. Production requires `MYSQLD_EXPORTER_PASSWORD` in `prod.env`; the local default is `exporter-local`. Database health checks execute an authenticated `SELECT 1` using `MYSQL_ROOT_PASSWORD`.
-  - Puma worker and thread counts come from `WEB_CONCURRENCY`, `RAILS_MIN_THREADS`, and `RAILS_MAX_THREADS`. Local Compose defaults to 2 workers with 5 threads; production Compose defaults to 4 workers with 5 threads.
+- In production and test environments, OTEL is used for application traces.
+- Grafana dashboards are maintained in `deploy/grafana`
+- Prometheus stack is used for metrics
 
 # CI/CD
 - Jenkins CI/CD lives in `ci_cd/Jenkinsfile`.
@@ -68,10 +35,25 @@
   - Timer-triggered `master` builds skip production deploys.
   - Production deploy maps the Jenkins secret text credential `DOCKERHUB_PASSWORD` to the `DOCKERHUB_PASSWORD` environment variable.
   - Test and production deploy SSH use the Jenkins credential ID from the old freestyle job.
+- My SDLC is as follows:
+  - I develop on the development branch
+  - When things are pushed to the branch, I run all tests and run `deploy/deploy-test.sh` on my dev server
+  - To release to production, I rebase development with master to make sure everything is good to go. Then I merge the development branch with master and push to master.
+  - Currently, I'm using docker compose for production and kubernetes for my DR environment. You can see this in `ci_cd/Jenkinsfile` on the deploy-production stage.
+
+# Deployment
+- The only rails envs I use are TEST DEVELOPMENT and PRODUCTION.
+  - test is obviously to run tests locally and uses sqlite
+  - development is for running the application locally and uses sqlite
+  - production is for all of my SDLC environments and uses mariadb
+    - this is to make sure my dev environment and production environments are the same
+    - I utilize docker images for my test and production environments you can see these in `deploy/`
+    - I often test this setup locally too with `deploy/deploy-test.sh`
+- docker compose AND kubernetes deploys need to be kept in sync with each other for deployment flexibility
+- when adding environment variables be sure to update the readme, update `deploy/prod.env.example`, update `deploy/kubernetes/secrets/secrets.yaml` and update the README. Be sure to also keep both compose files up to date and the kubernetes manifests.
 
 # Other
-Cypress tests have been mostly deprecated in favor of vitest but they still exist:
-- Cypress tests are created for js tests. They can be found in cypress-tests/cypress
-- Cypress tests can be run with docker: bash cypress-tests/run-cypress-tests.sh
-
-Please keep README.md and AGENTS.md up to date when making changes.
+- Please keep README.md and AGENTS.md up to date when making changes.
+- The README should be relevant information for a developer and should not get bloated. What versions of stuff are running, how to get up and running locally as a dev, how to deploy and what variables are needed or optional.
+- Make sure other README files in subfolders of this project are kept up to date as well if any changes are made.
+- If something is added to .gitignore consider always consider if it should be added to .dockerignore as well.

@@ -8,7 +8,7 @@ class GenerateTournamentMatchesJob < ApplicationJob
     
     begin
       # Execute the job
-      generator = GenerateTournamentMatches.new(tournament)
+      generator = TournamentServices::GenerateTournamentMatches.new(tournament)
       generator.generate_raw
       
       Rails.logger.info("Completed tournament match generation for tournament ##{tournament.id}")

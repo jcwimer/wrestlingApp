@@ -47,14 +47,16 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_enqueued_with(job: AdvanceWrestlerJob) do
-      patch match_path(@queue1_match), params: {
-        match: {
-          score: "3-1",
-          win_type: "Decision",
-          winner_id: @queue1_match.w1,
-          finished: 1
+      assert_enqueued_with(job: FillBoutBoardJob) do
+        patch match_path(@queue1_match), params: {
+          match: {
+            score: "3-1",
+            win_type: "Decision",
+            winner_id: @queue1_match.w1,
+            finished: 1
+          }
         }
-      }
+      end
     end
 
     assert_redirected_to state_mat_path(@mat)
@@ -73,14 +75,16 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_enqueued_with(job: AdvanceWrestlerJob) do
-      patch match_path(@queue1_match), params: {
-        match: {
-          score: "3-1",
-          win_type: "Decision",
-          winner_id: @queue1_match.w1,
-          finished: 1
+      assert_enqueued_with(job: FillBoutBoardJob) do
+        patch match_path(@queue1_match), params: {
+          match: {
+            score: "3-1",
+            win_type: "Decision",
+            winner_id: @queue1_match.w1,
+            finished: 1
+          }
         }
-      }
+      end
     end
 
     assert_redirected_to stat_mat_path(@mat)

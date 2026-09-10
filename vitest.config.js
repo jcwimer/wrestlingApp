@@ -4,7 +4,14 @@ import { defineConfig } from "vitest/config"
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["test/javascript/**/*.test.js"]
+    include: ["test/javascript/**/*.test.js"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      reportsDirectory: "coverage/javascript",
+      include: ["app/assets/javascripts/**/*.js"],
+      exclude: ["app/assets/javascripts/application.js"]
+    }
   },
   resolve: {
     alias: {

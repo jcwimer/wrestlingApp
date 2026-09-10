@@ -10,7 +10,7 @@ class DoubleEliminationSixteenManEightPlacesRunThrough < ActionDispatch::Integra
     match.finished = 1
     match.win_type = "Decision"
     match.score = "0-0"
-    match.save
+    perform_enqueued_jobs { match.save }
   end
 
   test "16 man double elimination place 1-8" do

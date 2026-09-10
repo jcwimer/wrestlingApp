@@ -101,13 +101,6 @@ Wrestling::Application.routes.draw do
   post "/wrestlers/update_pool" => "wrestlers#update_pool"
 
   get "schools/:id/stats" => "schools#stats"
-  
-  #API
-  get "/api/tournaments" => "api#tournaments"
-  get "/api/tournaments/user" => "api#currentUserTournaments"
-  get "/api/tournaments/:tournament" => "api#tournament"
-  get "/api/index" => "api#index"
-  post "/api/tournaments/new" => "newTournament"
 
   resources :tournaments do
     member do

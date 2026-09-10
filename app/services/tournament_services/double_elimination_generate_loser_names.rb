@@ -1,4 +1,4 @@
-class DoubleEliminationGenerateLoserNames
+class TournamentServices::DoubleEliminationGenerateLoserNames
   def initialize(tournament)
     @tournament = tournament
   end

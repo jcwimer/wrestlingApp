@@ -128,12 +128,14 @@ class TournamentPagesCacheTest < ActionController::TestCase
     match = @weight.matches.where(finished: [nil, 0]).first || @weight.matches.first
     assert match, "Expected a match to complete for expiration test"
 
-    match.update!(
-      finished: 1,
-      winner_id: match.w1 || match.w2,
-      win_type: "Decision",
-      score: "1-0"
-    )
+    perform_enqueued_jobs do
+      match.update!(
+        finished: 1,
+        winner_id: match.w1 || match.w2,
+        win_type: "Decision",
+        score: "1-0"
+      )
+    end
 
     team_post_events = cache_events_for(%w[team_scores team_score_row]) do
       get :team_scores, params: { id: @tournament.id }

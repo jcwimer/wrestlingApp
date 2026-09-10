@@ -18,6 +18,9 @@ mkdir -p grafana/provisioning/dashboards
 mkdir -p grafana/provisioning/datasources
 
 githubraw_url=https://raw.githubusercontent.com/jcwimer/wrestlingApp/refs/heads/master
+wget -O compose ${githubraw_url}/bin/docker-compose
+chmod +x compose
+COMPOSE=./compose
 wget -O docker-compose.yml ${githubraw_url}/deploy/docker-compose-prod.yml
 wget -O nginx/nginx.conf ${githubraw_url}/deploy/nginx/nginx.conf
 wget -O nginx/nginx-entrypoint.sh ${githubraw_url}/deploy/nginx/nginx-entrypoint.sh
@@ -43,15 +46,15 @@ set -a
 . prod.env
 set +a
 : "${MYSQLD_EXPORTER_PASSWORD:?Set MYSQLD_EXPORTER_PASSWORD in prod.env}"
-docker-compose pull
-docker-compose down
+${COMPOSE} pull
+${COMPOSE} down
 echo "Waiting for db to be up..."
-docker-compose up -d wrestlingdev_db
+${COMPOSE} up -d wrestlingdev_db
 sleep 30s
 echo "Running database migrations..."
-docker-compose run --rm wrestlingdev bin/rails db:migrate
-docker-compose run --rm wrestlingdev bin/rails db:migrate:cache
-docker-compose run --rm wrestlingdev bin/rails db:migrate:queue
-docker-compose run --rm wrestlingdev bin/rails db:migrate:cable
+${COMPOSE} run --rm wrestlingdev bin/rails db:migrate
+${COMPOSE} run --rm wrestlingdev bin/rails db:migrate:cache
+${COMPOSE} run --rm wrestlingdev bin/rails db:migrate:queue
+${COMPOSE} run --rm wrestlingdev bin/rails db:migrate:cable
 echo "Bringing up the new containers..."
-docker-compose up -d
+${COMPOSE} up -d

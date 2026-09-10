@@ -15,7 +15,7 @@ class SwapWrestlersTest < ActionDispatch::IntegrationTest
     test_line_wrestler1 = wrestler1.bracket_line
     test_line_wrestler2 = wrestler2.bracket_line
     
-    SwapWrestlers.new.swap_wrestlers_bracket_lines(wrestler1.id,wrestler2.id)
+    WrestlerServices::SwapWrestlers.new.swap_wrestlers_bracket_lines(wrestler1.id,wrestler2.id)
 
     #Variable needs refreshed otherwise asserts fail
     wrestler1 = get_wrestler_by_name("Test1")

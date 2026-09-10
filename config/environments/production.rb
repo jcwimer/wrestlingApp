@@ -9,6 +9,8 @@ Rails.application.configure do
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
 
+  config.secret_key_base = ENV.fetch("WRESTLINGDEV_SECRET_KEY_BASE")
+
   # Full error reports are disabled.
   config.consider_all_requests_local = false
 
@@ -115,12 +117,6 @@ Rails.application.configure do
   # Restore asset compilation settings
   config.public_file_server.enabled = true
   
-  ## Using default asset pipeline sprockets
-  #Live compile with sprockets instead of: rails assets:precompile
-  config.assets.compile = true
-  # Generate digests for assets URLs.
-  config.assets.digest = true
-
   MissionControl::Jobs.http_basic_auth_user = ENV["WRESTLINGDEV_MISSION_CONTROL_USER"]
   MissionControl::Jobs.http_basic_auth_password =ENV["WRESTLINGDEV_MISSION_CONTROL_PASSWORD"]
 end

@@ -9,7 +9,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
         wrestler.bracket_line = nil
         wrestler.save
       end
-      GenerateTournamentMatches.new(@tournament.reload).generate
+      generate_tournament_matches(@tournament.reload)
     end
   end
 
@@ -33,7 +33,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     test_seven_bracket_line_original = wrestlers.select{|w|w.name == "Test7"}.first.bracket_line
     test_eight_bracket_line_original = wrestlers.select{|w|w.name == "Test8"}.first.bracket_line
 
-    GenerateTournamentMatches.new(@tournament.reload).generate
+    generate_tournament_matches(@tournament.reload)
 
     wrestlers = @tournament.reload.wrestlers
     test_one_bracket_line_second = wrestlers.select{|w|w.name == "Test1"}.first.bracket_line
@@ -58,7 +58,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
   test "Deleting a wrestler and generating produces a BYE for the person who lost their opponent" do
     wrestler_three_first_round = @tournament.reload.matches.select{|m| m.bracket_position == "Quarter" && m.wrestler1.name == "Test3"}.first
     wrestler_three_first_round.wrestler2.destroy
-    GenerateTournamentMatches.new(@tournament.reload).generate
+    generate_tournament_matches(@tournament.reload)
     matches = @tournament.reload.matches
 
     match_with_bye = matches.select{|m|m.loser2_name == "BYE"}.first
@@ -78,7 +78,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     wrestler_four = wrestlers.select{|w| w.name == "Test4"}.first
     wrestler_four.original_seed = 3
     wrestler_four.save
-    GenerateTournamentMatches.new(@tournament.reload).generate
+    generate_tournament_matches(@tournament.reload)
     matches = @tournament.reload.matches
 
     assert(matches.select{|m| m.bracket_position == "Quarter" && m.w2 == wrestler_four_first_round_opponent}.first.loser1_name == "BYE")
@@ -102,7 +102,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     wrestler_four.original_seed = 3
     wrestler_four.save
 
-    GenerateTournamentMatches.new(@tournament.reload).generate
+    generate_tournament_matches(@tournament.reload)
 
     wrestlers = @tournament.reload.wrestlers
     test_one_bracket_line_second = wrestlers.select{|w|w.name == "Test1"}.first.bracket_line
@@ -134,7 +134,7 @@ class EightManDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     wrestler_seven.original_seed = 5
     wrestler_seven.save
 
-    GenerateTournamentMatches.new(@tournament.reload).generate
+    generate_tournament_matches(@tournament.reload)
 
     matches_second = @tournament.reload.matches.select{|m| m.bracket_position == "Quarter"}
     # everyone else should have the same opponent

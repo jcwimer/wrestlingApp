@@ -72,7 +72,7 @@ class MatchBroadcastTest < ActiveSupport::TestCase
     stream = stream_name_for(mat)
 
     clear_streams(stream)
-    WipeTournamentMatches.new(@tournament).setUpMatchGeneration
+    TournamentServices::WipeTournamentMatches.new(@tournament).setUpMatchGeneration
 
     assert_operator broadcasts_for(stream).size, :>, 0
     payload = broadcasts_for(stream).last

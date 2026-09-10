@@ -35,8 +35,8 @@ class Match < ApplicationRecord
 
 			assigned_mat = mat
 			update_column(:finalized_at, Time.current)
-			advance_mat_queue_for_finalized_match!(assigned_mat)
-			advance_wrestlers
+			promote_queue1_if_current_match!(assigned_mat)
+			enqueue_post_finalize_jobs!
 		end
 		true
 	end
@@ -151,9 +151,14 @@ class Match < ApplicationRecord
 	end
 
 	def advance_wrestlers
+		enqueue_post_finalize_jobs!
+	end
+
+	def enqueue_post_finalize_jobs!
 		return false unless w1 || w2
 
 		AdvanceWrestlerJob.perform_later([id], tournament_id)
+		FillBoutBoardJob.perform_later(tournament_id)
 		true
 	end
 
@@ -340,12 +345,10 @@ class Match < ApplicationRecord
 	
 	private
 
-	def advance_mat_queue_for_finalized_match!(assigned_mat)
-		if assigned_mat
-			MatQueueOperation.new(tournament).advance(assigned_mat, self, invalidate_cached_views: false)
-		else
-			tournament.refill_open_bout_board_queues(invalidate_cached_views: false)
-		end
+	def promote_queue1_if_current_match!(assigned_mat)
+		return unless assigned_mat&.queue1 == id
+
+		MatQueueOperation.new(tournament).promote_after_queue1_finish!(assigned_mat, self)
 	end
 
 	def update_finished_at

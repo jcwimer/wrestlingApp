@@ -23,13 +23,13 @@ class TournamentBackupsController < ApplicationController
   
     # POST /tournament/:tournament_id/tournament_backups/create
     def create
-      TournamentBackupService.new(@tournament, 'Manual backup').create_backup
+      TournamentServices::TournamentBackupService.new(@tournament, 'Manual backup').create_backup
       redirect_to tournament_tournament_backups_path(@tournament), notice: 'Backup was successfully created. It will show up soon, check your background jobs for status.'
     end
   
     # POST /tournament/:tournament_id/tournament_backups/:id/restore
     def restore
-      WrestlingdevImporter.new(@tournament, @tournament_backup).import
+      TournamentServices::WrestlingdevImporter.new(@tournament, @tournament_backup).import
       redirect_to tournament_path(@tournament), notice: 'Restore has successfully been submitted, please check your background jobs to see if it has finished.'
     end
 
@@ -51,7 +51,7 @@ class TournamentBackupsController < ApplicationController
         )
     
         # Pass the backup object to the importer
-        WrestlingdevImporter.new(@tournament, backup).import
+        TournamentServices::WrestlingdevImporter.new(@tournament, backup).import
     
         redirect_to tournament_path(@tournament), notice: 'Restore has successfully been submitted, please check your background jobs to see if it has finished.'
         rescue JSON::ParserError => e

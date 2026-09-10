@@ -17,7 +17,7 @@ class WrestlersController < ApplicationController
     @matches = Match.where(w1: wrestler_id).or(Match.where(w2: wrestler_id))
       .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
       .order(:bout_number)
-    @wrestler_points_calc = CalculateWrestlerTeamScore.new(@wrestler)
+    @wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(@wrestler)
   end
 
   # GET /wrestlers/new

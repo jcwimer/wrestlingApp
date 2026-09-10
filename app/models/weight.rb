@@ -103,7 +103,7 @@ class Weight < ApplicationRecord
 	
 	
 	def swap_wrestlers_bracket_lines(wrestler1_id,wrestler2_id)
-		SwapWrestlers.new.swap_wrestlers_bracket_lines(wrestler1_id,wrestler2_id)
+		WrestlerServices::SwapWrestlers.new.swap_wrestlers_bracket_lines(wrestler1_id,wrestler2_id)
 	end
 
 
@@ -168,7 +168,7 @@ class Weight < ApplicationRecord
 	end
 	
 	def pool_placement_order(pool)
-		#PoolOrder.new(wrestlers_in_pool(pool)).getPoolOrder
+		#BracketAdvancement::PoolOrder.new(wrestlers_in_pool(pool)).getPoolOrder
 	end
 
 	def wrestlers_without_pool_assignment

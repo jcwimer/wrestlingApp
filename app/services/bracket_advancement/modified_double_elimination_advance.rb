@@ -1,4 +1,4 @@
-class ModifiedDoubleEliminationAdvance
+class BracketAdvancement::ModifiedDoubleEliminationAdvance
 
     attr_reader :matches_to_advance
 

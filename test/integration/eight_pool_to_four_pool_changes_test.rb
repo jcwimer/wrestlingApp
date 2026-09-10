@@ -15,7 +15,7 @@ class EightPoolToFourPoolChangesTest < ActionDispatch::IntegrationTest
         count =  count + 1
       end
     end
-    GenerateTournamentMatches.new(@tournament.reload).generate
+    generate_tournament_matches(@tournament.reload)
     assert @tournament.matches.count == 32
     assert @tournament.weights.first.pools == 4
     @tournament.reload.weights.first.wrestlers.each do |wrestler|

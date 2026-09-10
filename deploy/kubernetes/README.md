@@ -12,8 +12,8 @@
 5. Apply either `mariadb-standalone.yaml` or `mariadb-replica.yaml`, not both; they define the same database resources. Apply the remaining files in `deploy/kubernetes/manifests/`, including `telemetry.yaml`.
 
 ## What do I get?
-1. Wrestlingdev deployed with 2 replicas.
-2. Two workers are deployed to run background jobs
+1. Wrestlingdev deployed with 2 replicas (HPA scales to 5).
+2. Solid Queue runs inside Puma (`SOLID_QUEUE_IN_PUMA=true`); there are no separate worker pods.
 3. A standalone mariadb that can back up to S3 compatable storage if you set the values in `deploy/kubernetes/secrets/secrets.yaml` and prometheus ready metrics
 4. OpenTelemetry Collector, Jaeger, Prometheus, and Grafana for tracing and performance dashboards.
 
@@ -42,8 +42,7 @@ First, be sure your secrets.yaml has all envs up to date. Then, make sure you ge
 
 Each push to master updates the docker `prod` tag and also pushes a tag with the git hash. You will want to update to those tags.
 1. Set the git hash as a variable `TAG=$(git rev-parse --verify HEAD)`
-2. Update the wrestlingdev deployment tag `kubectl --record deployment.apps/wrestlingdev-app-deployment set image deployment.v1.apps/wrestlingdev-app-deployment wrestlingdev-app=jcwimer/wrestlingdev:${TAG}`
-3. Update the wrestlingdev job runner tag `kubectl --record statefulset.apps/wrestlingdev-worker set image statefulset.v1.apps/wrestlingdev-worker wrestlingdev-worker=jcwimer/wrestlingdev:${TAG}`
+2. Update the app image `kubectl --record statefulset.apps/wrestlingdev-app set image statefulset.v1.apps/wrestlingdev-app wrestlingdev-app=jcwimer/wrestlingdev:${TAG}`
 
 Finally, run db-migrations
 1. Delete the db migrations job so you can re-run it `kubectl delete job wrestlingdev-db-create-migrate`
@@ -51,8 +50,7 @@ Finally, run db-migrations
 
 ## How do I see logs?
 
-For workers: `kubectl logs -f --tail=100 -l app=wrestlingdev -l tier=worker`
-For app logs: `kubectl logs -f --tail=100 -l app=wrestlingdev -l tier=app`
+`kubectl logs -f --tail=100 -l app=wrestlingdev -l tier=frontend`
 
 ## I'm a pro. What's bad about this?
 Right now, mariadb's root password comes from the secrets.yaml and wrestlingdev uses the root password to run. Ideally, you'd create another secret for mariadb's root password and you'd create a user specifically for wrestlingdev.

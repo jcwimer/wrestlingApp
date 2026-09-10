@@ -1,4 +1,4 @@
-class PoolToBracketGenerateLoserNames
+class TournamentServices::PoolToBracketGenerateLoserNames
   def initialize(tournament)
     @tournament = tournament
   end

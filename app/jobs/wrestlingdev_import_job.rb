@@ -17,7 +17,7 @@ class WrestlingdevImportJob < ApplicationJob
     
     begin
       # Execute the import
-      importer = WrestlingdevImporter.new(tournament)
+      importer = TournamentServices::WrestlingdevImporter.new(tournament)
       importer.import_data = import_data if import_data
       importer.import_raw
       

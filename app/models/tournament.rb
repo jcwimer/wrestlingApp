@@ -148,7 +148,7 @@ class Tournament < ApplicationRecord
 
 	def destroy_all_matches
 		matches.delete_all
-		mats.reload.each(&:clear_queue!)
+		reset_mats
 	end
 
 	def matches_by_round(round)
@@ -166,6 +166,7 @@ class Tournament < ApplicationRecord
 		matches.where.not(mat_id: nil).update_all(mat_id: nil, updated_at: timestamp)
 		mat_records.each do |mat|
 			mat.update_columns(queue1: nil, queue2: nil, queue3: nil, queue4: nil, updated_at: timestamp)
+			Mat::QUEUE_SLOTS.each { |slot| mat.public_send("#{slot}=", nil) }
 		end
 		broadcast_bout_board_changes(mat_records) if broadcast
 	end
@@ -299,7 +300,7 @@ class Tournament < ApplicationRecord
 	end
 
 	def create_backup()
-		TournamentBackupService.new(self, "Manual backup").create_backup
+		TournamentServices::TournamentBackupService.new(self, "Manual backup").create_backup
 	end	  
 
 	def confirm_all_weights_have_original_seeds
@@ -338,7 +339,16 @@ class Tournament < ApplicationRecord
 	end
 
 	def broadcast_bout_board_changes(mat_records)
-		mat_records.each(&:broadcast_queue_state)
+		cache_values = Rails.cache.read_multi(*mat_records.flat_map { |mat|
+			[mat.scoreboard_selection_cache_key, mat.last_match_result_cache_key]
+		})
+		mat_records.each do |mat|
+			mat.broadcast_legacy_mat_view
+			mat.broadcast_scoreboard_state(
+				selection: cache_values[mat.scoreboard_selection_cache_key],
+				last_match_result: cache_values[mat.last_match_result_cache_key]
+			)
+		end
 		self.class.broadcast_up_matches_board(id)
 	end
 

@@ -7,13 +7,15 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pom.xml ./
-RUN mvn -q dependency:go-offline
+RUN mvn -q dependency:go-offline dependency:resolve-plugins
+
+COPY src ./src
 RUN mvn -q test-compile
+RUN mvn -q gatling:help
+RUN mvn -q -o gatling:help
 
 COPY package.json package-lock.json ./
 RUN npm ci
-
-COPY src ./src
 COPY browser-operators.js ./browser-operators.js
 COPY run.sh ./run.sh
 RUN chmod +x ./run.sh

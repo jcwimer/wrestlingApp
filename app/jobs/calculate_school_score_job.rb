@@ -14,7 +14,7 @@ class CalculateSchoolScoreJob < ApplicationJob
       { schools: :deductedPoints },
       weights: [
         :matches,
-        { wrestlers: [:deductedPoints, :matches_as_w1, :matches_as_w2] }
+        { wrestlers: [:deductedPoints, :matches_as_w1, :matches_as_w2, { weight: :tournament }] }
       ]
     ).find(school_data.fetch(:tournament_id))
     school = tournament.schools.find { |candidate| candidate.id == school_id }

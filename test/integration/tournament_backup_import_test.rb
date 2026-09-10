@@ -10,7 +10,7 @@ class TournamentBackupImportTest < ActionDispatch::IntegrationTest
     match.finished = 1
     match.win_type = "Decision"
     match.score = "1-0"
-    match.save
+    perform_enqueued_jobs { match.save }
   end
 
   test "Test backing up and importing a double elimination tournament mid tournament" do
@@ -209,9 +209,9 @@ class TournamentBackupImportTest < ActionDispatch::IntegrationTest
     assert seventh_finals.reload.wrestler2.name == "Test10"
 
     # Backup, then restore, then run asserts again
-    TournamentBackupService.new(@tournament, 'Manual backup').create_backup
+    create_tournament_backup(@tournament, 'Manual backup')
     backup = TournamentBackup.where(tournament: @tournament).first
-    WrestlingdevImporter.new(@tournament, backup).import
+    import_tournament_backup(@tournament, backup)
 
     @tournament.reload
 
@@ -359,9 +359,9 @@ class TournamentBackupImportTest < ActionDispatch::IntegrationTest
     )
   
     # Backup and import
-    TournamentBackupService.new(@tournament, 'Manual backup').create_backup
+    create_tournament_backup(@tournament, 'Manual backup')
     backup = TournamentBackup.where(tournament: @tournament).first
-    WrestlingdevImporter.new(@tournament, backup).import
+    import_tournament_backup(@tournament, backup)
   
     @tournament.reload
     assert_equal "Mat 1", @tournament.mats.first.name
@@ -388,11 +388,11 @@ class TournamentBackupImportTest < ActionDispatch::IntegrationTest
         match.save
     end
 
-    TournamentBackupService.new(@tournament, 'Manual backup').create_backup
+    create_tournament_backup(@tournament, 'Manual backup')
     backup = TournamentBackup.where(tournament: @tournament).first
     # puts "Backup size in bytes: #{backup.backup_data.bytesize}"
     # 1253119 (~1.25 MB) vs 4294967295 max (4 GB)
-    WrestlingdevImporter.new(@tournament, backup).import
+    import_tournament_backup(@tournament, backup)
   
     @tournament.reload
 
