@@ -6,7 +6,7 @@ class TournamentServices::TournamentBackupService
 
   def create_backup
     # Use perform_later which will execute based on centralized adapter config
-    TournamentBackupJob.perform_later(@tournament, @reason)
+    TournamentBackupJob.perform_later_with_enqueue_retry(@tournament, @reason)
   end
 
   def create_backup_raw

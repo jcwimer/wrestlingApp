@@ -5,7 +5,7 @@ class TournamentServices::GenerateTournamentMatches
 
     def generate
       # Use perform_later which will execute based on centralized adapter config
-      GenerateTournamentMatchesJob.perform_later(@tournament)
+      GenerateTournamentMatchesJob.perform_later_with_enqueue_retry(@tournament)
     end
 
     def generate_raw

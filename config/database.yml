@@ -85,6 +85,8 @@ production:
     password: <%= ENV['WRESTLINGDEV_DB_PWD'] %>
     host: <%= ENV['WRESTLINGDEV_DB_HOST'] %>
     port: <%= ENV['WRESTLINGDEV_DB_PORT'] %>
+    variables:
+      tx_isolation: READ-COMMITTED
     migrations_paths: db/queue/migrate
   cache:
     adapter: mysql2

@@ -18,7 +18,7 @@ class TournamentServices::WrestlingdevImporter
 
   def import
     # Use perform_later which will execute based on centralized adapter config
-    WrestlingdevImportJob.perform_later(@tournament, @import_data)
+    WrestlingdevImportJob.perform_later_with_enqueue_retry(@tournament, @import_data)
   end
 
   def import_raw

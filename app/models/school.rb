@@ -59,7 +59,7 @@ class School < ApplicationRecord
 	
 	def calculate_score
 		# Use perform_later which will execute based on centralized adapter config
-		CalculateSchoolScoreJob.perform_later({ school_id: id, tournament_id: tournament_id })
+		CalculateSchoolScoreJob.perform_later_with_enqueue_retry({ school_id: id, tournament_id: tournament_id })
 	end
 
 	def calculate_score_raw(wrestlers: self.wrestlers)

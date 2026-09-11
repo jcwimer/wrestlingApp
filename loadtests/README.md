@@ -25,7 +25,7 @@ docker compose build
 docker compose run --rm gatling
 ```
 
-Gatling drives preparation and all spectator traffic. The same container starts five headless Playwright browser contexts per active tournament for mat operation because Gatling itself does not execute browser JavaScript. A preparation marker prevents those browsers from opening the state pages until match generation has finished.
+Gatling drives preparation and all spectator traffic. The same container starts five headless Playwright browser contexts per active tournament for mat operation because Gatling itself does not execute browser JavaScript. A preparation marker prevents those browsers from opening the state pages until match generation has finished. When running against the local Compose test stack, cAdvisor records this container's CPU and memory separately so its load-generator overhead is not attributed to the app server during evaluation.
 
 For a local Rails server, bind Rails to an address Docker can reach, for example `bin/rails server -b 0.0.0.0`. Do not set `BASE_URL` to `127.0.0.1`, which means the Gatling container itself; use the default `http://host.docker.internal:3000`. Reports are written to `loadtests/results/`.
 

@@ -20,6 +20,8 @@ Keep this section updated whenever there's an accepted non standard or non suppo
 - Development Puma starts Solid Queue internally by default. Rather than requiring a separate bin/jobs worker process, the Puma process loads the Solid Queue plugin unless explicitly disabled. This is how I want to run the app for the time being until I need to scale workers separately.
 - SQLite connection configuration: WAL, busy timeout, and related PRAGMAs are applied through `database.yml` to all SQLite databases in development (primary, queue, cache, cable).
 - `secret_key_base` is set in `config/environments/*` (production uses `WRESTLINGDEV_SECRET_KEY_BASE`), not Rails credentials.
+- The MariaDB Solid Queue connection uses `tx_isolation: READ-COMMITTED`. This avoids Solid Queue enqueue-vs-claim deadlocks caused by InnoDB gap locks under `REPEATABLE READ`; use MariaDB's `tx_isolation` name, not MySQL's `transaction_isolation`. See https://github.com/rails/solid_queue/issues/531#issuecomment-5464388820.
+- Application-owned jobs enqueue through `perform_later_with_enqueue_retry`, which makes up to three jittered attempts for a `SolidQueue::Job::EnqueueError` caused by `ActiveRecord::Deadlocked`. This is an enqueue safety net, not job-execution retry behavior.
 
 # Telemetry
 - In production and test environments, OTEL is used for application traces.

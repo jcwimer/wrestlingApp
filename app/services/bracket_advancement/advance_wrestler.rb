@@ -7,7 +7,7 @@ class BracketAdvancement::AdvanceWrestler
     end
     
     def advance
-      AdvanceWrestlerJob.perform_later([@last_match.id], @wrestler.tournament.id)
+      AdvanceWrestlerJob.perform_later_with_enqueue_retry([@last_match.id], @wrestler.tournament.id)
     end
 
     def advance_raw(tracker: nil, invalidate: true, context: nil, reload: true)

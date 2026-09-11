@@ -68,7 +68,7 @@ class Tournament < ApplicationRecord
 	end
 	
 	def calculate_all_team_scores
-		CalculateTournamentTeamScoresJob.perform_later(id)
+		CalculateTournamentTeamScoresJob.perform_later_with_enqueue_retry(id)
 	end
 	
 	def create_pre_defined_weights(weight_classes)

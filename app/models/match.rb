@@ -157,8 +157,8 @@ class Match < ApplicationRecord
 	def enqueue_post_finalize_jobs!
 		return false unless w1 || w2
 
-		AdvanceWrestlerJob.perform_later([id], tournament_id)
-		FillBoutBoardJob.perform_later(tournament_id)
+		AdvanceWrestlerJob.perform_later_with_enqueue_retry([id], tournament_id)
+		FillBoutBoardJob.perform_later_with_enqueue_retry(tournament_id)
 		true
 	end
 

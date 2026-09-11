@@ -161,6 +161,8 @@ bash deploy/deploy-test.sh
 App: [http://localhost](http://localhost)  
 Grafana: [http://localhost:3000](http://localhost:3000) (admin/admin)
 
+Docker Compose telemetry includes cAdvisor for per-container CPU and memory metrics. It is used to attribute local load-generator overhead during load-test analysis and is intentionally not part of the Kubernetes deployment.
+
 This resets the database with seed data on each deploy.
 
 ### Production (Docker Compose)
