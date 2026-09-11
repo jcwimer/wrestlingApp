@@ -16,7 +16,7 @@ sudo rm -rf loadtests/results/*; docker compose -f deploy/docker-compose-test.ym
 docker-compose -f deploy/docker-compose-test.yml ps
 ```
 
-Telemetry stack from `deploy/docker-compose-test.yml` should still be up: app, MariaDB, otel-collector, Jaeger, Prometheus, Grafana, node-exporter, mariadb-exporter.
+Telemetry stack from `deploy/docker-compose-test.yml` should still be up: app, MariaDB, otel-collector, Jaeger, Prometheus, Grafana, node-exporter, cAdvisor, mariadb-exporter.
 
 ## Load profile (four tournaments, `TOURNAMENT_COUNT=4`)
 
@@ -123,6 +123,12 @@ Use dashboards in `deploy/grafana/dashboards/`:
 - **MariaDB / Exporter** (`mariadb-exporter`) — especially connection utilization
 - **Node Exporter** — CPU, memory, load, disk (sanity check WSL saturation)
 
+### Load-generator resource attribution (required for local runs)
+
+Gatling and its Playwright browsers run in a Docker container on the same local WSL host as the test stack. They consume meaningful CPU and RAM, so node-exporter host utilization is **not** application-server utilization and must not be used as a direct production capacity limit.
+
+Use cAdvisor (`job="cadvisor"`) to report the Gatling container's peak and sustained CPU and memory separately, then distinguish its share from the app, MariaDB, and telemetry containers. The local host's total CPU/memory remains useful as a saturation check, but capacity extrapolation should account for the fact that production will not run the load generator. Do not simply subtract a single peak sample or multiply capacity by the apparent remaining CPU; container contention, CPU architecture, Puma worker count, and real-event burstiness still matter.
+
 Key Prometheus queries to evaluate:
 
 ```promql
@@ -137,6 +143,10 @@ histogram_quantile(0.99, sum(rate(traces_span_metrics_duration_milliseconds_buck
 
 # Error rate
 sum(rate(traces_span_metrics_calls_total{service_name="wrestlingdev", status_code="STATUS_CODE_ERROR"}[5m]))
+
+# Gatling container CPU cores and working-set memory
+sum by (name) (rate(container_cpu_usage_seconds_total{job="cadvisor", name=~".*gatling.*"}[5m]))
+sum by (name) (container_memory_working_set_bytes{job="cadvisor", name=~".*gatling.*"})
 ```
 
 Report peak and sustained values during the 900s window, not just end-state.
@@ -200,7 +210,7 @@ Still note job errors and extreme outliers, but do not let healthy job latency n
 
 ### 3. Backend health
 
-- CPU/memory saturation on app host and DB (node-exporter)
+- CPU/memory saturation on app host and DB (node-exporter), plus Gatling/Playwright CPU and memory from cAdvisor for local runs
 - MariaDB: slow queries, buffer pool reads, threads running, lock waits
 - Solid Queue: failures and retries first; backlog/job duration only if extreme or paired with user-visible issues (see **Background jobs**)
 - Action Cable: connect/subscribe/broadcast latency
@@ -212,7 +222,7 @@ Still note job errors and extreme outliers, but do not let healthy job latency n
 
 ### 5. Local vs prod extrapolation
 
-- Normalize results by **per-worker capacity** and **observed resource utilization**, not raw RPS alone
+- Normalize results by **per-worker capacity** and **observed resource utilization**, not raw RPS alone. For a local run, separate cAdvisor-measured Gatling/Playwright consumption from host utilization; do not attribute generator CPU or RAM to the application.
 - Call out what prod gains (4 workers, 64GB RAM, tuned MariaDB) vs loses (older CPU, Traefik hop, real-world variance)
 - Give **low / expected / high** simultaneous tournament estimates
 

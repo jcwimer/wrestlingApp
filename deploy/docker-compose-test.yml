@@ -127,6 +127,19 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus:/prometheus
 
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.60.5
+    command:
+      - --docker_only=true
+    restart: always
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      exporters:
+
   node-exporter:
     image: prom/node-exporter:v1.9.1
     command:
