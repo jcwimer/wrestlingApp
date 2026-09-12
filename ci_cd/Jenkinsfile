@@ -25,38 +25,37 @@ pipeline {
   }
 
   stages {
-    stage('development-tests') {
+    stage('Development') {
       when {
+        beforeAgent true
         expression { buildsBranch('development') }
       }
 
-      steps {
-        deleteDir()
-        checkout([
-          $class: 'GitSCM',
-          branches: [[name: 'origin/development']],
-          userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
-          extensions: [
-            [$class: 'WipeWorkspace']
-          ]
-        ])
+      stages {
+        stage('development-tests') {
+          steps {
+            deleteDir()
+            checkout([
+              $class: 'GitSCM',
+              branches: [[name: 'origin/development']],
+              userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
+              extensions: [
+                [$class: 'WipeWorkspace']
+              ]
+            ])
 
-        sh '''
-          set -o pipefail
-          docker build -t wrestlingdev:dev -f deploy/rails-prod-Dockerfile .
-          docker run --name wrestlingdev-development-tests --rm wrestlingdev:dev /bin/bash /rails/bin/run-all-tests.sh
-        '''
-      }
-    }
+            sh '''
+              set -o pipefail
+              docker build -t wrestlingdev:dev -f deploy/rails-prod-Dockerfile .
+              docker run --name wrestlingdev-development-tests --rm wrestlingdev:dev /bin/bash /rails/bin/run-all-tests.sh
+            '''
+          }
+        }
 
-    stage('deploy-test') {
-      when {
-        expression { buildsBranch('development') }
-      }
-
-      steps {
-        sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
-          sh '''
+        stage('deploy-test') {
+          steps {
+            sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
+              sh '''
 set -o pipefail
 test_host=wrestlingdev-test.home.wimer.cloud
 
@@ -72,13 +71,16 @@ git checkout origin/development
 bash deploy/deploy-test.sh
 
 ENDSSH
-          '''
+              '''
+            }
+          }
         }
       }
     }
 
-    stage('deploy-production') {
+    stage('Production') {
       when {
+        beforeAgent true
         allOf {
           expression { buildsBranch('master') }
           not {
@@ -87,20 +89,22 @@ ENDSSH
         }
       }
 
-      steps {
-        deleteDir()
-        checkout([
-          $class: 'GitSCM',
-          branches: [[name: 'origin/master']],
-          userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
-          extensions: [
-            [$class: 'WipeWorkspace']
-          ]
-        ])
+      stages {
+        stage('deploy-production') {
+          steps {
+            deleteDir()
+            checkout([
+              $class: 'GitSCM',
+              branches: [[name: 'origin/master']],
+              userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
+              extensions: [
+                [$class: 'WipeWorkspace']
+              ]
+            ])
 
-        withCredentials([string(credentialsId: 'DOCKERHUB_PASSWORD', variable: 'DOCKERHUB_PASSWORD')]) {
-          sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
-            sh '''SSH_OPTS="-T -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q"
+            withCredentials([string(credentialsId: 'DOCKERHUB_PASSWORD', variable: 'DOCKERHUB_PASSWORD')]) {
+              sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
+                sh '''SSH_OPTS="-T -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q"
 HETZNER="94.130.8.146" # hetzner1.home.wimer.cloud does not work?
 
 TAG=$(git rev-parse --verify HEAD)
@@ -149,7 +153,9 @@ sudo kubectl delete job wrestlingdev-db-create-migrate
 sudo kubectl apply -f https://raw.githubusercontent.com/jcwimer/wrestlingApp/master/deploy/kubernetes/manifests/db-migration.yaml
 
 ENDSSH
-            '''
+                '''
+              }
+            }
           }
         }
       }
@@ -157,6 +163,13 @@ ENDSSH
   }
 
   post {
+    failure {
+      mail(
+        to: 'jacob.wimer@gmail.com',
+        subject: "Failed Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+        body: "The wrestlingdev Jenkins build failed: ${env.BUILD_URL}"
+      )
+    }
     unstable {
       mail(
         to: 'jacob.wimer@gmail.com',
