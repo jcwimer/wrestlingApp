@@ -63,8 +63,3 @@ cleanupWrestlingAppLocalStorage();
 }).call(this);
 
 console.log("Propshaft/Importmap application.js initialized with jQuery, Bootstrap, and Stimulus.");
-
-// If you have custom JavaScript files in app/javascript/ that were previously
-// handled by Sprockets `require_tree`, you'll need to import them here explicitly.
-// For example:
-// import "./my_custom_logic"; 
