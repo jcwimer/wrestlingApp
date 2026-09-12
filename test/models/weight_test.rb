@@ -1,14 +1,15 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class WeightTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
-  
-  test "Weight validations" do
+
+  test 'Weight validations' do
     weight = Weight.new
     assert_not weight.valid?
-    assert_equal [:tournament, :max], weight.errors.attribute_names
+    assert_equal %i[tournament max], weight.errors.attribute_names
   end
-  
 end

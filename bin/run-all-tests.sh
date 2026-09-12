@@ -8,4 +8,5 @@ npm run test:js:coverage
 bundle exec rake db:migrate RAILS_ENV=test
 CI=true brakeman
 bundle audit
+bundle exec rubocop app/ test/
 COVERAGE=true rails test -v

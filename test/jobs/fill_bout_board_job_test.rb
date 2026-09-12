@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class FillBoutBoardJobTest < ActiveJob::TestCase
   setup do
@@ -11,13 +13,13 @@ class FillBoutBoardJobTest < ActiveJob::TestCase
     @queue2_match.update_columns(mat_id: @mat.id)
   end
 
-  test "removes finished matches from queues and refills open slots" do
-    @queue2_match.update_columns(finished: 1, winner_id: @queue2_match.w1, win_type: "Decision", score: "3-1")
+  test 'removes finished matches from queues and refills open slots' do
+    @queue2_match.update_columns(finished: 1, winner_id: @queue2_match.w1, win_type: 'Decision', score: '3-1')
 
     FillBoutBoardJob.perform_now(@tournament.id)
 
     @mat.reload
     assert_equal @queue1_match.id, @mat.queue1
-    refute_includes @mat.queue_match_ids.compact, @queue2_match.id
+    assert_not_includes @mat.queue_match_ids.compact, @queue2_match.id
   end
 end

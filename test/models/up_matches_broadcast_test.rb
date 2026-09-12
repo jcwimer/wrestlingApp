@@ -1,7 +1,9 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class UpMatchesBroadcastTest < ActiveSupport::TestCase
-  test "tournament broadcaster emits replace action for up matches board" do
+  test 'tournament broadcaster emits replace action for up matches board' do
     tournament = tournaments(:one)
     stream = stream_name_for(tournament)
     clear_streams(stream)
@@ -13,7 +15,7 @@ class UpMatchesBroadcastTest < ActiveSupport::TestCase
     assert_up_matches_replace_payload(payload)
   end
 
-  test "mat queue change broadcasts up matches board update" do
+  test 'mat queue change broadcasts up matches board update' do
     tournament = tournaments(:one)
     mat = mats(:one)
     match = matches(:tournament_1_bout_2000)
@@ -26,7 +28,7 @@ class UpMatchesBroadcastTest < ActiveSupport::TestCase
     assert_up_matches_replace_payload(broadcasts_for(stream).last)
   end
 
-  test "mat clear_queue broadcasts up matches board update" do
+  test 'mat clear_queue broadcasts up matches board update' do
     tournament = tournaments(:one)
     mat = mats(:one)
     match = matches(:tournament_1_bout_2000)
@@ -41,7 +43,7 @@ class UpMatchesBroadcastTest < ActiveSupport::TestCase
     assert_up_matches_replace_payload(broadcasts_for(stream).last)
   end
 
-  test "match mat assignment change broadcasts up matches board update" do
+  test 'match mat assignment change broadcasts up matches board update' do
     tournament = tournaments(:one)
     mat = mats(:one)
     match = matches(:tournament_1_bout_2001)
@@ -54,7 +56,7 @@ class UpMatchesBroadcastTest < ActiveSupport::TestCase
     assert_up_matches_replace_payload(broadcasts_for(stream).last)
   end
 
-  test "match mat unassignment broadcasts up matches board update" do
+  test 'match mat unassignment broadcasts up matches board update' do
     tournament = tournaments(:one)
     mat = mats(:one)
     match = matches(:tournament_1_bout_2001)
@@ -69,24 +71,24 @@ class UpMatchesBroadcastTest < ActiveSupport::TestCase
     assert_up_matches_replace_payload(broadcasts_for(stream).last)
   end
 
-  test "mat update without queue slot changes does not broadcast up matches board update" do
+  test 'mat update without queue slot changes does not broadcast up matches board update' do
     tournament = tournaments(:one)
     mat = mats(:one)
     stream = stream_name_for(tournament)
     clear_streams(stream)
 
-    mat.update!(name: "Mat One Renamed")
+    mat.update!(name: 'Mat One Renamed')
 
     assert_equal 0, broadcasts_for(stream).size
   end
 
-  test "match update without mat_id change does not broadcast up matches board update" do
+  test 'match update without mat_id change does not broadcast up matches board update' do
     tournament = tournaments(:one)
     match = matches(:tournament_1_bout_2001)
     stream = stream_name_for(tournament)
     clear_streams(stream)
 
-    match.update!(w1_stat: "Local stat change")
+    match.update!(w1_stat: 'Local stat change')
 
     assert_equal 0, broadcasts_for(stream).size
   end
@@ -110,8 +112,8 @@ class UpMatchesBroadcastTest < ActiveSupport::TestCase
 
   # Broadcast payloads may be JSON-escaped in test adapters, so assert semantic markers.
   def assert_up_matches_replace_payload(payload)
-    assert_includes payload, "up_matches_board"
-    assert_includes payload, "replace"
-    assert_includes payload, "turbo-stream"
+    assert_includes payload, 'up_matches_board'
+    assert_includes payload, 'replace'
+    assert_includes payload, 'turbo-stream'
   end
 end

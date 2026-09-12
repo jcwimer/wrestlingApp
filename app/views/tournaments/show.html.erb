@@ -9,7 +9,7 @@
   </div>
 <% end %>
 
-<% if (can? :manage, @tournament) && @tournament.has_active_jobs? %>
+<% if (can? :manage, @tournament) && @tournament.active_jobs? %>
   <div class="alert alert-info">
     <strong>Background Jobs In Progress</strong>
     <p>The following background jobs are currently running:</p>

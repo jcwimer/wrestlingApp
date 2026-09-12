@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class WrestlersController < ApplicationController
-  before_action :set_wrestler, only: [:show, :edit, :update, :destroy]
-  before_action :check_access, only: [:new, :create, :update, :destroy, :edit]
+  before_action :set_wrestler, only: %i[show edit update destroy]
+  before_action :check_access, only: %i[new create update destroy edit]
   before_action :check_read_access, only: [:show]
 
   # GET /wrestlers/1
@@ -9,14 +11,14 @@ class WrestlersController < ApplicationController
     wrestler_id = @wrestler.id
     @tournament = Tournament.preload(
       weights: {
-        wrestlers: [:school, :deductedPoints, :matches_as_w1, :matches_as_w2]
+        wrestlers: %i[school deductedPoints matches_as_w1 matches_as_w2]
       }
     ).find(@wrestler.tournament.id)
     @wrestler = @tournament.weights.flat_map(&:wrestlers).find { |wrestler| wrestler.id == wrestler_id }
     @school = @wrestler.school
     @matches = Match.where(w1: wrestler_id).or(Match.where(w2: wrestler_id))
-      .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
-      .order(:bout_number)
+                    .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+                    .order(:bout_number)
     @wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(@wrestler)
   end
 
@@ -55,10 +57,10 @@ class WrestlersController < ApplicationController
         format.json { render :show, status: :created, location: @wrestler }
       else
         format.html { render :new }
-        format.json { render json: @wrestler.errors, status: :unprocessable_entity }
+        format.json { render json: @wrestler.errors, status: :unprocessable_content }
       end
     end
-  end  
+  end
 
   # PATCH/PUT /wrestlers/1
   def update
@@ -74,10 +76,10 @@ class WrestlersController < ApplicationController
         format.json { render :show, status: :ok, location: @wrestler }
       else
         format.html { render :edit }
-        format.json { render json: @wrestler.errors, status: :unprocessable_entity }
+        format.json { render json: @wrestler.errors, status: :unprocessable_content }
       end
     end
-  end  
+  end
 
   # DELETE /wrestlers/1
   def destroy
@@ -85,7 +87,7 @@ class WrestlersController < ApplicationController
     tournament_id = @school.tournament_id
     @wrestler.destroy
     TournamentCacheInvalidator.generation_completed(tournament_id)
-    message = "Wrestler was successfully deleted. This action has removed all matches. Please re-generate matches if you already had matches."
+    message = 'Wrestler was successfully deleted. This action has removed all matches. Please re-generate matches if you already had matches.'
 
     respond_to do |format|
       redirect_path = session[:return_path] || school_path(@school)
@@ -97,77 +99,70 @@ class WrestlersController < ApplicationController
   private
 
   def set_wrestler
-    @wrestler = Wrestler.includes(:school, :weight, :tournament, :matches_as_w1, :matches_as_w2).find_by(id: params[:id])
+    @wrestler = Wrestler.includes(:school, :weight, :tournament, :matches_as_w1,
+                                  :matches_as_w2).find_by(id: params[:id])
 
-    if @wrestler.nil?
-      redirect_to root_path, alert: "Wrestler not found"
-    end
+    return unless @wrestler.nil?
+
+    redirect_to root_path, alert: 'Wrestler not found'
   end
 
   def wrestler_params
-    params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win, 
+    params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win,
                                      :season_loss, :criteria, :extra, :offical_weight, :pool, :school_permission_key)
-  end  
+  end
 
   def check_access
     if params[:school].present?
-       @school = School.find(params[:school])
-       #@tournament = Tournament.find(@school.tournament.id)
+      @school = School.find(params.require(:school))
+    # @tournament = Tournament.find(@school.tournament.id)
     elsif params[:wrestler].present?
-      if params[:wrestler]["school_id"].present?
-           @school = School.find(params[:wrestler]["school_id"])
-           if wrestler_params[:school_permission_key].present?
-             @school_permission_key = wrestler_params[:school_permission_key]
-           end
+      if params[:wrestler]['school_id'].present?
+        @school = School.find(params.require(:wrestler).permit(:school_id)[:school_id])
+        @school_permission_key = wrestler_params[:school_permission_key] if wrestler_params[:school_permission_key].present?
       else
-          @wrestler = Wrestler.find(params[:wrestler]["id"])
-          @school = @wrestler.school
+        @wrestler = Wrestler.find(params.require(:wrestler).permit(:id)[:id])
+        @school = @wrestler.school
       end
     elsif @wrestler
-       @school = @wrestler.school
-    end
-
-    # set @school_permission_key for use in ability
-    if params[:school_permission_key].present?
-      @school_permission_key = params[:school_permission_key]
-    end
-    authorize! :manage, @school
-  end  
-
-  def check_read_access
-    if params[:school]
-      @school = School.find(params[:school])
-    elsif params[:wrestler].present?
-      if params[:wrestler]["school_id"].present?
-            @school = School.find(params[:wrestler]["school_id"])
-      else
-          @wrestler = Wrestler.find(params[:wrestler]["id"])
-          @school = @wrestler.school
-      end
-      if wrestler_params[:school_permission_key].present?
-          @school_permission_key = wrestler_params[:school_permission_key]
-      end
-   elsif @wrestler
       @school = @wrestler.school
     end
 
     # set @school_permission_key for use in ability
-    if params[:school_permission_key].present?
-      @school_permission_key = params[:school_permission_key]
+    @school_permission_key = params[:school_permission_key] if params[:school_permission_key].present?
+    authorize! :manage, @school
+  end
+
+  def check_read_access
+    if params[:school]
+      @school = School.find(params.require(:school))
+    elsif params[:wrestler].present?
+      if params[:wrestler]['school_id'].present?
+        @school = School.find(params.require(:wrestler).permit(:school_id)[:school_id])
+      else
+        @wrestler = Wrestler.find(params.require(:wrestler).permit(:id)[:id])
+        @school = @wrestler.school
+      end
+      @school_permission_key = wrestler_params[:school_permission_key] if wrestler_params[:school_permission_key].present?
+    elsif @wrestler
+      @school = @wrestler.school
     end
+
+    # set @school_permission_key for use in ability
+    @school_permission_key = params[:school_permission_key] if params[:school_permission_key].present?
     authorize! :read, @school
   end
 
   # Helper method to append school_permission_key to redirects if it exists.
   def append_permission_key(path)
-    return path unless @school_permission_key.present?
+    return path if @school_permission_key.blank?
 
     # If path is an ActiveRecord object, convert to URL.
     path = school_path(path) if path.is_a?(School)
     uri = URI.parse(path)
-    query_params = Rack::Utils.parse_nested_query(uri.query || "")
-    query_params["school_permission_key"] = @school_permission_key
+    query_params = Rack::Utils.parse_nested_query(uri.query || '')
+    query_params['school_permission_key'] = @school_permission_key
     uri.query = query_params.to_query
     uri.to_s
-  end  
+  end
 end

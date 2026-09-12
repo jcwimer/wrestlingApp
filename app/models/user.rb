@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   attr_accessor :reset_token
-  
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   has_many :tournaments
-  has_many :delegated_tournament_permissions, class_name: "TournamentDelegate", dependent: :destroy
-  has_many :delegated_school_permissions, class_name: "SchoolDelegate", dependent: :destroy
+  has_many :delegated_tournament_permissions, class_name: 'TournamentDelegate', dependent: :destroy
+  has_many :delegated_school_permissions, class_name: 'SchoolDelegate', dependent: :destroy
 
   # Replace Devise with has_secure_password
   has_secure_password
@@ -49,6 +51,7 @@ class User < ApplicationRecord
   def authenticated?(attribute, token)
     digest = send("#{attribute}_digest")
     return false if digest.nil?
+
     BCrypt::Password.new(digest).is_password?(token)
   end
 
@@ -57,15 +60,15 @@ class User < ApplicationRecord
               .where(tournament_delegates: { user_id: id })
               .distinct
   end
-  
+
   def delegated_schools
     School.joins(:delegates)
           .where(school_delegates: { user_id: id })
           .includes(:tournament)
           .distinct
   end
-  
+
   def self.search(search)
-	  where("email LIKE ?", "%#{search}%")
-	end      
+    where('email LIKE ?', "%#{search}%")
+  end
 end

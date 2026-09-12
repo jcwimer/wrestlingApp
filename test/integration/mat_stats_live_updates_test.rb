@@ -1,11 +1,13 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class MatStatsLiveUpdatesTest < ActionDispatch::IntegrationTest
   include ActionView::RecordIdentifier
 
-  test "destroying all matches broadcasts no-match state for mat stats stream" do
+  test 'destroying all matches broadcasts no-match state for mat stats stream' do
     create_double_elim_tournament_single_weight_1_6(4)
-    mat = @tournament.mats.create!(name: "Mat 1")
+    mat = @tournament.mats.create!(name: 'Mat 1')
     @tournament.reset_and_fill_bout_board
     stream = stream_name_for(mat)
 
@@ -15,7 +17,7 @@ class MatStatsLiveUpdatesTest < ActionDispatch::IntegrationTest
     assert_operator broadcasts_for(stream).size, :>, 0
     payload = broadcasts_for(stream).last
     assert_includes payload, dom_id(mat, :current_match)
-    assert_includes payload, "No matches assigned to this mat."
+    assert_includes payload, 'No matches assigned to this mat.'
   end
 
   private

@@ -1,37 +1,41 @@
-class WrestlerServices::ModifiedSixteenManPlacementPoints
+# frozen_string_literal: true
+
+module WrestlerServices
+  class ModifiedSixteenManPlacementPoints
     def initialize(wrestler)
-		@wrestler = wrestler
-		@wrestler = wrestler
-		@number_of_placers = @wrestler.weight.tournament.number_of_placers
+      @wrestler = wrestler
+      @wrestler = wrestler
+      @number_of_placers = @wrestler.weight.tournament.number_of_placers
     end
 
     def calc_points
-    	if  won_bracket_position_size("1/2") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).firstPlace
-        elsif bracket_position_size("1/2") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).secondPlace
-        elsif won_bracket_position_size("3/4") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).thirdPlace
-        elsif bracket_position_size("Semis") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).fourthPlace
-        elsif won_bracket_position_size("5/6") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).fifthPlace
-        elsif bracket_position_size("5/6") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).sixthPlace
-        elsif won_bracket_position_size("7/8") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).seventhPlace
-        elsif bracket_position_size("Conso Semis") > 0 and @number_of_placers >= 8
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).eighthPlace
-        else
-        	return 0
-        end
+      if won_bracket_position_size('1/2').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).first_place
+      elsif bracket_position_size('1/2').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).second_place
+      elsif won_bracket_position_size('3/4').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).third_place
+      elsif bracket_position_size('Semis').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).fourth_place
+      elsif won_bracket_position_size('5/6').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).fifth_place
+      elsif bracket_position_size('5/6').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).sixth_place
+      elsif won_bracket_position_size('7/8').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).seventh_place
+      elsif bracket_position_size('Conso Semis').positive? && (@number_of_placers >= 8)
+        WrestlerServices::PlacementPoints.new(@number_of_placers).eighth_place
+      else
+        0
+      end
     end
 
     def bracket_position_size(bracket_position_name)
-        @wrestler.all_matches.select{|m| m.bracket_position == bracket_position_name}.size
+      @wrestler.all_matches.count { |m| m.bracket_position == bracket_position_name }
     end
 
     def won_bracket_position_size(bracket_position_name)
-        @wrestler.matches_won.select{|m| m.bracket_position == bracket_position_name}.size
+      @wrestler.matches_won.count { |m| m.bracket_position == bracket_position_name }
     end
+  end
 end

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class MatAssignmentRulesController < ApplicationController
   before_action :set_tournament
   before_action :check_access_manage
-  before_action :set_mat_assignment_rule, only: [:edit, :update, :destroy]
+  before_action :set_mat_assignment_rule, only: %i[edit update destroy]
 
   def index
     @mat_assignment_rules = @tournament.mat_assignment_rules.includes(:mat)
@@ -10,6 +12,10 @@ class MatAssignmentRulesController < ApplicationController
 
   def new
     @mat_assignment_rule = @tournament.mat_assignment_rules.build
+    load_form_data
+  end
+
+  def edit
     load_form_data
   end
 
@@ -24,10 +30,6 @@ class MatAssignmentRulesController < ApplicationController
     end
   end
 
-  def edit
-    load_form_data
-  end
-
   def update
     load_form_data
 
@@ -40,17 +42,18 @@ class MatAssignmentRulesController < ApplicationController
 
   def destroy
     @mat_assignment_rule.destroy
-    redirect_to tournament_mat_assignment_rules_path(@tournament), notice: 'Mat assignment rule was successfully deleted.'
+    redirect_to tournament_mat_assignment_rules_path(@tournament),
+                notice: 'Mat assignment rule was successfully deleted.'
   end
 
   private
 
   def set_tournament
-    @tournament = Tournament.find(params[:tournament_id])
+    @tournament = Tournament.find(params.require(:tournament_id))
   end
 
   def set_mat_assignment_rule
-    @mat_assignment_rule = @tournament.mat_assignment_rules.find(params[:id])
+    @mat_assignment_rule = @tournament.mat_assignment_rules.find(params.require(:id))
   end
 
   def check_access_manage
@@ -62,7 +65,8 @@ class MatAssignmentRulesController < ApplicationController
     params[:mat_assignment_rule][:bracket_positions] ||= []
     params[:mat_assignment_rule][:rounds] ||= []
 
-    params.require(:mat_assignment_rule).permit(:mat_id, weight_classes: [], bracket_positions: [], rounds: []).tap do |whitelisted|
+    params.require(:mat_assignment_rule).permit(:mat_id, weight_classes: [], bracket_positions: [],
+                                                         rounds: []).tap do |whitelisted|
       whitelisted[:weight_classes] = Array(whitelisted[:weight_classes]).map(&:to_i)
       whitelisted[:rounds] = Array(whitelisted[:rounds]).map(&:to_i)
       whitelisted[:bracket_positions] = Array(whitelisted[:bracket_positions])

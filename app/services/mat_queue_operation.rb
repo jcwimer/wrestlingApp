@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MatQueueOperation
   def initialize(tournament)
     @tournament = tournament
@@ -5,10 +7,10 @@ class MatQueueOperation
 
   def assign(match, target_mat, position)
     position = position.to_i
-    raise ArgumentError, "Queue position must be 1-4" unless (1..4).cover?(position)
+    raise ArgumentError, 'Queue position must be 1-4' unless (1..4).cover?(position)
 
     affected_ids = mats_containing(match.id).pluck(:id) | [target_mat.id]
-    mutate(affected_ids) do |mats|
+    apply_queue_changes(affected_ids) do |mats|
       source_mats = mats.reject { |mat| mat.id == target_mat.id }
       source_mats.each { |mat| collapse(mat, match.id) }
 
@@ -30,7 +32,7 @@ class MatQueueOperation
       return true
     end
 
-    mutate(affected_ids) do |mats|
+    apply_queue_changes(affected_ids) do |mats|
       mats.each { |mat| collapse(mat, match_id) }
       set_match_mat(match_id, nil)
       fill(mats)
@@ -38,7 +40,7 @@ class MatQueueOperation
   end
 
   def clear(mat)
-    mutate([mat.id]) do |mats|
+    apply_queue_changes([mat.id]) do |mats|
       locked_mat = mats.first
       Match.where(id: locked_mat.queue_match_ids.compact, mat_id: locked_mat.id).update_all(mat_id: nil)
       write_queue(locked_mat, [])
@@ -48,13 +50,13 @@ class MatQueueOperation
   def advance(mat, finished_match = nil, invalidate_cached_views: true, deferred_wrestler_ids: nil)
     affected_ids = @tournament.mats.pluck(:id)
     changed = false
-    mutate(affected_ids, invalidate_cached_views:, deferred_wrestler_ids:) do |mats|
+    apply_queue_changes(affected_ids, invalidate_cached_views:, deferred_wrestler_ids:) do |mats|
       locked_mat = mats.find { |candidate| candidate.id == mat.id }
       if finished_match
         changed = locked_mat.queue_match_ids.include?(finished_match.id)
         collapse(locked_mat, finished_match.id)
         set_match_mat(finished_match.id, nil)
-      elsif locked_mat.queue1 && Match.where(id: locked_mat.queue1, finished: 1).exists?
+      elsif locked_mat.queue1 && Match.exists?(id: locked_mat.queue1, finished: 1)
         finished_id = locked_mat.queue1
         collapse(locked_mat, finished_id)
         set_match_mat(finished_id, nil)
@@ -66,7 +68,7 @@ class MatQueueOperation
   end
 
   def promote_after_queue1_finish!(mat, finished_match)
-    mutate([mat.id], broadcast_changes: false) do |mats|
+    apply_queue_changes([mat.id], broadcast_changes: false) do |mats|
       locked_mat = mats.first
       collapse(locked_mat, finished_match.id)
       set_match_mat(finished_match.id, nil)
@@ -75,12 +77,12 @@ class MatQueueOperation
 
   def refill(invalidate_cached_views: true, deferred_wrestler_ids: nil)
     mat_ids = @tournament.mats.pluck(:id)
-    mutate(mat_ids, invalidate_cached_views:, deferred_wrestler_ids:) { |mats| fill(mats) }
+    apply_queue_changes(mat_ids, invalidate_cached_views:, deferred_wrestler_ids:) { |mats| fill(mats) }
   end
 
   def refresh_bout_board!(invalidate_cached_views: true, deferred_wrestler_ids: nil)
     mat_ids = @tournament.mats.pluck(:id)
-    mutate(mat_ids, invalidate_cached_views:, deferred_wrestler_ids:) do |mats|
+    apply_queue_changes(mat_ids, invalidate_cached_views:, deferred_wrestler_ids:) do |mats|
       finished_ids = Match.where(id: mats.flat_map(&:queue_match_ids).compact, finished: 1).pluck(:id)
       mats.each do |mat|
         mat.queue_match_ids.compact.each do |match_id|
@@ -96,7 +98,7 @@ class MatQueueOperation
 
   def reset_and_fill
     mat_ids = @tournament.mats.pluck(:id)
-    mutate(mat_ids) do |mats|
+    apply_queue_changes(mat_ids) do |mats|
       Match.where(tournament_id: @tournament.id).where.not(mat_id: nil).update_all(mat_id: nil)
       mats.each { |mat| write_queue(mat, []) }
       fill(mats)
@@ -105,7 +107,7 @@ class MatQueueOperation
 
   private
 
-  def mutate(mat_ids, invalidate_cached_views: true, deferred_wrestler_ids: nil, broadcast_changes: true)
+  def apply_queue_changes(mat_ids, invalidate_cached_views: true, deferred_wrestler_ids: nil, broadcast_changes: true) # rubocop:disable Naming/PredicateMethod
     return true if mat_ids.empty?
 
     affected_mats = []
@@ -117,10 +119,10 @@ class MatQueueOperation
       before_queues = affected_mats.to_h { |mat| [mat.id, mat.queue_match_ids] }
       before_locations = queue_locations(affected_mats)
       yield affected_mats
-      changed_mats = affected_mats.select { |mat| before_queues[mat.id] != mat.queue_match_ids }
+      changed_mats = affected_mats.reject { |mat| before_queues[mat.id] == mat.queue_match_ids }
       after_locations = queue_locations(affected_mats)
-      moved_match_ids = (before_locations.keys | after_locations.keys).select do |match_id|
-        before_locations[match_id] != after_locations[match_id]
+      moved_match_ids = (before_locations.keys | after_locations.keys).reject do |match_id|
+        before_locations[match_id] == after_locations[match_id]
       end
       wrestler_ids = Match.where(id: moved_match_ids).pluck(:w1, :w2).flatten.compact.uniq
     end
@@ -132,9 +134,9 @@ class MatQueueOperation
       TournamentCacheInvalidator.wrestler_listings(wrestler_ids) if invalidate_cached_views
       mats_for_broadcast = Mat.where(id: changed_mats.map(&:id)).order(:id).to_a
       preload_broadcast_matches(mats_for_broadcast)
-      scoreboard_cache_values = Rails.cache.read_multi(*mats_for_broadcast.flat_map { |mat|
+      scoreboard_cache_values = Rails.cache.read_multi(*mats_for_broadcast.flat_map do |mat|
         [mat.scoreboard_selection_cache_key, mat.last_match_result_cache_key]
-      })
+      end)
       mats_for_broadcast.each do |mat|
         mat.broadcast_legacy_mat_view
         mat.broadcast_scoreboard_state(
@@ -149,7 +151,7 @@ class MatQueueOperation
 
   def mats_containing(match_id)
     Mat.where(tournament_id: @tournament.id).where(
-      "queue1 = :id OR queue2 = :id OR queue3 = :id OR queue4 = :id", id: match_id
+      'queue1 = :id OR queue2 = :id OR queue3 = :id OR queue4 = :id', id: match_id
     )
   end
 
@@ -164,7 +166,7 @@ class MatQueueOperation
   end
 
   def write_queue(mat, ids)
-    queue = ids.first(4) + [nil] * (4 - ids.first(4).length)
+    queue = ids.first(4) + ([nil] * (4 - ids.first(4).length))
     mat.update_columns(
       queue1: queue[0], queue2: queue[1], queue3: queue[2], queue4: queue[3], updated_at: Time.current
     )
@@ -199,8 +201,8 @@ class MatQueueOperation
     match_ids = mats.flat_map(&:queue_match_ids).compact.uniq
     matches_by_id = Match.where(id: match_ids).includes(
       :tournament,
-      { wrestler1: [:school, :matches_as_w1, :matches_as_w2] },
-      { wrestler2: [:school, :matches_as_w1, :matches_as_w2] }
+      { wrestler1: %i[school matches_as_w1 matches_as_w2] },
+      { wrestler2: %i[school matches_as_w1 matches_as_w2] }
     ).index_by(&:id)
     mats.each { |mat| mat.preload_queue_matches(matches_by_id) }
   end

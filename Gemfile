@@ -77,10 +77,11 @@ gem "mission_control-jobs"
 
 
 group :development do
-#  gem 'rubocop'
  gem 'brakeman'
  gem 'bundler-audit'
  gem 'rubocop'
+ gem 'rubocop-rails'
+ gem 'rubocop-performance'
 end
 
 group :development, :test do

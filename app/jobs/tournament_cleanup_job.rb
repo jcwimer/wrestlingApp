@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TournamentCleanupJob < ApplicationJob
   queue_as :default
 
@@ -13,12 +15,12 @@ class TournamentCleanupJob < ApplicationJob
     old_tournaments = Tournament.where('date < ? AND user_id IS NOT NULL', 1.week.ago.to_date).includes(
       :matches,
       { schools: :delegates },
-      weights: [:wrestlers, :matches]
+      weights: %i[wrestlers matches]
     )
-    
-    active_ids, empty_ids = old_tournaments.partition { |tournament|
-      tournament.matches.any? { |match| match.finished == 1 && match.win_type != "BYE" }
-    }.map { |tournaments| tournaments.map(&:id) }
+
+    active_ids, empty_ids = old_tournaments.partition do |tournament|
+      tournament.matches.any? { |match| match.finished == 1 && match.win_type != 'BYE' }
+    end.map { |tournaments| tournaments.map(&:id) }
 
     cleanup_active_tournaments(active_ids)
     delete_empty_tournaments(empty_ids)

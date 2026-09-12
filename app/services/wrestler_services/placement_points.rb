@@ -1,53 +1,49 @@
-class WrestlerServices::PlacementPoints
-	def initialize(number_of_placers)
-		@number_of_placers = number_of_placers
+# frozen_string_literal: true
+
+module WrestlerServices
+  class PlacementPoints
+    def initialize(number_of_placers)
+      @number_of_placers = number_of_placers
     end
 
-    def firstPlace
-        if @number_of_placers == 4
-            return 14
-        else    
-            return 16
-        end
+    def first_place
+      return 14 if @number_of_placers == 4
+
+      16
     end
-    
-    def secondPlace
-        if @number_of_placers == 4
-            return 10
-        else    
-            return 12
-        end
+
+    def second_place
+      return 10 if @number_of_placers == 4
+
+      12
     end
-    
-    def thirdPlace
-        if @number_of_placers == 4
-            return 7
-        else    
-            return 9
-        end
+
+    def third_place
+      return 7 if @number_of_placers == 4
+
+      9
     end
-    
-    def fourthPlace
-        if @number_of_placers == 4
-            return 4
-        else    
-            return 7
-        end
+
+    def fourth_place
+      return 4 if @number_of_placers == 4
+
+      7
     end
-    
-    def fifthPlace
-        5  
+
+    def fifth_place
+      5
     end
-    
-    def sixthPlace
-        3  
+
+    def sixth_place
+      3
     end
-    
-    def seventhPlace
-        2  
+
+    def seventh_place
+      2
     end
-    
-    def eighthPlace
-        1 
+
+    def eighth_place
+      1
     end
+  end
 end

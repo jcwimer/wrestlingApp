@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class MatAssignmentRulesControllerTest < ActionController::TestCase
@@ -19,8 +21,8 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
   end
 
   def create_rule
-    post :create, params: { tournament_id: @tournament.id, mat_assignment_rule: { 
-      mat_id: @mat.id, weight_classes: [1, 2, 3], bracket_positions: ['1/2'], rounds: [1, 2] 
+    post :create, params: { tournament_id: @tournament.id, mat_assignment_rule: {
+      mat_id: @mat.id, weight_classes: [1, 2, 3], bracket_positions: ['1/2'], rounds: [1, 2]
     } }
   end
 
@@ -29,8 +31,8 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
   end
 
   def update_rule(rule_id)
-    patch :update, params: { tournament_id: @tournament.id, id: rule_id, mat_assignment_rule: { 
-      weight_classes: [4, 5, 6] 
+    patch :update, params: { tournament_id: @tournament.id, id: rule_id, mat_assignment_rule: {
+      weight_classes: [4, 5, 6]
     } }
   end
 
@@ -65,31 +67,31 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
   end
 
   # Tests
-  test "logged in tournament owner should get index" do
+  test 'logged in tournament owner should get index' do
     sign_in_owner
     index
     success
   end
 
-  test "logged in tournament delegate should get index" do
+  test 'logged in tournament delegate should get index' do
     sign_in_tournament_delegate
     index
     success
   end
 
-  test "logged in user should not get index if not owner or delegate" do
+  test 'logged in user should not get index if not owner or delegate' do
     sign_in_non_owner
     index
     redirect
   end
 
-  test "logged school delegate should not get index" do
+  test 'logged school delegate should not get index' do
     sign_in_school_delegate
     index
     redirect
   end
 
-  test "logged in tournament owner should create a new rule" do
+  test 'logged in tournament owner should create a new rule' do
     sign_in_owner
     new
     success
@@ -99,7 +101,7 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     assert_redirected_to tournament_mat_assignment_rules_path(@tournament)
   end
 
-  test "logged in tournament delegate should create a new rule" do
+  test 'logged in tournament delegate should create a new rule' do
     sign_in_tournament_delegate
     new
     success
@@ -109,7 +111,7 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     assert_redirected_to tournament_mat_assignment_rules_path(@tournament)
   end
 
-  test "logged in user should not create a rule if not owner or delegate" do
+  test 'logged in user should not create a rule if not owner or delegate' do
     sign_in_non_owner
     new
     redirect
@@ -119,7 +121,7 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     redirect
   end
 
-  test "logged school delegate should not create a rule" do
+  test 'logged school delegate should not create a rule' do
     sign_in_school_delegate
     new
     redirect
@@ -129,35 +131,35 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     redirect
   end
 
-  test "logged in tournament owner should edit a rule" do
+  test 'logged in tournament owner should edit a rule' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_owner
     edit_rule(rule.id)
     success
   end
 
-  test "logged in tournament delegate should edit a rule" do
+  test 'logged in tournament delegate should edit a rule' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_tournament_delegate
     edit_rule(rule.id)
     success
   end
 
-  test "logged in user should not edit a rule if not owner or delegate" do
+  test 'logged in user should not edit a rule if not owner or delegate' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_non_owner
     edit_rule(rule.id)
     redirect
   end
 
-  test "logged school delegate should not edit a rule" do
+  test 'logged school delegate should not edit a rule' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_school_delegate
     edit_rule(rule.id)
     redirect
   end
 
-  test "logged in tournament owner should update a rule" do
+  test 'logged in tournament owner should update a rule' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_owner
     update_rule(rule.id)
@@ -166,7 +168,7 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     assert_equal [4, 5, 6], rule.weight_classes
   end
 
-  test "logged in tournament delegate should update a rule" do
+  test 'logged in tournament delegate should update a rule' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_tournament_delegate
     update_rule(rule.id)
@@ -175,7 +177,7 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     assert_equal [4, 5, 6], rule.weight_classes
   end
 
-  test "logged in tournament owner should destroy a rule" do
+  test 'logged in tournament owner should destroy a rule' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_owner
     assert_difference 'MatAssignmentRule.count', -1 do
@@ -184,7 +186,7 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     assert_redirected_to tournament_mat_assignment_rules_path(@tournament)
   end
 
-  test "logged in tournament delegate should destroy a rule" do
+  test 'logged in tournament delegate should destroy a rule' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_tournament_delegate
     assert_difference 'MatAssignmentRule.count', -1 do
@@ -193,7 +195,7 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     assert_redirected_to tournament_mat_assignment_rules_path(@tournament)
   end
 
-  test "logged in user should not destroy a rule if not owner or delegate" do
+  test 'logged in user should not destroy a rule if not owner or delegate' do
     rule = MatAssignmentRule.create!(mat_id: @mat.id, tournament_id: @tournament.id, weight_classes: [1, 2, 3])
     sign_in_non_owner
     assert_no_difference 'MatAssignmentRule.count' do
@@ -202,22 +204,22 @@ class MatAssignmentRulesControllerTest < ActionController::TestCase
     redirect
   end
 
-  test "logged in tournament owner should create a rule with bracket positions" do
+  test 'logged in tournament owner should create a rule with bracket positions' do
     sign_in_owner
     assert_difference 'MatAssignmentRule.count', 1 do
-      post :create, params: { tournament_id: @tournament.id, mat_assignment_rule: { 
-        mat_id: @mat.id, weight_classes: [1, 2, 3], bracket_positions: ['A1', 'B2'], rounds: [1, 2] 
+      post :create, params: { tournament_id: @tournament.id, mat_assignment_rule: {
+        mat_id: @mat.id, weight_classes: [1, 2, 3], bracket_positions: %w[A1 B2], rounds: [1, 2]
       } }
     end
     assert_redirected_to tournament_mat_assignment_rules_path(@tournament)
-  
+
     rule = MatAssignmentRule.last
     assert_equal [1, 2, 3], rule.weight_classes
-    assert_equal ['A1', 'B2'], rule.bracket_positions
+    assert_equal %w[A1 B2], rule.bracket_positions
     assert_equal [1, 2], rule.rounds
   end
 
-  test "index lists created mat assignment rule once in html" do
+  test 'index lists created mat assignment rule once in html' do
     sign_in_owner
     unique_mat = Mat.create!(name: "Unique Mat #{SecureRandom.hex(4)}", tournament_id: @tournament.id)
     MatAssignmentRule.create!(

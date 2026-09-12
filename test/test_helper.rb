@@ -1,418 +1,424 @@
-if ENV["COVERAGE"]
-  require "simplecov"
-  SimpleCov.start "rails" do
+# frozen_string_literal: true
+
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start 'rails' do
     enable_coverage :branch
-    skip "/test/"
-    skip "/config/"
-    skip "/vendor/"
+    skip '/test/'
+    skip '/config/'
+    skip '/vendor/'
   end
 end
 
-ENV["RAILS_ENV"] ||= "test"
-require File.expand_path('../../config/environment', __FILE__)
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('../config/environment', __dir__)
 require 'rails/test_help'
 
-class ActiveSupport::TestCase
-  include ActiveJob::TestHelper
+module ActiveSupport
+  class TestCase
+    include ActiveJob::TestHelper
 
-  self.test_order = :random
+    self.test_order = :random
 
-  parallelize_setup do |worker|
-    SimpleCov.command_name "#{SimpleCov.command_name}-#{worker}" if defined?(SimpleCov)
-  end
-
-  parallelize(workers: :number_of_processors)
-  ActiveRecord::Migration.check_all_pending!
-
-  # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-  #
-  # Note: You'll currently still have to declare fixtures explicitly in integration tests
-  # -- they do not yet inherit this setting
-  fixtures :all
-
-  # Add more helper methods to be used by all tests here...
-  
-  # Configure email for testing
-  def setup_test_mailer
-    ActionMailer::Base.delivery_method = :test
-    ActionMailer::Base.perform_deliveries = true
-    ActionMailer::Base.deliveries = []
-    Rails.application.routes.default_url_options[:host] = 'example.com'
-    ActionMailer::Base.default from: 'test@example.com'
-  end
-  
-  # Authentication helpers for tests - replaces Devise test helpers
-  def sign_in(user)
-    # Set the password_digest for the user if it's not already set
-    unless user.password_digest.present?
-      user.password_digest = BCrypt::Password.create("password")
-      user.save(validate: false)
+    parallelize_setup do |worker|
+      SimpleCov.command_name "#{SimpleCov.command_name}-#{worker}" if defined?(SimpleCov)
     end
-    
-    # For controller tests
-    if defined?(@request)
+
+    parallelize(workers: :number_of_processors)
+    ActiveRecord::Migration.check_all_pending!
+
+    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
+    #
+    # Note: You'll currently still have to declare fixtures explicitly in integration tests
+    # -- they do not yet inherit this setting
+    fixtures :all
+
+    # Add more helper methods to be used by all tests here...
+
+    # Configure email for testing
+    def setup_test_mailer
+      ActionMailer::Base.delivery_method = :test
+      ActionMailer::Base.perform_deliveries = true
+      ActionMailer::Base.deliveries = []
+      Rails.application.routes.default_url_options[:host] = 'example.com'
+      ActionMailer::Base.default from: 'test@example.com'
+    end
+
+    # Authentication helpers for tests - replaces Devise test helpers
+    def sign_in(user)
+      # Set the password_digest for the user if it's not already set
+      if user.password_digest.blank?
+        user.password_digest = BCrypt::Password.create('password')
+        user.save(validate: false)
+      end
+
+      # For controller tests
+      return unless defined?(@request)
+
       @request.session[:user_id] = user.id
     end
-  end
 
-  def generate_tournament_matches(tournament)
-    perform_enqueued_jobs do
-      TournamentServices::GenerateTournamentMatches.new(tournament).generate
-    end
-  end
-
-  def create_tournament_backup(tournament, reason)
-    perform_enqueued_jobs do
-      TournamentServices::TournamentBackupService.new(tournament, reason).create_backup
-    end
-  end
-
-  def import_tournament_backup(tournament, backup)
-    perform_enqueued_jobs do
-      TournamentServices::WrestlingdevImporter.new(tournament, backup).import
-    end
-  end
-
-  def create_a_tournament_with_single_weight(tournament_type, number_of_wrestlers)
-    @tournament = Tournament.new
-    @tournament.name = "Test Tournament"
-    @tournament.address = "some place"
-    @tournament.director = "some guy"
-    @tournament.director_email= "test@test.com"
-    @tournament.tournament_type = tournament_type
-    @tournament.date = "2015-12-30"
-    @tournament.is_public = true
-    @tournament.save
-    @school = School.new
-    @school.name = "Test"
-    @school.tournament_id = @tournament.id
-    @school.save
-    @weight = Weight.new
-    @weight.max = 106
-    @weight.tournament_id = @tournament.id
-    @weight.save
-    create_wrestlers_for_weight(@weight, @school, number_of_wrestlers, 1)
-    return @tournament
-  end
-
-  def create_pool_tournament_single_weight(number_of_wrestlers)
-    @tournament = Tournament.new
-    @tournament.name = "Test Tournament"
-    @tournament.address = "some place"
-    @tournament.director = "some guy"
-    @tournament.director_email= "test@test.com"
-    @tournament.tournament_type = "Pool to bracket"
-    @tournament.date = "2015-12-30"
-    @tournament.is_public = true
-    @tournament.save
-    @school = School.new
-    @school.name = "Test"
-    @school.tournament_id = @tournament.id
-    @school.save
-    @weight = Weight.new
-    @weight.max = 106
-    @weight.tournament_id = @tournament.id
-    @weight.save
-    create_wrestlers_for_weight(@weight, @school, number_of_wrestlers, 1)
-    generate_tournament_matches(@tournament)
-    return @tournament
-  end
-
-  def create_double_elim_tournament_single_weight_1_6(number_of_wrestlers)
-    @tournament = Tournament.new
-    @tournament.name = "Test Tournament"
-    @tournament.address = "some place"
-    @tournament.director = "some guy"
-    @tournament.director_email= "test@test.com"
-    @tournament.tournament_type = "Regular Double Elimination 1-6"
-    @tournament.date = "2015-12-30"
-    @tournament.is_public = true
-    @tournament.save
-    @school = School.new
-    @school.name = "Test"
-    @school.tournament_id = @tournament.id
-    @school.save
-    @weight = Weight.new
-    @weight.max = 106
-    @weight.tournament_id = @tournament.id
-    @weight.save
-    create_wrestlers_for_weight_for_double_elim(@weight, @school, number_of_wrestlers, 1)
-    generate_tournament_matches(@tournament)
-    return @tournament
-  end
-  
-  def create_double_elim_tournament_single_weight(number_of_wrestlers, tournament_type)
-    @tournament = Tournament.new
-    @tournament.name = "Test Tournament"
-    @tournament.address = "some place"
-    @tournament.director = "some guy"
-    @tournament.director_email= "test@test.com"
-    @tournament.tournament_type = tournament_type
-    @tournament.date = "2015-12-30"
-    @tournament.is_public = true
-    @tournament.save
-    @school = School.new
-    @school.name = "Test"
-    @school.tournament_id = @tournament.id
-    @school.save
-    @weight = Weight.new
-    @weight.max = 106
-    @weight.tournament_id = @tournament.id
-    @weight.save
-    create_wrestlers_for_weight_for_double_elim(@weight, @school, number_of_wrestlers, 1)
-    generate_tournament_matches(@tournament)
-    return @tournament
-  end
-
-  def create_double_elim_tournament_1_6_with_multiple_weights_and_multiple_mats(number_of_wrestlers, number_of_weights, number_of_mats)
-    @tournament = Tournament.new
-    @tournament.name = "Test Tournament"
-    @tournament.address = "some place"
-    @tournament.director = "some guy"
-    @tournament.director_email = "test@test.com"
-    @tournament.tournament_type = "Regular Double Elimination 1-6"
-    @tournament.date = "2015-12-30"
-    @tournament.is_public = true
-    @tournament.save
-
-    @school = School.new
-    @school.name = "Test"
-    @school.tournament_id = @tournament.id
-    @school.save
-
-    @mats = []
-    (1..number_of_mats).each do |mat_number|
-      mat = Mat.new
-      mat.name = "Mat #{mat_number}"
-      mat.tournament_id = @tournament.id
-      mat.save
-      @mats << mat
+    def generate_tournament_matches(tournament)
+      perform_enqueued_jobs do
+        TournamentServices::GenerateTournamentMatches.new(tournament).generate
+      end
     end
 
-    (1..number_of_weights).each do |weight_number|
+    def create_tournament_backup(tournament, reason)
+      perform_enqueued_jobs do
+        TournamentServices::TournamentBackupService.new(tournament, reason).create_backup
+      end
+    end
+
+    def import_tournament_backup(tournament, backup)
+      perform_enqueued_jobs do
+        TournamentServices::WrestlingdevImporter.new(tournament, backup).import
+      end
+    end
+
+    def create_a_tournament_with_single_weight(tournament_type, number_of_wrestlers)
+      @tournament = Tournament.new
+      @tournament.name = 'Test Tournament'
+      @tournament.address = 'some place'
+      @tournament.director = 'some guy'
+      @tournament.director_email = 'test@test.com'
+      @tournament.tournament_type = tournament_type
+      @tournament.date = '2015-12-30'
+      @tournament.is_public = true
+      @tournament.save
+      @school = School.new
+      @school.name = 'Test'
+      @school.tournament_id = @tournament.id
+      @school.save
+      @weight = Weight.new
+      @weight.max = 106
+      @weight.tournament_id = @tournament.id
+      @weight.save
+      create_wrestlers_for_weight(@weight, @school, number_of_wrestlers, 1)
+      @tournament
+    end
+
+    def create_pool_tournament_single_weight(number_of_wrestlers)
+      @tournament = Tournament.new
+      @tournament.name = 'Test Tournament'
+      @tournament.address = 'some place'
+      @tournament.director = 'some guy'
+      @tournament.director_email = 'test@test.com'
+      @tournament.tournament_type = 'Pool to bracket'
+      @tournament.date = '2015-12-30'
+      @tournament.is_public = true
+      @tournament.save
+      @school = School.new
+      @school.name = 'Test'
+      @school.tournament_id = @tournament.id
+      @school.save
+      @weight = Weight.new
+      @weight.max = 106
+      @weight.tournament_id = @tournament.id
+      @weight.save
+      create_wrestlers_for_weight(@weight, @school, number_of_wrestlers, 1)
+      generate_tournament_matches(@tournament)
+      @tournament
+    end
+
+    def create_double_elim_tournament_single_weight_1_6(number_of_wrestlers)
+      @tournament = Tournament.new
+      @tournament.name = 'Test Tournament'
+      @tournament.address = 'some place'
+      @tournament.director = 'some guy'
+      @tournament.director_email = 'test@test.com'
+      @tournament.tournament_type = 'Regular Double Elimination 1-6'
+      @tournament.date = '2015-12-30'
+      @tournament.is_public = true
+      @tournament.save
+      @school = School.new
+      @school.name = 'Test'
+      @school.tournament_id = @tournament.id
+      @school.save
+      @weight = Weight.new
+      @weight.max = 106
+      @weight.tournament_id = @tournament.id
+      @weight.save
+      create_wrestlers_for_weight_for_double_elim(@weight, @school, number_of_wrestlers, 1)
+      generate_tournament_matches(@tournament)
+      @tournament
+    end
+
+    def create_double_elim_tournament_single_weight(number_of_wrestlers, tournament_type)
+      @tournament = Tournament.new
+      @tournament.name = 'Test Tournament'
+      @tournament.address = 'some place'
+      @tournament.director = 'some guy'
+      @tournament.director_email = 'test@test.com'
+      @tournament.tournament_type = tournament_type
+      @tournament.date = '2015-12-30'
+      @tournament.is_public = true
+      @tournament.save
+      @school = School.new
+      @school.name = 'Test'
+      @school.tournament_id = @tournament.id
+      @school.save
+      @weight = Weight.new
+      @weight.max = 106
+      @weight.tournament_id = @tournament.id
+      @weight.save
+      create_wrestlers_for_weight_for_double_elim(@weight, @school, number_of_wrestlers, 1)
+      generate_tournament_matches(@tournament)
+      @tournament
+    end
+
+    def create_double_elim_tournament_1_6_with_multiple_weights_and_multiple_mats(number_of_wrestlers, number_of_weights, number_of_mats)
+      @tournament = Tournament.new
+      @tournament.name = 'Test Tournament'
+      @tournament.address = 'some place'
+      @tournament.director = 'some guy'
+      @tournament.director_email = 'test@test.com'
+      @tournament.tournament_type = 'Regular Double Elimination 1-6'
+      @tournament.date = '2015-12-30'
+      @tournament.is_public = true
+      @tournament.save
+
+      @school = School.new
+      @school.name = 'Test'
+      @school.tournament_id = @tournament.id
+      @school.save
+
+      @mats = []
+      (1..number_of_mats).each do |mat_number|
+        mat = Mat.new
+        mat.name = "Mat #{mat_number}"
+        mat.tournament_id = @tournament.id
+        mat.save
+        @mats << mat
+      end
+
+      (1..number_of_weights).each do |weight_number|
+        weight = Weight.new
+        weight.max = 100 + weight_number
+        weight.tournament_id = @tournament.id
+        weight.save
+        create_wrestlers_for_weight_for_double_elim(weight, @school, number_of_wrestlers, 1)
+      end
+
+      generate_tournament_matches(@tournament)
+      @tournament
+    end
+
+    def create_wrestlers_for_weight_for_double_elim(weight, school, number_of_wrestlers, naming_start_number)
+      naming_number = naming_start_number
+      (1..number_of_wrestlers).each do |_number|
+        wrestler = Wrestler.new
+        wrestler.name = "Test#{naming_number}"
+        wrestler.school_id = school.id
+        wrestler.weight_id = weight.id
+        wrestler.original_seed = naming_number
+        wrestler.save
+        naming_number += 1
+      end
+    end
+
+    def create_pool_tournament
+      @tournament = Tournament.new
+      @tournament.name = 'Test Tournament'
+      @tournament.address = 'some place'
+      @tournament.director = 'some guy'
+      @tournament.director_email = 'test@test.com'
+      @tournament.tournament_type = 'Pool to bracket'
+      @tournament.date = '2015-12-30'
+      @tournament.is_public = true
+      @tournament.save
+
+      # First school
+      school = School.new
+      school.name = 'Test1'
+      school.tournament_id = @tournament.id
+      school.save
+
+      # Second school
+      school = School.new
+      school.name = 'Test2'
+      school.tournament_id = @tournament.id
+      school.save
+
+      # Third school
+      school = School.new
+      school.name = 'Test3'
+      school.tournament_id = @tournament.id
+      school.save
+
+      # Weight 1
       weight = Weight.new
-      weight.max = 100 + weight_number
+      weight.max = 106
       weight.tournament_id = @tournament.id
       weight.save
-      create_wrestlers_for_weight_for_double_elim(weight, @school, number_of_wrestlers, 1)
+      create_wrestlers_for_weight(weight, @tournament.schools.sample, 6, 1)
+
+      # Weight 2
+      weight = Weight.new
+      weight.max = 113
+      weight.tournament_id = @tournament.id
+      weight.save
+      create_wrestlers_for_weight(weight, @tournament.schools.sample, 10, 7)
+
+      # Weight 3
+      weight = Weight.new
+      weight.max = 120
+      weight.tournament_id = @tournament.id
+      weight.save
+      create_wrestlers_for_weight(weight, @tournament.schools.sample, 12, 17)
+
+      # Weight 4
+      weight = Weight.new
+      weight.max = 126
+      weight.tournament_id = @tournament.id
+      weight.save
+      create_wrestlers_for_weight(weight, @tournament.schools.sample, 16, 29)
+
+      # Weight 5
+      weight = Weight.new
+      weight.max = 132
+      weight.tournament_id = @tournament.id
+      weight.save
+      create_wrestlers_for_weight(weight, @tournament.schools.sample, 24, 45)
+
+      # Weight 6
+      weight = Weight.new
+      weight.max = 138
+      weight.tournament_id = @tournament.id
+      weight.save
+      create_wrestlers_for_weight(weight, @tournament.schools.sample, 8, 69)
+
+      generate_tournament_matches(@tournament)
     end
 
-    generate_tournament_matches(@tournament)
-    return @tournament
-  end
-
-  def create_wrestlers_for_weight_for_double_elim(weight, school, number_of_wrestlers, naming_start_number)
-    naming_number = naming_start_number
-    (1..number_of_wrestlers).each do |number|
-      wrestler = Wrestler.new
-      wrestler.name = "Test#{naming_number}"
-      wrestler.school_id = school.id
-      wrestler.weight_id = weight.id
-      wrestler.original_seed = naming_number
-      wrestler.save
-      naming_number += 1
+    def team_point_adjusts_for_wrestler(wrestler_name, points)
+      wrestler = get_wrestler_by_name(wrestler_name)
+      Teampointadjust.create!(points: points, wrestler_id: wrestler.id)
     end
-  end
 
-  def create_pool_tournament
-    @tournament = Tournament.new
-    @tournament.name = "Test Tournament"
-    @tournament.address = "some place"
-    @tournament.director = "some guy"
-    @tournament.director_email= "test@test.com"
-    @tournament.tournament_type = "Pool to bracket"
-    @tournament.date = "2015-12-30"
-    @tournament.is_public = true
-    @tournament.save
-    
-    # First school
-    school = School.new
-    school.name = "Test1"
-    school.tournament_id = @tournament.id
-    school.save
-    
-    # Second school
-    school = School.new
-    school.name = "Test2"
-    school.tournament_id = @tournament.id
-    school.save
-
-    # Third school
-    school = School.new
-    school.name = "Test3"
-    school.tournament_id = @tournament.id
-    school.save
-
-    # Weight 1
-    weight = Weight.new
-    weight.max = 106
-    weight.tournament_id = @tournament.id
-    weight.save
-    create_wrestlers_for_weight(weight, @tournament.schools.sample, 6, 1)
-
-    # Weight 2
-    weight = Weight.new
-    weight.max = 113
-    weight.tournament_id = @tournament.id
-    weight.save
-    create_wrestlers_for_weight(weight, @tournament.schools.sample, 10, 7)
-
-    # Weight 3
-    weight = Weight.new
-    weight.max = 120
-    weight.tournament_id = @tournament.id
-    weight.save
-    create_wrestlers_for_weight(weight, @tournament.schools.sample, 12, 17)
-
-    # Weight 4
-    weight = Weight.new
-    weight.max = 126
-    weight.tournament_id = @tournament.id
-    weight.save
-    create_wrestlers_for_weight(weight, @tournament.schools.sample, 16, 29)
-
-    # Weight 5
-    weight = Weight.new
-    weight.max = 132
-    weight.tournament_id = @tournament.id
-    weight.save
-    create_wrestlers_for_weight(weight, @tournament.schools.sample, 24, 45)
-
-    # Weight 6
-    weight = Weight.new
-    weight.max = 138
-    weight.tournament_id = @tournament.id
-    weight.save
-    create_wrestlers_for_weight(weight, @tournament.schools.sample, 8, 69)
-
-    generate_tournament_matches(@tournament)
-  end
-
-  def team_point_adjusts_for_wrestler(wrestler_name, points)
-    wrestler = get_wrestler_by_name(wrestler_name)
-    Teampointadjust.create!(points: points, wrestler_id: wrestler.id)
-  end
-
-  def create_wrestlers_for_weight(weight, school, number_of_wrestlers, naming_start_number)
-    naming_number = naming_start_number
-    seed = 1
-    for number in (1..number_of_wrestlers) do 
-      wrestler = Wrestler.new
-      wrestler.name = "Test#{naming_number}"
-      wrestler.school_id = school.id
-      wrestler.weight_id = weight.id
-      if (number_of_wrestlers <= 10 and seed <= 4) or (number_of_wrestlers > 10 and seed <= 8) 
-        wrestler.original_seed = seed
-      end
-      wrestler.save
-      naming_number = naming_number + 1
-      seed = seed + 1
-    end
-  end
-
-  def end_match(match,winner)
-     match.win_type = "Decision"
-     match.score = "1-0"
-     save_match(match,winner)
-  end
-  
-  def end_match_extra_points(match,winner)
-     match.win_type = "Decision"
-     match.score = "0-2"
-     save_match(match,winner)
-  end
-  
-  def end_match_with_major(match,winner)
-     match.win_type = "Major"
-     match.score = "8-0"
-     save_match(match,winner)
-  end
-  
-  def end_match_with_tech(match,winner)
-     match.win_type = "Tech Fall"
-     match.score = "15-0"
-     save_match(match,winner)
-  end
-  
-  def end_match_with_pin(match,winner)
-     match.win_type = "Pin"
-     match.score = "5:00"
-     save_match(match,winner)
-  end
-  
-  def end_match_with_quickest_pin(match,winner)
-     match.win_type = "Pin"
-     match.score = "0:20"
-     save_match(match,winner)
-  end
-  
-  def end_match_with_quick_pin(match,winner)
-     match.win_type = "Pin"
-     match.score = "1:20"
-     save_match(match,winner)
-  end
-  
-  def end_match_custom(match,win_type,score,winner)
-     match.win_type = win_type
-     match.score = score
-     save_match(match,winner)
-  end
-  
-  def save_match(match,winner)
-    match.finished = 1
-    match.winner_id = translate_name_to_id(winner)
-
-    perform_enqueued_jobs { match.save! }
-  end
-  
-  def translate_name_to_id(wrestler)
-    Wrestler.where("name = ? AND weight_id = ?", wrestler, @weight.id).first.id
-  end
-
-  def get_wrestler_by_name(name)
-  	Wrestler.where("name = ? AND weight_id = ?", name, @weight.id).first    
-  end
-
-  def match_wrestler_vs(wrestler1_name,wrestler2_name)
-    Match.where("(w1 = ? OR w2 = ?) AND (w1 = ? OR w2 = ?)",translate_name_to_id(wrestler1_name), translate_name_to_id(wrestler1_name), translate_name_to_id(wrestler2_name),translate_name_to_id(wrestler2_name)).first
-  end
-
-  def finish_matches_through_round(tournament, max_round)
-    perform_enqueued_jobs do
-      tournament.matches.reload.select { |match| match.round && match.round <= max_round }.each do |match|
-        next if match.finished == 1
-        winner_id = match.w1 || match.w2
-        next unless winner_id
-        match.update!(
-          finished: 1,
-          winner_id: winner_id,
-          win_type: "Decision",
-          score: "1-0"
-        )
+    def create_wrestlers_for_weight(weight, school, number_of_wrestlers, naming_start_number)
+      naming_number = naming_start_number
+      seed = 1
+      (1..number_of_wrestlers).each do |_|
+        wrestler = Wrestler.new
+        wrestler.name = "Test#{naming_number}"
+        wrestler.school_id = school.id
+        wrestler.weight_id = weight.id
+        wrestler.original_seed = seed if ((number_of_wrestlers <= 10) && (seed <= 4)) || ((number_of_wrestlers > 10) && (seed <= 8))
+        wrestler.save
+        naming_number += 1
+        seed += 1
       end
     end
+
+    def end_match(match, winner)
+      match.win_type = 'Decision'
+      match.score = '1-0'
+      save_match(match, winner)
+    end
+
+    def end_match_extra_points(match, winner)
+      match.win_type = 'Decision'
+      match.score = '0-2'
+      save_match(match, winner)
+    end
+
+    def end_match_with_major(match, winner)
+      match.win_type = 'Major'
+      match.score = '8-0'
+      save_match(match, winner)
+    end
+
+    def end_match_with_tech(match, winner)
+      match.win_type = 'Tech Fall'
+      match.score = '15-0'
+      save_match(match, winner)
+    end
+
+    def end_match_with_pin(match, winner)
+      match.win_type = 'Pin'
+      match.score = '5:00'
+      save_match(match, winner)
+    end
+
+    def end_match_with_quickest_pin(match, winner)
+      match.win_type = 'Pin'
+      match.score = '0:20'
+      save_match(match, winner)
+    end
+
+    def end_match_with_quick_pin(match, winner)
+      match.win_type = 'Pin'
+      match.score = '1:20'
+      save_match(match, winner)
+    end
+
+    def end_match_custom(match, win_type, score, winner)
+      match.win_type = win_type
+      match.score = score
+      save_match(match, winner)
+    end
+
+    def save_match(match, winner)
+      match.finished = 1
+      match.winner_id = translate_name_to_id(winner)
+
+      perform_enqueued_jobs { match.save! }
+    end
+
+    def translate_name_to_id(wrestler)
+      Wrestler.where('name = ? AND weight_id = ?', wrestler, @weight.id).first.id
+    end
+
+    def get_wrestler_by_name(name)
+      Wrestler.where('name = ? AND weight_id = ?', name, @weight.id).first
+    end
+
+    def match_wrestler_vs(wrestler1_name, wrestler2_name)
+      Match.where('(w1 = ? OR w2 = ?) AND (w1 = ? OR w2 = ?)', translate_name_to_id(wrestler1_name), translate_name_to_id(wrestler1_name),
+                  translate_name_to_id(wrestler2_name), translate_name_to_id(wrestler2_name)).first
+    end
+
+    def finish_matches_through_round(tournament, max_round)
+      perform_enqueued_jobs do
+        tournament.matches.reload.select { |match| match.round && match.round <= max_round }.each do |match|
+          next if match.finished == 1
+
+          winner_id = match.w1 || match.w2
+          next unless winner_id
+
+          match.update!(
+            finished: 1,
+            winner_id: winner_id,
+            win_type: 'Decision',
+            score: '1-0'
+          )
+        end
+      end
+    end
+
+    def finish_matches_through_final_round(tournament)
+      last_round = tournament.matches.maximum(:round)
+      return unless last_round
+
+      finish_matches_through_round(tournament, last_round - 1)
+    end
   end
-
-  def finish_matches_through_final_round(tournament)
-    last_round = tournament.matches.maximum(:round)
-    return unless last_round
-
-    finish_matches_through_round(tournament, last_round - 1)
-  end
-
 end
 
 # Add support for controller tests
-class ActionController::TestCase
-  # Authentication helpers for tests - replaces Devise test helpers
-  def sign_in(user)
-    # Set the password_digest for the user if it's not already set
-    unless user.password_digest.present?
-      user.password_digest = BCrypt::Password.create("password")
-      user.save(validate: false)
+module ActionController
+  class TestCase
+    # Authentication helpers for tests - replaces Devise test helpers
+    def sign_in(user)
+      # Set the password_digest for the user if it's not already set
+      if user.password_digest.blank?
+        user.password_digest = BCrypt::Password.create('password')
+        user.save(validate: false)
+      end
+
+      # Set the session for the controller test
+      @request.session[:user_id] = user.id
     end
-    
-    # Set the session for the controller test
-    @request.session[:user_id] = user.id
   end
 end

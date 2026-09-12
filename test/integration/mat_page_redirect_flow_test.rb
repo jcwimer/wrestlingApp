@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
   fixtures :all
@@ -21,7 +23,7 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
     ActiveJob::Base.queue_adapter = :inline
   end
 
-  test "tournament show links stat match to mat stat page" do
+  test 'tournament show links stat match to mat stat page' do
     log_in(@owner)
 
     get tournament_path(@tournament)
@@ -31,7 +33,7 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, stat_match_path(@queue1_match)
   end
 
-  test "mat stat page sets redirect path back to mat stat" do
+  test 'mat stat page sets redirect path back to mat stat' do
     log_in(@owner)
 
     get stat_mat_path(@mat)
@@ -40,7 +42,7 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "value=\"#{stat_mat_path(@mat)}\""
   end
 
-  test "mat state update redirects back to mat state and shows next queued match immediately" do
+  test 'mat state update redirects back to mat state and shows next queued match immediately' do
     log_in(@owner)
 
     get state_mat_path(@mat, bout_number: @queue1_match.bout_number)
@@ -50,8 +52,8 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
       assert_enqueued_with(job: FillBoutBoardJob) do
         patch match_path(@queue1_match), params: {
           match: {
-            score: "3-1",
-            win_type: "Decision",
+            score: '3-1',
+            win_type: 'Decision',
             winner_id: @queue1_match.w1,
             finished: 1
           }
@@ -68,7 +70,7 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "data-match-state-match-id-value=\"#{@queue1_match.id}\""
   end
 
-  test "mat stat update redirects back to mat stat and shows next queued match immediately" do
+  test 'mat stat update redirects back to mat stat and shows next queued match immediately' do
     log_in(@owner)
 
     get stat_mat_path(@mat, bout_number: @queue1_match.bout_number)
@@ -78,8 +80,8 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
       assert_enqueued_with(job: FillBoutBoardJob) do
         patch match_path(@queue1_match), params: {
           match: {
-            score: "3-1",
-            win_type: "Decision",
+            score: '3-1',
+            win_type: 'Decision',
             winner_id: @queue1_match.w1,
             finished: 1
           }
@@ -96,7 +98,7 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "data-match-data-match-id-value=\"#{@queue1_match.id}\""
   end
 
-  test "mat show still redirects match updates back to mat show" do
+  test 'mat show still redirects match updates back to mat show' do
     log_in(@owner)
 
     get mat_path(@mat, bout_number: @queue1_match.bout_number)
@@ -104,8 +106,8 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
 
     patch match_path(@queue1_match), params: {
       match: {
-        score: "3-1",
-        win_type: "Decision",
+        score: '3-1',
+        win_type: 'Decision',
         winner_id: @queue1_match.w1,
         finished: 1
       }
@@ -124,14 +126,14 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
   def ensure_login_password(user)
     return if user.password_digest.present?
 
-    user.update_column(:password_digest, BCrypt::Password.create("password"))
+    user.update_column(:password_digest, BCrypt::Password.create('password'))
   end
 
   def log_in(user)
     post login_path, params: {
       session: {
         email: user.email,
-        password: "password"
+        password: 'password'
       }
     }
   end

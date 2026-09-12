@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
   fixtures :all
@@ -11,7 +13,7 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
     ensure_login_password(@owner)
   end
 
-  test "match state update redirects to all matches by default" do
+  test 'match state update redirects to all matches by default' do
     log_in(@owner)
 
     get state_match_path(@match)
@@ -19,8 +21,8 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
 
     patch match_path(@match), params: {
       match: {
-        score: "3-1",
-        win_type: "Decision",
+        score: '3-1',
+        win_type: 'Decision',
         winner_id: @match.w1,
         finished: 1
       }
@@ -29,7 +31,7 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to "/tournaments/#{@tournament.id}/matches"
   end
 
-  test "match state update respects redirect_to param through request flow" do
+  test 'match state update respects redirect_to param through request flow' do
     log_in(@owner)
 
     get state_match_path(@match), params: { redirect_to: mat_path(@mat) }
@@ -38,8 +40,8 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
     patch match_path(@match), params: {
       redirect_to: mat_path(@mat),
       match: {
-        score: "3-1",
-        win_type: "Decision",
+        score: '3-1',
+        win_type: 'Decision',
         winner_id: @match.w1,
         finished: 1
       }
@@ -48,7 +50,7 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to mat_path(@mat)
   end
 
-  test "mat state update redirects back to mat state through request flow" do
+  test 'mat state update redirects back to mat state through request flow' do
     log_in(@owner)
 
     get state_mat_path(@mat), params: { bout_number: @match.bout_number }
@@ -56,8 +58,8 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
 
     patch match_path(@match), params: {
       match: {
-        score: "3-1",
-        win_type: "Decision",
+        score: '3-1',
+        win_type: 'Decision',
         winner_id: @match.w1,
         finished: 1
       }
@@ -66,7 +68,7 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to state_mat_path(@mat)
   end
 
-  test "mat state redirect shows next queued match before background job runs" do
+  test 'mat state redirect shows next queued match before background job runs' do
     queue2_match = matches(:tournament_1_bout_1001)
     @mat.update!(queue1: @match.id, queue2: queue2_match.id, queue3: nil, queue4: nil)
     @match.update_columns(mat_id: @mat.id, finalized_at: nil)
@@ -80,8 +82,8 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
       assert_enqueued_with(job: FillBoutBoardJob) do
         patch match_path(@match), params: {
           match: {
-            score: "3-1",
-            win_type: "Decision",
+            score: '3-1',
+            win_type: 'Decision',
             winner_id: @match.w1,
             finished: 1
           }
@@ -103,14 +105,14 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
   def ensure_login_password(user)
     return if user.password_digest.present?
 
-    user.update_column(:password_digest, BCrypt::Password.create("password"))
+    user.update_column(:password_digest, BCrypt::Password.create('password'))
   end
 
   def log_in(user)
     post login_path, params: {
       session: {
         email: user.email,
-        password: "password"
+        password: 'password'
       }
     }
   end

@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 module ApplicationHelper
   def hide_ads?
     case controller_name
-    when "schools"
-      action_name == "show" && (user_signed_in? || school_permission_key_present?)
-    when "wrestlers"
+    when 'schools'
+      action_name == 'show' && (user_signed_in? || school_permission_key_present?)
+    when 'wrestlers'
       %w[new edit].include?(action_name) && (user_signed_in? || school_permission_key_present?)
-    when "mats"
-      action_name == "show" && user_signed_in?
+    when 'mats'
+      action_name == 'show' && user_signed_in?
     else
       false
     end

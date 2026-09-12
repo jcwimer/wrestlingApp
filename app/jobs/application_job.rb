@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationJob < ActiveJob::Base
   ENQUEUE_MAX_ATTEMPTS = 3
 
@@ -9,9 +11,9 @@ class ApplicationJob < ActiveJob::Base
 
       begin
         perform_later(...)
-      rescue SolidQueue::Job::EnqueueError => error
+      rescue SolidQueue::Job::EnqueueError => e
         attempts += 1
-        raise unless error.cause.is_a?(ActiveRecord::Deadlocked) && attempts < ENQUEUE_MAX_ATTEMPTS
+        raise unless e.cause.is_a?(ActiveRecord::Deadlocked) && attempts < ENQUEUE_MAX_ATTEMPTS
 
         sleep(rand * attempts * 0.05)
         retry
@@ -27,9 +29,9 @@ class ApplicationJob < ActiveJob::Base
 
   private
 
-  def detect_n_plus_one_queries(&block)
-    return Prosopite.pause(&block) if Prosopite.scan?
+  def detect_n_plus_one_queries(&)
+    return Prosopite.pause(&) if Prosopite.scan?
 
-    Prosopite.scan(&block)
+    Prosopite.scan(&)
   end
 end

@@ -5,6 +5,7 @@
 - Write as little code as possible. I do not want a bunch of crazy non standard or non supported rails implementations or patterns. This will make rails upgrades in the future easier.
 - javascript tests are through vitest. See `vitest.config.js`. Run `npm run test:js` or `npm run test:js:coverage`
 - Ruby test coverage uses SimpleCov. Run `COVERAGE=true bin/rails test` (enabled automatically in `bin/run-all-tests.sh`)
+- Ruby style is enforced with RuboCop (`rubocop`, `rubocop-rails`, `rubocop-performance`). Run `bundle exec rubocop app/ test/` or `bin/rubocop`.
 - Load-tests are in `loadtests/` using gatling and playwright. They simulate traffic analyzed from my largest tournament to date.
 - importmap pins in `importmap.rb` and aliases in `vitest.config.js` need to match.
 - Unless explicitly told, tests should not be removed. If you need to remove a test because of a rewrite or any other reason you need to ask before you do so.

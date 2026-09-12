@@ -1,4 +1,6 @@
+# frozen_string_literal: true
+
 class SchoolDelegate < ApplicationRecord
-    belongs_to :school
-    belongs_to :user
+  belongs_to :school
+  belongs_to :user
 end

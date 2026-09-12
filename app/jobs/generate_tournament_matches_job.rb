@@ -1,21 +1,23 @@
+# frozen_string_literal: true
+
 class GenerateTournamentMatchesJob < ApplicationJob
   queue_as :default
   limits_concurrency to: 1, key: ->(tournament) { "tournament:#{tournament.id}" }
-  
+
   def perform(tournament)
     # Log information about the job
     Rails.logger.info("Starting tournament match generation for tournament ##{tournament.id}")
-    
+
     begin
       # Execute the job
       generator = TournamentServices::GenerateTournamentMatches.new(tournament)
       generator.generate_raw
-      
+
       Rails.logger.info("Completed tournament match generation for tournament ##{tournament.id}")
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error("Error generating tournament matches: #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
       raise # Re-raise the error so it's properly recorded
     end
   end
-end 
+end

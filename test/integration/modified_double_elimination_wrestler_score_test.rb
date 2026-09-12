@@ -1,149 +1,149 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ModifiedDoubleEliminationWrestlerScore < ActionDispatch::IntegrationTest
   def setup
-    create_double_elim_tournament_single_weight(14, "Modified 16 Man Double Elimination 1-8")
+    create_double_elim_tournament_single_weight(14, 'Modified 16 Man Double Elimination 1-8')
   end
-  
-  def winner_by_name(winner_name,match)
-    wrestler = @tournament.weights.first.wrestlers.select{|w| w.name == winner_name}.first
+
+  def winner_by_name(winner_name, match)
+    wrestler = @tournament.weights.first.wrestlers.find { |w| w.name == winner_name }
     match.w1 = wrestler.id
     match.winner_id = wrestler.id
     match.finished = 1
-    match.win_type = "Decision"
-    match.score = "0-0"
+    match.win_type = 'Decision'
+    match.score = '0-0'
     match.save
   end
-  
-  def winner_by_name_by_bye(winner_name,match)
-    wrestler = @tournament.weights.first.wrestlers.select{|w| w.name == winner_name}.first
+
+  def winner_by_name_by_bye(winner_name, match)
+    wrestler = @tournament.weights.first.wrestlers.find { |w| w.name == winner_name }
     match.w1 = wrestler.id
     match.winner_id = wrestler.id
     match.finished = 1
-    match.win_type = "BYE"
-    match.score = ""
+    match.win_type = 'BYE'
+    match.score = ''
     match.save
   end
-  
+
   def get_wretler_by_name(name)
-    wrestler = @tournament.weights.first.wrestlers.select{|w| w.name == name}.first
-    return wrestler
+    @tournament.weights.first.wrestlers.find { |w| w.name == name }
   end
 
   def wrestle_other_match_in_round(reference_match, conso: false)
     match = @tournament.matches.reload
-      .select { |m| m.round == reference_match.round && m.id != reference_match.id && m.is_consolation_match == conso }
-      .first
+                       .find { |m| m.round == reference_match.round && m.id != reference_match.id && m.is_consolation_match == conso }
     return if match.nil?
 
-    winner_by_name("Test2", match)
+    winner_by_name('Test2', match)
   end
 
-  test "Wrestlers get points for byes in the championship rounds" do
+  test 'Wrestlers get points for byes in the championship rounds' do
     matches = @tournament.matches.reload
-    round1 = matches.select{|m| m.round == 1}.first
-    quarter = matches.select{|m| m.bracket_position == "Quarter"}.first
-    semi = matches.select{|m| m.bracket_position == "Semis"}.first
-    winner_by_name_by_bye("Test1", round1)
-    winner_by_name_by_bye("Test1", quarter)
+    round1 = matches.find { |m| m.round == 1 }
+    quarter = matches.find { |m| m.bracket_position == 'Quarter' }
+    semi = matches.find { |m| m.bracket_position == 'Semis' }
+    winner_by_name_by_bye('Test1', round1)
+    winner_by_name_by_bye('Test1', quarter)
     wrestle_other_match_in_round(round1, conso: false)
-    winner_by_name("Test1", semi)
-    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    winner_by_name('Test1', semi)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name('Test1'))
     assert wrestler_points_calc.byePoints == 2
   end
-  
-  test "Wrestlers get points for byes in the consolation rounds" do
+
+  test 'Wrestlers get points for byes in the consolation rounds' do
     matches = @tournament.matches.reload
-    round2 = matches.select{|m| m.bracket_position == "Conso Round of 8"}.first
-    quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.first
-    semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
-    winner_by_name_by_bye("Test1", round2)
-    winner_by_name_by_bye("Test1", quarter)
+    round2 = matches.find { |m| m.bracket_position == 'Conso Round of 8' }
+    quarter = matches.find { |m| m.bracket_position == 'Conso Quarter' }
+    semi = matches.find { |m| m.bracket_position == 'Conso Semis' }
+    winner_by_name_by_bye('Test1', round2)
+    winner_by_name_by_bye('Test1', quarter)
     wrestle_other_match_in_round(round2, conso: true)
-    winner_by_name("Test1", semi)
-    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
+    winner_by_name('Test1', semi)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name('Test1'))
     assert wrestler_points_calc.byePoints == 1
   end
-  
-  test "Wrestlers do not get bye points if they get byes to 1st/2nd and win by bye" do
+
+  test 'Wrestlers do not get bye points if they get byes to 1st/2nd and win by bye' do
     matches = @tournament.matches.reload
-    round1 = matches.select{|m| m.round == 1}.first
-    quarter = matches.select{|m| m.bracket_position == "Quarter"}.first
-    semi = matches.select{|m| m.bracket_position == "Semis"}.first
-    final = matches.select{|m| m.bracket_position == "1/2"}.first
-    winner_by_name_by_bye("Test1", round1)
-    winner_by_name_by_bye("Test1", quarter)
-    winner_by_name_by_bye("Test1", semi)
-    winner_by_name_by_bye("Test1", final)
-    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 0
-  end
-  
-  test "Wrestlers do not get bye points if they get byes to 5th/6th and win by bye" do
-    matches = @tournament.matches.reload
-    round2 = matches.select{|m| m.bracket_position == "Conso Round of 8"}.first
-    quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.first
-    semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
-    final = matches.select{|m| m.bracket_position == "5/6"}.first
-    winner_by_name_by_bye("Test1", round2)
-    winner_by_name_by_bye("Test1", quarter)
-    winner_by_name_by_bye("Test1", semi)
-    winner_by_name_by_bye("Test1", final)
-    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 0
-  end
-  
-  test "Wrestlers do not get bye points if they get byes to 1st/2nd and win by decision" do
-    matches = @tournament.matches.reload
-    round1 = matches.select{|m| m.round == 1}.first
-    quarter = matches.select{|m| m.bracket_position == "Quarter"}.first
-    semi = matches.select{|m| m.bracket_position == "Semis"}.first
-    final = matches.select{|m| m.bracket_position == "1/2"}.first
-    winner_by_name_by_bye("Test1", round1)
-    winner_by_name_by_bye("Test1", quarter)
-    winner_by_name_by_bye("Test1", semi)
-    winner_by_name("Test1", final)
-    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 0
+    round1 = matches.find { |m| m.round == 1 }
+    quarter = matches.find { |m| m.bracket_position == 'Quarter' }
+    semi = matches.find { |m| m.bracket_position == 'Semis' }
+    final = matches.find { |m| m.bracket_position == '1/2' }
+    winner_by_name_by_bye('Test1', round1)
+    winner_by_name_by_bye('Test1', quarter)
+    winner_by_name_by_bye('Test1', semi)
+    winner_by_name_by_bye('Test1', final)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name('Test1'))
+    assert wrestler_points_calc.byePoints.zero?
   end
 
-  test "Wrestlers do not get championship bye points when no championship match is wrestled in those bye rounds" do
+  test 'Wrestlers do not get bye points if they get byes to 5th/6th and win by bye' do
     matches = @tournament.matches.reload
-    round1 = matches.select{|m| m.round == 1}.first
-    quarter = matches.select{|m| m.bracket_position == "Quarter"}.first
-    semi = matches.select{|m| m.bracket_position == "Semis"}.first
-    winner_by_name_by_bye("Test1", round1)
-    winner_by_name_by_bye("Test1", quarter)
-    winner_by_name("Test1", semi)
-    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 0
-  end
-  
-  test "Wrestlers do not get bye points if they get byes to 5th/6th and win by decision" do
-    matches = @tournament.matches.reload
-    round2 = matches.select{|m| m.bracket_position == "Conso Round of 8"}.first
-    quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.first
-    semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
-    final = matches.select{|m| m.bracket_position == "5/6"}.first
-    winner_by_name_by_bye("Test1", round2)
-    winner_by_name_by_bye("Test1", quarter)
-    winner_by_name_by_bye("Test1", semi)
-    winner_by_name("Test1", final)
-    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 0
+    round2 = matches.find { |m| m.bracket_position == 'Conso Round of 8' }
+    quarter = matches.find { |m| m.bracket_position == 'Conso Quarter' }
+    semi = matches.find { |m| m.bracket_position == 'Conso Semis' }
+    final = matches.find { |m| m.bracket_position == '5/6' }
+    winner_by_name_by_bye('Test1', round2)
+    winner_by_name_by_bye('Test1', quarter)
+    winner_by_name_by_bye('Test1', semi)
+    winner_by_name_by_bye('Test1', final)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name('Test1'))
+    assert wrestler_points_calc.byePoints.zero?
   end
 
-  test "Wrestlers do not get conso bye points when no conso match is wrestled in those rounds" do
+  test 'Wrestlers do not get bye points if they get byes to 1st/2nd and win by decision' do
     matches = @tournament.matches.reload
-    round2 = matches.select{|m| m.bracket_position == "Conso Round of 8"}.first
-    quarter = matches.select{|m| m.bracket_position == "Conso Quarter"}.first
-    semi = matches.select{|m| m.bracket_position == "Conso Semis"}.first
-    final = matches.select{|m| m.bracket_position == "5/6"}.first
-    winner_by_name_by_bye("Test1", round2)
-    winner_by_name_by_bye("Test1", quarter)
-    winner_by_name_by_bye("Test1", semi)
-    winner_by_name("Test1", final)
-    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name("Test1"))
-    assert wrestler_points_calc.byePoints == 0
+    round1 = matches.find { |m| m.round == 1 }
+    quarter = matches.find { |m| m.bracket_position == 'Quarter' }
+    semi = matches.find { |m| m.bracket_position == 'Semis' }
+    final = matches.find { |m| m.bracket_position == '1/2' }
+    winner_by_name_by_bye('Test1', round1)
+    winner_by_name_by_bye('Test1', quarter)
+    winner_by_name_by_bye('Test1', semi)
+    winner_by_name('Test1', final)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name('Test1'))
+    assert wrestler_points_calc.byePoints.zero?
+  end
+
+  test 'Wrestlers do not get championship bye points when no championship match is wrestled in those bye rounds' do
+    matches = @tournament.matches.reload
+    round1 = matches.find { |m| m.round == 1 }
+    quarter = matches.find { |m| m.bracket_position == 'Quarter' }
+    semi = matches.find { |m| m.bracket_position == 'Semis' }
+    winner_by_name_by_bye('Test1', round1)
+    winner_by_name_by_bye('Test1', quarter)
+    winner_by_name('Test1', semi)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name('Test1'))
+    assert wrestler_points_calc.byePoints.zero?
+  end
+
+  test 'Wrestlers do not get bye points if they get byes to 5th/6th and win by decision' do
+    matches = @tournament.matches.reload
+    round2 = matches.find { |m| m.bracket_position == 'Conso Round of 8' }
+    quarter = matches.find { |m| m.bracket_position == 'Conso Quarter' }
+    semi = matches.find { |m| m.bracket_position == 'Conso Semis' }
+    final = matches.find { |m| m.bracket_position == '5/6' }
+    winner_by_name_by_bye('Test1', round2)
+    winner_by_name_by_bye('Test1', quarter)
+    winner_by_name_by_bye('Test1', semi)
+    winner_by_name('Test1', final)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name('Test1'))
+    assert wrestler_points_calc.byePoints.zero?
+  end
+
+  test 'Wrestlers do not get conso bye points when no conso match is wrestled in those rounds' do
+    matches = @tournament.matches.reload
+    round2 = matches.find { |m| m.bracket_position == 'Conso Round of 8' }
+    quarter = matches.find { |m| m.bracket_position == 'Conso Quarter' }
+    semi = matches.find { |m| m.bracket_position == 'Conso Semis' }
+    final = matches.find { |m| m.bracket_position == '5/6' }
+    winner_by_name_by_bye('Test1', round2)
+    winner_by_name_by_bye('Test1', quarter)
+    winner_by_name_by_bye('Test1', semi)
+    winner_by_name('Test1', final)
+    wrestler_points_calc = WrestlerServices::CalculateWrestlerTeamScore.new(get_wretler_by_name('Test1'))
+    assert wrestler_points_calc.byePoints.zero?
   end
 end

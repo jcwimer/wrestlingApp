@@ -1,6 +1,10 @@
+# frozen_string_literal: true
+
 class MatsController < ApplicationController
-  before_action :set_mat, only: [:show, :stat, :state, :scoreboard, :edit, :update, :destroy, :assign_next_match, :select_match]
-  before_action :check_access, only: [:new,:create,:update,:destroy,:edit,:show, :stat, :state, :scoreboard, :assign_next_match, :select_match]
+  before_action :set_mat,
+                only: %i[show stat state scoreboard edit update destroy assign_next_match select_match]
+  before_action :check_access,
+                only: %i[new create update destroy edit show stat state scoreboard assign_next_match select_match]
 
   # GET /mats/1
   # GET /mats/1.json
@@ -20,7 +24,7 @@ class MatsController < ApplicationController
 
   def state
     load_mat_match_context
-    @match_state_ruleset = "folkstyle_usa"
+    @match_state_ruleset = 'folkstyle_usa'
   end
 
   def select_match
@@ -28,9 +32,9 @@ class MatsController < ApplicationController
       match.id == params[:match_id].to_i || match.bout_number == params[:bout_number].to_i
     end
 
-    return head :unprocessable_entity unless selected_match || params[:last_match_result].present?
+    return head :unprocessable_content unless selected_match || params[:last_match_result].present?
 
-    @mat.update_scoreboard_state!(
+    @mat.update_scoreboard_state(
       match: selected_match,
       update_selection: selected_match.present?,
       last_match_result: params[:last_match_result],
@@ -42,9 +46,9 @@ class MatsController < ApplicationController
   # GET /mats/new
   def new
     @mat = Mat.new
-    if params[:tournament]
-      @tournament = Tournament.find(params[:tournament])
-    end
+    return unless params[:tournament]
+
+    @tournament = Tournament.find(params.require(:tournament))
   end
 
   # GET /mats/1/edit
@@ -63,7 +67,7 @@ class MatsController < ApplicationController
         format.json { render action: 'show', status: :created, location: @mat }
       else
         format.html { render action: 'new' }
-        format.json { render json: @mat.errors, status: :unprocessable_entity }
+        format.json { render json: @mat.errors, status: :unprocessable_content }
       end
     end
   end
@@ -74,11 +78,10 @@ class MatsController < ApplicationController
     respond_to do |format|
       if @mat.advance_queue!
         format.html { redirect_to "/tournaments/#{@mat.tournament.id}", notice: "Mat #{@mat.name} queue advanced." }
-        format.json { head :no_content }
       else
-        format.html { redirect_to "/tournaments/#{@mat.tournament.id}", alert: "There was an error." }
-        format.json { head :no_content }
+        format.html { redirect_to "/tournaments/#{@mat.tournament.id}", alert: 'There was an error.' }
       end
+      format.json { head :no_content }
     end
   end
 
@@ -92,7 +95,7 @@ class MatsController < ApplicationController
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
-        format.json { render json: @mat.errors, status: :unprocessable_entity }
+        format.json { render json: @mat.errors, status: :unprocessable_content }
       end
     end
   end
@@ -109,96 +112,95 @@ class MatsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_mat
-      @mat = Mat.find(params[:id])
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_mat
+    @mat = Mat.find(params.require(:id))
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def mat_params
+    params.require(:mat).permit(:name, :tournament_id)
+  end
+
+  def check_access
+    if params[:tournament]
+      @tournament = Tournament.find(params.require(:tournament))
+    elsif params[:mat]
+      @mat = Mat.new(mat_params)
+      @tournament = Tournament.find(@mat.tournament_id)
+    elsif @mat
+      @tournament = @mat.tournament
     end
+    authorize! :manage, @tournament
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def mat_params
-      params.require(:mat).permit(:name, :tournament_id)
+  def sanitize_mat_redirect_path(path)
+    return nil if path.blank?
+
+    uri = URI.parse(path)
+    return nil if uri.scheme.present? || uri.host.present?
+
+    params = Rack::Utils.parse_nested_query(uri.query)
+    params.delete('bout_number')
+    uri.query = params.to_query.presence
+    uri.to_s
+  rescue URI::InvalidURIError
+    nil
+  end
+
+  def mat_queue_page_path
+    case action_name
+    when 'stat' then stat_mat_path(@mat)
+    when 'state' then state_mat_path(@mat)
+    else mat_path(@mat)
     end
+  end
 
-    def check_access
-      if params[:tournament]
-    	   @tournament = Tournament.find(params[:tournament])
-    	elsif params[:mat]
-    	   @mat = Mat.new(mat_params)
-    	   @tournament = Tournament.find(@mat.tournament_id)
-    	elsif @mat
-    	   @tournament = @mat.tournament
-    	end
-    	authorize! :manage, @tournament
-    end
+  def load_mat_match_context
+    bout_number_param = params[:bout_number]
+    @queue_matches = @mat.queue_matches
+    @match = if bout_number_param
+               @queue_matches.compact.find { |match| match.bout_number == bout_number_param.to_i }
+             else
+               @queue_matches[0]
+             end
+    @match ||= @queue_matches[0]
+    @next_match = @queue_matches[1]
+    @show_next_bout_button = false
 
-    def sanitize_mat_redirect_path(path)
-      return nil if path.blank?
-
-      uri = URI.parse(path)
-      return nil if uri.scheme.present? || uri.host.present?
-
-      params = Rack::Utils.parse_nested_query(uri.query)
-      params.delete("bout_number")
-      uri.query = params.to_query.presence
-      uri.to_s
-    rescue URI::InvalidURIError
-      nil
-    end
-
-    def mat_queue_page_path
-      case action_name
-      when "stat" then stat_mat_path(@mat)
-      when "state" then state_mat_path(@mat)
-      else mat_path(@mat)
-      end
-    end
-
-    def load_mat_match_context
-      bout_number_param = params[:bout_number]
-      @queue_matches = @mat.queue_matches
-      @match = if bout_number_param
-        @queue_matches.compact.find { |match| match.bout_number == bout_number_param.to_i }
+    @wrestlers = []
+    if @match
+      if @match.w1
+        @wrestler1_name = @match.wrestler1.name
+        @wrestler1_school_name = @match.wrestler1.school.name
+        @wrestler1_last_match = @match.wrestler1.last_match
+        @wrestlers.push(@match.wrestler1)
       else
-        @queue_matches[0]
+        @wrestler1_name = 'Not assigned'
+        @wrestler1_school_name = 'N/A'
+        @wrestler1_last_match = nil
       end
-      @match ||= @queue_matches[0]
-      @next_match = @queue_matches[1]
-      @show_next_bout_button = false
 
-      @wrestlers = []
-      if @match
-        if @match.w1
-          @wrestler1_name = @match.wrestler1.name
-          @wrestler1_school_name = @match.wrestler1.school.name
-          @wrestler1_last_match = @match.wrestler1.last_match
-          @wrestlers.push(@match.wrestler1)
-        else
-          @wrestler1_name = "Not assigned"
-          @wrestler1_school_name = "N/A"
-          @wrestler1_last_match = nil
-        end
-
-        if @match.w2
-          @wrestler2_name = @match.wrestler2.name
-          @wrestler2_school_name = @match.wrestler2.school.name
-          @wrestler2_last_match = @match.wrestler2.last_match
-          @wrestlers.push(@match.wrestler2)
-        else
-          @wrestler2_name = "Not assigned"
-          @wrestler2_school_name = "N/A"
-          @wrestler2_last_match = nil
-        end
-
-        @tournament = @match.tournament
+      if @match.w2
+        @wrestler2_name = @match.wrestler2.name
+        @wrestler2_school_name = @match.wrestler2.school.name
+        @wrestler2_last_match = @match.wrestler2.last_match
+        @wrestlers.push(@match.wrestler2)
       else
-        @tournament = @mat.tournament
+        @wrestler2_name = 'Not assigned'
+        @wrestler2_school_name = 'N/A'
+        @wrestler2_last_match = nil
       end
 
-      @match_results_redirect_path = sanitize_mat_redirect_path(params[:redirect_to].presence || request.original_fullpath)
-      @mat_queue_page_path = mat_queue_page_path
-      session[:return_path] = @match_results_redirect_path
-      session[:error_return_path] = request.original_fullpath
+      @tournament = @match.tournament
+    else
+      @tournament = @mat.tournament
     end
-    
-    
+
+    @match_results_redirect_path = sanitize_mat_redirect_path(params[:redirect_to].presence || request.original_fullpath)
+    @mat_queue_page_path = mat_queue_page_path
+    session[:return_path] = @match_results_redirect_path
+    session[:error_return_path] = request.original_fullpath
+  end
 end

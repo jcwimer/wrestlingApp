@@ -1,34 +1,36 @@
+# frozen_string_literal: true
+
 class WrestlingdevImportJob < ApplicationJob
   queue_as :default
   limits_concurrency to: 1, key: ->(tournament, *) { "tournament:#{tournament.id}" }
-  
+
   def perform(tournament, import_data = nil)
     # Log information about the job
     Rails.logger.info("Starting import for tournament ##{tournament.id} (#{tournament.name})")
-    
+
     # Create job status record
-    job_name = "Importing tournament"
+    job_name = 'Importing tournament'
     job_status = TournamentJobStatus.create!(
       tournament: tournament,
       job_name: job_name,
-      status: "Running",
-      details: "Processing backup data"
+      status: 'Running',
+      details: 'Processing backup data'
     )
-    
+
     begin
       # Execute the import
       importer = TournamentServices::WrestlingdevImporter.new(tournament)
       importer.import_data = import_data if import_data
       importer.import_raw
-      
+
       # Remove the job status record on success
       TournamentJobStatus.complete_job(tournament.id, job_name)
-    rescue => e
+    rescue StandardError => e
       # Update status to errored
-      job_status.update(status: "Errored", details: "Error: #{e.message}")
-      
+      job_status.update(status: 'Errored', details: "Error: #{e.message}")
+
       # Re-raise the error for SolidQueue to handle
       raise e
     end
   end
-end 
+end

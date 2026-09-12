@@ -1,23 +1,27 @@
-class TournamentServices::WipeTournamentMatches
-    
-    def initialize( tournament )
+# frozen_string_literal: true
+
+module TournamentServices
+  class WipeTournamentMatches
+    def initialize(tournament)
       @tournament = tournament
     end
-    
-    def setUpMatchGeneration
-        wipeMatches
-        resetSchoolScores
+
+    def set_up_match_generation
+      wipe_matches
+      reset_school_scores
     end
-    
-    def wipeWeightMatches(weight)
-       weight.matches.destroy_all 
+    alias setUpMatchGeneration set_up_match_generation # rubocop:disable Naming/MethodName
+
+    def wipe_weight_matches(weight)
+      weight.matches.destroy_all
     end
-    
-    def wipeMatches
-       @tournament.destroy_all_matches
+
+    def wipe_matches
+      @tournament.destroy_all_matches
     end
-    
-    def resetSchoolScores
-		@tournament.schools.update_all("score = 0.0")
-	end
+
+    def reset_school_scores
+      @tournament.schools.update_all('score = 0.0')
+    end
+  end
 end

@@ -1,10 +1,24 @@
+# frozen_string_literal: true
+
 class TournamentsController < ApplicationController
-  before_action :set_tournament, only: [:all_results, :delete_school_keys, :generate_school_keys,:reset_bout_board,:calculate_team_scores,:bout_sheets,:swap,:weigh_in_sheet,:error,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:remove_delegate,:school_delegate,:delegate,:matches,:weigh_in,:weigh_in_weight,:create_custom_weights,:show,:edit,:update,:destroy,:up_matches,:no_matches,:team_scores,:generate_matches,:bracket,:all_brackets,:qrcode,:live_scores]
-  before_action :check_access_manage, only: [:delete_school_keys, :generate_school_keys,:reset_bout_board,:calculate_team_scores,:swap,:weigh_in_sheet,:teampointadjust,:remove_teampointadjust,:remove_school_delegate,:school_delegate,:weigh_in,:weigh_in_weight,:create_custom_weights,:update,:edit,:generate_matches,:matches,:qrcode]
-  before_action :check_access_destroy, only: [:destroy,:delegate,:remove_delegate]
+  before_action :set_tournament,
+                only: %i[
+                  all_results delete_school_keys generate_school_keys reset_bout_board calculate_team_scores
+                  bout_sheets swap weigh_in_sheet error teampointadjust remove_teampointadjust
+                  remove_school_delegate remove_delegate school_delegate delegate matches weigh_in
+                  weigh_in_weight create_custom_weights show edit update destroy up_matches no_matches
+                  team_scores generate_matches bracket all_brackets qrcode live_scores
+                ]
+  before_action :check_access_manage,
+                only: %i[
+                  delete_school_keys generate_school_keys reset_bout_board calculate_team_scores swap
+                  weigh_in_sheet teampointadjust remove_teampointadjust remove_school_delegate school_delegate
+                  weigh_in weigh_in_weight create_custom_weights update edit generate_matches matches qrcode
+                ]
+  before_action :check_access_destroy, only: %i[destroy delegate remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
-  before_action :check_for_matches, only: [:all_results,:bracket,:all_brackets]
-  before_action :check_access_read, only: [:all_results,:up_matches,:bracket,:all_brackets,:live_scores]
+  before_action :check_for_matches, only: %i[all_results bracket all_brackets]
+  before_action :check_access_read, only: %i[all_results up_matches bracket all_brackets live_scores]
 
   def weigh_in_sheet
     @schools = @tournament.schools.includes(wrestlers: :weight)
@@ -20,21 +34,27 @@ class TournamentsController < ApplicationController
   end
 
   def swap
-    @wrestler = Wrestler.find(params[:wrestler][:originalId])
+    @wrestler = Wrestler.find(params.require(:wrestler).permit(:original_id)[:original_id])
     respond_to do |format|
-      if WrestlerServices::SwapWrestlers.new.swap_wrestlers_bracket_lines(params[:wrestler][:originalId], params[:wrestler][:swapId])
-        format.html { redirect_to "/tournaments/#{@wrestler.tournament.id}/brackets/#{@wrestler.weight.id}", notice: 'Wrestlers successfully swapped.' }
+      if WrestlerServices::SwapWrestlers.new.swap_wrestlers_bracket_lines(params[:wrestler][:original_id],
+                                                                          params[:wrestler][:swap_id])
+        format.html do
+          redirect_to "/tournaments/#{@wrestler.tournament.id}/brackets/#{@wrestler.weight.id}",
+                      notice: 'Wrestlers successfully swapped.'
+        end
         format.json { render action: 'show', status: :created, location: @wrestler }
       end
     end
   end
 
   def remove_teampointadjust
-    if params[:teampointadjust]
-      @points = Teampointadjust.find(params[:teampointadjust])
-      @points.destroy
-      respond_to do |format|
-        format.html { redirect_to "/tournaments/#{@tournament.id}/teampointadjust", notice: 'Point adjustment removed successfully' }
+    return unless params[:teampointadjust]
+
+    @points = Teampointadjust.find(params.require(:teampointadjust))
+    @points.destroy
+    respond_to do |format|
+      format.html do
+        redirect_to "/tournaments/#{@tournament.id}/teampointadjust", notice: 'Point adjustment removed successfully'
       end
     end
   end
@@ -42,53 +62,69 @@ class TournamentsController < ApplicationController
   def teampointadjust
     if params[:teampointadjust]
       @points = Teampointadjust.new
-      @points.wrestler_id = params[:teampointadjust]["wrestler_id"]
-      @points.school_id = params[:teampointadjust]["school_id"]
-      @points.points = params[:teampointadjust]["points"]
+      @points.wrestler_id = params[:teampointadjust]['wrestler_id']
+      @points.school_id = params[:teampointadjust]['school_id']
+      @points.points = params[:teampointadjust]['points']
       respond_to do |format|
         if @points.save
-          format.html { redirect_to "/tournaments/#{@tournament.id}/teampointadjust", notice: 'Point adjustment added successfully' }
+          format.html do
+            redirect_to "/tournaments/#{@tournament.id}/teampointadjust", notice: 'Point adjustment added successfully'
+          end
         else
-          format.html { redirect_to "/tournaments/#{@tournament.id}/teampointadjust", notice: 'There was an issue saving point adjustment please try again' }
+          format.html do
+            redirect_to "/tournaments/#{@tournament.id}/teampointadjust",
+                        notice: 'There was an issue saving point adjustment please try again'
+          end
         end
       end
     else
-      @point_adjustments = @tournament.pointAdjustments
+      @point_adjustments = @tournament.point_adjustments
     end
   end
 
   def remove_delegate
-    if params[:delegate]
-      @delegate = TournamentDelegate.find(params[:delegate])
-      @delegate.destroy
-      respond_to do |format|
-        format.html { redirect_to "/tournaments/#{@tournament.id}/delegate", notice: 'Delegated permissions removed successfully' }
+    return unless params[:delegate]
+
+    @delegate = TournamentDelegate.find(params.require(:delegate))
+    @delegate.destroy
+    respond_to do |format|
+      format.html do
+        redirect_to "/tournaments/#{@tournament.id}/delegate", notice: 'Delegated permissions removed successfully'
       end
     end
   end
 
   def remove_school_delegate
-    if params[:delegate]
-      @delegate = SchoolDelegate.find(params[:delegate])
-      @delegate.destroy
-      respond_to do |format|
-        format.html { redirect_to "/tournaments/#{@tournament.id}/school_delegate", notice: 'Delegated permissions removed successfully' }
+    return unless params[:delegate]
+
+    @delegate = SchoolDelegate.find(params.require(:delegate))
+    @delegate.destroy
+    respond_to do |format|
+      format.html do
+        redirect_to "/tournaments/#{@tournament.id}/school_delegate",
+                    notice: 'Delegated permissions removed successfully'
       end
     end
   end
 
   def school_delegate
     if params[:search]
-      @user = User.where('email = ?', params[:search]).first
+      @user = User.where(email: params[:search]).first
     elsif params[:school_delegate]
       @delegate = SchoolDelegate.new
-      @delegate.user_id = params[:school_delegate]["user_id"]
-      @delegate.school_id = params[:school_delegate]["school_id"]
+      @delegate.user_id = params[:school_delegate]['user_id']
+      @delegate.school_id = params[:school_delegate]['school_id']
       respond_to do |format|
         if @delegate.save
-          format.html { redirect_to "/tournaments/#{@tournament.id}/school_delegate", notice: 'Delegated permissions added successfully' }
+          format.html do
+            redirect_to "/tournaments/#{@tournament.id}/school_delegate",
+                        notice: 'Delegated permissions added successfully'
+          end
         else
-          format.html { redirect_to "/tournaments/#{@tournament.id}/school_delegate", notice: 'There was an issue delegating permissions please try again' }
+          format.html do
+            redirect_to "/tournaments/#{@tournament.id}/school_delegate",
+                        notice: 'There was an issue delegating permissions please try again'
+          end
         end
       end
     end
@@ -99,16 +135,21 @@ class TournamentsController < ApplicationController
 
   def delegate
     if params[:search]
-      @user = User.where('email = ?', params[:search]).first
+      @user = User.where(email: params[:search]).first
     elsif params[:tournament_delegate]
       @delegate = TournamentDelegate.new
-      @delegate.user_id = params[:tournament_delegate]["user_id"]
+      @delegate.user_id = params[:tournament_delegate]['user_id']
       @delegate.tournament_id = @tournament.id
       respond_to do |format|
         if @delegate.save
-          format.html { redirect_to "/tournaments/#{@tournament.id}/delegate", notice: 'Delegated permissions added successfully' }
+          format.html do
+            redirect_to "/tournaments/#{@tournament.id}/delegate", notice: 'Delegated permissions added successfully'
+          end
         else
-          format.html { redirect_to "/tournaments/#{@tournament.id}/delegate", notice: 'There was an issue delegating permissions please try again' }
+          format.html do
+            redirect_to "/tournaments/#{@tournament.id}/delegate",
+                        notice: 'There was an issue delegating permissions please try again'
+          end
         end
       end
     end
@@ -117,7 +158,7 @@ class TournamentsController < ApplicationController
 
   def matches
     per_page = 50
-    @page = params[:page].to_i > 0 ? params[:page].to_i : 1
+    @page = params[:page].to_i.positive? ? params[:page].to_i : 1
     offset = (@page - 1) * per_page
     matches_table = Match.arel_table
 
@@ -126,29 +167,27 @@ class TournamentsController < ApplicationController
     if params[:search].present?
       wrestlers_table = Wrestler.arel_table
       schools_table = School.arel_table
-      search_terms = params[:search].downcase.split
+      search_terms = params.require(:search).downcase.split
 
       search_terms.each do |term|
         escaped_term = ActiveRecord::Base.sanitize_sql_like(term)
         pattern = "%#{escaped_term}%"
 
         matching_wrestler_ids = Wrestler
-          .joins(:weight)
-          .left_outer_joins(:school)
-          .where(weights: { tournament_id: @tournament.id })
-          .where(
-            wrestlers_table[:name].matches(pattern)
-              .or(schools_table[:name].matches(pattern))
-          )
-          .distinct
-          .select(:id)
+                                .joins(:weight)
+                                .left_outer_joins(:school)
+                                .where(weights: { tournament_id: @tournament.id })
+                                .where(
+                                  wrestlers_table[:name].matches(pattern)
+                                    .or(schools_table[:name].matches(pattern))
+                                )
+                                .distinct
+                                .select(:id)
 
         term_scope = @tournament.matches.where(w1: matching_wrestler_ids)
-          .or(@tournament.matches.where(w2: matching_wrestler_ids))
+                                .or(@tournament.matches.where(w2: matching_wrestler_ids))
 
-        if term.match?(/\A\d+\z/)
-          term_scope = term_scope.or(@tournament.matches.where(bout_number: term.to_i))
-        end
+        term_scope = term_scope.or(@tournament.matches.where(bout_number: term.to_i)) if term.match?(/\A\d+\z/)
 
         matches_scope = matches_scope.where(id: term_scope.select(:id))
       end
@@ -158,22 +197,22 @@ class TournamentsController < ApplicationController
     @total_pages = (@total_count / per_page.to_f).ceil
     @per_page = per_page
 
-    loser1_not_bye = matches_table[:loser1_name].not_eq("BYE").or(matches_table[:loser1_name].eq(nil))
-    loser2_not_bye = matches_table[:loser2_name].not_eq("BYE").or(matches_table[:loser2_name].eq(nil))
+    loser1_not_bye = matches_table[:loser1_name].not_eq('BYE').or(matches_table[:loser1_name].eq(nil))
+    loser2_not_bye = matches_table[:loser2_name].not_eq('BYE').or(matches_table[:loser2_name].eq(nil))
 
     non_bye_scope = matches_scope.where(loser1_not_bye).where(loser2_not_bye)
     @matches_without_byes_count = non_bye_scope.count
     @unfinished_matches_without_byes_count = non_bye_scope.where(finished: [nil, 0]).count
 
     @matches = matches_scope
-      .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
-      .offset(offset)
-      .limit(per_page)
-    if @match
-      @w1 = @match.wrestler1
-      @w2 = @match.wrestler2
-      @wrestlers = [@w1,@w2]
-    end
+               .includes({ wrestler1: :school }, { wrestler2: :school }, { weight: :matches })
+               .offset(offset)
+               .limit(per_page)
+    return unless @match
+
+    @w1 = @match.wrestler1
+    @w2 = @match.wrestler2
+    @wrestlers = [@w1, @w2]
   end
 
   def weigh_in_weight
@@ -183,35 +222,33 @@ class TournamentsController < ApplicationController
         result[wrestler_id] = permitted
       end
       Wrestler.update(sanitized_wrestlers.keys, sanitized_wrestlers.values) if sanitized_wrestlers.present?
-      redirect_to "/tournaments/#{@tournament.id}/weigh_in/#{params[:weight]}", notice: "Weights were successfully recorded."
+      redirect_to "/tournaments/#{@tournament.id}/weigh_in/#{params[:weight]}",
+                  notice: 'Weights were successfully recorded.'
       return
     end
     if params[:weight]
-        @weight = Weight.where(id: params[:weight])
-                        .includes(wrestlers: [:school, :weight])
-                        .first
-        @tournament_id = @tournament.id
-        @tournament_name = @tournament.name
-        @weights = @tournament.weights
+      @weight = Weight.where(id: params[:weight])
+                      .includes(wrestlers: %i[school weight])
+                      .first
+      @tournament_id = @tournament.id
+      @tournament_name = @tournament.name
+      @weights = @tournament.weights
     end
-    if @weight
-      @wrestlers = @weight.wrestlers
-    end
+    @wrestlers = @weight.wrestlers if @weight
   end
 
   def weigh_in
-      if @tournament
-        @weights = @tournament.weights
-        @weights = @weights.sort_by{|x|[x.max]}
-      end
+    return unless @tournament
+
+    @weights = @tournament.weights
+    @weights = @weights.sort_by { |x| [x.max] }
   end
 
   def create_custom_weights
-    @custom = params[:customValue].split(",")
+    @custom = params.require(:customValue).split(',')
     @tournament.create_pre_defined_weights(@custom)
     redirect_to "/tournaments/#{@tournament.id}"
   end
-
 
   def all_brackets
     @team_scores = cached_team_scores
@@ -219,13 +256,11 @@ class TournamentsController < ApplicationController
   end
 
   def bracket
-    if params[:weight]
-      @weight = @tournament.weights.find(params[:weight])
-    end
+    @weight = @tournament.weights.find(params.require(:weight)) if params[:weight]
   end
 
   def all_results
-    @matches = @tournament.matches.includes(:schools,:wrestlers,:weight)
+    @matches = @tournament.matches.includes(:schools, :wrestlers, :weight)
     @round = nil
     @bracket_position = nil
   end
@@ -236,19 +271,19 @@ class TournamentsController < ApplicationController
     cached = Rails.cache.read_multi(*keys)
     selected_ids = @mats.filter_map do |mat|
       selection = cached[mat.scoreboard_selection_cache_key]
-      match_id = selection && (selection[:match_id] || selection["match_id"])
+      match_id = selection && (selection[:match_id] || selection['match_id'])
       match_id if mat.queue_match_ids.include?(match_id)
     end
     match_ids = (@mats.flat_map(&:queue_match_ids).compact | selected_ids)
     matches_by_id = Match.where(id: match_ids)
-      .includes(:weight, { wrestler1: :school }, { wrestler2: :school })
-      .index_by(&:id)
+                         .includes(:weight, { wrestler1: :school }, { wrestler2: :school })
+                         .index_by(&:id)
 
     @live_score_matches = {}
     @live_score_results = {}
     @mats.each do |mat|
       selection = cached[mat.scoreboard_selection_cache_key]
-      selected_id = selection && (selection[:match_id] || selection["match_id"])
+      selected_id = selection && (selection[:match_id] || selection['match_id'])
       @live_score_matches[mat.id] = matches_by_id[selected_id] || matches_by_id[mat.queue1]
       @live_score_results[mat.id] = cached[mat.last_match_result_cache_key]
     end
@@ -262,16 +297,12 @@ class TournamentsController < ApplicationController
     @team_scores = cached_team_scores
   end
 
-
-  def no_matches
-
-  end
+  def no_matches; end
 
   def qrcode
     @tournament_url = tournament_url(@tournament)
     @qrcode = RQRCode::QRCode.new(@tournament_url)
   end
-
 
   def up_matches
     @matches = @tournament.up_matches_unassigned_matches
@@ -280,37 +311,37 @@ class TournamentsController < ApplicationController
 
   def bout_sheets
     matches_scope = @tournament.matches
-                             .where("loser1_name != ? OR loser1_name IS NULL", "BYE")
-                             .where("loser2_name != ? OR loser2_name IS NULL", "BYE")
+                               .where('loser1_name != ? OR loser1_name IS NULL', 'BYE')
+                               .where('loser2_name != ? OR loser2_name IS NULL', 'BYE')
 
-    if params[:round]
-      round = params[:round]
-      if round != "All"
-        @matches = matches_scope
-                              .where(round: round)
-                              .includes(:weight)
-                              .order(:bout_number)
-      else
-        @matches = matches_scope
-                              .includes(:weight)
-                              .order(:bout_number)
-      end
+    return unless params[:round]
 
-      wrestler_ids = @matches.flat_map { |match| [match.w1, match.w2] }.compact.uniq
-      @wrestlers_by_id = Wrestler.includes(:school).where(id: wrestler_ids).index_by(&:id)
-    end
+    round = params[:round]
+    @matches = if round == 'All'
+                 matches_scope
+                   .includes(:weight)
+                   .order(:bout_number)
+               else
+                 matches_scope
+                   .where(round: round)
+                   .includes(:weight)
+                   .order(:bout_number)
+               end
+
+    wrestler_ids = @matches.flat_map { |match| [match.w1, match.w2] }.compact.uniq
+    @wrestlers_by_id = Wrestler.includes(:school).where(id: wrestler_ids).index_by(&:id)
   end
 
   def index
     per_page = 20
-    @page = params[:page].to_i > 0 ? params[:page].to_i : 1
+    @page = params[:page].to_i.positive? ? params[:page].to_i : 1
     offset = (@page - 1) * per_page
 
     tournaments = if params[:search].present?
-      Tournament.search_date_name(params[:search])
-    else
-      Tournament.all
-    end
+                    Tournament.search_date_name(params[:search])
+                  else
+                    Tournament.all
+                  end
 
     @total_count = tournaments.count
     @total_pages = (@total_count / per_page.to_f).ceil
@@ -318,34 +349,30 @@ class TournamentsController < ApplicationController
 
     tournaments_table = Tournament.arel_table
     date_distance = Arel::Nodes::NamedFunction.new(
-      "ABS",
+      'ABS',
       [tournaments_table[:date_sort_key] - Date.current.jd]
     )
 
     @tournaments = tournaments
-      .order(date_distance.asc, tournaments_table[:date].asc, tournaments_table[:id].asc)
-      .offset(offset)
-      .limit(per_page)
+                   .order(date_distance.asc, tournaments_table[:date].asc, tournaments_table[:id].asc)
+                   .offset(offset)
+                   .limit(per_page)
   end
 
   def show
-    @schools = @tournament.schools.includes(:delegates).sort_by{|school|school.name}
-    @weights = @tournament.weights.includes(:wrestlers).sort_by{|x|[x.max]}
-    @mats = @tournament.mats.sort_by{|mat|mat.name}
+    @schools = @tournament.schools.includes(:delegates).sort_by(&:name)
+    @weights = @tournament.weights.includes(:wrestlers).sort_by { |x| [x.max] }
+    @mats = @tournament.mats.sort_by(&:name)
   end
 
   def new
     @tournament = Tournament.new
   end
 
-  def edit
-  end
+  def edit; end
 
   def create
-    if user_signed_in?
-    else
-      redirect_to root_path
-    end
+    redirect_to root_path unless user_signed_in?
     @tournament = Tournament.new(tournament_params)
     @tournament.user_id = current_user.id
     respond_to do |format|
@@ -354,7 +381,7 @@ class TournamentsController < ApplicationController
         format.json { render action: 'show', status: :created, location: @tournament }
       else
         format.html { render action: 'new' }
-        format.json { render json: @tournament.errors, status: :unprocessable_entity }
+        format.json { render json: @tournament.errors, status: :unprocessable_content }
       end
     end
   end
@@ -366,7 +393,7 @@ class TournamentsController < ApplicationController
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
-        format.json { render json: @tournament.errors, status: :unprocessable_entity }
+        format.json { render json: @tournament.errors, status: :unprocessable_content }
       end
     end
   end
@@ -379,57 +406,60 @@ class TournamentsController < ApplicationController
     end
   end
 
-  def error
-  end
+  def error; end
 
   def reset_bout_board
     @tournament.reset_and_fill_bout_board
-    redirect_to tournament_path(@tournament), notice: "Successfully reset the bout board. Please have all mat table workers refresh their page."
+    redirect_to tournament_path(@tournament),
+                notice: 'Successfully reset the bout board. Please have all mat table workers refresh their page.'
   end
 
   def generate_school_keys
     @tournament.schools.each do |school|
       school.update(permission_key: SecureRandom.uuid)
     end
-    redirect_to school_delegate_path(@tournament), notice: "School permission keys generated successfully."
+    redirect_to school_delegate_path(@tournament), notice: 'School permission keys generated successfully.'
   end
 
   def delete_school_keys
     @tournament.schools.update_all(permission_key: nil)
-    redirect_to school_delegate_path(@tournament), notice: "All school permission keys have been deleted."
+    redirect_to school_delegate_path(@tournament), notice: 'All school permission keys have been deleted.'
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_tournament
-      @tournament = if action_name == "live_scores"
-        Tournament.find_by(id: params[:id])
-      elsif %w[show up_matches bracket all_brackets team_scores].include?(action_name)
-        Tournament.includes(:user, :delegates).find_by(id: params[:id])
-      else
-        Tournament.includes(:user, :delegates, :mats, :schools, :weights, :matches, wrestlers: [:school, :weight, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
-      end
-    end
 
-    def cached_team_scores
-      Rails.cache.fetch(TournamentCacheInvalidator.team_scores_data_key(@tournament.id)) do
-        @tournament.schools.map do |school|
-          {
-            id: school.id,
-            name: school.name,
-            abbreviation: school.abbreviation,
-            score: school.page_score_string
-          }
-        end.sort_by { |school| [-school[:score].to_f, school[:name]] }
-      end
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_tournament
+    @tournament = if action_name == 'live_scores'
+                    Tournament.find_by(id: params[:id])
+                  elsif %w[show up_matches bracket all_brackets team_scores].include?(action_name)
+                    Tournament.includes(:user, :delegates).find_by(id: params[:id])
+                  else
+                    Tournament.includes(:user, :delegates, :mats, :schools, :weights, :matches,
+                                        wrestlers: %i[school weight matches_as_w1 matches_as_w2]).find_by(id: params[:id])
+                  end
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def tournament_params
-      params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref, :date, :originalId, :swapId, :is_public)
+  def cached_team_scores
+    Rails.cache.fetch(TournamentCacheInvalidator.team_scores_data_key(@tournament.id)) do
+      @tournament.schools.map do |school|
+        {
+          id: school.id,
+          name: school.name,
+          abbreviation: school.abbreviation,
+          score: school.page_score_string
+        }
+      end.sort_by { |school| [-school[:score].to_f, school[:name]] }
     end
+  end
 
-  #Check for tournament owner
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def tournament_params
+    params.require(:tournament).permit(:name, :address, :director, :director_email, :tournament_type, :weigh_in_ref,
+                                       :date, :original_id, :swap_id, :is_public)
+  end
+
+  # Check for tournament owner
   def check_access_destroy
     authorize! :destroy, @tournament
   end
@@ -443,19 +473,17 @@ class TournamentsController < ApplicationController
   end
 
   def check_for_matches
-    if @tournament
-    	if @tournament.matches.empty? or @tournament.curently_generating_matches == 1
-    	  redirect_to "/tournaments/#{@tournament.id}/no_matches"
-    	end
-    end
+    return unless @tournament
+    return unless @tournament.matches.empty? || (@tournament.curently_generating_matches == 1)
+
+    redirect_to "/tournaments/#{@tournament.id}/no_matches"
   end
 
   def check_tournament_errors
-    if @tournament.match_generation_error != nil
-      respond_to do |format|
-        format.html { redirect_to "/tournaments/#{@tournament.id}/error" }
-      end
+    return if @tournament.match_generation_error.nil?
+
+    respond_to do |format|
+      format.html { redirect_to "/tournaments/#{@tournament.id}/error" }
     end
   end
-
 end

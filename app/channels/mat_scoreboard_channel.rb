@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MatScoreboardChannel < ApplicationCable::Channel
   def subscribed
     @mat = Mat.find_by(id: params[:mat_id])

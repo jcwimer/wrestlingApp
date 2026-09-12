@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class TournamentCacheInvalidator
   CACHE_KEY_VERSION = 1
 
   class << self
     def bracket_key(weight_id, print: false)
-      ["weight_bracket", CACHE_KEY_VERSION, weight_id, print]
+      ['weight_bracket', CACHE_KEY_VERSION, weight_id, print]
     end
 
     def bracket_fragment_key(weight_id, print: false)
@@ -11,38 +13,38 @@ class TournamentCacheInvalidator
     end
 
     def team_scores_key(tournament_id)
-      ["team_scores", CACHE_KEY_VERSION, tournament_id]
+      ['team_scores', CACHE_KEY_VERSION, tournament_id]
     end
 
     def team_scores_data_key(tournament_id)
-      ["team_scores_data", CACHE_KEY_VERSION, tournament_id]
+      ['team_scores_data', CACHE_KEY_VERSION, tournament_id]
     end
 
     def school_stats_key(school_id)
-      ["school_stats", CACHE_KEY_VERSION, school_id]
+      ['school_stats', CACHE_KEY_VERSION, school_id]
     end
 
     def school_stats_data_key(school_id)
-      ["school_stats_data", CACHE_KEY_VERSION, school_id]
+      ['school_stats_data', CACHE_KEY_VERSION, school_id]
     end
 
     def school_summary_key(school_id)
-      ["school_summary", CACHE_KEY_VERSION, school_id]
+      ['school_summary', CACHE_KEY_VERSION, school_id]
     end
 
     def school_roster_key(school_id)
-      ["school_roster", CACHE_KEY_VERSION, school_id]
+      ['school_roster', CACHE_KEY_VERSION, school_id]
     end
 
     def weight_roster_key(weight_id)
-      ["weight_roster", CACHE_KEY_VERSION, weight_id]
+      ['weight_roster', CACHE_KEY_VERSION, weight_id]
     end
 
     def wrestler_profile_key(wrestler_id)
-      ["wrestler_profile", CACHE_KEY_VERSION, wrestler_id]
+      ['wrestler_profile', CACHE_KEY_VERSION, wrestler_id]
     end
 
-    def match_changed(wrestler_ids:, weight_ids:, tournament_ids:)
+    def match_changed(wrestler_ids:, weight_ids:, tournament_ids: nil) # rubocop:disable Lint/UnusedMethodArgument
       rows = wrestler_rows(wrestler_ids)
       brackets(weight_ids | rows.map(&:third))
       school_stats(rows.map(&:second))
@@ -51,13 +53,13 @@ class TournamentCacheInvalidator
     end
 
     def tournament_changed(tournament, changes)
-      brackets(Weight.where(tournament_id: tournament.id).pluck(:id)) if changes.key?("name") || changes.key?("tournament_type")
-      school_summaries(School.where(tournament_id: tournament.id).pluck(:id)) if changes.key?("name")
+      brackets(Weight.where(tournament_id: tournament.id).pluck(:id)) if changes.key?('name') || changes.key?('tournament_type')
+      school_summaries(School.where(tournament_id: tournament.id).pluck(:id)) if changes.key?('name')
     end
 
     def wrestler_changed(wrestler, changes)
-      school_ids = changed_ids(changes, "school_id", wrestler.school_id)
-      weight_ids = changed_ids(changes, "weight_id", wrestler.weight_id)
+      school_ids = changed_ids(changes, 'school_id', wrestler.school_id)
+      weight_ids = changed_ids(changes, 'weight_id', wrestler.weight_id)
       brackets(weight_ids)
       school_stats(school_ids)
       wrestler_listings_for(school_ids:, weight_ids:)
@@ -65,10 +67,10 @@ class TournamentCacheInvalidator
     end
 
     def school_changed(school, changes)
-      tournament_ids = changed_ids(changes, "tournament_id", school.tournament_id)
-      school_summaries([school.id]) if (changes.keys & %w[name score tournament_id]).any?
-      team_scores(tournament_ids) if changes.key?("name") || changes.key?("score")
-      return unless changes.key?("name")
+      tournament_ids = changed_ids(changes, 'tournament_id', school.tournament_id)
+      school_summaries([school.id]) if changes.keys.intersect?(%w[name score tournament_id])
+      team_scores(tournament_ids) if changes.key?('name') || changes.key?('score')
+      return unless changes.key?('name')
 
       wrestler_ids = Wrestler.where(school_id: school.id).pluck(:id)
       weight_ids = Wrestler.where(id: wrestler_ids).distinct.pluck(:weight_id)
@@ -78,7 +80,7 @@ class TournamentCacheInvalidator
       brackets(weight_ids)
     end
 
-    def weight_changed(weight, changes)
+    def weight_changed(weight, _changes)
       wrestler_rows = Wrestler.where(weight_id: weight.id).pluck(:id, :school_id)
       brackets([weight.id])
       school_stats(wrestler_rows.map(&:second))
@@ -187,7 +189,7 @@ class TournamentCacheInvalidator
     def bracket_digest_path
       @bracket_digest_path ||= begin
         view = ApplicationController.new.view_context
-        template = view.lookup_context.find_template("tournaments/cached_bracket", [], true)
+        template = view.lookup_context.find_template('tournaments/cached_bracket', [], true)
         view.digest_path_from_template(template)
       end
     end

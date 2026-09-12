@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class SchoolsController < ApplicationController
-  before_action :set_school, only: [:show, :edit, :update, :destroy, :stats]
-  before_action :check_access_director, only: [:new,:create,:destroy]
-  before_action :check_access_delegate, only: [:update,:edit]
-  before_action :check_read_access, only: [:show, :stats]
+  before_action :set_school, only: %i[show edit update destroy stats]
+  before_action :check_access_director, only: %i[new create destroy]
+  before_action :check_access_delegate, only: %i[update edit]
+  before_action :check_read_access, only: %i[show stats]
 
   def stats
     @tournament = @school.tournament
@@ -36,9 +38,9 @@ class SchoolsController < ApplicationController
   # GET /schools/new
   def new
     @school = School.new
-    if params[:tournament]
-      @tournament = Tournament.find(params[:tournament])
-    end
+    return unless params[:tournament]
+
+    @tournament = Tournament.find(params.require(:tournament))
   end
 
   # GET /schools/1/edit
@@ -57,7 +59,7 @@ class SchoolsController < ApplicationController
         format.json { render action: 'show', status: :created, location: @school }
       else
         format.html { render action: 'new' }
-        format.json { render json: @school.errors, status: :unprocessable_entity }
+        format.json { render json: @school.errors, status: :unprocessable_content }
       end
     end
   end
@@ -72,7 +74,7 @@ class SchoolsController < ApplicationController
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
-        format.json { render json: @school.errors, status: :unprocessable_entity }
+        format.json { render json: @school.errors, status: :unprocessable_content }
       end
     end
   end
@@ -90,62 +92,56 @@ class SchoolsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_school
-      @school = if action_name == "stats"
-        School.includes({ tournament: :delegates }, :delegates).find_by(id: params[:id])
-      elsif action_name == "show"
-        School.includes({ tournament: :delegates }, :delegates, :deductedPoints).find_by(id: params[:id])
-      else
-        School.includes({ tournament: :delegates }, :delegates, :deductedPoints, wrestlers: [:weight, :deductedPoints, :matches_as_w1, :matches_as_w2]).find_by(id: params[:id])
-      end
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_school
+    @school = if action_name == 'stats'
+                School.includes({ tournament: :delegates }, :delegates).find_by(id: params[:id])
+              elsif action_name == 'show'
+                School.includes({ tournament: :delegates }, :delegates, :deductedPoints).find_by(id: params[:id])
+              else
+                School.includes({ tournament: :delegates }, :delegates, :deductedPoints,
+                                wrestlers: %i[weight deductedPoints matches_as_w1 matches_as_w2]).find_by(id: params[:id])
+              end
+  end
+
+  def load_school_wrestlers
+    match_associations = [:winner, { wrestler1: :school }, { wrestler2: :school }, { weight: :matches }]
+    @wrestlers = @school.wrestlers.includes(
+      :weight, matches_as_w1: match_associations, matches_as_w2: match_associations
+    ).to_a
+    @matches_by_wrestler_id = @wrestlers.to_h { |wrestler| [wrestler.id, wrestler.all_matches] }
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def school_params
+    params.require(:school).permit(:name, :score, :tournament_id)
+  end
+
+  def check_access_director
+    if params[:tournament].present?
+      @tournament = Tournament.find(params.require(:tournament))
+    elsif params[:school].present?
+      @tournament = Tournament.find(params.require(:school).permit(:tournament_id)[:tournament_id])
+    elsif @school
+      @tournament = @school.tournament
     end
 
-    def load_school_wrestlers
-      match_associations = [:winner, { wrestler1: :school }, { wrestler2: :school }, { weight: :matches }]
-      @wrestlers = @school.wrestlers.includes(
-        :weight, matches_as_w1: match_associations, matches_as_w2: match_associations
-      ).to_a
-      @matches_by_wrestler_id = @wrestlers.to_h { |wrestler| [wrestler.id, wrestler.all_matches] }
-    end
+    authorize! :manage, @tournament
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def school_params
-      params.require(:school).permit(:name, :score, :tournament_id)
-    end
+  def check_access_delegate
+    @school_permission_key = params[:school_permission_key] if params[:school].present? && school_params[:school_permission_key].present?
 
-    def check_access_director
-    	if params[:tournament].present?
-    	   @tournament = Tournament.find(params[:tournament])
-    	elsif params[:school].present?
-    	   @tournament = Tournament.find(params[:school]["tournament_id"])
-    	elsif @school
-    	   @tournament = @school.tournament
-    	end
+    @school_permission_key = params[:school_permission_key] if params[:school_permission_key].present?
 
-    	authorize! :manage, @tournament
-    end
+    authorize! :manage, @school
+  end
 
-    def check_access_delegate
-      if params[:school].present?
-        if school_params[:school_permission_key].present?
-          @school_permission_key = params[:school_permission_key]
-        end
-      end
+  def check_read_access
+    # set @school_permission_key for use in ability
+    @school_permission_key = params[:school_permission_key] if params[:school_permission_key].present?
 
-      if params[:school_permission_key].present?
-        @school_permission_key = params[:school_permission_key]
-      end
-
-    	authorize! :manage, @school
-    end
-    
-    def check_read_access
-      # set @school_permission_key for use in ability
-      if params[:school_permission_key].present?
-        @school_permission_key = params[:school_permission_key]
-      end
-
-      authorize! :read, @school
-    end
+    authorize! :read, @school
+  end
 end

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class MatchChannel < ApplicationCable::Channel
-  SCOREBOARD_CACHE_TTL = 1.hours
+  SCOREBOARD_CACHE_TTL = 1.hour
 
   def subscribed
     @match = Match.find_by(id: params[:match_id])
@@ -26,7 +28,7 @@ class MatchChannel < ApplicationCable::Channel
 
     return unless can_manage_match?
 
-    scoreboard_state = data["scoreboard_state"]
+    scoreboard_state = data['scoreboard_state']
     return if scoreboard_state.blank?
 
     return if Rails.cache.read(scoreboard_cache_key) == scoreboard_state
@@ -64,11 +66,9 @@ class MatchChannel < ApplicationCable::Channel
       @match.update_columns(changed_attributes) if changed_attributes.any?
     end
 
-    if changed_attributes.any? && @match.finished == 1
-      TournamentCacheInvalidator.finished_match_stats_changed([@match.w1, @match.w2])
-    end
+    TournamentCacheInvalidator.finished_match_stats_changed([@match.w1, @match.w2]) if changed_attributes.any? && @match.finished == 1
     MatchChannel.broadcast_to(@match, changed_attributes) if changed_attributes.any?
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "[MatchChannel] Exception during match stat update for #{@match.id}: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
   end
@@ -91,7 +91,9 @@ class MatchChannel < ApplicationCable::Channel
       scoreboard_state: Rails.cache.read(scoreboard_cache_key)
     }.compact
 
-    Rails.logger.info { "[MatchChannel] request_sync transmit for match #{@match.id} (#{payload.to_json.bytesize} bytes)" }
+    Rails.logger.info do
+      "[MatchChannel] request_sync transmit for match #{@match.id} (#{payload.to_json.bytesize} bytes)"
+    end
     transmit(payload)
   end
 

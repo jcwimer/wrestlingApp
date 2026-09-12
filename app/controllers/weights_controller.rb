@@ -1,8 +1,9 @@
-class WeightsController < ApplicationController
-  before_action :set_weight, only: [:pool_order, :show, :edit, :update, :destroy]
-  before_action :check_access_manage, only: [:pool_order, :new,:create,:update,:destroy,:edit]
-  before_action :check_access_read, only: [:show]
+# frozen_string_literal: true
 
+class WeightsController < ApplicationController
+  before_action :set_weight, only: %i[pool_order show edit update destroy]
+  before_action :check_access_manage, only: %i[pool_order new create update destroy edit]
+  before_action :check_access_read, only: [:show]
 
   # GET /weights/1
   # GET /weights/1.json
@@ -14,7 +15,7 @@ class WeightsController < ApplicationController
         sanitized_wrestlers = params.require(:wrestler).to_unsafe_h.transform_values do |attributes|
           ActionController::Parameters.new(attributes).permit(:original_seed)
         end
-  
+
         wrestlers_by_id = @weight.wrestlers.index_by { |wrestler| wrestler.id.to_s }
         sanitized_wrestlers.each do |wrestler_id, attributes|
           wrestlers_by_id.fetch(wrestler_id.to_s).update!(attributes)
@@ -25,14 +26,14 @@ class WeightsController < ApplicationController
     @wrestlers = @weight.wrestlers
     @tournament = @weight.tournament
     session[:return_path] = "/weights/#{@weight.id}"
-  end  
+  end
 
   # GET /weights/new
   def new
     @weight = Weight.new
-    if params[:tournament]
-      @tournament = Tournament.find(params[:tournament])
-    end
+    return unless params[:tournament]
+
+    @tournament = Tournament.find(params.require(:tournament))
   end
 
   # GET /weights/1/edit
@@ -46,15 +47,15 @@ class WeightsController < ApplicationController
   def create
     @weight = Weight.new(weight_params)
     @tournament = Tournament.find(weight_params[:tournament_id])
-      respond_to do |format|
-        if @weight.save
-          format.html { redirect_to @tournament, notice: 'Weight was successfully created.' }
-          format.json { render action: 'show', status: :created, location: @weight }
-        else
-          format.html { render action: 'new' }
-          format.json { render json: @weight.errors, status: :unprocessable_entity }
-        end
+    respond_to do |format|
+      if @weight.save
+        format.html { redirect_to @tournament, notice: 'Weight was successfully created.' }
+        format.json { render action: 'show', status: :created, location: @weight }
+      else
+        format.html { render action: 'new' }
+        format.json { render json: @weight.errors, status: :unprocessable_content }
       end
+    end
   end
 
   # PATCH/PUT /weights/1
@@ -67,7 +68,7 @@ class WeightsController < ApplicationController
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
-        format.json { render json: @weight.errors, status: :unprocessable_entity }
+        format.json { render json: @weight.errors, status: :unprocessable_content }
       end
     end
   end
@@ -79,59 +80,62 @@ class WeightsController < ApplicationController
     @weight.destroy_with_dependents!
     TournamentCacheInvalidator.generation_completed(@tournament.id)
     respond_to do |format|
-        format.html { redirect_to @tournament }
-        format.json { head :no_content }
+      format.html { redirect_to @tournament }
+      format.json { head :no_content }
     end
   end
 
   def pool_order
     pool = params[:pool_to_order].to_i
-    if @weight.all_pool_matches_finished(pool)
-      BracketAdvancement::PoolOrder.new(@weight.wrestlers_in_pool(pool)).getPoolOrder
+    if @weight.all_pool_matches_finished?(pool)
+      BracketAdvancement::PoolOrder.new(@weight.wrestlers_in_pool(pool)).pool_order
       respond_to do |format|
-        format.html { redirect_to @tournament, notice: "Pool #{pool} placing is updating for weight class #{@weight.max}." }
+        format.html do
+          redirect_to @tournament, notice: "Pool #{pool} placing is updating for weight class #{@weight.max}."
+        end
       end
     else
       respond_to do |format|
-        format.html { redirect_to @tournament, notice: "Pool #{pool} for weight class #{@weight.max} still has matches to finish." }
+        format.html do
+          redirect_to @tournament, notice: "Pool #{pool} for weight class #{@weight.max} still has matches to finish."
+        end
       end
     end
-
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_weight
-      scope = Weight.includes(tournament: :delegates)
-      scope = scope.includes(wrestlers: [:school, :matches_as_w1, :matches_as_w2]) unless action_name == "show"
-      @weight = scope.find_by(id: params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def weight_params
-      params.require(:weight).permit(:max, :tournament_id, :mat_id)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_weight
+    scope = Weight.includes(tournament: :delegates)
+    scope = scope.includes(wrestlers: %i[school matches_as_w1 matches_as_w2]) unless action_name == 'show'
+    @weight = scope.find_by(id: params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def weight_params
+    params.require(:weight).permit(:max, :tournament_id, :mat_id)
+  end
+
   def check_access_manage
-    	if params[:tournament]
-    	   @tournament = Tournament.find(params[:tournament])
-    	elsif params[:weight]
-    	   @tournament = Tournament.find(params[:weight]["tournament_id"])
-    	elsif @weight
-    	   @tournament = @weight.tournament
-    	end
-    	authorize! :manage, @tournament
+    if params[:tournament]
+      @tournament = Tournament.find(params.require(:tournament))
+    elsif params[:weight]
+      @tournament = Tournament.find(params.require(:weight).permit(:tournament_id)[:tournament_id])
+    elsif @weight
+      @tournament = @weight.tournament
+    end
+    authorize! :manage, @tournament
   end
 
   def check_access_read
     if params[:tournament]
-       @tournament = Tournament.find(params[:tournament])
+      @tournament = Tournament.find(params.require(:tournament))
     elsif params[:weight]
-       @tournament = Tournament.find(params[:weight]["tournament_id"])
+      @tournament = Tournament.find(params.require(:weight).permit(:tournament_id)[:tournament_id])
     elsif @weight
-       @tournament = @weight.tournament
+      @tournament = @weight.tournament
     end
     authorize! :read, @tournament
-end
-
-
+  end
 end

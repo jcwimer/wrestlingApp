@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
   setup do
@@ -14,10 +16,10 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     Rails.cache.clear
   end
 
-  test "finished match explicitly deletes bracket stats and wrestler views and refreshes team scores" do
+  test 'finished match explicitly deletes bracket stats and wrestler views and refreshes team scores' do
     seed_cache_entries
 
-    perform_enqueued_jobs { @match.update!(finished: 1, winner_id: @match.w1, win_type: "Decision", score: "1-0") }
+    perform_enqueued_jobs { @match.update!(finished: 1, winner_id: @match.w1, win_type: 'Decision', score: '1-0') }
 
     assert_brackets_deleted
     assert_school_stats_deleted
@@ -25,11 +27,11 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_team_scores_deleted
   end
 
-  test "finished match keeps caches until queued advancement completes" do
+  test 'finished match keeps caches until queued advancement completes' do
     ActiveJob::Base.queue_adapter = :test
     seed_cache_entries
 
-    @match.update!(finished: 1, winner_id: @match.w1, win_type: "Decision", score: "1-0")
+    @match.update!(finished: 1, winner_id: @match.w1, win_type: 'Decision', score: '1-0')
 
     assert_brackets_cached
     assert_rosters_cached
@@ -44,7 +46,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     ActiveJob::Base.queue_adapter = :inline
   end
 
-  test "match invalidation does not evict school summaries" do
+  test 'match invalidation does not evict school summaries' do
     seed_cache_entries
 
     TournamentCacheInvalidator.match_changed(
@@ -57,19 +59,19 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_team_scores_cached
   end
 
-  test "unfinished live stats do not delete page caches" do
+  test 'unfinished live stats do not delete page caches' do
     keys = seed_cache_entries
 
-    @match.update!(w1_stat: "T2")
+    @match.update!(w1_stat: 'T2')
 
     keys.each { |key| assert Rails.cache.exist?(key), "Expected #{key.inspect} to remain cached" }
   end
 
-  test "finished stat correction deletes only school stats and wrestler profiles" do
-    @match.update_columns(finished: 1, winner_id: @match.w1, win_type: "Decision", score: "1-0")
+  test 'finished stat correction deletes only school stats and wrestler profiles' do
+    @match.update_columns(finished: 1, winner_id: @match.w1, win_type: 'Decision', score: '1-0')
     seed_cache_entries
 
-    @match.update!(w1_stat: "T2")
+    @match.update!(w1_stat: 'T2')
 
     assert_school_stats_deleted
     @wrestlers.each { |wrestler| assert_fragment_deleted(TournamentCacheInvalidator.wrestler_profile_key(wrestler.id)) }
@@ -78,10 +80,10 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_rosters_cached
   end
 
-  test "wrestler information changes explicitly delete affected caches without deleting team scores" do
+  test 'wrestler information changes explicitly delete affected caches without deleting team scores' do
     seed_cache_entries
 
-    @wrestlers.first.update!(name: "Updated Wrestler")
+    @wrestlers.first.update!(name: 'Updated Wrestler')
 
     assert_brackets_deleted
     assert_school_stats_deleted([@wrestlers.first.school_id])
@@ -91,7 +93,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_team_scores_cached
   end
 
-  test "wrestler updates do not fan out timestamps to cache dependents" do
+  test 'wrestler updates do not fan out timestamps to cache dependents' do
     wrestler = @wrestlers.first
     timestamps = {
       school: wrestler.school.reload.updated_at,
@@ -99,17 +101,17 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
       tournament: @tournament.reload.updated_at
     }
 
-    wrestler.update!(name: "Updated Without Touch Fanout")
+    wrestler.update!(name: 'Updated Without Touch Fanout')
 
     assert_equal timestamps[:school], wrestler.school.reload.updated_at
     assert_equal timestamps[:weight], wrestler.weight.reload.updated_at
     assert_equal timestamps[:tournament], @tournament.reload.updated_at
   end
 
-  test "tournament name changes delete bracket and school summary caches" do
+  test 'tournament name changes delete bracket and school summary caches' do
     seed_cache_entries
 
-    @tournament.update!(name: "Updated Tournament")
+    @tournament.update!(name: 'Updated Tournament')
 
     assert_brackets_deleted
     @schools.each { |school| assert_fragment_deleted(TournamentCacheInvalidator.school_summary_key(school.id)) }
@@ -117,7 +119,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_team_scores_cached
   end
 
-  test "school score changes delete only that school summary and team scores" do
+  test 'school score changes delete only that school summary and team scores' do
     seed_cache_entries
     changed_school = @schools.first
     unchanged_school = @schools.second
@@ -130,7 +132,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_team_scores_deleted
   end
 
-  test "generation completion explicitly deletes every tournament cache domain" do
+  test 'generation completion explicitly deletes every tournament cache domain' do
     seed_cache_entries
 
     TournamentCacheInvalidator.generation_completed(@tournament.id)
@@ -141,7 +143,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_team_scores_deleted
   end
 
-  test "full team score calculation explicitly deletes score caches" do
+  test 'full team score calculation explicitly deletes score caches' do
     seed_cache_entries
 
     CalculateTournamentTeamScoresJob.perform_now(@tournament.id)
@@ -149,8 +151,8 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_team_scores_deleted
   end
 
-  test "advancement explicitly deletes the weight bracket after bulk persistence" do
-    @match.update_columns(finished: 1, winner_id: @match.w1, win_type: "Decision", score: "1-0")
+  test 'advancement explicitly deletes the weight bracket after bulk persistence' do
+    @match.update_columns(finished: 1, winner_id: @match.w1, win_type: 'Decision', score: '1-0')
     seed_cache_entries
 
     BracketAdvancement::AdvanceWrestler.new(@match.wrestler1, @match).advance_raw
@@ -158,7 +160,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_brackets_deleted
   end
 
-  test "match generation explicitly deletes all page domains after bulk persistence" do
+  test 'match generation explicitly deletes all page domains after bulk persistence' do
     seed_cache_entries
 
     TournamentServices::GenerateTournamentMatches.new(@tournament).generate_raw
@@ -172,7 +174,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
 
   def seed_cache_entries
     keys = cache_entry_keys
-    Rails.cache.write_multi(keys.index_with { "cached" })
+    Rails.cache.write_multi(keys.index_with { 'cached' })
     keys
   end
 

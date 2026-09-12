@@ -1,11 +1,12 @@
-require "set"
+# frozen_string_literal: true
 
-class BracketAdvancement::AdvanceWrestler
+module BracketAdvancement
+  class AdvanceWrestler
     def initialize(wrestler, last_match)
       @wrestler = wrestler
       @last_match = last_match
     end
-    
+
     def advance
       AdvanceWrestlerJob.perform_later_with_enqueue_retry([@last_match.id], @wrestler.tournament.id)
     end
@@ -28,13 +29,14 @@ class BracketAdvancement::AdvanceWrestler
 
       matches_to_advance = []
 
-      if @tournament.tournament_type == "Pool to bracket"
+      if @tournament.tournament_type == 'Pool to bracket'
         matches_to_advance.concat(pool_to_bracket_advancement(context))
-      elsif @tournament.tournament_type.include?("Modified 16 Man Double Elimination")
-        service = BracketAdvancement::ModifiedDoubleEliminationAdvance.new(@wrestler, @last_match, matches: context[:matches])
+      elsif @tournament.tournament_type.include?('Modified 16 Man Double Elimination')
+        service = BracketAdvancement::ModifiedDoubleEliminationAdvance.new(@wrestler, @last_match,
+                                                                           matches: context[:matches])
         service.bracket_advancement
         matches_to_advance.concat(service.matches_to_advance)
-      elsif @tournament.tournament_type.include?("Regular Double Elimination")
+      elsif @tournament.tournament_type.include?('Regular Double Elimination')
         service = BracketAdvancement::DoubleEliminationAdvance.new(@wrestler, @last_match, matches: context[:matches])
         service.bracket_advancement
         matches_to_advance.concat(service.matches_to_advance)
@@ -44,14 +46,17 @@ class BracketAdvancement::AdvanceWrestler
       tracker[:weight_ids] << context[:weight].id
       tracker[:wrestler_ids].merge(changed_wrestler_ids | [@wrestler.id])
       advance_pending_matches(matches_to_advance, tracker, context)
-      TournamentCacheInvalidator.advancement_completed(tracker[:weight_ids].to_a, tracker[:wrestler_ids].to_a) if invalidate
+      if invalidate
+        TournamentCacheInvalidator.advancement_completed(tracker[:weight_ids].to_a,
+                                                         tracker[:wrestler_ids].to_a)
+      end
       tracker
     end
-    
+
     def preload_advancement_context
       weight = Weight.includes(
         :tournament,
-        { matches: [:wrestler1, :wrestler2, :winner] },
+        { matches: %i[wrestler1 wrestler2 winner] },
         {
           wrestlers: [
             :school,
@@ -114,7 +119,7 @@ class BracketAdvancement::AdvanceWrestler
         }
       end
       Wrestler.upsert_all(updates) if updates.any?
-      updates.map { |row| row[:id] }
+      updates.pluck(:id)
     end
 
     def advance_pending_matches(matches_to_advance, tracker, context)
@@ -124,7 +129,10 @@ class BracketAdvancement::AdvanceWrestler
 
         [current_match.w1, current_match.w2].compact.uniq.each do |wrestler_id|
           wrestler = context[:wrestlers_by_id][wrestler_id] || Wrestler.find_by(id: wrestler_id)
-          BracketAdvancement::AdvanceWrestler.new(wrestler, current_match).advance_raw(tracker:, invalidate: false, context:) if wrestler
+          if wrestler
+            BracketAdvancement::AdvanceWrestler.new(wrestler, current_match).advance_raw(tracker:, invalidate: false,
+                                                                                         context:)
+          end
         end
       end
     end
@@ -132,13 +140,14 @@ class BracketAdvancement::AdvanceWrestler
     def pool_to_bracket_advancement(context)
       matches_to_advance = []
       wrestlers_in_pool = context[:wrestlers].select { |w| w.pool == @wrestler.pool }
-      if @wrestler.weight.all_pool_matches_finished(@wrestler.pool) && (@wrestler.finished_bracket_matches.size < 1)
-        BracketAdvancement::PoolOrder.new(wrestlers_in_pool).getPoolOrder
+      if @wrestler.weight.all_pool_matches_finished?(@wrestler.pool) && @wrestler.finished_bracket_matches.empty?
+        BracketAdvancement::PoolOrder.new(wrestlers_in_pool).pool_order
       end
-      service = BracketAdvancement::PoolAdvance.new(@wrestler, @last_match, matches: context[:matches], wrestlers: context[:wrestlers])
-      service.advanceWrestler
+      service = BracketAdvancement::PoolAdvance.new(@wrestler, @last_match, matches: context[:matches],
+                                                                            wrestlers: context[:wrestlers])
+      service.advance_wrestler
       matches_to_advance.concat(service.matches_to_advance)
       matches_to_advance
     end
-
+  end
 end

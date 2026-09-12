@@ -1,13 +1,17 @@
+# frozen_string_literal: true
+
 class CalculateSchoolScoreJob < ApplicationJob
   queue_as :default
-  limits_concurrency to: 1, key: ->(school_data) { "tournament:#{school_data[:tournament_id]}" }, group: "tournament_updates"
-  
+  limits_concurrency to: 1, key: lambda { |school_data|
+    "tournament:#{school_data[:tournament_id]}"
+  }, group: 'tournament_updates'
+
   # Need for TournamentJobStatusIntegrationTest
   def self.perform_sync(school)
     # Execute directly on provided objects
     school.calculate_score_raw
   end
-  
+
   def perform(school_data)
     school_id = school_data.fetch(:school_id)
     tournament = Tournament.preload(
@@ -22,29 +26,29 @@ class CalculateSchoolScoreJob < ApplicationJob
 
     # Log information about the job
     Rails.logger.info("Calculating score for school ##{school.id} (#{school.name})")
-    
+
     # Create job status record
     tournament = school.tournament
     job_name = "Calculating team score for #{school.name}"
     job_status = TournamentJobStatus.create!(
       tournament: tournament,
       job_name: job_name,
-      status: "Running",
+      status: 'Running',
       details: "School ID: #{school.id}"
     )
-    
+
     begin
       # Execute the calculation
       school.calculate_score_raw(wrestlers: wrestlers)
-      
+
       # Remove the job status record on success
       TournamentJobStatus.complete_job(tournament.id, job_name)
-    rescue => e
+    rescue StandardError => e
       # Update status to errored
-      job_status.update(status: "Errored", details: "Error: #{e.message}")
-      
+      job_status.update(status: 'Errored', details: "Error: #{e.message}")
+
       # Re-raise the error for SolidQueue to handle
       raise e
     end
   end
-end 
+end

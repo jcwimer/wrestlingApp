@@ -1,120 +1,122 @@
-class TournamentServices::TournamentSeeding
-    def initialize( tournament )
+# frozen_string_literal: true
+
+module TournamentServices
+  class TournamentSeeding
+    def initialize(tournament)
       @tournament = tournament
     end
-    
+
     def set_seeds(weights: nil, persist: true)
-        weights_to_seed = weights || @tournament.weights.includes(:wrestlers)
-        updated_wrestlers = []
+      weights_to_seed = weights || @tournament.weights.includes(:wrestlers)
+      updated_wrestlers = []
 
-        weights_to_seed.each do |weight|
-			wrestlers = weight.wrestlers
-			bracket_size = weight.calculate_bracket_size
+      weights_to_seed.each do |weight|
+        wrestlers = weight.wrestlers
+        bracket_size = weight.calculate_bracket_size
 
-            wrestlers = reset_bracket_line_for_lines_higher_than_bracket_size(wrestlers, bracket_size)
-            wrestlers = set_original_seed_to_bracket_line(wrestlers)
-            wrestlers = random_seeding(wrestlers, bracket_size)
-            updated_wrestlers.concat(wrestlers)
+        wrestlers = reset_bracket_line_for_lines_higher_than_bracket_size(wrestlers, bracket_size)
+        wrestlers = assign_original_seed_to_bracket_line(wrestlers)
+        wrestlers = random_seeding(wrestlers, bracket_size)
+        updated_wrestlers.concat(wrestlers)
+      end
+
+      persist_bracket_lines(updated_wrestlers) if persist
+      updated_wrestlers
+    end
+
+    def random_seeding(wrestlers, bracket_size)
+      available_bracket_lines = (1..bracket_size).to_a
+
+      # remove bracket lines that are taken from available_bracket_lines
+      wrestlers_with_bracket_lines = wrestlers.reject { |w| w.bracket_line.nil? }
+      wrestlers_with_bracket_lines.each do |wrestler|
+        available_bracket_lines.delete(wrestler.bracket_line)
+      end
+
+      available_bracket_lines_to_use = random_seeding_bracket_line_order(available_bracket_lines)
+
+      wrestlers_without_bracket_lines = wrestlers.select { |w| w.bracket_line.nil? }
+      if @tournament.tournament_type == 'Pool to bracket'
+        wrestlers_without_bracket_lines.shuffle.each do |wrestler|
+          # pool brackets just grab the first available seed
+          first_available_bracket_line = available_bracket_lines.first
+          wrestler.bracket_line = first_available_bracket_line
+          available_bracket_lines.delete(first_available_bracket_line)
+        end
+      else
+        # Iterrate over the list randomly
+        wrestlers_without_bracket_lines.shuffle.each do |wrestler|
+          next unless available_bracket_lines_to_use.size.positive?
+
+          bracket_line_to_use = available_bracket_lines_to_use.first
+          wrestler.bracket_line = bracket_line_to_use
+          available_bracket_lines_to_use.delete(bracket_line_to_use)
+        end
+      end
+      wrestlers
+    end
+
+    def assign_original_seed_to_bracket_line(wrestlers)
+      wrestlers_with_seeds = wrestlers.reject { |w| w.original_seed.nil? }
+      wrestlers_with_seeds.each do |wrestler|
+        wrestlers_with_seeded_wrestlers_bracket_line = wrestlers.select do |w|
+          w.bracket_line == wrestler.original_seed && w.id != wrestler.id
+        end
+        wrestlers_with_seeded_wrestlers_bracket_line.each do |wrestler_with_wrong_bracket_line|
+          wrestler_with_wrong_bracket_line.bracket_line = nil
         end
 
-        persist_bracket_lines(updated_wrestlers) if persist
-        updated_wrestlers
+        wrestler.bracket_line = wrestler.original_seed
+      end
+      wrestlers
     end
-    
-    def random_seeding(wrestlers, bracket_size)
-		half_of_bracket = bracket_size / 2
-		available_bracket_lines = (1..bracket_size).to_a
 
-		# remove bracket lines that are taken from available_bracket_lines
-		wrestlers_with_bracket_lines = wrestlers.select{|w| w.bracket_line != nil }
-		wrestlers_with_bracket_lines.each do |wrestler|
-			available_bracket_lines.delete(wrestler.bracket_line)
-		end
+    def reset_bracket_line_for_lines_higher_than_bracket_size(wrestlers, bracket_size)
+      wrestlers.each do |w|
+        w.bracket_line = nil if w.bracket_line && w.bracket_line > bracket_size
+      end
+      wrestlers
+    end
 
-		available_bracket_lines_to_use = set_random_seeding_bracket_line_order(available_bracket_lines)
+    def reset_all_seeds(wrestlers)
+      wrestlers.each do |w|
+        w.bracket_line = nil
+      end
+      wrestlers
+    end
 
-		wrestlers_without_bracket_lines = wrestlers.select{|w| w.bracket_line == nil }
-		if @tournament.tournament_type == "Pool to bracket"
-			wrestlers_without_bracket_lines.shuffle.each do |wrestler|
-				# pool brackets just grab the first available seed
-				first_available_bracket_line = available_bracket_lines.first
-				wrestler.bracket_line = first_available_bracket_line
-				available_bracket_lines.delete(first_available_bracket_line)
-			end
-		else
-			# Iterrate over the list randomly
-			wrestlers_without_bracket_lines.shuffle.each do |wrestler|
-				if available_bracket_lines_to_use.size > 0
-					bracket_line_to_use = available_bracket_lines_to_use.first
-					wrestler.bracket_line = bracket_line_to_use
-					available_bracket_lines_to_use.delete(bracket_line_to_use)
-				end
-			end
-		end
-		return wrestlers
-	end
-	
-	def set_original_seed_to_bracket_line(wrestlers)
-		wrestlers_with_seeds = wrestlers.select{|w| w.original_seed != nil }
-		wrestlers_with_seeds.each do |wrestler|
-			wrestlers_with_seeded_wrestlers_bracket_line = wrestlers.select{|w| w.bracket_line == wrestler.original_seed && w.id != wrestler.id}
-			wrestlers_with_seeded_wrestlers_bracket_line.each do |wrestler_with_wrong_bracket_line|
-				wrestler_with_wrong_bracket_line.bracket_line = nil
-			end
-			
-			wrestler.bracket_line = wrestler.original_seed
-		end
-		return wrestlers
-	end
-	
-	def reset_bracket_line_for_lines_higher_than_bracket_size(wrestlers, bracket_size)
-		wrestlers.each do |w|
-			if w.bracket_line && w.bracket_line > bracket_size
-				w.bracket_line = nil
-			end
-		end
-		return wrestlers
-	end
+    private
 
-	def reset_all_seeds(wrestlers)
-		wrestlers.each do |w|
-			w.bracket_line = nil
-		end
-		return wrestlers
-	end
+    def random_seeding_bracket_line_order(available_bracket_lines)
+      # This method prevents double BYEs in round 1
+      # It also evenly distributes matches from the top half of the bracket to the bottom half
+      # It does both of these while keeping the randomness of the line assignment
+      odd_or_even = [0, 1]
+      odd_or_even_sample = odd_or_even.sample
 
-	private
+      # sort by odd or even based on the sample above
+      if odd_or_even_sample == 1
+        # odd numbers first
+        available_bracket_lines.sort_by { |n| n.even? ? 1 : 0 }
+      else
+        # even numbers first
+        available_bracket_lines.sort_by { |n| n.odd? ? 1 : 0 }
+      end
+    end
 
-	def set_random_seeding_bracket_line_order(available_bracket_lines)
-		# This method prevents double BYEs in round 1
-		# It also evenly distributes matches from the top half of the bracket to the bottom half
-		# It does both of these while keeping the randomness of the line assignment
-		odd_or_even = [0, 1]
-		odd_or_even_sample = odd_or_even.sample
+    def persist_bracket_lines(wrestlers)
+      return if wrestlers.blank?
 
-		# sort by odd or even based on the sample above
-		if odd_or_even_sample == 1
-			# odd numbers first
-			result = available_bracket_lines.sort_by { |n| n.even? ? 1 : 0 }
-		else
-			# even numbers first
-			result = available_bracket_lines.sort_by { |n| n.odd? ? 1 : 0 }
-		end
-		result
-	end
+      timestamp = Time.current
+      updates = wrestlers.map do |wrestler|
+        {
+          id: wrestler.id,
+          bracket_line: wrestler.bracket_line,
+          updated_at: timestamp
+        }
+      end
 
-	def persist_bracket_lines(wrestlers)
-		return if wrestlers.blank?
-
-		timestamp = Time.current
-		updates = wrestlers.map do |wrestler|
-			{
-				id: wrestler.id,
-				bracket_line: wrestler.bracket_line,
-				updated_at: timestamp
-			}
-		end
-
-		Wrestler.upsert_all(updates)
-	end
+      Wrestler.upsert_all(updates)
+    end
+  end
 end

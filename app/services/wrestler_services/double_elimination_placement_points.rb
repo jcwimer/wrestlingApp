@@ -1,48 +1,51 @@
-class WrestlerServices::DoubleEliminationPlacementPoints
+# frozen_string_literal: true
+
+module WrestlerServices
+  class DoubleEliminationPlacementPoints
     def initialize(wrestler)
-		@wrestler = wrestler
-		@number_of_placers = @wrestler.weight.tournament.number_of_placers
+      @wrestler = wrestler
+      @number_of_placers = @wrestler.weight.tournament.number_of_placers
     end
 
     def calc_points
-    	if  won_bracket_position_size("1/2") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).firstPlace
-        elsif bracket_position_size("1/2") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).secondPlace
-        elsif won_bracket_position_size("3/4") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).thirdPlace
-        elsif bracket_position_size("3/4") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).fourthPlace
-        elsif won_bracket_position_size("5/6") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).fifthPlace
-        elsif (bracket_position_size("Semis") > 0 or bracket_position_size("Conso Semis") > 0) and @number_of_placers >= 6
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).sixthPlace
-        elsif won_bracket_position_size("7/8") > 0
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).seventhPlace
-        elsif bracket_position_size("Conso Quarter") > 0 and @number_of_placers >= 8
-            return WrestlerServices::PlacementPoints.new(@number_of_placers).eighthPlace
-        else
-        	return 0
-        end
+      if won_bracket_position_size('1/2').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).first_place
+      elsif bracket_position_size('1/2').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).second_place
+      elsif won_bracket_position_size('3/4').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).third_place
+      elsif bracket_position_size('3/4').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).fourth_place
+      elsif won_bracket_position_size('5/6').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).fifth_place
+      elsif (bracket_position_size('Semis').positive? || bracket_position_size('Conso Semis').positive?) && (@number_of_placers >= 6)
+        WrestlerServices::PlacementPoints.new(@number_of_placers).sixth_place
+      elsif won_bracket_position_size('7/8').positive?
+        WrestlerServices::PlacementPoints.new(@number_of_placers).seventh_place
+      elsif bracket_position_size('Conso Quarter').positive? && (@number_of_placers >= 8)
+        WrestlerServices::PlacementPoints.new(@number_of_placers).eighth_place
+      else
+        0
+      end
     end
 
     def bracket_position_size(bracket_position_name)
-      @wrestler.all_matches.select{|m| m.bracket_position == bracket_position_name}.size
+      @wrestler.all_matches.count { |m| m.bracket_position == bracket_position_name }
     end
 
     def won_bracket_position_size(bracket_position_name)
-        @wrestler.matches_won.select{|m| m.bracket_position == bracket_position_name}.size
+      @wrestler.matches_won.count { |m| m.bracket_position == bracket_position_name }
     end
 
     def bracket_placement_points(bracket_position_name)
-        if bracket_position_name == "Did not place"
-            return 0
-        end
-        if @wrestler.participating_matches.where(bracket_position: bracket_position_name).count > 0
-            points = Teampointadjust.find_by(tournament_id: @wrestler.weight.tournament.id, points_for_placement: bracket_position_name)
-            if points
-                # ... existing code ...
-            end
-        end
+      return 0 if bracket_position_name == 'Did not place'
+
+      return unless @wrestler.participating_matches.where(bracket_position: bracket_position_name).any?
+
+      points = Teampointadjust.find_by(tournament_id: @wrestler.weight.tournament.id,
+                                       points_for_placement: bracket_position_name)
+      nil unless points
+      # ... existing code ...
     end
+  end
 end

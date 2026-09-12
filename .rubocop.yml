@@ -1,0 +1,102 @@
+inherit_gem:
+  rubocop-rails: config/default.yml
+
+plugins:
+  - rubocop-rails
+  - rubocop-performance
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 4.0
+  Exclude:
+    - 'bin/*'
+    - 'db/schema.rb'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 70
+
+Layout/LineLength:
+  Max: 160
+
+Metrics/AbcSize:
+  Max: 125
+
+Metrics/CyclomaticComplexity:
+  Max: 50
+
+Metrics/PerceivedComplexity:
+  Max: 50
+
+Metrics/ClassLength:
+  Max: 500
+
+Metrics/ParameterLists:
+  Max: 6
+
+Metrics/BlockLength:
+  Max: 30
+
+Metrics/BlockNesting:
+  Max: 4
+
+Naming/MethodParameterName:
+  MinNameLength: 2
+
+Rails/HelperInstanceVariable:
+  Enabled: false
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+Rails/InverseOf:
+  Enabled: false
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+Rails/StrongParametersExpect:
+  Enabled: false
+
+Metrics/BlockLength:
+  Max: 40
+  Exclude:
+    - 'test/**/*'
+
+Metrics/ClassLength:
+  Max: 1500
+
+Naming/VariableNumber:
+  Exclude:
+    - 'test/**/*'
+
+Naming/AccessorMethodName:
+  Exclude:
+    - 'test/**/*'
+
+Naming/VariableName:
+  Exclude:
+    - 'test/**/*'
+
+Rails/WhereNotWithMultipleConditions:
+  Exclude:
+    - 'test/**/*'
+
+Rails/ActionControllerTestCase:
+  Enabled: false
+
+Style/MultilineBlockChain:
+  Enabled: false
+
+Style/NumericPredicate:
+  Exclude:
+    - 'test/**/*'

@@ -1,14 +1,15 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class WrestlerTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
-  
-  test "Wrestler validations" do
+
+  test 'Wrestler validations' do
     wrestler = Wrestler.new
     assert_not wrestler.valid?
-    assert_equal [:school, :weight, :name, :weight_id, :school_id], wrestler.errors.attribute_names
+    assert_equal %i[school weight name weight_id school_id], wrestler.errors.attribute_names
   end
-  
 end

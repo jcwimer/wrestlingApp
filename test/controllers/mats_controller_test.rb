@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class MatsControllerTest < ActionController::TestCase
@@ -7,16 +9,14 @@ class MatsControllerTest < ActionController::TestCase
   setup do
     @tournament = Tournament.find(1)
     # @tournament.generateMatchups
-    @match = Match.where("tournament_id = ? and mat_id = ?",1,1).first
+    @match = Match.where('tournament_id = ? and mat_id = ?', 1, 1).first
     @mat = mats(:one)
     @match ||= @tournament.matches.first
-    if @match && @mat.queue1.nil?
-      @mat.assign_match_to_queue!(@match, 1)
-    end
+    @mat.assign_match_to_queue!(@match, 1) if @match && @mat.queue1.nil?
   end
- 
+
   def create
-    post :create, params: { mat: {name: 'Mat100', tournament_id: 1} }
+    post :create, params: { mat: { name: 'Mat100', tournament_id: 1 } }
   end
 
   def post_assign_next_match
@@ -26,9 +26,9 @@ class MatsControllerTest < ActionController::TestCase
   def new
     get :new, params: { tournament: @tournament.id }
   end
-  
+
   def show
-    get :show,  params: { id: 1 }
+    get :show, params: { id: 1 }
   end
 
   def get_state
@@ -60,7 +60,7 @@ class MatsControllerTest < ActionController::TestCase
   end
 
   def post_update
-    patch :update, params: { id: @mat.id, mat: {name: @mat.name, tournament_id: @mat.tournament_id} }
+    patch :update, params: { id: @mat.id, mat: { name: @mat.name, tournament_id: @mat.tournament_id } }
   end
 
   def destroy
@@ -70,7 +70,7 @@ class MatsControllerTest < ActionController::TestCase
   def get_edit
     get :edit, params: { id: @mat.id }
   end
-  
+
   def sign_in_owner
     sign_in users(:one)
   end
@@ -78,15 +78,15 @@ class MatsControllerTest < ActionController::TestCase
   def sign_in_non_owner
     sign_in users(:two)
   end
-  
+
   def sign_in_tournament_delegate
     sign_in users(:three)
   end
-  
+
   def sign_in_school_delegate
     sign_in users(:four)
   end
-  
+
   def success
     assert_response :success
   end
@@ -103,11 +103,11 @@ class MatsControllerTest < ActionController::TestCase
   def assert_ads_visible
     assert_match(/blocked_message/, response.body)
   end
-  
+
   def no_matches
     assert_redirected_to "/tournaments/#{@tournament.id}/no_matches"
   end
-  
+
   def wipe
     @tournament.destroy_all_matches
   end
@@ -116,93 +116,93 @@ class MatsControllerTest < ActionController::TestCase
     get :show, params: { id: @mat.id }
     old_controller = @controller
     @controller = MatchesController.new
-    patch :update, params: { id: @match.id, match: {tournament_id: 1, mat_id: @mat.id} }
+    patch :update, params: { id: @match.id, match: { tournament_id: 1, mat_id: @mat.id } }
     @controller = old_controller
   end
 
-  test "logged in tournament owner should get edit mat page" do
+  test 'logged in tournament owner should get edit mat page' do
     sign_in_owner
     get_edit
     success
   end
-  
-  test "logged in tournament delegate should get edit mat page" do
+
+  test 'logged in tournament delegate should get edit mat page' do
     sign_in_tournament_delegate
     get_edit
     success
   end
 
-  test "logged in user should not get edit mat page if not owner" do
+  test 'logged in user should not get edit mat page if not owner' do
     sign_in_non_owner
     get_edit
     redirect
   end
-  
-  test "logged school delegate should not get edit mat page if not owner" do
+
+  test 'logged school delegate should not get edit mat page if not owner' do
     sign_in_school_delegate
     get_edit
     redirect
   end
 
-  test "non logged in user should not get edit mat page" do
+  test 'non logged in user should not get edit mat page' do
     get_edit
     redirect
   end
 
-  test "non logged in user should get post update mat" do
+  test 'non logged in user should get post update mat' do
     post_update
     redirect
-  end 
+  end
 
-  test "logged in user should not post update mat if not owner" do
+  test 'logged in user should not post update mat if not owner' do
     sign_in_non_owner
     post_update
     redirect
-  end 
-  
-  test "logged school delegate should not post update mat if not owner" do
+  end
+
+  test 'logged school delegate should not post update mat if not owner' do
     sign_in_school_delegate
     post_update
     redirect
   end
 
-  test "logged in tournament owner should post update mat" do
+  test 'logged in tournament owner should post update mat' do
     sign_in_owner
     post_update
-    assert_redirected_to tournament_path(@mat.tournament_id) 
+    assert_redirected_to tournament_path(@mat.tournament_id)
   end
-  
-  test "logged in tournament delegate should post update mat" do
+
+  test 'logged in tournament delegate should post update mat' do
     sign_in_tournament_delegate
     post_update
-    assert_redirected_to tournament_path(@mat.tournament_id) 
+    assert_redirected_to tournament_path(@mat.tournament_id)
   end
 
-  test "logged in tournament owner can create a new mat" do
+  test 'logged in tournament owner can create a new mat' do
     sign_in_owner
     new
-    success 
+    success
     create
-    assert_redirected_to tournament_path(@mat.tournament_id) 
-  end
-  
-  test "logged in tournament delegate can create a new mat" do
-    sign_in_tournament_delegate
-    new
-    success 
-    create
-    assert_redirected_to tournament_path(@mat.tournament_id) 
+    assert_redirected_to tournament_path(@mat.tournament_id)
   end
 
-  test "logged in user not tournament owner cannot create a mat" do
+  test 'logged in tournament delegate can create a new mat' do
+    sign_in_tournament_delegate
+    new
+    success
+    create
+    assert_redirected_to tournament_path(@mat.tournament_id)
+  end
+
+  test 'logged in user not tournament owner cannot create a mat' do
     sign_in_non_owner
     new
     redirect
     create
     redirect
   end
-  
-  test "logged school delegate not tournament owner cannot create a mat" do
+
+  test 'logged school delegate not tournament owner cannot create a mat' do
     sign_in_school_delegate
     new
     redirect
@@ -210,205 +210,205 @@ class MatsControllerTest < ActionController::TestCase
     redirect
   end
 
-  test "logged in tournament owner can destroy a mat" do
+  test 'logged in tournament owner can destroy a mat' do
     sign_in_owner
     destroy
     assert_redirected_to tournament_path(@tournament.id)
   end
-  
-  test "logged in tournament delegate can destroy a mat" do
+
+  test 'logged in tournament delegate can destroy a mat' do
     sign_in_tournament_delegate
     destroy
     assert_redirected_to tournament_path(@tournament.id)
   end
 
-  test "logged in user not tournament owner cannot destroy mat" do
+  test 'logged in user not tournament owner cannot destroy mat' do
     sign_in_non_owner
     destroy
     redirect
   end
-  
-  test "logged school delegate not tournament owner cannot destroy mat" do
+
+  test 'logged school delegate not tournament owner cannot destroy mat' do
     sign_in_school_delegate
     destroy
     redirect
   end
-  
-  test "logged in user should not get show mat" do
+
+  test 'logged in user should not get show mat' do
     sign_in_non_owner
     show
-    redirect 
-  end 
+    redirect
+  end
 
-  test "logged in user should not get state mat page" do
+  test 'logged in user should not get state mat page' do
     sign_in_non_owner
     get_state
     redirect
   end
 
-  test "logged in user should not get scoreboard mat page" do
+  test 'logged in user should not get scoreboard mat page' do
     sign_in_non_owner
     get_scoreboard
     redirect
   end
-  
-  test "logged school delegate should not get show mat" do
+
+  test 'logged school delegate should not get show mat' do
     sign_in_school_delegate
     show
-    redirect 
+    redirect
   end
 
-  test "logged school delegate should not get state mat page" do
+  test 'logged school delegate should not get state mat page' do
     sign_in_school_delegate
     get_state
     redirect
   end
 
-  test "logged school delegate should not get scoreboard mat page" do
+  test 'logged school delegate should not get scoreboard mat page' do
     sign_in_school_delegate
     get_scoreboard
     redirect
   end
 
-  test "non logged in user should not get state mat page" do
+  test 'non logged in user should not get state mat page' do
     get_state
     redirect
   end
 
-  test "non logged in user should not get scoreboard mat page" do
+  test 'non logged in user should not get scoreboard mat page' do
     get_scoreboard
     redirect
   end
 
-  test "valid school permission key cannot get state mat page" do
+  test 'valid school permission key cannot get state mat page' do
     school = @tournament.schools.first
-    school.update!(permission_key: "valid-school-key")
+    school.update!(permission_key: 'valid-school-key')
 
-    get_state_with_params(school_permission_key: "valid-school-key")
-    assert_redirected_to "/static_pages/not_allowed"
+    get_state_with_params(school_permission_key: 'valid-school-key')
+    assert_redirected_to '/static_pages/not_allowed'
   end
 
-  test "invalid school permission key cannot get state mat page" do
+  test 'invalid school permission key cannot get state mat page' do
     school = @tournament.schools.first
-    school.update!(permission_key: "valid-school-key")
+    school.update!(permission_key: 'valid-school-key')
 
-    get_state_with_params(school_permission_key: "invalid-school-key")
-    assert_redirected_to "/static_pages/not_allowed"
+    get_state_with_params(school_permission_key: 'invalid-school-key')
+    assert_redirected_to '/static_pages/not_allowed'
   end
 
-  test "valid school permission key cannot get scoreboard mat page" do
+  test 'valid school permission key cannot get scoreboard mat page' do
     school = @tournament.schools.first
-    school.update!(permission_key: "valid-school-key")
+    school.update!(permission_key: 'valid-school-key')
 
-    get_scoreboard_with_params(school_permission_key: "valid-school-key")
-    assert_redirected_to "/static_pages/not_allowed"
+    get_scoreboard_with_params(school_permission_key: 'valid-school-key')
+    assert_redirected_to '/static_pages/not_allowed'
   end
 
-  test "invalid school permission key cannot get scoreboard mat page" do
+  test 'invalid school permission key cannot get scoreboard mat page' do
     school = @tournament.schools.first
-    school.update!(permission_key: "valid-school-key")
+    school.update!(permission_key: 'valid-school-key')
 
-    get_scoreboard_with_params(school_permission_key: "invalid-school-key")
-    assert_redirected_to "/static_pages/not_allowed"
+    get_scoreboard_with_params(school_permission_key: 'invalid-school-key')
+    assert_redirected_to '/static_pages/not_allowed'
   end
 
-  test "logged in user should not post select_match on mat" do
+  test 'logged in user should not post select_match on mat' do
     sign_in_non_owner
     post_select_match
     redirect
   end
 
-  test "logged school delegate should not post select_match on mat" do
+  test 'logged school delegate should not post select_match on mat' do
     sign_in_school_delegate
     post_select_match
     redirect
   end
 
-  test "non logged in user should not post select_match on mat" do
+  test 'non logged in user should not post select_match on mat' do
     post_select_match
     redirect
   end
 
-  test "valid school permission key cannot post select_match on mat" do
+  test 'valid school permission key cannot post select_match on mat' do
     school = @tournament.schools.first
-    school.update!(permission_key: "valid-school-key")
+    school.update!(permission_key: 'valid-school-key')
 
-    post_select_match_with_params(school_permission_key: "valid-school-key")
-    assert_redirected_to "/static_pages/not_allowed"
+    post_select_match_with_params(school_permission_key: 'valid-school-key')
+    assert_redirected_to '/static_pages/not_allowed'
   end
 
-  test "invalid school permission key cannot post select_match on mat" do
+  test 'invalid school permission key cannot post select_match on mat' do
     school = @tournament.schools.first
-    school.update!(permission_key: "valid-school-key")
+    school.update!(permission_key: 'valid-school-key')
 
-    post_select_match_with_params(school_permission_key: "invalid-school-key")
-    assert_redirected_to "/static_pages/not_allowed"
+    post_select_match_with_params(school_permission_key: 'invalid-school-key')
+    assert_redirected_to '/static_pages/not_allowed'
   end
 
-  test "logged in tournament owner should get show mat" do
+  test 'logged in tournament owner should get show mat' do
     sign_in_owner
     show
     success
   end
 
-  test "logged in tournament owner should get state mat page" do
+  test 'logged in tournament owner should get state mat page' do
     sign_in_owner
     get_state
     success
   end
 
-  test "logged in tournament owner should get scoreboard mat page" do
+  test 'logged in tournament owner should get scoreboard mat page' do
     sign_in_owner
     get_scoreboard
     success
   end
 
-  test "logged in tournament owner can post select_match on mat" do
+  test 'logged in tournament owner can post select_match on mat' do
     sign_in_owner
     post_select_match
     assert_response :no_content
   end
-  
-  test "logged in tournament delegate should get show mat" do
+
+  test 'logged in tournament delegate should get show mat' do
     sign_in_tournament_delegate
     show
     success
   end
 
-  test "logged in tournament delegate should get state mat page" do
+  test 'logged in tournament delegate should get state mat page' do
     sign_in_tournament_delegate
     get_state
     success
   end
 
-  test "logged in tournament delegate should get scoreboard mat page" do
+  test 'logged in tournament delegate should get scoreboard mat page' do
     sign_in_tournament_delegate
     get_scoreboard
     success
   end
 
-  test "state mat page renders queue buttons and mat-state controller" do
+  test 'state mat page renders queue buttons and mat-state controller' do
     sign_in_owner
     get_state
 
     assert_response :success
-    assert_includes response.body, "data-controller=\"mat-state\""
-    assert_includes response.body, "Queue 1:"
-    assert_includes response.body, "Queue 2:"
-    assert_includes response.body, "Queue 3:"
-    assert_includes response.body, "Queue 4:"
+    assert_includes response.body, 'data-controller="mat-state"'
+    assert_includes response.body, 'Queue 1:'
+    assert_includes response.body, 'Queue 2:'
+    assert_includes response.body, 'Queue 3:'
+    assert_includes response.body, 'Queue 4:'
   end
 
-  test "scoreboard mat page renders match-scoreboard controller" do
+  test 'scoreboard mat page renders match-scoreboard controller' do
     sign_in_owner
     get_scoreboard_with_params(print: true)
 
     assert_response :success
-    assert_includes response.body, "data-controller=\"match-scoreboard\""
-    assert_includes response.body, "data-match-scoreboard-source-mode-value=\"localstorage\""
+    assert_includes response.body, 'data-controller="match-scoreboard"'
+    assert_includes response.body, 'data-match-scoreboard-source-mode-value="localstorage"'
   end
 
-  test "scoreboard mat page uses selected scoreboard match as initial bout" do
+  test 'scoreboard mat page uses selected scoreboard match as initial bout' do
     sign_in_owner
     alternate_match = @mat.queue2_match
     if alternate_match.nil?
@@ -424,54 +424,54 @@ class MatsControllerTest < ActionController::TestCase
     assert_includes response.body, "data-match-scoreboard-initial-bout-number-value=\"#{alternate_match.bout_number}\""
   end
 
-  test "state mat page renders no matches assigned when queue is empty" do
+  test 'state mat page renders no matches assigned when queue is empty' do
     sign_in_owner
     @mat.clear_queue!
 
     get_state
 
     assert_response :success
-    assert_includes response.body, "No matches assigned to this mat."
+    assert_includes response.body, 'No matches assigned to this mat.'
   end
 
-  test "logged in tournament owner should get stat mat page" do
+  test 'logged in tournament owner should get stat mat page' do
     sign_in_owner
     get_stat
     assert_response :success
-    assert_includes response.body, "data-controller=\"match-data\""
+    assert_includes response.body, 'data-controller="match-data"'
   end
 
-  test "posting a match update from mat stat redirects back to mat stat" do
+  test 'posting a match update from mat stat redirects back to mat stat' do
     sign_in_owner
     get :stat, params: { id: @mat.id, bout_number: @match.bout_number }
 
     old_controller = @controller
     @controller = MatchesController.new
-    patch :update, params: { id: @match.id, match: { score: "3-1", win_type: "Decision", winner_id: @match.w1, finished: 1 } }
+    patch :update, params: { id: @match.id, match: { score: '3-1', win_type: 'Decision', winner_id: @match.w1, finished: 1 } }
     @controller = old_controller
 
     assert_redirected_to "/mats/#{@mat.id}/stat"
   end
 
-  test "posting a match update from mat state redirects back to mat state" do
+  test 'posting a match update from mat state redirects back to mat state' do
     sign_in_owner
     get :state, params: { id: @mat.id, bout_number: @match.bout_number }
 
     old_controller = @controller
     @controller = MatchesController.new
-    patch :update, params: { id: @match.id, match: { score: "3-1", win_type: "Decision", winner_id: @match.w1, finished: 1 } }
+    patch :update, params: { id: @match.id, match: { score: '3-1', win_type: 'Decision', winner_id: @match.w1, finished: 1 } }
     @controller = old_controller
 
     assert_redirected_to "/mats/#{@mat.id}/state"
   end
 
-  test "logged in tournament delegate can post select_match on mat" do
+  test 'logged in tournament delegate can post select_match on mat' do
     sign_in_tournament_delegate
     post_select_match
     assert_response :no_content
   end
 
-  test "select_match updates selected scoreboard match" do
+  test 'select_match updates selected scoreboard match' do
     sign_in_owner
     alternate_match = @mat.queue2_match
     if alternate_match.nil?
@@ -486,18 +486,18 @@ class MatsControllerTest < ActionController::TestCase
     assert_equal alternate_match.id, @mat.selected_scoreboard_match&.id
   end
 
-  test "select_match updates last match result without changing selected match" do
+  test 'select_match updates last match result without changing selected match' do
     sign_in_owner
     @mat.set_selected_scoreboard_match!(@match)
 
-    post :select_match, params: { id: @mat.id, last_match_result: "106 lbs - Winner Decision Loser 3-1" }
+    post :select_match, params: { id: @mat.id, last_match_result: '106 lbs - Winner Decision Loser 3-1' }
 
     assert_response :no_content
     assert_equal @match.id, @mat.selected_scoreboard_match&.id
-    assert_equal "106 lbs - Winner Decision Loser 3-1", @mat.last_match_result_text
+    assert_equal '106 lbs - Winner Decision Loser 3-1', @mat.last_match_result_text
   end
 
-  test "select_match returns unprocessable entity for a non queued match without last result" do
+  test 'select_match returns unprocessable entity for a non queued match without last result' do
     sign_in_owner
     non_queued_match = @tournament.matches.where(mat_id: nil).first
 
@@ -506,36 +506,36 @@ class MatsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
   end
 
-  test "ads are hidden on mat show" do
+  test 'ads are hidden on mat show' do
     sign_in_owner
     show
     success
     assert_ads_hidden
   end
 
-  test "redirect to mat show when posting a match from mat show" do
+  test 'redirect to mat show when posting a match from mat show' do
     sign_in_owner
     post_match_update_from_mat_show
     assert_redirected_to "/mats/#{@mat.id}"
   end
 
-  test "logged in tournament owner can show mat with bout_number param" do
+  test 'logged in tournament owner can show mat with bout_number param' do
     sign_in_owner
-  
+
     # Set a specific bout number to test
     bout_number = @match.bout_number
-  
+
     # Call the show action with the bout_number param
     get :show, params: { id: @mat.id, bout_number: bout_number }
-  
+
     # Assert the response is successful
     assert_response :success
-  
+
     # Check if the bout_number is rendered on the page
-    assert_match /#{bout_number}/, response.body, "The bout_number should be rendered on the page"
+    assert_match(/#{bout_number}/, response.body, 'The bout_number should be rendered on the page')
   end
 
-  test "mat show renders queue buttons for all four queue slots" do
+  test 'mat show renders queue buttons for all four queue slots' do
     sign_in_owner
 
     available_matches = @tournament.matches.where(mat_id: nil).limit(3).to_a
@@ -546,13 +546,13 @@ class MatsControllerTest < ActionController::TestCase
     get :show, params: { id: @mat.id }
     assert_response :success
 
-    assert_includes response.body, "Queue 1: Bout"
-    assert_includes response.body, "Queue 2:"
-    assert_includes response.body, "Queue 3:"
-    assert_includes response.body, "Queue 4:"
+    assert_includes response.body, 'Queue 1: Bout'
+    assert_includes response.body, 'Queue 2:'
+    assert_includes response.body, 'Queue 3:'
+    assert_includes response.body, 'Queue 4:'
   end
 
-  test "mat show highlights selected queue button and keeps bout_number links working" do
+  test 'mat show highlights selected queue button and keeps bout_number links working' do
     sign_in_owner
 
     queue2_match = @mat.queue2_match
@@ -561,9 +561,9 @@ class MatsControllerTest < ActionController::TestCase
       @mat.assign_match_to_queue!(assignable, 2) if assignable
       queue2_match = @mat.reload.queue2_match
     end
-    assert queue2_match, "Expected queue2 match to be present"
+    assert queue2_match, 'Expected queue2 match to be present'
 
-    get :show, params: { id: @mat.id, bout_number: queue2_match.bout_number, foo: "bar" }
+    get :show, params: { id: @mat.id, bout_number: queue2_match.bout_number, foo: 'bar' }
     assert_response :success
 
     assert_includes response.body, "Queue 2: Bout #{queue2_match.bout_number}"
@@ -571,88 +571,88 @@ class MatsControllerTest < ActionController::TestCase
     assert_includes response.body, "bout_number=#{queue2_match.bout_number}"
   end
 
-  test "mat show falls back to queue1 when requested bout number is not currently queued" do
+  test 'mat show falls back to queue1 when requested bout number is not currently queued' do
     sign_in_owner
 
     queue1 = @mat.reload.queue1_match
-    assert queue1, "Expected queue1 to be present"
+    assert queue1, 'Expected queue1 to be present'
 
-    get :show, params: { id: @mat.id, bout_number: 999999 }
+    get :show, params: { id: @mat.id, bout_number: 999_999 }
     assert_response :success
     assert_includes response.body, "Bout <strong>#{queue1.bout_number}</strong>"
   end
 
-  test "mat show renders no matches assigned when queue is empty" do
+  test 'mat show renders no matches assigned when queue is empty' do
     sign_in_owner
 
     @mat.clear_queue!
     get :show, params: { id: @mat.id }
     assert_response :success
-    assert_includes response.body, "No matches assigned to this mat."
+    assert_includes response.body, 'No matches assigned to this mat.'
   end
 
-  test "logged in tournament owner should redirect back to the first unfinished bout on a mat after submitting a match with a bout number param" do
+  test 'logged in tournament owner should redirect back to the first unfinished bout on a mat after submitting a match with a bout number param' do
     sign_in_owner
-  
+
     first_bout_number = @mat.queue1_match.bout_number
-  
+
     # Set a specific bout number to test
     bout_number = @match.bout_number
-  
+
     # Call the show action with the bout_number param
     get :show, params: { id: @mat.id, bout_number: bout_number }
-  
+
     # Submit the match
     old_controller = @controller
     @controller = MatchesController.new
     patch :update, params: { id: @match.id, match: { tournament_id: 1, mat_id: @mat.id } }
     @controller = old_controller
-  
+
     # Assert the redirect
     assert_redirected_to mat_path(@mat) # Verify redirection to /mats/1
-  
+
     # Explicitly follow the redirect with the named route
     get :show, params: { id: @mat.id }
-  
+
     # Check if the first_bout_number is rendered on the page
-    assert_match /#{first_bout_number}/, response.body, "The first unfinished bout_number should be rendered on the page"
-  end  
-  
-#TESTS THAT NEED MATCHES PUT ABOVE THIS
-  test "show renders when no matches" do
+    assert_match(/#{first_bout_number}/, response.body, 'The first unfinished bout_number should be rendered on the page')
+  end
+
+  # TESTS THAT NEED MATCHES PUT ABOVE THIS
+  test 'show renders when no matches' do
     sign_in_owner
     wipe
     show
     success
-    assert_includes response.body, "No matches assigned to this mat."
+    assert_includes response.body, 'No matches assigned to this mat.'
   end
 
   # Assign Next Match Permissions
-  test "logged in tournament owner should post assign_next_match mat page" do
+  test 'logged in tournament owner should post assign_next_match mat page' do
     sign_in_owner
     post_assign_next_match
     assert_redirected_to "/tournaments/#{@mat.tournament_id}"
   end
-  
-  test "logged in tournament delegate should post assign_next_match mat page" do
+
+  test 'logged in tournament delegate should post assign_next_match mat page' do
     sign_in_tournament_delegate
     post_assign_next_match
     assert_redirected_to "/tournaments/#{@mat.tournament_id}"
   end
 
-  test "logged in user should not get post assign_next_match page if not owner" do
+  test 'logged in user should not get post assign_next_match page if not owner' do
     sign_in_non_owner
     post_assign_next_match
     redirect
   end
-  
-  test "logged school delegate should not post assign_next_match mat page if not owner" do
+
+  test 'logged school delegate should not post assign_next_match mat page if not owner' do
     sign_in_school_delegate
     post_assign_next_match
     redirect
   end
 
-  test "non logged in user should not post assign_next_match mat page" do
+  test 'non logged in user should not post assign_next_match mat page' do
     post_assign_next_match
     redirect
   end

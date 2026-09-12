@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class UpMatchesCacheTest < ActionController::TestCase
   tests TournamentsController
@@ -20,26 +22,26 @@ class UpMatchesCacheTest < ActionController::TestCase
     ActionController::Base.perform_caching = @original_perform_caching
   end
 
-  test "up_matches row fragments hit cache and invalidate when a mat queue changes" do
+  test 'up_matches row fragments hit cache and invalidate when a mat queue changes' do
     first_events = cache_events_for_up_matches do
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
 
-    assert_operator cache_writes(first_events), :>, 0, "Expected initial render to write row fragments"
+    assert_operator cache_writes(first_events), :>, 0, 'Expected initial render to write row fragments'
 
     second_events = cache_events_for_up_matches do
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
 
-    assert_equal 0, cache_writes(second_events), "Expected second render to reuse cached row fragments"
-    assert_operator cache_hits(second_events), :>, 0, "Expected second render to have cache hits"
+    assert_equal 0, cache_writes(second_events), 'Expected second render to reuse cached row fragments'
+    assert_operator cache_hits(second_events), :>, 0, 'Expected second render to have cache hits'
 
     mat = @tournament.mats.first
     mat.reload
     movable_match = mat.queue2_match || mat.queue1_match
-    assert movable_match, "Expected at least one queued match to move"
+    assert movable_match, 'Expected at least one queued match to move'
 
     third_events = cache_events_for_up_matches do
       mat.assign_match_to_queue!(movable_match, 4)
@@ -47,10 +49,10 @@ class UpMatchesCacheTest < ActionController::TestCase
       assert_response :success
     end
 
-    assert_operator cache_writes(third_events), :>, 0, "Expected queue change to invalidate and rewrite at least one row fragment"
+    assert_operator cache_writes(third_events), :>, 0, 'Expected queue change to invalidate and rewrite at least one row fragment'
   end
 
-  test "up_matches preloads first rounds without loading every weight match" do
+  test 'up_matches preloads first rounds without loading every weight match' do
     matches = @tournament.up_matches_unassigned_matches
 
     matches.each do |match|
@@ -59,12 +61,12 @@ class UpMatchesCacheTest < ActionController::TestCase
     end
   end
 
-  test "up_matches row fragments hit cache after queue clear rewrite" do
+  test 'up_matches row fragments hit cache after queue clear rewrite' do
     first_events = cache_events_for_up_matches do
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_operator cache_writes(first_events), :>, 0, "Expected initial render to write row fragments"
+    assert_operator cache_writes(first_events), :>, 0, 'Expected initial render to write row fragments'
 
     mat = @tournament.mats.first
     clear_events = cache_events_for_up_matches do
@@ -72,78 +74,78 @@ class UpMatchesCacheTest < ActionController::TestCase
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_operator cache_writes(clear_events), :>, 0, "Expected queue clear to invalidate and rewrite at least one row fragment"
+    assert_operator cache_writes(clear_events), :>, 0, 'Expected queue clear to invalidate and rewrite at least one row fragment'
 
     repeat_events = cache_events_for_up_matches do
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_equal 0, cache_writes(repeat_events), "Expected subsequent render after queue clear rewrite to reuse cached row fragments"
-    assert_operator cache_hits(repeat_events), :>, 0, "Expected cache hits after queue clear rewrite"
+    assert_equal 0, cache_writes(repeat_events), 'Expected subsequent render after queue clear rewrite to reuse cached row fragments'
+    assert_operator cache_hits(repeat_events), :>, 0, 'Expected cache hits after queue clear rewrite'
   end
 
-  test "up_matches unassigned row fragments hit cache and invalidate after unassigned match update" do
+  test 'up_matches unassigned row fragments hit cache and invalidate after unassigned match update' do
     key_markers = %w[up_matches_unassigned_row]
 
     first_events = cache_events_for_up_matches(key_markers) do
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_operator cache_writes(first_events), :>, 0, "Expected initial unassigned row render to write fragments"
+    assert_operator cache_writes(first_events), :>, 0, 'Expected initial unassigned row render to write fragments'
 
     second_events = cache_events_for_up_matches(key_markers) do
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_equal 0, cache_writes(second_events), "Expected repeat unassigned row render to reuse cached fragments"
-    assert_operator cache_hits(second_events), :>, 0, "Expected repeat unassigned row render to hit cache"
+    assert_equal 0, cache_writes(second_events), 'Expected repeat unassigned row render to reuse cached fragments'
+    assert_operator cache_hits(second_events), :>, 0, 'Expected repeat unassigned row render to hit cache'
 
     unassigned_match = @tournament.up_matches_unassigned_matches.first
-    assert unassigned_match, "Expected at least one unassigned match for cache invalidation test"
+    assert unassigned_match, 'Expected at least one unassigned match for cache invalidation test'
 
     third_events = cache_events_for_up_matches(key_markers) do
       unassigned_match.touch
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_operator cache_writes(third_events), :>, 0, "Expected unassigned match update to invalidate unassigned row fragment"
+    assert_operator cache_writes(third_events), :>, 0, 'Expected unassigned match update to invalidate unassigned row fragment'
   end
 
-  test "completing an on-mat match expires up_matches cached fragments" do
+  test 'completing an on-mat match expires up_matches cached fragments' do
     warm_events = cache_events_for_up_matches(%w[up_matches_mat_row up_matches_unassigned_row]) do
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_operator cache_writes(warm_events), :>, 0, "Expected initial up_matches render to warm caches"
+    assert_operator cache_writes(warm_events), :>, 0, 'Expected initial up_matches render to warm caches'
 
     mat = @tournament.mats.detect { |m| m.queue1_match.present? }
-    assert mat, "Expected a mat with a queued match"
+    assert mat, 'Expected a mat with a queued match'
     match = mat.queue1_match
-    assert match, "Expected queue1 match to complete"
+    assert match, 'Expected queue1 match to complete'
 
     post_action_events = cache_events_for_up_matches(%w[up_matches_mat_row up_matches_unassigned_row]) do
       match.update!(
         finished: 1,
         winner_id: match.w1 || match.w2,
-        win_type: "Decision",
-        score: "1-0"
+        win_type: 'Decision',
+        score: '1-0'
       )
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
 
-    assert_operator cache_writes(post_action_events), :>, 0, "Expected completed match to expire and rewrite up_matches caches"
+    assert_operator cache_writes(post_action_events), :>, 0, 'Expected completed match to expire and rewrite up_matches caches'
   end
 
-  test "manually assigning an unassigned match to a mat queue expires up_matches caches" do
+  test 'manually assigning an unassigned match to a mat queue expires up_matches caches' do
     warm_events = cache_events_for_up_matches(%w[up_matches_mat_row up_matches_unassigned_row]) do
       get :up_matches, params: { id: @tournament.id }
       assert_response :success
     end
-    assert_operator cache_writes(warm_events), :>, 0, "Expected initial up_matches render to warm caches"
+    assert_operator cache_writes(warm_events), :>, 0, 'Expected initial up_matches render to warm caches'
 
     unassigned_match = @tournament.up_matches_unassigned_matches.first
-    assert unassigned_match, "Expected at least one unassigned match to manually place on a mat"
+    assert unassigned_match, 'Expected at least one unassigned match to manually place on a mat'
     target_mat = @tournament.mats.first
 
     post_action_events = cache_events_for_up_matches(%w[up_matches_mat_row up_matches_unassigned_row]) do
@@ -152,12 +154,12 @@ class UpMatchesCacheTest < ActionController::TestCase
       assert_response :success
     end
 
-    assert_operator cache_writes(post_action_events), :>, 0, "Expected manual mat assignment to expire and rewrite up_matches caches"
+    assert_operator cache_writes(post_action_events), :>, 0, 'Expected manual mat assignment to expire and rewrite up_matches caches'
   end
 
   private
 
-  def cache_events_for_up_matches(key_markers = %w[up_matches_mat_row up_matches_unassigned_row])
+  def cache_events_for_up_matches(key_markers = %w[up_matches_mat_row up_matches_unassigned_row], &)
     events = []
     subscriber = lambda do |name, _start, _finish, _id, payload|
       key = payload[:key].to_s
@@ -168,22 +170,20 @@ class UpMatchesCacheTest < ActionController::TestCase
 
     ActiveSupport::Notifications.subscribed(
       subscriber,
-      /cache_(read|write|fetch_hit|generate)(?:_multi)?\.active_support/
-    ) do
-      yield
-    end
+      /cache_(read|write|fetch_hit|generate)(?:_multi)?\.active_support/, &
+    )
 
     events
   end
 
   def cache_writes(events)
-    events.count { |event| event[:name].start_with?("cache_write") }
+    events.count { |event| event[:name].start_with?('cache_write') }
   end
 
   def cache_hits(events)
     events.count do |event|
-      event[:name] == "cache_fetch_hit.active_support" ||
-        (event[:name].start_with?("cache_read") && event[:hit])
+      event[:name] == 'cache_fetch_hit.active_support' ||
+        (event[:name].start_with?('cache_read') && event[:hit])
     end
   end
 end

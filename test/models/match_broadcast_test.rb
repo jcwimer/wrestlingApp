@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class MatchBroadcastTest < ActiveSupport::TestCase
   include ActionView::RecordIdentifier
 
-  test "broadcasts to old and new mats when mat changes" do
+  test 'broadcasts to old and new mats when mat changes' do
     create_double_elim_tournament_single_weight_1_6(4)
-    mat1 = @tournament.mats.create!(name: "Mat 1")
-    mat2 = @tournament.mats.create!(name: "Mat 2")
+    mat1 = @tournament.mats.create!(name: 'Mat 1')
+    mat2 = @tournament.mats.create!(name: 'Mat 2')
     @tournament.matches.update_all(mat_id: nil)
     match = @tournament.matches.first
 
@@ -28,9 +30,9 @@ class MatchBroadcastTest < ActiveSupport::TestCase
     assert_includes broadcasts_for(stream2).last, dom_id(mat2, :current_match)
   end
 
-  test "broadcasts when a match is removed from a mat" do
+  test 'broadcasts when a match is removed from a mat' do
     create_double_elim_tournament_single_weight_1_6(4)
-    mat = @tournament.mats.create!(name: "Mat 1")
+    mat = @tournament.mats.create!(name: 'Mat 1')
     @tournament.matches.update_all(mat_id: nil)
     match = @tournament.matches.first
 
@@ -49,9 +51,9 @@ class MatchBroadcastTest < ActiveSupport::TestCase
     assert_includes broadcasts_for(stream).last, dom_id(mat, :current_match)
   end
 
-  test "destroy_all_matches clears mats and broadcasts no matches assigned" do
+  test 'destroy_all_matches clears mats and broadcasts no matches assigned' do
     create_double_elim_tournament_single_weight_1_6(4)
-    mat = @tournament.mats.create!(name: "Mat 1")
+    mat = @tournament.mats.create!(name: 'Mat 1')
     @tournament.reset_and_fill_bout_board
     stream = stream_name_for(mat)
 
@@ -61,13 +63,13 @@ class MatchBroadcastTest < ActiveSupport::TestCase
     assert_operator broadcasts_for(stream).size, :>, 0
     payload = broadcasts_for(stream).last
     assert_includes payload, dom_id(mat, :current_match)
-    assert_includes payload, "No matches assigned to this mat."
+    assert_includes payload, 'No matches assigned to this mat.'
     assert_equal [nil, nil, nil, nil], mat.reload.queue_match_ids
   end
 
-  test "wipe tournament matches service clears mats and broadcasts no matches assigned" do
+  test 'wipe tournament matches service clears mats and broadcasts no matches assigned' do
     create_double_elim_tournament_single_weight_1_6(4)
-    mat = @tournament.mats.create!(name: "Mat 1")
+    mat = @tournament.mats.create!(name: 'Mat 1')
     @tournament.reset_and_fill_bout_board
     stream = stream_name_for(mat)
 
@@ -77,7 +79,7 @@ class MatchBroadcastTest < ActiveSupport::TestCase
     assert_operator broadcasts_for(stream).size, :>, 0
     payload = broadcasts_for(stream).last
     assert_includes payload, dom_id(mat, :current_match)
-    assert_includes payload, "No matches assigned to this mat."
+    assert_includes payload, 'No matches assigned to this mat.'
     assert_equal [nil, nil, nil, nil], mat.reload.queue_match_ids
   end
 
