@@ -26,6 +26,10 @@ class WrestlersControllerTest < ActionController::TestCase
     patch :update, params: { id: @wrestler.id, wrestler: { name: @wrestler.name, weight_id: 1, school_id: 1 } }
   end
 
+  def post_update_pool(pool: 2)
+    post :update_pool, params: { wrestler: { id: @wrestler.id, pool: pool } }
+  end
+
   def destroy
     delete :destroy, params: { id: @wrestler.id }
   end
@@ -123,6 +127,42 @@ class WrestlersControllerTest < ActionController::TestCase
     sign_in_school_delegate
     post_update
     assert_redirected_to school_path(@school.id)
+  end
+
+  test 'tournament owner can move wrestler to another pool' do
+    sign_in_owner
+
+    post_update_pool
+
+    assert_redirected_to weight_path(@wrestler.weight)
+    assert_equal 2, @wrestler.reload.pool
+  end
+
+  test 'tournament delegate can move wrestler to another pool' do
+    sign_in_tournament_delegate
+
+    post_update_pool
+
+    assert_redirected_to weight_path(@wrestler.weight)
+    assert_equal 2, @wrestler.reload.pool
+  end
+
+  test 'school delegate cannot move wrestler to another pool' do
+    sign_in_school_delegate
+
+    post_update_pool
+
+    redirect
+    assert_equal 1, @wrestler.reload.pool
+  end
+
+  test 'unrelated user cannot move wrestler to another pool' do
+    sign_in_non_owner
+
+    post_update_pool
+
+    redirect
+    assert_equal 1, @wrestler.reload.pool
   end
 
   test 'logged in tournament owner can create a new wrestler' do

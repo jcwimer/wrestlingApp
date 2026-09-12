@@ -4,6 +4,8 @@ class WrestlersController < ApplicationController
   before_action :set_wrestler, only: %i[show edit update destroy]
   before_action :check_access, only: %i[new create update destroy edit]
   before_action :check_read_access, only: [:show]
+  before_action :set_wrestler_for_pool_update, only: [:update_pool]
+  before_action :check_pool_update_access, only: [:update_pool]
 
   # GET /wrestlers/1
   # GET /wrestlers/1.json
@@ -81,6 +83,15 @@ class WrestlersController < ApplicationController
     end
   end
 
+  def update_pool
+    if @wrestler.update(pool: params.require(:wrestler).require(:pool))
+      redirect_to @wrestler.weight,
+                  notice: "Wrestler was successfully updated. Please re-generate this weight class's matches."
+    else
+      redirect_to @wrestler.weight, alert: @wrestler.errors.full_messages.to_sentence
+    end
+  end
+
   # DELETE /wrestlers/1
   def destroy
     @school = @wrestler.school
@@ -105,6 +116,15 @@ class WrestlersController < ApplicationController
     return unless @wrestler.nil?
 
     redirect_to root_path, alert: 'Wrestler not found'
+  end
+
+  def set_wrestler_for_pool_update
+    @wrestler = Wrestler.includes(:school, :weight, :tournament)
+                        .find(params.require(:wrestler).require(:id))
+  end
+
+  def check_pool_update_access
+    authorize! :manage, @wrestler.tournament
   end
 
   def wrestler_params

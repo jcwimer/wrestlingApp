@@ -22,7 +22,7 @@ class ModifiedDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     winner_by_name('Test9', round1.find { |m| m.bracket_position_number == 2 })
     winner_by_name('Test5', round1.find { |m| m.bracket_position_number == 3 })
     winner_by_name('Test4', round1.find { |m| m.bracket_position_number == 4 })
-    winner_by_name('Test13', round1.find { |m| m.bracket_position_number == 5 })
+    winner_by_name('Test14', round1.find { |m| m.bracket_position_number == 5 })
     winner_by_name('Test6', round1.find { |m| m.bracket_position_number == 6 })
     winner_by_name('Test10', round1.find { |m| m.bracket_position_number == 7 })
 
@@ -31,7 +31,7 @@ class ModifiedDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     assert quarter.first.reload.wrestler2.name == 'Test9'
     assert quarter.second.reload.wrestler1.name == 'Test5'
     assert quarter.second.reload.wrestler2.name == 'Test4'
-    assert quarter.third.reload.wrestler1.name == 'Test13'
+    assert quarter.third.reload.wrestler1.name == 'Test14'
     assert quarter.third.reload.wrestler2.name == 'Test6'
     assert quarter.fourth.reload.wrestler1.name == 'Test10'
     assert quarter.fourth.reload.wrestler2.name == 'Test2'
@@ -39,14 +39,14 @@ class ModifiedDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     conso_round2 = matches.select { |m| m.bracket_position == 'Conso Round of 8' }.sort_by(&:bracket_position_number)
     assert conso_round2.first.reload.wrestler2.name == 'Test8'
     assert conso_round2.second.reload.wrestler1.name == 'Test12'
-    assert conso_round2.second.reload.wrestler2.name == 'Test14'
+    assert conso_round2.second.reload.wrestler2.name == 'Test13'
     assert conso_round2.third.reload.wrestler1.name == 'Test3'
     assert conso_round2.third.reload.wrestler2.name == 'Test11'
     assert conso_round2.fourth.reload.wrestler1.name == 'Test7'
 
     winner_by_name('Test1', quarter.first)
     winner_by_name('Test5', quarter.second)
-    winner_by_name('Test13', quarter.third)
+    winner_by_name('Test14', quarter.third)
     winner_by_name('Test10', quarter.fourth)
     winner_by_name('Test12', conso_round2.second)
     winner_by_name('Test3', conso_round2.third)
@@ -54,7 +54,7 @@ class ModifiedDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     semis = matches.select { |m| m.bracket_position == 'Semis' }.sort_by(&:bracket_position_number)
     assert semis.first.reload.wrestler1.name == 'Test1'
     assert semis.first.reload.wrestler2.name == 'Test5'
-    assert semis.second.reload.wrestler1.name == 'Test13'
+    assert semis.second.reload.wrestler1.name == 'Test14'
     assert semis.second.reload.wrestler2.name == 'Test10'
 
     conso_quarter = matches.select { |m| m.bracket_position == 'Conso Quarter' }.sort_by(&:bracket_position_number)
@@ -91,7 +91,7 @@ class ModifiedDoubleEliminationSixPlacesRunThrough < ActionDispatch::Integration
     assert first_finals.reload.wrestler2.name == 'Test10'
 
     assert third_finals.reload.wrestler1.name == 'Test1'
-    assert third_finals.reload.wrestler2.name == 'Test13'
+    assert third_finals.reload.wrestler2.name == 'Test14'
 
     assert fifth_finals.reload.wrestler1.name == 'Test2'
     assert fifth_finals.reload.wrestler2.name == 'Test4'
