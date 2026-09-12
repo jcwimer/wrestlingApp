@@ -7,6 +7,20 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     create_pool_tournament_single_weight(6)
   end
 
+  def complete_three_way_tie(overrides = {})
+    results = [
+      %w[Test1 Test2 Test1], %w[Test1 Test4 Test1], %w[Test1 Test5 Test1], %w[Test1 Test6 Test1],
+      %w[Test2 Test3 Test2], %w[Test2 Test4 Test2], %w[Test2 Test5 Test2], %w[Test2 Test6 Test2],
+      %w[Test1 Test3 Test3], %w[Test3 Test4 Test3], %w[Test3 Test5 Test3], %w[Test3 Test6 Test3],
+      %w[Test4 Test5 Test4], %w[Test4 Test6 Test4], %w[Test5 Test6 Test5]
+    ]
+
+    results.each do |first, second, winner|
+      win_type, score = overrides.fetch("#{first}-#{second}", %w[Decision 1-0])
+      end_match_custom(match_wrestler_vs(first, second), win_type, score, winner)
+    end
+  end
+
   test 'Pool order based on wins' do
     end_match(match_wrestler_vs('Test1', 'Test2'), 'Test1')
     end_match(match_wrestler_vs('Test1', 'Test3'), 'Test1')
@@ -124,7 +138,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
 
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement == 2
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Team Points'
-    assert Wrestler.find(translate_name_to_id('Test2')).pool_placement = 3
+    assert Wrestler.find(translate_name_to_id('Test2')).pool_placement == 3
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement_tiebreaker.nil?
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement == 1
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker == 'Head to Head'
@@ -159,11 +173,11 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     end_match(match_wrestler_vs('Test5', 'Test6'), 'Test5')
 
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement == 1
-    assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Most Pins'
+    assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Fall/Default/Forfeit/DQ Points'
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement == 2
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement_tiebreaker == 'Head to Head'
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement == 3
-    assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker == 'Team Points'
+    assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker.nil?
     assert Wrestler.find(translate_name_to_id('Test4')).pool_placement == 4
     assert Wrestler.find(translate_name_to_id('Test5')).pool_placement == 5
     assert Wrestler.find(translate_name_to_id('Test6')).pool_placement == 6
@@ -195,11 +209,11 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     end_match(match_wrestler_vs('Test5', 'Test6'), 'Test5')
 
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement == 1
-    assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Most Techs'
+    assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Tech Fall Points'
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement == 2
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement_tiebreaker == 'Head to Head'
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement == 3
-    assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker == 'Team Points'
+    assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker.nil?
     assert Wrestler.find(translate_name_to_id('Test4')).pool_placement == 4
     assert Wrestler.find(translate_name_to_id('Test5')).pool_placement == 5
     assert Wrestler.find(translate_name_to_id('Test6')).pool_placement == 6
@@ -234,11 +248,11 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     end_match(match_wrestler_vs('Test5', 'Test6'), 'Test5')
 
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement == 1
-    assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Pin Time'
+    assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Most Pins in Least Time'
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement == 2
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement_tiebreaker == 'Head to Head'
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement == 3
-    assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker == 'Decision Points Scored'
+    assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker.nil?
     assert Wrestler.find(translate_name_to_id('Test4')).pool_placement == 4
     assert Wrestler.find(translate_name_to_id('Test5')).pool_placement == 5
     assert Wrestler.find(translate_name_to_id('Test6')).pool_placement == 6
@@ -276,9 +290,9 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement == 1
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Head to Head'
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement == 2
-    assert Wrestler.find(translate_name_to_id('Test2')).pool_placement_tiebreaker == 'Pin Time'
+    assert Wrestler.find(translate_name_to_id('Test2')).pool_placement_tiebreaker == 'Most Pins in Least Time'
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement == 3
-    assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker == 'Decision Points Scored'
+    assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker.nil?
     assert Wrestler.find(translate_name_to_id('Test4')).pool_placement == 4
     assert Wrestler.find(translate_name_to_id('Test5')).pool_placement == 5
     assert Wrestler.find(translate_name_to_id('Test6')).pool_placement == 6
@@ -310,7 +324,7 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement == 1
     assert Wrestler.find(translate_name_to_id('Test1')).pool_placement_tiebreaker == 'Least Deducted Points'
     assert Wrestler.find(translate_name_to_id('Test2')).pool_placement == 2
-    assert Wrestler.find(translate_name_to_id('Test2')).pool_placement_tiebreaker == 'Least Deducted Points'
+    assert Wrestler.find(translate_name_to_id('Test2')).pool_placement_tiebreaker == 'Head to Head'
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement == 3
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker.nil?
     assert Wrestler.find(translate_name_to_id('Test4')).pool_placement == 4
@@ -413,7 +427,9 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert Wrestler.where('weight_id = ? AND pool_placement = 2', @weight.id).first.pool_placement_tiebreaker == 'Head to Head'
   end
 
-  test 'Pool order when two two way ties head to head tiebreakers' do
+  test 'Pool order uses head to head before deductions when two wrestlers are tied' do
+    team_point_adjusts_for_wrestler('Test1', 1)
+
     end_match(match_wrestler_vs('Test1', 'Test2'), 'Test1')
     end_match(match_wrestler_vs('Test1', 'Test3'), 'Test1')
     end_match(match_wrestler_vs('Test1', 'Test5'), 'Test1')
@@ -440,6 +456,48 @@ class PoolAdvancementTest < ActionDispatch::IntegrationTest
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement == 3
     assert Wrestler.find(translate_name_to_id('Test3')).pool_placement_tiebreaker == 'Head to Head'
     assert Wrestler.find(translate_name_to_id('Test4')).pool_placement == 4
+  end
+
+  test 'Pool order counts only actual falls for the pin count criterion' do
+    complete_three_way_tie(
+      'Test1-Test2' => %w[Pin 0:30],
+      'Test1-Test4' => ['Forfeit', ''],
+      'Test2-Test3' => %w[Pin 0:40],
+      'Test2-Test4' => %w[Pin 1:00],
+      'Test1-Test3' => ['Default', ''],
+      'Test3-Test4' => ['DQ', '']
+    )
+
+    wrestler = Wrestler.find(translate_name_to_id('Test2'))
+    assert wrestler.pool_placement == 1
+    assert wrestler.pool_placement_tiebreaker == 'Most Pins in Least Time'
+  end
+
+  test 'Pool order uses quickest individual pin after aggregate pin time' do
+    complete_three_way_tie(
+      'Test1-Test2' => %w[Pin 0:20],
+      'Test1-Test4' => %w[Pin 1:40],
+      'Test2-Test3' => %w[Pin 0:40],
+      'Test2-Test4' => %w[Pin 1:20],
+      'Test1-Test3' => %w[Pin 0:50],
+      'Test3-Test4' => %w[Pin 1:10]
+    )
+
+    wrestler = Wrestler.find(translate_name_to_id('Test1'))
+    assert wrestler.pool_placement == 1
+    assert wrestler.pool_placement_tiebreaker == 'Quickest Pin'
+  end
+
+  test 'Pool order uses total decision point differential' do
+    complete_three_way_tie(
+      'Test1-Test2' => %w[Decision 2-1],
+      'Test2-Test3' => %w[Decision 10-1],
+      'Test1-Test3' => %w[Decision 10-1]
+    )
+
+    wrestler = Wrestler.find(translate_name_to_id('Test2'))
+    assert wrestler.pool_placement == 1
+    assert wrestler.pool_placement_tiebreaker == 'Decision Point Differential'
   end
 
   test 'Pool order with 4 wrestlers and two two way ties' do

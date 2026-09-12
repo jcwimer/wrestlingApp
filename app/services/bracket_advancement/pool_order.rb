@@ -55,41 +55,40 @@ module BracketAdvancement
 
     def break_tie(wrestlers_with_same_points)
       original_tie_size = wrestlers_with_same_points.size
-      deducted_points(original_tie_size, wrestlers_with_same_points) if same_tie_size_as_original?(
-        original_tie_size, wrestlers_with_same_points
-      )
       if (original_tie_size == 2) && same_tie_size_as_original?(original_tie_size,
                                                                 wrestlers_with_same_points)
         head_to_head(wrestlers_with_same_points)
       end
+      deducted_points(wrestlers_with_same_points) if same_tie_size_as_original?(
+        original_tie_size, wrestlers_with_same_points
+      )
       team_points(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
                                                                             wrestlers_with_same_points)
-      most_falls(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
-                                                                           wrestlers_with_same_points)
+      finish_points(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
+                                                                              wrestlers_with_same_points)
       most_techs(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
                                                                            wrestlers_with_same_points)
       most_majors(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
                                                                             wrestlers_with_same_points)
-      most_decision_points_scored(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
-                                                                                            wrestlers_with_same_points)
-      fastest_pins(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
+      most_decisions(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
+                                                                               wrestlers_with_same_points)
+      most_pins_in_least_time(wrestlers_with_same_points) if same_tie_size_as_original?(
+        original_tie_size, wrestlers_with_same_points
+      )
+      quickest_pin(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
                                                                              wrestlers_with_same_points)
+      decision_point_differential(wrestlers_with_same_points) if same_tie_size_as_original?(
+        original_tie_size, wrestlers_with_same_points
+      )
       coin_flip(wrestlers_with_same_points) if same_tie_size_as_original?(original_tie_size,
                                                                           wrestlers_with_same_points)
     end
 
     def head_to_head(wrestlers_with_same_points)
-      wrestlers_with_same_points.each do |wr|
-        other_wrestler = wrestlers_with_same_points.reject { |w| w.id == wr.id }.first
-        next unless other_wrestler
-
-        matches = wr.match_against(other_wrestler).select { |match| match.bracket_position == 'Pool' }
-        next unless matches.any? && matches.first.winner == wr
-
-        add_points_to_wrestlers_ahead(wr)
-        wr.pool_placement_tiebreaker = 'Head to Head'
-        add_points(wr)
-      end
+      first, second = wrestlers_with_same_points
+      match = first.match_against(second).find { |candidate| candidate.bracket_position == 'Pool' }
+      winner = wrestlers_with_same_points.find { |wrestler| wrestler.id == match&.winner_id }
+      award_wrestlers([winner].compact, wrestlers_with_same_points, 'Head to Head')
     end
 
     def add_points(wrestler)
@@ -105,126 +104,90 @@ module BracketAdvancement
       end
     end
 
-    def deducted_points(original_tie_size, wrestlers_with_same_points)
-      points_array = wrestlers_with_same_points.map(&:total_points_deducted)
-      least_points = points_array.min
-      wrestlers_with_least_deducted_points = wrestlers_with_same_points.select do |w|
-        w.total_points_deducted == least_points
-      end
-      add_points_to_wrestlers_ahead(wrestlers_with_least_deducted_points.first)
-      return unless wrestlers_with_least_deducted_points.size != original_tie_size
-
-      wrestlers_with_least_deducted_points.each do |wr|
-        wr.pool_placement_tiebreaker = 'Least Deducted Points'
-        add_points(wr)
-      end
-    end
-
-    def most_decision_points_scored(wrestlers_with_same_points)
-      points_array = wrestlers_with_same_points.map(&:decision_points_scored_pool)
-      most_points = points_array.max
-      wrestlers_with_most_points = wrestlers_with_same_points.select do |w|
-        w.decision_points_scored_pool == most_points
-      end
-      add_points_to_wrestlers_ahead(wrestlers_with_most_points.first)
-      wrestlers_with_most_points.each do |wr|
-        wr.pool_placement_tiebreaker = 'Decision Points Scored'
-        add_points(wr)
-      end
-      second_points = points_array.sort[-2]
-      wrestlers_with_second_most_points = wrestlers_with_same_points.select do |w|
-        w.decision_points_scored_pool == second_points
-      end
-      add_points_to_wrestlers_ahead(wrestlers_with_second_most_points.first)
-      wrestlers_with_second_most_points.each do |wr|
-        wr.pool_placement_tiebreaker = 'Decision Points Scored'
-        add_points(wr)
-      end
-    end
-
-    def fastest_pins(wrestlers_with_same_points)
-      wrestlers_with_same_points_with_pins = []
-      wrestlers_with_same_points.each do |wr|
-        wrestlers_with_same_points_with_pins << wr if wr.pin_wins.any? { |m| m.bracket_position == 'Pool' }
-      end
-      return unless wrestlers_with_same_points_with_pins.size.positive?
-
-      fastest = wrestlers_with_same_points_with_pins.min_by(&:pin_time_pool).pin_time_pool
-      wrestlers_with_fastest_pin = wrestlers_with_same_points_with_pins.select { |w| w.pin_time_pool == fastest }
-      add_points_to_wrestlers_ahead(wrestlers_with_fastest_pin.first)
-      wrestlers_with_fastest_pin.each do |wr|
-        wr.pool_placement_tiebreaker = 'Pin Time'
-        add_points(wr)
-      end
+    def deducted_points(wrestlers_with_same_points)
+      award_lowest(wrestlers_with_same_points, 'Least Deducted Points', &:total_points_deducted)
     end
 
     def team_points(wrestlers_with_same_points)
-      team_points_array = wrestlers_with_same_points.map(&:total_pool_points_for_pool_order)
-      most_points = team_points_array.max
-      wrestlers_sorted_by_team_points = wrestlers_with_same_points.select do |w|
-        w.total_pool_points_for_pool_order == most_points
-      end
-      add_points_to_wrestlers_ahead(wrestlers_sorted_by_team_points.first)
-      wrestlers_sorted_by_team_points.each do |wr|
-        wr.pool_placement_tiebreaker = 'Team Points'
-        add_points(wr)
-      end
+      award_highest(wrestlers_with_same_points, 'Team Points', &:total_pool_points_for_pool_order)
     end
 
-    def most_falls(wrestlers_with_same_points)
-      most_pins = wrestlers_with_same_points.map do |w|
-        w.pin_wins.count { |m| m.bracket_position == 'Pool' }
-      end
-      pins_max = most_pins.max
-      wrestlers_sorted_by_fall_wins = wrestlers_with_same_points.select do |w|
-        w.pin_wins.count do |m|
-          m.bracket_position == 'Pool'
-        end == pins_max
-      end
-      return unless pins_max.positive?
-
-      add_points_to_wrestlers_ahead(wrestlers_sorted_by_fall_wins.first)
-      wrestlers_sorted_by_fall_wins.each do |wr|
-        wr.pool_placement_tiebreaker = 'Most Pins'
-        add_points(wr)
+    def finish_points(wrestlers_with_same_points)
+      award_highest(wrestlers_with_same_points, 'Fall/Default/Forfeit/DQ Points') do |wrestler|
+        pool_wins_by_type(wrestler, 'Pin', 'Forfeit', 'Injury Default', 'Default', 'DQ')
       end
     end
 
     def most_techs(wrestlers_with_same_points)
-      techs_array = wrestlers_with_same_points.map do |w|
-        w.tech_wins.count { |m| m.bracket_position == 'Pool' }
-      end
-      most_techs_wins = techs_array.max
-      wrestlers_sorted_by_tech_wins = wrestlers_with_same_points.select do |w|
-        w.tech_wins.count do |m|
-          m.bracket_position == 'Pool'
-        end == most_techs_wins
-      end
-      return unless most_techs_wins.positive?
-
-      add_points_to_wrestlers_ahead(wrestlers_sorted_by_tech_wins.first)
-      wrestlers_sorted_by_tech_wins.each do |wr|
-        wr.pool_placement_tiebreaker = 'Most Techs'
-        add_points(wr)
+      award_highest(wrestlers_with_same_points, 'Tech Fall Points') do |wrestler|
+        pool_wins_by_type(wrestler, 'Tech Fall')
       end
     end
 
     def most_majors(wrestlers_with_same_points)
-      majors_array = wrestlers_with_same_points.map do |w|
-        w.major_wins.count { |m| m.bracket_position == 'Pool' }
+      award_highest(wrestlers_with_same_points, 'Major Decision Points') do |wrestler|
+        pool_wins_by_type(wrestler, 'Major')
       end
-      most_major_wins = majors_array.max
-      wrestlers_sorted_by_major_wins = wrestlers_with_same_points.select do |w|
-        w.major_wins.count do |m|
-          m.bracket_position == 'Pool'
-        end == most_major_wins
-      end
-      return unless most_major_wins.positive?
+    end
 
-      add_points_to_wrestlers_ahead(wrestlers_sorted_by_major_wins.first)
-      wrestlers_sorted_by_major_wins.each do |wr|
-        wr.pool_placement_tiebreaker = 'Most Majors'
-        add_points(wr)
+    def most_decisions(wrestlers_with_same_points)
+      award_highest(wrestlers_with_same_points, 'Decision Points') do |wrestler|
+        pool_wins_by_type(wrestler, 'Decision')
+      end
+    end
+
+    def most_pins_in_least_time(wrestlers_with_same_points)
+      award_highest(wrestlers_with_same_points, 'Most Pins in Least Time') do |wrestler|
+        pins = pool_pin_wins(wrestler)
+        [pins.size, -pins.sum(&:pin_time_in_seconds)]
+      end
+    end
+
+    def quickest_pin(wrestlers_with_same_points)
+      return unless wrestlers_with_same_points.any? { |wrestler| pool_pin_wins(wrestler).any? }
+
+      award_lowest(wrestlers_with_same_points, 'Quickest Pin') do |wrestler|
+        pool_pin_wins(wrestler).map(&:pin_time_in_seconds).min || Float::INFINITY
+      end
+    end
+
+    def decision_point_differential(wrestlers_with_same_points)
+      award_highest(wrestlers_with_same_points, 'Decision Point Differential') do |wrestler|
+        wrestler.pool_matches.sum do |match|
+          next 0 unless match.finished == 1 && match.win_type == 'Decision'
+
+          first_score, second_score = match.score.delete(' ').split('-').map(&:to_i)
+          margin = (first_score - second_score).abs
+          match.winner_id == wrestler.id ? margin : -margin
+        end
+      end
+    end
+
+    def pool_wins_by_type(wrestler, *win_types)
+      wrestler.pool_wins.count { |match| win_types.include?(match.win_type) }
+    end
+
+    def pool_pin_wins(wrestler)
+      wrestler.pool_wins.select { |match| match.win_type == 'Pin' }
+    end
+
+    def award_highest(wrestlers, label, &)
+      values = wrestlers.index_with(&)
+      award_wrestlers(values.select { |_wrestler, value| value == values.values.max }.keys, wrestlers, label)
+    end
+
+    def award_lowest(wrestlers, label, &)
+      values = wrestlers.index_with(&)
+      award_wrestlers(values.select { |_wrestler, value| value == values.values.min }.keys, wrestlers, label)
+    end
+
+    def award_wrestlers(winners, tied_wrestlers, label)
+      return if winners.empty? || winners.size == tied_wrestlers.size
+
+      add_points_to_wrestlers_ahead(winners.first)
+      winners.each do |wrestler|
+        wrestler.pool_placement_tiebreaker = label
+        add_points(wrestler)
       end
     end
 

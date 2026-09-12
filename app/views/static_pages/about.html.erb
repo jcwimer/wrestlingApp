@@ -28,18 +28,22 @@
 <h3>Pool to bracket information</h3>
 <p>At this moment in time, WrestlingDev supports a pool to bracket type tournament for up to 24 wrestlers per weight. The bracket format follows OHSAA's 5 match per day rule. WrestlingDev will automatically generate brackets, generate bout numbers, generate and update a bout board, track team points, and update brackets.</p>
 <h4>Pool tiebreakers</h4>
+<p>NFHS rules do not provide a direct tiebreaker sequence for individual round-robin pool standings. WrestlingDev therefore uses a sequence adapted from the NFHS dual-meet tiebreaker criteria.</p>
 <ul>
-    <li>Least team points deducted</li>
-    <li>Head to head</li>
-    <li>Most team points scored</li>
-    <li>Most wins by fall, default, dq</li>
-    <li>Most wins by tech fall</li>
-    <li>Most wins by major</li>
-    <li>Most points scored in decisions</li>
-    <li>Total pin time accumulation</li>
+    <li>Most matches won</li>
+    <li>Head-to-head result when two wrestlers remain tied</li>
+    <li>Fewest team points deducted for flagrant or unsportsmanlike conduct</li>
+    <li>Most team points accumulated in all pool matches</li>
+    <li>Most team points from falls, defaults, forfeits, and disqualifications</li>
+    <li>Most team points from technical falls</li>
+    <li>Most team points from major decisions</li>
+    <li>Most team points from decisions</li>
+    <li>Most actual pins in the least aggregate time</li>
+    <li>Quickest individual pin</li>
+    <li>Greatest total point differential in decisions</li>
     <li>Coin flip</li>
 </ul>
-<p>If three wrestlers are tied, they will be put through this sequence until two wrestlers are left. Once two wrestlers are left, the pool runner up will be decided by head to head.</p>
+<p>If three or more wrestlers are tied, they are compared using this sequence until the tie is reduced. When two wrestlers remain tied, the sequence restarts with their head-to-head result.</p>
 <h4>Pool to bracket scoring</h4>
 <ul>
     <li>Pool win: 2pt</li>
