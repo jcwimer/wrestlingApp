@@ -36,6 +36,8 @@ Keep this section updated whenever there's an accepted non standard or non suppo
   - The test deploy stage is named `deploy-test`.
   - The production deploy stage is named `deploy-production` and runs on SCM-triggered or manually triggered `master` builds.
   - Timer-triggered `master` builds skip production deploys.
+  - Jenkins polls SCM every five minutes for branch changes.
+  - Concurrent builds of the same branch are disabled.
   - Production deploy maps the Jenkins secret text credential `DOCKERHUB_PASSWORD` to the `DOCKERHUB_PASSWORD` environment variable.
   - Test and production deploy SSH use the Jenkins credential ID from the old freestyle job.
 - My SDLC is as follows:

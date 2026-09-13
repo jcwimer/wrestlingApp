@@ -141,12 +141,14 @@ Mission Control (Solid Queue UI) is at `/jobs`. Development credentials: `dev` /
 
 Jenkins job `wrestlingdev` (`ci_cd/Jenkinsfile`):
 
-| Branch | On push |
-|--------|---------|
-| `development` | Run tests, deploy to test server |
+| Branch | Behavior |
+|--------|----------|
+| `development` | Run tests, deploy to test server; also runs nightly |
 | `master` | Deploy production (SCM-triggered or manual; timer builds skip deploy) |
 
 **Release flow:** develop on `development` → rebase with `master` → merge to `master` and push.
+
+Jenkins polls SCM every five minutes. Concurrent builds of the same branch are disabled.
 
 Production images are pushed to Docker Hub (`jcwimer/wrestlingdev`). Test and production deploys use SSH credentials configured in Jenkins.
 

@@ -12,50 +12,42 @@ def buildsBranch(branchName) {
   return false
 }
 
-pipeline {
-  agent any
+def developmentBuild = buildsBranch('development')
+def productionBuild = buildsBranch('master')
+def timerBuild = !currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause').isEmpty()
 
-  options {
-    skipDefaultCheckout(true)
-  }
+try {
+  if (developmentBuild) {
+    properties([
+      disableConcurrentBuilds(),
+      pipelineTriggers([
+        cron('H 0 * * *'),
+        pollSCM('H/5 * * * *')
+      ])
+    ])
 
-  triggers {
-    cron('H 0 * * *')
-    pollSCM('H/5 * * * *')
-  }
+    node {
+      stage('development-tests') {
+        deleteDir()
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: 'origin/development']],
+          userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
+          extensions: [
+            [$class: 'WipeWorkspace']
+          ]
+        ])
 
-  stages {
-    stage('Development') {
-      when {
-        beforeAgent true
-        expression { buildsBranch('development') }
+        sh '''
+          set -o pipefail
+          docker build -t wrestlingdev:dev -f deploy/rails-prod-Dockerfile .
+          docker run --name wrestlingdev-development-tests --rm wrestlingdev:dev /bin/bash /rails/bin/run-all-tests.sh
+        '''
       }
 
-      stages {
-        stage('development-tests') {
-          steps {
-            deleteDir()
-            checkout([
-              $class: 'GitSCM',
-              branches: [[name: 'origin/development']],
-              userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
-              extensions: [
-                [$class: 'WipeWorkspace']
-              ]
-            ])
-
-            sh '''
-              set -o pipefail
-              docker build -t wrestlingdev:dev -f deploy/rails-prod-Dockerfile .
-              docker run --name wrestlingdev-development-tests --rm wrestlingdev:dev /bin/bash /rails/bin/run-all-tests.sh
-            '''
-          }
-        }
-
-        stage('deploy-test') {
-          steps {
-            sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
-              sh '''
+      stage('deploy-test') {
+        sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
+          sh '''
 set -o pipefail
 test_host=wrestlingdev-test.home.wimer.cloud
 
@@ -71,40 +63,32 @@ git checkout origin/development
 bash deploy/deploy-test.sh
 
 ENDSSH
-              '''
-            }
-          }
+          '''
         }
       }
     }
+  } else if (productionBuild) {
+    properties([
+      disableConcurrentBuilds(),
+      pipelineTriggers([pollSCM('H/5 * * * *')])
+    ])
 
-    stage('Production') {
-      when {
-        beforeAgent true
-        allOf {
-          expression { buildsBranch('master') }
-          not {
-            triggeredBy 'TimerTrigger'
-          }
-        }
-      }
-
-      stages {
+    if (!timerBuild) {
+      node {
         stage('deploy-production') {
-          steps {
-            deleteDir()
-            checkout([
-              $class: 'GitSCM',
-              branches: [[name: 'origin/master']],
-              userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
-              extensions: [
-                [$class: 'WipeWorkspace']
-              ]
-            ])
+          deleteDir()
+          checkout([
+            $class: 'GitSCM',
+            branches: [[name: 'origin/master']],
+            userRemoteConfigs: [[url: 'https://github.com/jcwimer/wrestlingApp.git']],
+            extensions: [
+              [$class: 'WipeWorkspace']
+            ]
+          ])
 
-            withCredentials([string(credentialsId: 'DOCKERHUB_PASSWORD', variable: 'DOCKERHUB_PASSWORD')]) {
-              sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
-                sh '''SSH_OPTS="-T -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q"
+          withCredentials([string(credentialsId: 'DOCKERHUB_PASSWORD', variable: 'DOCKERHUB_PASSWORD')]) {
+            sshagent(credentials: ['c997b53f-0c6a-4490-970c-8d3af7808914']) {
+              sh '''SSH_OPTS="-T -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -q"
 HETZNER="94.130.8.146" # hetzner1.home.wimer.cloud does not work?
 
 TAG=$(git rev-parse --verify HEAD)
@@ -153,29 +137,32 @@ sudo kubectl delete job wrestlingdev-db-create-migrate
 sudo kubectl apply -f https://raw.githubusercontent.com/jcwimer/wrestlingApp/master/deploy/kubernetes/manifests/db-migration.yaml
 
 ENDSSH
-                '''
-              }
+              '''
             }
           }
         }
       }
     }
+  } else {
+    properties([disableConcurrentBuilds()])
+    currentBuild.result = 'NOT_BUILT'
   }
-
-  post {
-    failure {
-      mail(
-        to: 'jacob.wimer@gmail.com',
-        subject: "Failed Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        body: "The wrestlingdev Jenkins build failed: ${env.BUILD_URL}"
-      )
-    }
-    unstable {
-      mail(
-        to: 'jacob.wimer@gmail.com',
-        subject: "Unstable Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        body: "The wrestlingdev Jenkins build is unstable: ${env.BUILD_URL}"
-      )
-    }
+} catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException interruption) {
+  throw interruption
+} catch (error) {
+  currentBuild.result = 'FAILURE'
+  mail(
+    to: 'jacob.wimer@gmail.com',
+    subject: "Failed Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+    body: "The wrestlingdev Jenkins build failed: ${env.BUILD_URL}"
+  )
+  throw error
+} finally {
+  if (currentBuild.currentResult == 'UNSTABLE') {
+    mail(
+      to: 'jacob.wimer@gmail.com',
+      subject: "Unstable Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+      body: "The wrestlingdev Jenkins build is unstable: ${env.BUILD_URL}"
+    )
   }
 }
