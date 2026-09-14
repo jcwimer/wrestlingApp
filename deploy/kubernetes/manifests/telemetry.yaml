@@ -234,6 +234,8 @@ spec:
         - --path.rootfs=/host
         - --path.procfs=/host/proc
         - --path.sysfs=/host/sys
+        - --collector.systemd
+        - --collector.processes
         - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)
         ports:
         - name: metrics
