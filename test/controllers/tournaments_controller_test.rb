@@ -85,7 +85,8 @@ class TournamentsControllerTest < ActionController::TestCase
   test 'logged in tournament owner can generate matches' do
     sign_in_owner
     post :generate_matches, params: { id: 1 }
-    success
+    assert_redirected_to tournament_path(1)
+    assert_equal 'Match generation was submitted.', flash[:notice]
   end
 
   test 'logged in non tournament owner cannot generate matches' do
@@ -818,7 +819,8 @@ class TournamentsControllerTest < ActionController::TestCase
   test 'logged in tournament delegate can generate matches' do
     sign_in_delegate
     post :generate_matches, params: { id: 1 }
-    success
+    assert_redirected_to tournament_path(1)
+    assert_equal 'Match generation was submitted.', flash[:notice]
   end
 
   test 'logged in tournament delegate can create custom weights' do
@@ -1247,7 +1249,8 @@ class TournamentsControllerTest < ActionController::TestCase
     wrestlers.each(&:save)
 
     post :generate_matches, params: { id: @tournament.id }
-    success
+    assert_redirected_to tournament_path(@tournament)
+    assert_equal 'Match generation was submitted.', flash[:notice]
   end
 
   test 'tournament owner can create school keys' do

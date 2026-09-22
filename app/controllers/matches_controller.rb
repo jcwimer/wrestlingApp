@@ -184,11 +184,7 @@ class MatchesController < ApplicationController
       @show_next_bout_button = queue_position == 1
     end
 
-    default_redirect_path = if action_name == 'stat' && @mat
-                              stat_mat_path(@mat)
-                            else
-                              "/tournaments/#{@tournament.id}/matches"
-                            end
+    default_redirect_path = "/tournaments/#{@tournament.id}/matches"
     @match_results_redirect_path = sanitize_redirect_path(params[:redirect_to].presence) || default_redirect_path
     session[:return_path] = @match_results_redirect_path
     session[:error_return_path] = request.original_fullpath

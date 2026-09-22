@@ -291,6 +291,7 @@ class TournamentsController < ApplicationController
 
   def generate_matches
     TournamentServices::GenerateTournamentMatches.new(@tournament).generate
+    redirect_to @tournament, notice: 'Match generation was submitted.'
   end
 
   def team_scores
