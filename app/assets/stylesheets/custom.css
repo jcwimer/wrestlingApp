@@ -54,3 +54,27 @@
     overflow-y: auto;
   }
 }
+
+.panel-heading.wd-section-heading {
+  padding: 0;
+}
+
+.wd-section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+}
+
+.wd-section-toggle:hover,
+.wd-section-toggle:focus {
+  color: #333;
+  text-decoration: none;
+}
+
+.wd-section-toggle__hint {
+  font-size: 0.9em;
+}

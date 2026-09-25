@@ -48,13 +48,22 @@
 </p>
 <% if can? :read, @tournament %><p>Brackets and team scores can be found in the white nav-bar up top.</p><% end %>
 <br>
-<h3>Schools</h3>
-<p>Click to see lineups, bout numbers, score breakdowns, and stats.</p>
-<br>
-<table class="table table-hover table-condensed">
+<% show_counts = can? :read, @tournament %>
+<section class="panel panel-default" data-controller="collapse">
+  <div class="panel-heading wd-section-heading">
+    <a class="wd-section-toggle" href="#tournament-schools" data-collapse-target="toggle" data-action="collapse#toggle" aria-expanded="false" aria-controls="tournament-schools">
+      <strong>Schools</strong>
+      <span class="text-muted wd-section-toggle__hint">Show/Hide</span>
+    </a>
+  </div>
+  <div class="panel-body">
+    <p>Click to see lineups, bout numbers, score breakdowns, and stats.</p>
+    <div id="tournament-schools" class="wd-collapse" data-collapse-target="panel">
+    <table class="table table-hover table-condensed">
   <thead>
     <tr>
       <th>Name</th>
+      <% if show_counts %><th>Participants</th><% end %>
       <% if can? :manage, @tournament %><th><%= link_to " New School" , "/schools/new?tournament=#{@tournament.id}", :class=>"fas fa-plus" %></th><% end %>
     </tr>
   </thead>
@@ -68,6 +77,7 @@
             <%= "#{school.name}" %>
           <% end %>
         </td>
+        <% if show_counts %><td><%= @school_participant_counts.fetch(school.id, 0) %></td><% end %>
         <td>
           <% if can? :manage, school %>
             <%= link_to edit_school_path(school), class: "text-decoration-none" do %>
@@ -83,15 +93,25 @@
       </tr>
     <% end %>
    </tbody>
-  </table>
-<br>
-<h3>Weight Class Seeds</h3>
-<br>
-<table class="table table-hover table-condensed">
+    </table>
+    </div>
+  </div>
+</section>
+<section class="panel panel-default" data-controller="collapse">
+  <div class="panel-heading wd-section-heading">
+    <a class="wd-section-toggle" href="#tournament-weights" data-collapse-target="toggle" data-action="collapse#toggle" aria-expanded="false" aria-controls="tournament-weights">
+      <strong>Weight Classes</strong>
+      <span class="text-muted wd-section-toggle__hint">Show/Hide</span>
+    </a>
+  </div>
+  <div class="panel-body">
+    <p>View weight classes.</p>
+    <div id="tournament-weights" class="wd-collapse" data-collapse-target="panel">
+    <table class="table table-hover table-condensed">
   <thead>
     <tr>
       <th>Weight Class</th>
-      <th>Bracket Size</th>
+      <% if show_counts %><th>Bracket Size</th><% end %>
       <% if can? :manage, @tournament %><th><%= link_to " New Weight Class" , "/weights/new?tournament=#{@tournament.id}", :class=>"fas fa-plus" %></th><% end %>
     </tr>
   </thead>
@@ -106,7 +126,7 @@
             <%= "#{weight.max}" %>
           <% end %>
         </td>
-        <td><%= weight.bracket_size %></td>
+        <% if show_counts %><td><%= weight.bracket_size %></td><% end %>
           <% if can? :manage, @tournament %>
           <td>
             <%= link_to edit_weight_path(weight), class: "text-decoration-none" do %>
@@ -120,12 +140,22 @@
       </tr>
     <% end %>
   </tbody>
-</table>
+    </table>
+    </div>
+  </div>
+</section>
 <% if can? :manage, @tournament %>
-  <br>
-  <br>
-  <h3>Mats</h3><br>
-  <table class="table table-hover table-condensed">
+  <section class="panel panel-default" data-controller="collapse">
+    <div class="panel-heading wd-section-heading">
+      <a class="wd-section-toggle" href="#tournament-mats" data-collapse-target="toggle" data-action="collapse#toggle" aria-expanded="false" aria-controls="tournament-mats">
+        <strong>Mats</strong>
+        <span class="text-muted wd-section-toggle__hint">Show/Hide</span>
+      </a>
+    </div>
+    <div class="panel-body">
+      <p>View mats, current matches, and scoreboards.</p>
+      <div id="tournament-mats" class="wd-collapse" data-collapse-target="panel">
+      <table class="table table-hover table-condensed">
     <thead>
       <tr>
         <th>Name</th>
@@ -140,11 +170,11 @@
           <td><%= link_to "Mat #{mat.name}", mat %></td>
           <td>
             <% if current_match %>
-              <%= link_to "Stat Match", stat_mat_path(mat), class: "btn btn-primary btn-sm" %>
-              <%= link_to "State Match", state_mat_path(mat), class: "btn btn-success btn-sm" %>
-              <%= link_to "Scoreboard", scoreboard_mat_path(mat, print: true), class: "btn btn-warning btn-sm", target: "_blank", rel: "noopener" %>
+              <%= link_to "Simple Mat Stats", stat_mat_path(mat), class: "btn btn-primary btn-sm" %>
+              <%= link_to "Full Mat Stats", state_mat_path(mat), class: "btn btn-success btn-sm" %>
+              <%= link_to "Offline Scoreboard", scoreboard_mat_path(mat, print: true), class: "btn btn-warning btn-sm", target: "_blank", rel: "noopener" %>
             <% else %>
-              <%= link_to "Scoreboard", scoreboard_mat_path(mat, print: true), class: "btn btn-warning btn-sm", target: "_blank", rel: "noopener" %>
+              <%= link_to "Offline Scoreboard", scoreboard_mat_path(mat, print: true), class: "btn btn-warning btn-sm", target: "_blank", rel: "noopener" %>
             <% end %>
           </td>
             <% if can? :manage, @tournament %>
@@ -158,6 +188,9 @@
         </tr>
       <% end %>
     </tbody>
-  </table>
+      </table>
+      </div>
+    </div>
+  </section>
 <% end %>
 <br><br>

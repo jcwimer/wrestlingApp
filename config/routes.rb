@@ -39,6 +39,7 @@ Wrestling::Application.routes.draw do
   resources :tournaments do
     resources :mat_assignment_rules, only: [:index, :new, :create, :edit, :update, :show, :destroy]
     member do
+      get :director
       post :reset_bout_board
     end
     resources :tournament_backups, only: [:index, :show, :destroy] do

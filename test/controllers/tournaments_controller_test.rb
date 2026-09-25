@@ -82,6 +82,228 @@ class TournamentsControllerTest < ActionController::TestCase
     @tournament.destroy_all_matches
   end
 
+  def assert_counts_visible
+    assert_select '#tournament-schools th', text: 'Participants', count: 1
+    assert_select '#tournament-schools tbody tr:first-child td:nth-child(2)', text: schools(:one).wrestlers.count.to_s
+    assert_select '#tournament-weights th', text: 'Bracket Size', count: 1
+    assert_select '#tournament-weights tbody tr:first-child td:nth-child(2)', text: weights(:one).bracket_size.to_s
+  end
+
+  def assert_counts_hidden
+    assert_select '#tournament-schools th', text: 'Participants', count: 0
+    assert_select '#tournament-schools tbody tr:first-child td:nth-child(2)', text: ''
+    assert_select '#tournament-weights th', text: 'Bracket Size', count: 0
+    assert_select '#tournament-weights tbody tr:first-child td:nth-child(2)', count: 0
+  end
+
+  test 'tournament sections start collapsed for the owner' do
+    sign_in_owner
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    descriptions = {
+      'schools' => 'Click to see lineups, bout numbers, score breakdowns, and stats.',
+      'weights' => 'View weight classes.',
+      'mats' => 'View mats, current matches, and scoreboards.'
+    }
+    descriptions.each do |section, description|
+      panel_id = "tournament-#{section}"
+      assert_select "section.panel[data-controller=collapse] .wd-section-heading > a.wd-section-toggle[aria-controls=#{panel_id}][aria-expanded=false]" do
+        assert_select '.wd-section-toggle__hint', text: 'Show/Hide', count: 1
+      end
+      assert_select 'section.panel[data-controller=collapse] > .panel-body > p', text: description, count: 1
+      assert_select "##{panel_id}.wd-collapse[data-collapse-target=panel]:not(.wd-collapse--open) table", count: 1
+    end
+    assert_select 'a[aria-controls=tournament-weights] strong', text: 'Weight Classes', count: 1
+  end
+
+  test 'public tournament shows only schools and weights sections to visitors' do
+    @tournament.update!(is_public: true)
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_select '#tournament-schools.wd-collapse', count: 1
+    assert_select '#tournament-weights.wd-collapse', count: 1
+    assert_select '#tournament-mats', count: 0
+    assert_counts_visible
+  end
+
+  test 'public tournament shows participant and bracket counts to owner' do
+    @tournament.update!(is_public: true)
+    sign_in_owner
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_visible
+  end
+
+  test 'public tournament shows participant and bracket counts to tournament delegate' do
+    @tournament.update!(is_public: true)
+    sign_in_delegate
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_visible
+  end
+
+  test 'public tournament shows participant and bracket counts to other users' do
+    @tournament.update!(is_public: true)
+    sign_in_non_owner
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_visible
+  end
+
+  test 'public tournament shows participant and bracket counts to school delegates' do
+    @tournament.update!(is_public: true)
+    sign_in_school_delegate
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_visible
+  end
+
+  test 'public tournament shows counts with a valid school UUID key' do
+    @tournament.update!(is_public: true)
+    @school.update!(permission_key: SecureRandom.uuid)
+
+    get :show, params: { id: @tournament.id, school_permission_key: @school.permission_key }
+
+    success
+    assert_counts_visible
+  end
+
+  test 'public tournament shows counts with an invalid school UUID key' do
+    @tournament.update!(is_public: true)
+    @school.update!(permission_key: SecureRandom.uuid)
+
+    get :show, params: { id: @tournament.id, school_permission_key: SecureRandom.uuid }
+
+    success
+    assert_counts_visible
+  end
+
+  test 'private tournament owner can see participant and bracket counts' do
+    @tournament.update!(is_public: false)
+    sign_in_owner
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_visible
+  end
+
+  test 'private tournament delegate can see participant and bracket counts' do
+    @tournament.update!(is_public: false)
+    sign_in_delegate
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_visible
+  end
+
+  test 'private tournament hides participant and bracket counts from other users' do
+    @tournament.update!(is_public: false)
+    sign_in_non_owner
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_hidden
+  end
+
+  test 'private tournament hides participant and bracket counts from school delegates' do
+    @tournament.update!(is_public: false)
+    sign_in_school_delegate
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_hidden
+  end
+
+  test 'private tournament hides participant and bracket counts from visitors' do
+    @tournament.update!(is_public: false)
+
+    get :show, params: { id: @tournament.id }
+
+    success
+    assert_counts_hidden
+  end
+
+  test 'private tournament hides counts with a valid school UUID key' do
+    @tournament.update!(is_public: false)
+    @school.update!(permission_key: SecureRandom.uuid)
+
+    get :show, params: { id: @tournament.id, school_permission_key: @school.permission_key }
+
+    success
+    assert_counts_hidden
+  end
+
+  test 'private tournament hides counts with an invalid school UUID key' do
+    @tournament.update!(is_public: false)
+    @school.update!(permission_key: SecureRandom.uuid)
+
+    get :show, params: { id: @tournament.id, school_permission_key: SecureRandom.uuid }
+
+    success
+    assert_counts_hidden
+  end
+
+  test 'tournament owner can access director links' do
+    sign_in_owner
+
+    get :director, params: { id: @tournament.id }
+
+    success
+    assert_select '#tournament-navbar a[href=?]', director_tournament_path(@tournament), count: 1
+    assert_select '#tournament-navbar a', text: 'Edit Tournament Info', count: 0
+    assert_select 'a[href=?]', tournament_delegate_path(@tournament), text: 'Tournament Delegation'
+    assert_select 'a[href=?]', school_delegate_path(@tournament), text: 'School Delegation'
+    assert_select 'a[href=?]', reset_bout_board_tournament_path(@tournament), text: 'Reset Bout Board'
+  end
+
+  test 'tournament delegate can access director links without owner delegation link' do
+    sign_in_delegate
+
+    get :director, params: { id: @tournament.id }
+
+    success
+    assert_select 'a[href=?]', school_delegate_path(@tournament), text: 'School Delegation'
+    assert_select 'a[href=?]', tournament_delegate_path(@tournament), count: 0
+  end
+
+  test 'other users cannot access director links' do
+    sign_in_non_owner
+
+    get :director, params: { id: @tournament.id }
+
+    redirect
+  end
+
+  test 'school delegates cannot access director links' do
+    sign_in_school_delegate
+
+    get :director, params: { id: @tournament.id }
+
+    redirect
+  end
+
+  test 'anonymous users cannot access director links' do
+    get :director, params: { id: @tournament.id }
+
+    redirect
+  end
+
   test 'logged in tournament owner can generate matches' do
     sign_in_owner
     post :generate_matches, params: { id: 1 }

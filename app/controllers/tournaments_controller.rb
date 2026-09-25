@@ -7,18 +7,20 @@ class TournamentsController < ApplicationController
                   bout_sheets swap weigh_in_sheet error teampointadjust remove_teampointadjust
                   remove_school_delegate remove_delegate school_delegate delegate matches weigh_in
                   weigh_in_weight create_custom_weights show edit update destroy up_matches no_matches
-                  team_scores generate_matches bracket all_brackets qrcode live_scores
+                  team_scores generate_matches bracket all_brackets qrcode live_scores director
                 ]
   before_action :check_access_manage,
                 only: %i[
                   delete_school_keys generate_school_keys reset_bout_board calculate_team_scores swap
                   weigh_in_sheet teampointadjust remove_teampointadjust remove_school_delegate school_delegate
-                  weigh_in weigh_in_weight create_custom_weights update edit generate_matches matches qrcode
+                  weigh_in weigh_in_weight create_custom_weights update edit generate_matches matches qrcode director
                 ]
   before_action :check_access_destroy, only: %i[destroy delegate remove_delegate]
   before_action :check_tournament_errors, only: [:generate_matches]
   before_action :check_for_matches, only: %i[all_results bracket all_brackets]
   before_action :check_access_read, only: %i[all_results up_matches bracket all_brackets live_scores]
+
+  def director; end
 
   def weigh_in_sheet
     @schools = @tournament.schools.includes(wrestlers: :weight)
@@ -364,6 +366,7 @@ class TournamentsController < ApplicationController
     @schools = @tournament.schools.includes(:delegates).sort_by(&:name)
     @weights = @tournament.weights.includes(:wrestlers).sort_by { |x| [x.max] }
     @mats = @tournament.mats.sort_by(&:name)
+    @school_participant_counts = @tournament.wrestlers.group(:school_id).count if can?(:read, @tournament)
   end
 
   def new
