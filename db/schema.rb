@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_14_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_04_180000) do
   create_table "mat_assignment_rules", force: :cascade do |t|
     t.string "bracket_positions"
     t.datetime "created_at", null: false
@@ -67,42 +67,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_14_120000) do
     t.index ["queue3"], name: "index_mats_on_queue3"
     t.index ["queue4"], name: "index_mats_on_queue4"
     t.index ["tournament_id"], name: "index_mats_on_tournament_id"
-  end
-
-  create_table "offline_operation_sessions", force: :cascade do |t|
-    t.bigint "base_sync_revision", default: 0, null: false
-    t.datetime "completed_at"
-    t.datetime "created_at", null: false
-    t.string "credential_digest", null: false
-    t.string "device_session_id", null: false
-    t.bigint "last_accepted_operation_sequence", default: 0, null: false
-    t.datetime "revoked_at"
-    t.boolean "server_lock_pending", default: false, null: false
-    t.datetime "started_at"
-    t.string "state", default: "prepared", null: false
-    t.integer "tournament_id", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.index ["tournament_id", "device_session_id"], name: "idx_on_tournament_id_device_session_id_7908277cc1", unique: true
-    t.index ["tournament_id"], name: "index_offline_operation_sessions_on_tournament_id"
-    t.index ["user_id"], name: "index_offline_operation_sessions_on_user_id"
-  end
-
-  create_table "offline_operations", force: :cascade do |t|
-    t.datetime "applied_at"
-    t.text "conflict_details"
-    t.datetime "created_at", null: false
-    t.integer "offline_operation_session_id", null: false
-    t.string "operation_id", null: false
-    t.string "operation_type", null: false
-    t.json "payload", null: false
-    t.bigint "resulting_sync_revision"
-    t.bigint "sequence", null: false
-    t.string "status", default: "pending", null: false
-    t.datetime "updated_at", null: false
-    t.index ["offline_operation_session_id", "sequence"], name: "idx_on_offline_operation_session_id_sequence_f721b0b3f3", unique: true
-    t.index ["offline_operation_session_id"], name: "index_offline_operations_on_offline_operation_session_id"
-    t.index ["operation_id"], name: "index_offline_operations_on_operation_id", unique: true
   end
 
   create_table "school_delegates", force: :cascade do |t|
@@ -165,7 +129,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_14_120000) do
   end
 
   create_table "tournaments", force: :cascade do |t|
-    t.integer "active_offline_operation_session_id"
     t.string "address"
     t.datetime "created_at", precision: nil
     t.integer "curently_generating_matches"
@@ -175,13 +138,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_14_120000) do
     t.string "director_email"
     t.boolean "is_public"
     t.string "name"
-    t.bigint "sync_revision", default: 0, null: false
     t.text "tournament_type"
     t.datetime "updated_at", precision: nil
     t.bigint "user_id"
     t.text "weigh_in_ref"
-    t.string "write_authority", default: "online", null: false
-    t.index ["active_offline_operation_session_id"], name: "index_tournaments_on_active_offline_operation_session_id", unique: true
     t.index ["user_id"], name: "index_tournaments_on_user_id"
   end
 
@@ -239,9 +199,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_14_120000) do
   add_foreign_key "matches", "tournaments"
   add_foreign_key "matches", "weights"
   add_foreign_key "mats", "tournaments"
-  add_foreign_key "offline_operation_sessions", "tournaments"
-  add_foreign_key "offline_operation_sessions", "users"
-  add_foreign_key "offline_operations", "offline_operation_sessions"
   add_foreign_key "school_delegates", "schools"
   add_foreign_key "school_delegates", "users"
   add_foreign_key "schools", "tournaments"
@@ -251,7 +208,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_14_120000) do
   add_foreign_key "tournament_delegates", "tournaments"
   add_foreign_key "tournament_delegates", "users"
   add_foreign_key "tournament_job_statuses", "tournaments"
-  add_foreign_key "tournaments", "offline_operation_sessions", column: "active_offline_operation_session_id"
   add_foreign_key "tournaments", "users"
   add_foreign_key "weights", "tournaments"
   add_foreign_key "wrestlers", "schools"
