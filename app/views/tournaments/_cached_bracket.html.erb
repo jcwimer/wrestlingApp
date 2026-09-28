@@ -1,3 +1,7 @@
 <% @weight = weight %>
 <% load_bracket(weight) %>
-<%= render "bracket_partial" %>
+<% if action_name == 'bracket' && params[:print].blank? %>
+  <%= render 'interactive_bracket' %>
+<% else %>
+  <%= render 'bracket_partial' %>
+<% end %>

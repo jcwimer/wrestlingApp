@@ -1,0 +1,5 @@
+<%= link_to spectate_match_path(match), class: 'interactive-bracket__match' do %>
+  <span class="interactive-bracket__competitor"><%= sanitize(match.w1_bracket_name, tags: %w[strong]) %></span>
+  <span class="interactive-bracket__bout">Bout <%= match.bout_number %> <%= match.bracket_score_string %></span>
+  <span class="interactive-bracket__competitor"><%= sanitize(match.w2_bracket_name, tags: %w[strong]) %></span>
+<% end %>

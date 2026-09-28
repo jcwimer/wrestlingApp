@@ -1,4 +1,5 @@
 # Development
+- Weight bracket pages use a separate non-print view with the original pool tables and interactive championship, consolation, and placement rounds. The printable weight and all-brackets views continue to use the original bracket partial. Placement finals belong to the bracket path that feeds them, which varies by tournament type.
 - I use rbenv locally if that is not available use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
   - If the docker image doesn't exist, use the build command: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
 - Do not add unnecessary comments to the code where you remove things.

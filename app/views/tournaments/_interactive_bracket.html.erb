@@ -1,0 +1,62 @@
+<% sections = interactive_bracket_sections(@weight, @matches) %>
+<section class="interactive-bracket" data-controller="bracket-navigation" aria-label="<%= @weight.max %> bracket">
+  <h2><%= @tournament.name %> — <%= @weight.max %> Bracket</h2>
+  <p><%= link_to 'Printable view', weight_bracket_path(@tournament, @weight, print: true), target: '_blank', rel: 'noopener' %></p>
+
+  <div class="interactive-bracket__tabs" role="tablist" aria-label="Bracket sections">
+    <% sections.each_with_index do |section, index| %>
+      <button type="button" role="tab" id="bracket-<%= @weight.id %>-tab-<%= section[:key] %>"
+              aria-controls="bracket-<%= @weight.id %>-panel-<%= section[:key] %>"
+              aria-selected="<%= index.zero? %>" tabindex="<%= index.zero? ? 0 : -1 %>"
+              class="interactive-bracket__tab <%= 'is-active' if index.zero? %>"
+              data-bracket-navigation-target="tab" data-panel="<%= section[:key] %>"
+              data-action="click->bracket-navigation#selectTab keydown->bracket-navigation#tabKeydown">
+        <%= section[:label] %>
+      </button>
+    <% end %>
+  </div>
+
+  <% sections.each_with_index do |section, index| %>
+    <div id="bracket-<%= @weight.id %>-panel-<%= section[:key] %>" role="tabpanel"
+         aria-labelledby="bracket-<%= @weight.id %>-tab-<%= section[:key] %>"
+         class="interactive-bracket__panel" data-bracket-navigation-target="panel"
+         data-panel="<%= section[:key] %>" <%= 'hidden' unless index.zero? %>>
+      <% if section[:key] == 'pools' %>
+        <table class="interactive-bracket__pool-table">
+          <tr><td><%= render 'pool' %></td></tr>
+        </table>
+      <% else %>
+        <div class="interactive-bracket__navigator" aria-label="Rounds">
+          <button type="button" class="interactive-bracket__step" aria-label="Previous round"
+                  data-action="bracket-navigation#previousRound">‹</button>
+          <div class="interactive-bracket__round-buttons">
+            <% section[:rounds].each_with_index do |round, round_index| %>
+              <button type="button" class="interactive-bracket__round-button <%= 'is-active' if round_index.zero? %>"
+                      data-round-index="<%= round_index %>" data-action="bracket-navigation#goToRound"
+                      aria-label="Show <%= round[:label] %>" aria-current="<%= round_index.zero? ? 'step' : 'false' %>">
+                <span><%= round[:label] %></span><span class="interactive-bracket__round-mark" aria-hidden="true">☷</span>
+              </button>
+            <% end %>
+          </div>
+          <button type="button" class="interactive-bracket__step" aria-label="Next round"
+                  data-action="bracket-navigation#nextRound">›</button>
+        </div>
+
+        <div class="interactive-bracket__viewport" data-action="scroll->bracket-navigation#syncRound">
+          <div class="interactive-bracket__track" data-connect="<%= %w[championship consolation].include?(section[:key]) %>">
+            <% section[:rounds].each do |round| %>
+              <section class="interactive-bracket__round" aria-label="<%= round[:label] %>">
+                <h3><%= round[:label] %></h3>
+                <div class="interactive-bracket__matches">
+                  <% round[:matches].each do |match| %>
+                    <%= render 'interactive_match', match: match %>
+                  <% end %>
+                </div>
+              </section>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</section>

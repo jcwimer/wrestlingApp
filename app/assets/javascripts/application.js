@@ -28,6 +28,7 @@ import NavbarCollapseController from "controllers/navbar_collapse_controller";
 import DropdownController from "controllers/dropdown_controller";
 import DismissController from "controllers/dismiss_controller";
 import CollapseController from "controllers/collapse_controller";
+import BracketNavigationController from "controllers/bracket_navigation_controller";
 
 // Register controllers
 application.register("wrestler-color", WrestlerColorController);
@@ -42,6 +43,7 @@ application.register("navbar-collapse", NavbarCollapseController);
 application.register("dropdown", DropdownController);
 application.register("dismiss", DismissController);
 application.register("collapse", CollapseController);
+application.register("bracket-navigation", BracketNavigationController);
 
 function cleanupWrestlingAppLocalStorage() {
   cleanupExpiredLocalStorage(window.localStorage);
