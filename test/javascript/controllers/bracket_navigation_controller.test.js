@@ -19,7 +19,6 @@ describe("bracket navigation", () => {
     const secondPanel = { dataset: { panel: "consolation" }, hidden: true }
     controller.tabTargets = [firstTab, secondTab]
     controller.panelTargets = [firstPanel, secondPanel]
-    controller.syncRound = vi.fn()
     controller.drawConnections = vi.fn()
 
     controller.activate(secondTab)
@@ -32,18 +31,34 @@ describe("bracket navigation", () => {
     expect(controller.drawConnections).toHaveBeenCalled()
   })
 
-  it("scrolls to a selected round", () => {
+  it("shows the selected round and following rounds, then restores earlier rounds", () => {
+    vi.stubGlobal("requestAnimationFrame", (callback) => callback())
     const controller = new BracketNavigationController()
-    const rounds = [{ offsetLeft: 20 }, { offsetLeft: 240 }, { offsetLeft: 460 }]
-    const viewport = { scrollTo: vi.fn() }
+    const rounds = Array.from({ length: 4 }, () => ({ hidden: false }))
+    const buttons = Array.from({ length: 4 }, () => ({ setAttribute: vi.fn(), classList: classList() }))
+    const viewport = { scrollLeft: 240 }
     controller.panelTargets = [{
       hidden: false,
-      querySelectorAll: () => rounds,
+      dataset: {},
+      querySelectorAll: (selector) => selector === ".interactive-bracket__round" ? rounds : buttons,
       querySelector: () => viewport
     }]
+    controller.drawConnections = vi.fn()
 
     controller.goToRound({ currentTarget: { dataset: { roundIndex: "2" } } })
 
-    expect(viewport.scrollTo).toHaveBeenCalledWith({ left: 440, behavior: "smooth" })
+    expect(rounds.map((round) => round.hidden)).toEqual([true, true, false, false])
+    expect(viewport.scrollLeft).toBe(0)
+    expect(buttons[2].setAttribute).toHaveBeenCalledWith("aria-current", "step")
+    expect(controller.drawConnections).toHaveBeenCalledTimes(1)
+
+    controller.previousRound()
+    expect(rounds.map((round) => round.hidden)).toEqual([true, false, false, false])
+
+    controller.goToRound({ currentTarget: { dataset: { roundIndex: "0" } } })
+    expect(rounds.every((round) => !round.hidden)).toBe(true)
+
+    controller.nextRound()
+    expect(rounds.map((round) => round.hidden)).toEqual([true, false, false, false])
   })
 })

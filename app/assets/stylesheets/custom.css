@@ -208,6 +208,10 @@
   width: clamp(190px, 28vw, 260px);
 }
 
+.interactive-bracket__round[hidden] {
+  display: none;
+}
+
 .interactive-bracket__round h3 {
   position: relative;
   z-index: 1;
@@ -219,6 +223,15 @@
   text-align: center;
   font-size: 16px;
   font-weight: 700;
+}
+
+.interactive-bracket__round h3 button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
 .interactive-bracket__matches {

@@ -23,6 +23,7 @@ class InteractiveBracketsControllerTest < ActionController::TestCase
     assert_select '[role="tab"]', text: 'Championship Bracket', count: 1
     assert_select '[role="tab"]', text: 'Consolation Bracket', count: 1
     assert_select '[role="tab"]', text: 'Placement Matches', count: 1
+    assert_select '[id$="-panel-championship"] .interactive-bracket__round h3 button[data-action="bracket-navigation#goToRound"]', text: 'Semis', count: 1
     assert_select '[id$="-panel-consolation"] .interactive-bracket__round h3', text: '3/4', count: 1
     assert_select '[id$="-panel-placement"] .interactive-bracket__round h3', text: '5/6', count: 1
     assert_select '[id$="-panel-placement"] .interactive-bracket__round h3', text: '7/8', count: 1

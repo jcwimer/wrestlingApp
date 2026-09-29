@@ -1,5 +1,5 @@
 # Development
-- Weight bracket pages use a separate non-print view with the original pool tables and interactive championship, consolation, and placement rounds. The printable weight and all-brackets views continue to use the original bracket partial. Placement finals belong to the bracket path that feeds them, which varies by tournament type.
+- Weight bracket pages use a separate non-print view with the original pool tables and interactive championship, consolation, and placement rounds. Selecting a round hides earlier rounds in that section and keeps the selected round and following rounds visible; selecting the first round restores the full section. The printable weight and all-brackets views continue to use the original bracket partial. Placement finals belong to the bracket path that feeds them, which varies by tournament type.
 - I use rbenv locally if that is not available use docker with `docker run -it -v $(pwd):/rails wrestlingdev-dev <rails command>`
   - If the docker image doesn't exist, use the build command: `docker build -t wrestlingdev-dev -f deploy/rails-dev-Dockerfile .`
 - Do not add unnecessary comments to the code where you remove things.
@@ -60,6 +60,7 @@ Keep this section updated whenever there's an accepted non standard or non suppo
 
 # Other
 - Please keep README.md and AGENTS.md up to date when making changes.
+- AGENTS.md does not need to have every feature listed. Only non standard things or information that cannot easily be gleaned from tests.
 - The README should be relevant information for a developer and should not get bloated. What versions of stuff are running, how to get up and running locally as a dev, how to deploy and what variables are needed or optional.
 - Make sure other README files in subfolders of this project are kept up to date as well if any changes are made.
 - If something is added to .gitignore consider always consider if it should be added to .dockerignore as well.

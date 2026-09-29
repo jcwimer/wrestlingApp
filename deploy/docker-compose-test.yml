@@ -131,6 +131,8 @@ services:
     image: ghcr.io/google/cadvisor:v0.60.5
     command:
       - --docker_only=true
+      # housekeeping_interval is the interval at which cadvisor will collect and process metrics. default is 1s.
+      - --housekeeping_interval=55s
     restart: always
     volumes:
       - /:/rootfs:ro

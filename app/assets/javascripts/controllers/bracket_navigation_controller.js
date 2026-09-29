@@ -39,56 +39,39 @@ export default class extends Controller {
       item.classList.toggle("is-active", selected)
     })
     this.panelTargets.forEach((panel) => { panel.hidden = panel.dataset.panel !== tab.dataset.panel })
-    requestAnimationFrame(() => {
-      this.syncRound()
-      this.drawConnections()
-    })
+    requestAnimationFrame(() => this.drawConnections())
   }
 
   goToRound(event) {
-    this.scrollToRound(Number(event.currentTarget.dataset.roundIndex))
+    this.showRound(Number(event.currentTarget.dataset.roundIndex))
   }
 
   previousRound() {
-    this.scrollToRound(this.currentRoundIndex() - 1)
+    this.showRound(this.currentRoundIndex() - 1)
   }
 
   nextRound() {
-    this.scrollToRound(this.currentRoundIndex() + 1)
+    this.showRound(this.currentRoundIndex() + 1)
   }
 
-  scrollToRound(index) {
+  showRound(index) {
     const panel = this.activePanel()
     const rounds = [...panel.querySelectorAll(".interactive-bracket__round")]
-    const round = rounds[Math.max(0, Math.min(index, rounds.length - 1))]
-    if (!round) return
+    if (!rounds.length) return
 
-    const viewport = panel.querySelector(".interactive-bracket__viewport")
-    viewport.scrollTo({ left: round.offsetLeft - rounds[0].offsetLeft, behavior: "smooth" })
-  }
-
-  syncRound() {
-    const panel = this.activePanel()
-    if (!panel) return
-
-    const current = this.currentRoundIndex()
+    const current = Math.max(0, Math.min(index, rounds.length - 1))
+    panel.dataset.roundIndex = current
+    rounds.forEach((round, roundIndex) => { round.hidden = roundIndex < current })
     panel.querySelectorAll(".interactive-bracket__round-button").forEach((button, index) => {
       button.classList.toggle("is-active", index === current)
       button.setAttribute("aria-current", index === current ? "step" : "false")
     })
+    panel.querySelector(".interactive-bracket__viewport").scrollLeft = 0
+    requestAnimationFrame(() => this.drawConnections())
   }
 
   currentRoundIndex() {
-    const panel = this.activePanel()
-    if (!panel) return 0
-
-    const viewport = panel.querySelector(".interactive-bracket__viewport")
-    const rounds = [...panel.querySelectorAll(".interactive-bracket__round")]
-    if (!rounds.length) return 0
-
-    const visibleLeft = viewport.scrollLeft + viewport.clientWidth / 3
-    return rounds.reduce((index, round, next) =>
-      round.offsetLeft - rounds[0].offsetLeft <= visibleLeft ? next : index, 0)
+    return Number(this.activePanel()?.dataset.roundIndex || 0)
   }
 
   activePanel() {
@@ -107,7 +90,7 @@ export default class extends Controller {
     svg.setAttribute("height", track.offsetHeight)
     svg.setAttribute("aria-hidden", "true")
     const origin = track.getBoundingClientRect()
-    const rounds = [...track.querySelectorAll(".interactive-bracket__round")]
+    const rounds = [...track.querySelectorAll(".interactive-bracket__round")].filter((round) => !round.hidden)
 
     rounds.slice(0, -1).forEach((round, index) => {
       const from = [...round.querySelectorAll(".interactive-bracket__match")]
