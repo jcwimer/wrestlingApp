@@ -15,6 +15,11 @@
     <%= f.label :name %><br>
     <%= f.text_field :name %>
   </div>
+
+  <div class="field">
+    <%= f.label :email %> (optional)<br>
+    <%= f.email_field :email %>
+  </div>
   
 <% if @school %>
       <%= f.hidden_field :tournament_id, :value => @tournament.id %>
@@ -22,7 +27,7 @@
 <br>
 
 <% if params[:school_permission_key].present? %>
-  <%= f.hidden_field :school_permission_key, value: params[:school_permission_key] %>
+  <%= hidden_field_tag :school_permission_key, params[:school_permission_key] %>
 <% end %>
 
   <div class="actions">

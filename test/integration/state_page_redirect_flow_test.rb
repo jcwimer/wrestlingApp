@@ -69,6 +69,7 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
   end
 
   test 'mat state redirect shows next queued match before background job runs' do
+    previous_queue_adapter = ActiveJob::Base.queue_adapter
     queue2_match = matches(:tournament_1_bout_1001)
     @mat.update!(queue1: @match.id, queue2: queue2_match.id, queue3: nil, queue4: nil)
     @match.update_columns(mat_id: @mat.id, finalized_at: nil)
@@ -97,7 +98,7 @@ class StatePageRedirectFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Bout #{queue2_match.bout_number}"
   ensure
     ActiveJob::Base.queue_adapter.enqueued_jobs.clear if ActiveJob::Base.queue_adapter.respond_to?(:enqueued_jobs)
-    ActiveJob::Base.queue_adapter = :inline
+    ActiveJob::Base.queue_adapter = previous_queue_adapter
   end
 
   private

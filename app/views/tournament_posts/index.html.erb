@@ -1,0 +1,11 @@
+<h1><%= @tournament.name %> Update Management</h1>
+
+<% if can? :manage, @tournament %>
+  <p><%= link_to "New Tournament Update", new_tournament_tournament_post_path(@tournament), class: "btn btn-success" %></p>
+<% end %>
+
+<% if @tournament_posts.empty? %>
+  <p>No tournament updates have been posted.</p>
+<% end %>
+
+<%= render partial: "tournament_posts/post", collection: @tournament_posts, as: :post, locals: { manage: true } %>

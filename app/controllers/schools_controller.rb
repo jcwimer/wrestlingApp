@@ -115,7 +115,7 @@ class SchoolsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def school_params
-    params.require(:school).permit(:name, :score, :tournament_id)
+    params.require(:school).permit(:name, :email, :score, :tournament_id)
   end
 
   def check_access_director
@@ -131,8 +131,6 @@ class SchoolsController < ApplicationController
   end
 
   def check_access_delegate
-    @school_permission_key = params[:school_permission_key] if params[:school].present? && school_params[:school_permission_key].present?
-
     @school_permission_key = params[:school_permission_key] if params[:school_permission_key].present?
 
     authorize! :manage, @school

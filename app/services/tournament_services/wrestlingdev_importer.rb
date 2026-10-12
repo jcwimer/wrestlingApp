@@ -46,6 +46,8 @@ module TournamentServices
       Teampointadjust.where(wrestler_id: wrestler_ids).or(Teampointadjust.where(school_id: school_ids)).delete_all
       Wrestler.where(id: wrestler_ids).delete_all
       SchoolDelegate.where(school_id: school_ids).delete_all
+      TournamentPost.where(tournament_id: @tournament.id).delete_all
+      @tournament.tournament_posts.reset
       MatAssignmentRule.where(tournament_id: @tournament.id).delete_all
       @tournament.delegates.delete_all
       @tournament.tournament_job_statuses.delete_all
@@ -57,6 +59,7 @@ module TournamentServices
     def parse_data
       parse_tournament(@import_data['tournament']['attributes'])
       parse_schools(@import_data['tournament']['schools'])
+      parse_tournament_posts(@import_data['tournament']['tournament_posts'])
       parse_weights(@import_data['tournament']['weights'])
       parse_mats(@import_data['tournament']['mats'])
       parse_wrestlers(@import_data['tournament']['wrestlers'])
@@ -77,6 +80,16 @@ module TournamentServices
         School.create(school_attributes.merge(tournament_id: @tournament.id))
       end
       @schools_by_name = School.where(tournament_id: @tournament.id).index_by(&:name)
+    end
+
+    def parse_tournament_posts(tournament_posts)
+      rows = Array(tournament_posts).map do |attributes|
+        attributes.except('id', 'tournament_id', 'is_public').merge(
+          'is_public' => ActiveModel::Type::Boolean.new.cast(attributes['is_public']) || false,
+          'tournament_id' => @tournament.id
+        )
+      end
+      TournamentPost.insert_all!(rows) if rows.any?
     end
 
     def parse_weights(weights)

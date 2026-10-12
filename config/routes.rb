@@ -37,6 +37,9 @@ Wrestling::Application.routes.draw do
   resources :users, only: [:show, :edit, :update]
 
   resources :tournaments do
+    resources :tournament_posts, except: [:show] do
+      post :email_coaches, on: :member
+    end
     resources :mat_assignment_rules, only: [:index, :new, :create, :edit, :update, :show, :destroy]
     member do
       get :director
@@ -107,6 +110,7 @@ Wrestling::Application.routes.draw do
     member do
       post :generate_school_keys
       post :delete_school_keys
+      post :email_school_keys
     end
   end
 

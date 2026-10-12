@@ -11,6 +11,7 @@ class Tournament < ApplicationRecord
   has_many :mat_assignment_rules, dependent: :destroy
   has_many :tournament_backups, dependent: :destroy
   has_many :tournament_job_statuses, dependent: :destroy
+  has_many :tournament_posts, dependent: :destroy
 
   validates :date, :name, :tournament_type, :address, :director, :director_email, presence: true
   before_validation :set_date_sort_key
@@ -100,13 +101,14 @@ class Tournament < ApplicationRecord
     MatAssignmentRule.where(tournament_id: id).delete_all
     TournamentBackup.where(tournament_id: id).delete_all
     TournamentJobStatus.where(tournament_id: id).delete_all
+    TournamentPost.where(tournament_id: id).delete_all
     Wrestler.where(weight_id: weight_ids).delete_all
     School.where(id: school_ids).delete_all
     Weight.where(id: weight_ids).delete_all
     Mat.where(tournament_id: id).delete_all
 
     %w[schools weights mats wrestlers matches delegates mat_assignment_rules tournament_backups
-       tournament_job_statuses].each do |association_name|
+       tournament_job_statuses tournament_posts].each do |association_name|
       association(association_name.to_sym).reset
     end
     destroy!

@@ -6,6 +6,7 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
   fixtures :all
 
   setup do
+    @previous_queue_adapter = ActiveJob::Base.queue_adapter
     @tournament = tournaments(:one)
     @mat = mats(:one)
     @queue1_match = matches(:tournament_1_bout_1000)
@@ -20,7 +21,7 @@ class MatPageRedirectFlowTest < ActionDispatch::IntegrationTest
 
   teardown do
     ActiveJob::Base.queue_adapter.enqueued_jobs.clear if ActiveJob::Base.queue_adapter.respond_to?(:enqueued_jobs)
-    ActiveJob::Base.queue_adapter = :inline
+    ActiveJob::Base.queue_adapter = @previous_queue_adapter
   end
 
   test 'tournament show links stat match to mat stat page' do

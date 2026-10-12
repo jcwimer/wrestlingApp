@@ -28,6 +28,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
   end
 
   test 'finished match keeps caches until queued advancement completes' do
+    previous_queue_adapter = ActiveJob::Base.queue_adapter
     ActiveJob::Base.queue_adapter = :test
     seed_cache_entries
 
@@ -43,7 +44,7 @@ class TournamentCacheInvalidatorTest < ActiveSupport::TestCase
     assert_team_scores_deleted
   ensure
     ActiveJob::Base.queue_adapter.enqueued_jobs.clear if ActiveJob::Base.queue_adapter.respond_to?(:enqueued_jobs)
-    ActiveJob::Base.queue_adapter = :inline
+    ActiveJob::Base.queue_adapter = previous_queue_adapter
   end
 
   test 'match invalidation does not evict school summaries' do

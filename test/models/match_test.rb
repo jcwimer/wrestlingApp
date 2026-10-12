@@ -25,6 +25,7 @@ class MatchTest < ActiveSupport::TestCase
   end
 
   test 'finalizing queue1 promotes queue2 to queue1 before background jobs run' do
+    previous_queue_adapter = ActiveJob::Base.queue_adapter
     ActiveJob::Base.queue_adapter = :test
     mat = mats(:one)
     queue1_match = matches(:tournament_1_bout_1000)
@@ -44,10 +45,11 @@ class MatchTest < ActiveSupport::TestCase
     assert_nil queue1_match.reload.mat_id
   ensure
     ActiveJob::Base.queue_adapter.enqueued_jobs.clear if ActiveJob::Base.queue_adapter.respond_to?(:enqueued_jobs)
-    ActiveJob::Base.queue_adapter = :inline
+    ActiveJob::Base.queue_adapter = previous_queue_adapter
   end
 
   test 'finalizing queue2 leaves queue1 unchanged before background jobs run' do
+    previous_queue_adapter = ActiveJob::Base.queue_adapter
     ActiveJob::Base.queue_adapter = :test
     mat = mats(:one)
     queue1_match = matches(:tournament_1_bout_1000)
@@ -67,7 +69,7 @@ class MatchTest < ActiveSupport::TestCase
     assert_equal queue2_match.id, mat.queue2
   ensure
     ActiveJob::Base.queue_adapter.enqueued_jobs.clear if ActiveJob::Base.queue_adapter.respond_to?(:enqueued_jobs)
-    ActiveJob::Base.queue_adapter = :inline
+    ActiveJob::Base.queue_adapter = previous_queue_adapter
   end
 
   test 'Match should not be valid if win type is a pin and a score is provided' do

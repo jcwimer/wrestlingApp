@@ -1,0 +1,31 @@
+<%= form_with model: [@tournament, @tournament_post] do |form| %>
+  <% if @tournament_post.errors.any? %>
+    <div class="alert alert-danger">
+      <ul>
+        <% @tournament_post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="field">
+    <%= form.label :title %>
+    <%= form.text_field :title, required: true, maxlength: 255, class: "form-control" %>
+  </div>
+  <div class="field">
+    <%= form.label :body, "Update" %>
+    <%= form.text_area :body, required: true, rows: 8, class: "form-control" %>
+  </div>
+  <div class="field">
+    <%= form.check_box :is_public %>
+    <%= form.label :is_public, "Is a public update" %>
+    <p>Public updates appear on the tournament page. Other updates are visible only to tournament directors and delegates.</p>
+  </div>
+  <div class="field">
+    <%= check_box_tag :email_coaches, "1", params[:email_coaches] == "1" %>
+    <%= label_tag :email_coaches, "Email this update to coaches" %>
+    <p>Schools without an email address will be skipped.</p>
+  </div>
+  <%= form.submit "Save Update", class: "btn btn-success" %>
+  <%= link_to "Cancel", tournament_tournament_posts_path(@tournament), class: "btn btn-default" %>
+<% end %>

@@ -30,6 +30,7 @@ module TournamentServices
     def generate_json
       tournament = Tournament.includes(
         :schools,
+        :tournament_posts,
         :mats,
         :mat_assignment_rules,
         { weights: :wrestlers },
@@ -49,6 +50,7 @@ module TournamentServices
         tournament: {
           attributes: tournament.attributes,
           schools: tournament.schools.map(&:attributes),
+          tournament_posts: tournament.tournament_posts.map(&:attributes),
           weights: weights.map(&:attributes),
           mats: mats.map do |mat|
             mat.attributes.merge(

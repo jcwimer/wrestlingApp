@@ -269,6 +269,7 @@ class TournamentsControllerTest < ActionController::TestCase
     assert_select '#tournament-navbar a', text: 'Edit Tournament Info', count: 0
     assert_select 'a[href=?]', tournament_delegate_path(@tournament), text: 'Tournament Delegation'
     assert_select 'a[href=?]', school_delegate_path(@tournament), text: 'School Delegation'
+    assert_select 'a[href=?]', tournament_tournament_posts_path(@tournament), text: 'Tournament Updates'
     assert_select 'a[href=?]', reset_bout_board_tournament_path(@tournament), text: 'Reset Bout Board'
   end
 
@@ -1514,6 +1515,74 @@ class TournamentsControllerTest < ActionController::TestCase
       expected_link_fragment = "/schools/#{school.id}?school_permission_key=#{school.permission_key}"
       assert_includes response.body, expected_link_fragment
     end
+  end
+
+  test 'tournament owner queues permission key emails only for schools with email and key' do
+    sign_in_owner
+    @request.env.merge!('HTTP_HOST' => 'test.wrestlingdev.com:8443', 'HTTPS' => 'on', 'SERVER_PORT' => '8443')
+    @school.update!(email: 'coach@example.com', permission_key: 'school-key')
+    other_school = @tournament.schools.where.not(id: @school.id).first
+    other_school.update!(email: nil, permission_key: 'another-key')
+
+    assert_enqueued_jobs(1, only: EmailSchoolPermissionKeyJob) { post :email_school_keys, params: { id: @tournament.id } }
+
+    assert_redirected_to school_delegate_path(@tournament)
+    assert_equal 'Permission key emails queued for 1 school.', flash[:notice]
+    expected_args = [@school.id, 'school-key', 'https://test.wrestlingdev.com:8443']
+    assert_enqueued_with(job: EmailSchoolPermissionKeyJob, args: expected_args)
+  end
+
+  test 'emailing school keys reports when no school is eligible' do
+    sign_in_owner
+    @tournament.schools.update_all(email: nil, permission_key: nil)
+
+    assert_no_enqueued_jobs only: EmailSchoolPermissionKeyJob do
+      post :email_school_keys, params: { id: @tournament.id }
+    end
+
+    assert_equal 'No schools with an email address and permission key were eligible for email.', flash[:notice]
+  end
+
+  test 'only tournament managers can queue school permission key emails' do
+    sign_in_non_owner
+
+    post :email_school_keys, params: { id: @tournament.id }
+
+    redirect
+  end
+
+  test 'tournament delegate can queue school permission key emails' do
+    sign_in_delegate
+    @school.update!(email: 'coach@example.com', permission_key: 'school-key')
+
+    assert_enqueued_jobs 1, only: EmailSchoolPermissionKeyJob do
+      post :email_school_keys, params: { id: @tournament.id }
+    end
+  end
+
+  test 'school delegate cannot queue school permission key emails' do
+    sign_in_school_delegate
+
+    post :email_school_keys, params: { id: @tournament.id }
+
+    redirect
+  end
+
+  test 'school permission key email action requires a signed in manager' do
+    post :email_school_keys, params: { id: @tournament.id }
+
+    redirect
+  end
+
+  test 'school permission key emails are shown with the generated links' do
+    sign_in_owner
+    @school.update!(email: 'coach@example.com', permission_key: 'school-key')
+
+    get :school_delegate, params: { id: @tournament.id }
+
+    assert_response :success
+    assert_select 'td', text: 'coach@example.com'
+    assert_select 'form[action=?]', email_school_keys_tournament_path(@tournament)
   end
 
   test 'tournament delegate can delete school keys' do

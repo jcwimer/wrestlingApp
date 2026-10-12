@@ -58,6 +58,27 @@ Keep this section updated whenever there's an accepted non standard or non suppo
 - docker compose AND kubernetes deploys need to be kept in sync with each other for deployment flexibility
 - when adding environment variables be sure to update the readme, update `deploy/prod.env.example`, update `deploy/kubernetes/secrets/secrets.yaml` and update the README. Be sure to also keep both compose files up to date and the kubernetes manifests.
 
+# Delegation and model cost
+
+- When the harness supports subagents, proactively delegate well-scoped tasks
+  and command execution where doing so reduces total cost or elapsed time.
+  Do not wait for the user to request delegation.
+- If the harness allows model selection, use the least expensive available
+  model capable of reliably completing each delegated task. Favor cheaper
+  models for routine searches, file inspection, straightforward edits, and
+  running established test, lint, or build commands. Reserve stronger models
+  for complex reasoning, architecture, ambiguous debugging, and final review.
+- Give each subagent a clear objective, relevant context, file ownership,
+  constraints, and expected results. Batch related commands into one assignment
+  when practical. Parallelize independent work and avoid concurrent edits to
+  the same files.
+- The primary agent remains responsible for planning, integrating changes,
+  reviewing results, and verifying the final outcome. Escalate to a more capable
+  model when a delegated task exceeds the selected model's capabilities.
+- Keep trivial tasks local when delegation overhead would exceed the benefit.
+  If subagents or model selection are unavailable, continue with the available
+  harness without blocking the work or claiming to have used cheaper models.
+
 # Other
 - Please keep README.md and AGENTS.md up to date when making changes.
 - AGENTS.md does not need to have every feature listed. Only non standard things or information that cannot easily be gleaned from tests.

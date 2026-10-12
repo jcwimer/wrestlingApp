@@ -2,6 +2,7 @@
 <p>Instead of forcing coaches to log into the app, you can generate links for their school that you can email them to submit their lineups. Be sure to delete these after the deadline for lineup submissions.</p>
 <%= button_to "Generate School Permission Key Links", generate_school_keys_tournament_path(@tournament), method: :post, class: "btn btn-success" %>
 <%= button_to "Delete School Permission Key Links", delete_school_keys_tournament_path(@tournament), method: :post, class: "btn btn-danger" %>
+<%= button_to "Email School Permission Key Links", email_school_keys_tournament_path(@tournament), method: :post, class: "btn btn-primary" %>
 <br><br>
 
 <% if @tournament.schools.where.not(permission_key: nil).exists? %>
@@ -10,6 +11,7 @@
     <thead>
       <tr>
         <th>School Name</th>
+        <th>Email</th>
         <th>Permission Link</th>
       </tr>
     </thead>
@@ -17,9 +19,10 @@
       <% @tournament.schools.where.not(permission_key: nil).each do |school| %>
         <tr>
           <td><%= school.name %></td>
+          <td><%= school.email %></td>
           <td>
-            <% full_url = "#{request.base_url}/schools/#{school.id}?school_permission_key=#{school.permission_key}" %>
-            <a href="<%= full_url %>"><%= full_url %></a>
+            <% full_url = school_url(school, school_permission_key: school.permission_key) %>
+            <%= link_to full_url, full_url %>
           </td>
         </tr>
       <% end %>

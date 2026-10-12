@@ -1,0 +1,15 @@
+<article id="<%= dom_id(post) %>" class="panel panel-default">
+  <div class="panel-body tournament-post-body">
+    <h2><%= post.title %></h2>
+    <p class="text-muted"><%= post.created_at.strftime("%B %-d, %Y at %-I:%M %p") %></p>
+    <%= simple_format(post.body) %>
+    <% if manage %>
+      <p><strong><%= post.is_public? ? "Public update" : "Coaches only" %></strong></p>
+      <div class="tournament-post-actions">
+        <%= link_to "Edit", edit_tournament_tournament_post_path(@tournament, post), class: "btn btn-primary" %>
+        <%= button_to "Email Coaches", email_coaches_tournament_tournament_post_path(@tournament, post), method: :post, class: "btn btn-success", data: { turbo_confirm: "Email this update to all schools with an email address?" } %>
+        <%= button_to "Delete", tournament_tournament_post_path(@tournament, post), method: :delete, class: "btn btn-danger", data: { turbo_confirm: "Delete this tournament update?" } %>
+      </div>
+    <% end %>
+  </div>
+</article>

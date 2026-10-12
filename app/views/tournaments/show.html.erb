@@ -51,6 +51,20 @@
 <% show_counts = can? :read, @tournament %>
 <section class="panel panel-default" data-controller="collapse">
   <div class="panel-heading wd-section-heading">
+    <a class="wd-section-toggle" href="#tournament-updates" data-collapse-target="toggle" data-action="collapse#toggle" aria-expanded="false" aria-controls="tournament-updates">
+      <strong>Tournament Updates</strong>
+      <span class="text-muted wd-section-toggle__hint">Show/Hide</span>
+    </a>
+  </div>
+  <div id="tournament-updates" class="panel-body wd-collapse" data-collapse-target="panel">
+    <% if @public_tournament_posts.empty? %>
+      <p>No public tournament updates have been posted.</p>
+    <% end %>
+    <%= render partial: "tournament_posts/post", collection: @public_tournament_posts, as: :post, locals: { manage: false } %>
+  </div>
+</section>
+<section class="panel panel-default" data-controller="collapse">
+  <div class="panel-heading wd-section-heading">
     <a class="wd-section-toggle" href="#tournament-schools" data-collapse-target="toggle" data-action="collapse#toggle" aria-expanded="false" aria-controls="tournament-schools">
       <strong>Schools</strong>
       <span class="text-muted wd-section-toggle__hint">Show/Hide</span>

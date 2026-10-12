@@ -3,7 +3,8 @@
 class TournamentsController < ApplicationController
   before_action :set_tournament,
                 only: %i[
-                  all_results delete_school_keys generate_school_keys reset_bout_board calculate_team_scores
+                  all_results delete_school_keys generate_school_keys email_school_keys reset_bout_board
+                  calculate_team_scores
                   bout_sheets swap weigh_in_sheet error teampointadjust remove_teampointadjust
                   remove_school_delegate remove_delegate school_delegate delegate matches weigh_in
                   weigh_in_weight create_custom_weights show edit update destroy up_matches no_matches
@@ -11,7 +12,8 @@ class TournamentsController < ApplicationController
                 ]
   before_action :check_access_manage,
                 only: %i[
-                  delete_school_keys generate_school_keys reset_bout_board calculate_team_scores swap
+                  delete_school_keys generate_school_keys email_school_keys reset_bout_board calculate_team_scores
+                  swap
                   weigh_in_sheet teampointadjust remove_teampointadjust remove_school_delegate school_delegate
                   weigh_in weigh_in_weight create_custom_weights update edit generate_matches matches qrcode director
                 ]
@@ -363,6 +365,7 @@ class TournamentsController < ApplicationController
   end
 
   def show
+    @public_tournament_posts = @tournament.tournament_posts.where(is_public: true).order(created_at: :desc, id: :desc)
     @schools = @tournament.schools.includes(:delegates).sort_by(&:name)
     @weights = @tournament.weights.includes(:wrestlers).sort_by { |x| [x.max] }
     @mats = @tournament.mats.sort_by(&:name)
@@ -428,6 +431,21 @@ class TournamentsController < ApplicationController
   def delete_school_keys
     @tournament.schools.update_all(permission_key: nil)
     redirect_to school_delegate_path(@tournament), notice: 'All school permission keys have been deleted.'
+  end
+
+  def email_school_keys
+    schools = @tournament.schools.where.not(email: [nil, '']).where.not(permission_key: [nil, ''])
+    count = schools.count
+    schools.find_each do |school|
+      EmailSchoolPermissionKeyJob.perform_later_with_enqueue_retry(school.id, school.permission_key, request.base_url)
+    end
+
+    notice = if count.positive?
+               "Permission key emails queued for #{count} #{'school'.pluralize(count)}."
+             else
+               'No schools with an email address and permission key were eligible for email.'
+             end
+    redirect_to school_delegate_path(@tournament), notice: notice
   end
 
   private

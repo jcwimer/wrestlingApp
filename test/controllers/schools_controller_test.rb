@@ -18,6 +18,37 @@ class SchoolsControllerTest < ActionController::TestCase
     post :create, params: { school: { name: 'Testaasdf', tournament_id: 1 } }
   end
 
+  test 'director can create a school with an optional coach email' do
+    sign_in_owner
+    assert_difference 'School.count' do
+      post :create, params: { school: { name: 'New School', tournament_id: @tournament.id, email: ' COACH@Example.com ' } }
+    end
+    assert_equal 'coach@example.com', @tournament.schools.find_by!(name: 'New School').email
+  end
+
+  test 'school permission form preserves its key and lets a coach update their email' do
+    @tournament.update!(is_public: false)
+    get_edit(school_permission_key: @school_permission_key)
+    assert_response :success
+    assert_select 'input[type=hidden][name=school_permission_key][value=?]', @school_permission_key
+
+    patch :update, params: { id: @school.id, school_permission_key: @school_permission_key,
+                             school: { name: @school.name, tournament_id: @tournament.id, email: 'coach@example.com' } }
+    assert_redirected_to tournament_path(@tournament)
+    assert_equal 'coach@example.com', @school.reload.email
+  end
+
+  test 'invalid coach email keeps the saved address and displays validation errors' do
+    sign_in_owner
+    @school.update!(email: 'coach@example.com')
+
+    patch :update, params: { id: @school.id, school: { email: 'invalid-email' } }
+
+    assert_template :edit
+    assert_select '#error_explanation', text: /Email is invalid/
+    assert_equal 'coach@example.com', @school.reload.email
+  end
+
   def new
     get :new, params: { tournament: @tournament.id }
   end

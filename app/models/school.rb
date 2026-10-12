@@ -7,6 +7,8 @@ class School < ApplicationRecord
   has_many :delegates, class_name: 'SchoolDelegate', dependent: :destroy
 
   validates :name, presence: true
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  before_validation :normalize_email
   before_destroy :prepare_dependents_for_destroy, prepend: true, unless: :destroyed_by_association
   after_commit :invalidate_cached_views, on: %i[create update]
 
@@ -45,6 +47,10 @@ class School < ApplicationRecord
     Teampointadjust.where(wrestler_id: wrestlers_to_delete.select(:id)).delete_all
     wrestlers_to_delete.delete_all
     wrestlers.reset
+  end
+
+  def normalize_email
+    self.email = email&.strip&.downcase
   end
 
   public

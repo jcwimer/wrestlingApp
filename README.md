@@ -195,6 +195,8 @@ Production Docker Compose uses `prod.env` (see `deploy/prod.env.example`). Sever
 
 Kubernetes and direct container configuration set the `WRESTLINGDEV_*` names below.
 
+Tournament directors and delegates manage tournament updates from Director Links and can optionally email their contents to coaches without a post link. Updates default to coaches only; checking "Is a public update" displays them above Schools on the tournament page, independently of the tournament's public setting. Add an optional coach email in each school's form; schools without one are skipped. Generated school permission links can be emailed from School Delegation and use the domain, protocol, and port of the request that queued them. Emails use the existing SMTP settings and Solid Queue workers, with a separate email per school. Tournament backups include school emails, updates, and update visibility; older backups remain supported.
+
 #### Required for Rails
 
 | Variable | Purpose |
