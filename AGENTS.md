@@ -14,6 +14,7 @@
 - Adhear to DRY and KISS principles
 - CSS layouts should be responsive for mobile browsers
 - When the db schema changes, always be cognizant of the tournament backup and import service. Continue to make sure these work.
+- Declare foreign key references with `type: :bigint` so SQLite schema dumps can also be loaded into MariaDB. `deploy/deploy-test.sh` runs `db:reset`, which loads the schema before running migrations.
 
 # Accepted non standard and non supported rails or gem patterns and implementations
 Keep this section updated whenever there's an accepted non standard or non supported rails or gem pattern. Be sure to check the versions of rails or gems when considering things that are non standard or non supported.
