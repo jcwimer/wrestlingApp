@@ -75,8 +75,10 @@ async function discoverMatIds(page, deadline) {
     await page.goto(`${baseUrl}/tournaments/${tournamentId}`, { waitUntil: "domcontentloaded", timeout: waitTimeout(deadline) })
 
     for (const matNumber of [1, 2, 3, 4, 5]) {
-      const link = page.getByRole("link", { name: `Mat Load Test ${matNumber}`, exact: true })
-      const href = await link.getAttribute("href")
+      const link = page.locator("#tournament-mats a[href^='/mats/']").filter({
+        hasText: new RegExp(`^Mat Load Test ${matNumber}$`)
+      })
+      const href = await link.first().getAttribute("href")
       const match = href && href.match(/^\/mats\/(\d+)$/)
       if (!match) throw new Error(`Could not find Load Test mat ${matNumber} on tournament ${tournamentId}`)
       matIdsByTournament[tournamentId][matNumber] = match[1]

@@ -45,6 +45,7 @@ public class TournamentLoadSimulation extends Simulation {
   private static final String OPERATOR_EMAIL = property("operatorEmail", "test@test.com");
   private static final String OPERATOR_PASSWORD = property("operatorPassword", "password");
   private static final String MAT_PREFIX = "Load Test ";
+  private static final String MAT_STATE_MATCH_ID_REGEX = "data-(?:mat-state|match-state)-match-id-value=\"(\\d+)\"";
   private static final Path PREPARED_MARKER = Path.of("/loadtests/run-state/prepared");
 
   private static final Map<Integer, List<String>> weightIdsByTournament = new ConcurrentHashMap<>();
@@ -65,7 +66,7 @@ public class TournamentLoadSimulation extends Simulation {
 
   private ChainBuilder findMat(int tournamentId, int number) {
     String key = matKey(tournamentId, number);
-    String matPattern = "href=\"/mats/(\\d+)\">Mat " + MAT_PREFIX + number + "</a>";
+    String matPattern = "id=\"tournament-mats\"[\\s\\S]*?href=\"/mats/(\\d+)\">Mat " + MAT_PREFIX + number + "</a>";
 
     return exec(http("Prep - find mat " + number + " (tournament " + tournamentId + ")")
         .get("/tournaments/" + tournamentId)
@@ -81,7 +82,12 @@ public class TournamentLoadSimulation extends Simulation {
         .exec(http("Prep - capture current first match (tournament " + tournamentId + ")")
             .get(session -> "/mats/" + session.getString(mat1Key) + "/state")
             .check(status().is(200))
-            .check(regex("data-mat-state-match-id-value=\"(\\d+)\"").optional().saveAs(previousMatchKey)))
+            .check(regex(MAT_STATE_MATCH_ID_REGEX).optional().saveAs(previousMatchKey)))
+        .exec(http("Prep - open director page (tournament " + tournamentId + ")")
+            .get("/tournaments/" + tournamentId + "/director")
+            .check(status().is(200))
+            .check(substring("Generate Brackets"))
+            .check(css("meta[name='csrf-token']", "content").saveAs("csrfToken")))
         .exec(http("Prep - generate matches (tournament " + tournamentId + ")")
             .post("/tournaments/" + tournamentId + "/generate_matches")
             .formParam("authenticity_token", "#{csrfToken}")
@@ -92,7 +98,7 @@ public class TournamentLoadSimulation extends Simulation {
             exec(http("Prep - wait for newly generated matches (tournament " + tournamentId + ")")
                 .get(session -> "/mats/" + session.getString(mat1Key) + "/state")
                 .check(status().is(200))
-                .check(regex("data-mat-state-match-id-value=\"(\\d+)\"").optional().saveAs("generatedMatchId"))),
+                .check(regex(MAT_STATE_MATCH_ID_REGEX).optional().saveAs("generatedMatchId"))),
             exec(session -> {
               String current = session.getString("generatedMatchId");
               String previous = session.getString(previousMatchKey);
@@ -106,7 +112,7 @@ public class TournamentLoadSimulation extends Simulation {
             .get("/tournaments/" + tournamentId)
             .check(status().is(200))
             .check(regex("href=\"/weights/(\\d+)\"").findAll().saveAs("weightIds"))
-            .check(regex("href=\"/schools/(\\d+)\"").findAll().saveAs("schoolIds")))
+            .check(regex("href=\"/schools/(\\d+)\"").findAll().optional().saveAs("schoolIds")))
         .exec(session -> {
           List<String> weightIds = List.copyOf(session.getList("weightIds"));
           List<String> schoolIds = List.copyOf(session.getList("schoolIds"));
@@ -128,9 +134,20 @@ public class TournamentLoadSimulation extends Simulation {
           .formParam("authenticity_token", "#{csrfToken}")
           .formParam("session[email]", OPERATOR_EMAIL)
           .formParam("session[password]", OPERATOR_PASSWORD)
-          .check(status().is(200))
-          .check(substring("Logged in successfully")))
+          .check(status().in(200, 303))
+          .check(regex("Logged in successfully|Welcome to WrestlingDev")))
       .exec(prepareAllTournaments())
+      .exec(session -> {
+        for (int tournamentId : loadTestTournamentIds()) {
+          List<String> weights = weightIdsByTournament.get(tournamentId);
+          List<String> schools = schoolIdsByTournament.get(tournamentId);
+          if (weights == null || weights.isEmpty() || schools == null || schools.isEmpty()) {
+            return session.markAsFailed();
+          }
+        }
+        return session;
+      })
+      .exitHereIfFailed()
       .exec(session -> {
         try {
           Files.createDirectories(PREPARED_MARKER.getParent());
