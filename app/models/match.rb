@@ -33,8 +33,9 @@ class Match < ApplicationRecord
   after_commit :invalidate_finished_stat_caches, on: :update, if: :finished_stats_changed?
 
   def finalize_once?
-    with_lock do
-      reload
+    self.class.transaction do
+      tournament.mats.order(:id).lock.load
+      lock!
       return false unless finished == 1 && winner_id.present? && finalized_at.nil?
 
       assigned_mat = mat

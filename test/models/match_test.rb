@@ -5,6 +5,27 @@ require 'test_helper'
 class MatchTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
+  test 'finalizing locks tournament mats before the match' do
+    match = matches(:tournament_1_bout_1000)
+    match.update_columns(finished: 1, winner_id: match.w1, finalized_at: nil, mat_id: nil)
+    match.define_singleton_method(:enqueue_post_finalize_jobs!) { true }
+    queries = []
+    subscriber = ActiveSupport::Notifications.subscribe('sql.active_record') do |*, payload|
+      queries << payload[:sql] if payload[:sql].start_with?('SELECT')
+    end
+
+    assert match.finalize_once?
+
+    mat_query = queries.index { |sql| sql.include?("FROM #{Mat.quoted_table_name}") }
+    match_query = queries.index { |sql| sql.include?("FROM #{Match.quoted_table_name}") }
+    assert_not_nil mat_query
+    assert_not_nil match_query
+    assert_operator mat_query, :<, match_query
+    assert_not_nil match.reload.finalized_at
+  ensure
+    ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
+  end
+
   test 'finished score correction does not finalize twice' do
     match = matches(:tournament_1_bout_1000)
     match.update_columns(mat_id: nil, finalized_at: nil)
