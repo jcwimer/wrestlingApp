@@ -27,6 +27,8 @@ docker compose run --rm gatling
 
 Gatling drives preparation and all spectator traffic. The same container starts five headless Playwright browser contexts per active tournament for mat operation because Gatling itself does not execute browser JavaScript. A preparation marker prevents those browsers from opening the state pages until match generation has finished. When running against the local Compose test stack, cAdvisor records this container's CPU and memory separately so its load-generator overhead is not attributed to the app server during evaluation.
 
+Operators check each match submission's HTTP response and wait for the next match. Any rejected submission or operator error fails the run, even if that operator later completes matches. `results/browser-operator-metrics.json` records each operator's attempts, response statuses, completions, timeouts, and failures; these browser requests are separate from Gatling's request statistics. The workload continues after an operator error to preserve the configured load.
+
 For a local Rails server, bind Rails to an address Docker can reach, for example `bin/rails server -b 0.0.0.0`. Do not set `BASE_URL` to `127.0.0.1`, which means the Gatling container itself; use the default `http://host.docker.internal:3000`. Reports are written to `loadtests/results/`.
 
 Gatling websocket timings include the Action Cable welcome, subscription confirmations, replacement-match confirmations, and periodic sync round trips. Unsolicited mat messages are buffered and drained between probes, then coalesced to the latest topology before changing subscriptions. A replacement is only tracked after the server confirms its subscription, keeping sync measurements attached to matches the client can actually reach. This matches the `live_scores` controller behavior. Gatling does not execute page JavaScript, so the separate Playwright observer correlates each operator scoring action with its matching score broadcast and supplies both delivery and browser-side DOM metrics.
@@ -35,7 +37,8 @@ Configuration is supplied through environment variables. Per-tournament settings
 
 | Variable | Default | Scope | Purpose |
 | --- | --- | --- | --- |
-| `BASE_URL` | `http://host.docker.internal:3000` | overall | Rails HTTP(S) origin, without a trailing slash |
+| `BASE_URL` | `http://host.docker.internal:3000` | overall | Application HTTP(S) origin, without a trailing slash |
+| `LIVE_PROTOCOL` | `rails` | overall | Set to `go` for the Go rewrite versioned WebSocket protocol |
 | `WS_URL` | derived from `BASE_URL` | overall | Optional Action Cable WS(S) origin |
 | `TOURNAMENT_COUNT` | `1` | overall | Number of load-test tournaments to exercise (`1`-`10`, uses tournaments `205` through `205 + count - 1`) |
 | `TEST_DURATION_SECONDS` | `600` | overall | Measured workload duration |
@@ -78,3 +81,15 @@ docker compose -f deploy/docker compose-test.yml down; docker volume rm $(docker
 ```
 
 For post-run analysis, use the agent prompt in [`agent_prompts/LOAD_TEST_EVALUATION.md`](../agent_prompts/LOAD_TEST_EVALUATION.md).
+
+## Running against Go rewrite
+
+Load a disposable primary database with the same Rails load-test seeds (tournaments 205–214), start the Go server against it and a separate support database, and use an origin reachable from Docker:
+
+```sh
+LIVE_PROTOCOL=go BASE_URL=http://host.docker.internal:8081 TOURNAMENT_COUNT=1 docker compose run --rm gatling
+```
+
+For the complete local setup and four-tournament, 15-minute run, execute `bash go_rewrite/local-loadtest.sh` from the repository root. It resets the disposable test database, selects Go framing, and stops on failures. Run logs, full-run Docker resource samples, and previous results are preserved under `tmp/go-loadtest/<timestamp>/`; current reports are in `loadtests/results/`. cAdvisor's 55-second housekeeping interval needs a rate window longer than one minute (use five minutes for CPU comparisons).
+
+`LIVE_PROTOCOL=go` changes only Gatling's WebSocket framing: topic subscriptions receive snapshots as confirmations, mat events drive replacement match subscriptions, and `request_sync` probes await a snapshot for the requested match. Bout-board viewers send periodic keepalives. Browser operators run the same Stimulus UI; the browser observer measures either transport automatically. The workload and latency thresholds are identical for Rails and Go. Rebuild the load-test image after changing the suite. For a short compatibility smoke, allow at least 120 seconds so all five staggered operators can finish a bout; use the default 600 seconds or longer for performance evaluation.

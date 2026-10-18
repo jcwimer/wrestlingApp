@@ -31,6 +31,7 @@ import static io.gatling.javaapi.http.HttpDsl.*;
 public class TournamentLoadSimulation extends Simulation {
   private static final String BASE_URL = property("baseUrl", "http://host.docker.internal:3000").replaceAll("/+$", "");
   private static final String WS_URL = websocketUrl();
+  private static final boolean GO_PROTOCOL = liveProtocol().equals("go");
   private static final int TOURNAMENT_COUNT = boundedCount(integerProperty("tournamentCount", 1));
   private static final int LOAD_TEST_TOURNAMENT_BASE_ID = 205;
   private static final Duration TEST_DURATION = Duration.ofSeconds(integerProperty("testDurationSeconds", 600));
@@ -165,16 +166,17 @@ public class TournamentLoadSimulation extends Simulation {
             .get("/tournaments/" + tournamentId + "/up_matches?print=true")
             .check(status().is(200))
             .check(regex("signed-stream-name=\"([^\"]+)\"").saveAs("signedStreamName")))
-        .exec(ws("Permanent viewer - connect Action Cable (tournament " + tournamentId + ")").connect("/cable")
-            .await(WS_RESPONSE_TIMEOUT).on(
-                ws.checkTextMessage("Permanent viewer - receive Action Cable welcome (tournament " + tournamentId + ")")
-                    .matching(substring("\"type\":\"welcome\""))))
+        .exec(connectViewer("Permanent viewer", tournamentId))
         .exec(ws("Permanent viewer - subscribe to bout board (tournament " + tournamentId + ")")
             .sendText(session -> turboSubscription(session.getString("signedStreamName")))
             .await(WS_RESPONSE_TIMEOUT).on(
                 ws.checkTextMessage("Permanent viewer - confirm bout board subscription (tournament " + tournamentId + ")")
-                    .matching(substring("Turbo::StreamsChannel"), substring("confirm_subscription"))))
-        .pause(session -> remainingWorkloadDuration())
+                    .matching(substring(GO_PROTOCOL ? "\"topic\":\"tournament:" + tournamentId + "\"" : "Turbo::StreamsChannel"), substring(GO_PROTOCOL ? "\"type\":\"snapshot\"" : "confirm_subscription"))))
+        .exec(session -> session.set("viewerDurationMillis", remainingWorkloadDuration().toMillis()))
+        .during(session -> Duration.ofMillis(session.getLong("viewerDurationMillis"))).on(
+            pause(session -> Duration.ofMillis(Math.min(30000, remainingWorkloadDuration().toMillis()))),
+            doIf(session -> GO_PROTOCOL).then(exec(ws("Permanent viewer - keepalive (tournament " + tournamentId + ")")
+                .sendText(goMessage("ping", "")))))
         .exec(ws("Permanent viewer - close Action Cable (tournament " + tournamentId + ")").close());
   }
 
@@ -201,23 +203,20 @@ public class TournamentLoadSimulation extends Simulation {
               .set("confirmedMatchIds", new LinkedHashSet<String>())
               .set("probeIndex", 0);
         })
-        .exec(ws("Live scores viewer - connect Action Cable (tournament " + tournamentId + ")").connect("/cable")
-            .await(WS_RESPONSE_TIMEOUT).on(
-                ws.checkTextMessage("Live scores viewer - receive Action Cable welcome (tournament " + tournamentId + ")")
-                    .matching(substring("\"type\":\"welcome\""))))
+        .exec(connectViewer("Live scores viewer", tournamentId))
         .foreach("#{liveMatIds}", "liveMatId").on(
             exec(ws("Live scores viewer - subscribe to mat (tournament " + tournamentId + ")")
                 .sendText(session -> subscribe("MatScoreboardChannel", "mat_id", session.getString("liveMatId")))
                 .await(WS_RESPONSE_TIMEOUT).on(
                     ws.checkTextMessage("Live scores viewer - confirm mat subscription (tournament " + tournamentId + ")")
-                        .matching(substring("MatScoreboardChannel"), substring("confirm_subscription"))))
+                        .matching(substring(GO_PROTOCOL ? "\"topic\":\"mat:#{liveMatId}\"" : "MatScoreboardChannel"), substring(GO_PROTOCOL ? "\"type\":\"snapshot\"" : "confirm_subscription"))))
         )
         .foreach("#{initialMatchIds}", "liveMatchId").on(
             exec(ws("Live scores viewer - subscribe to match (tournament " + tournamentId + ")")
                 .sendText(session -> subscribe("MatchChannel", "match_id", session.getString("liveMatchId")))
                 .await(WS_RESPONSE_TIMEOUT).on(
                     ws.checkTextMessage("Live scores viewer - confirm match subscription (tournament " + tournamentId + ")")
-                        .matching(substring("MatchChannel"), substring("confirm_subscription"))))
+                        .matching(substring(GO_PROTOCOL ? "\"topic\":\"match:#{liveMatchId}\"" : "MatchChannel"), substring(GO_PROTOCOL ? "\"type\":\"snapshot\"" : "confirm_subscription"))))
                 .exitHereIfFailed()
                 .exec(session -> {
                   Set<String> confirmed = new LinkedHashSet<>(session.getSet("confirmedMatchIds"));
@@ -229,6 +228,8 @@ public class TournamentLoadSimulation extends Simulation {
         .during(session -> Duration.ofMillis(session.getLong("viewerDurationMillis"))).on(
             pause(WS_PROBE_INTERVAL),
             followMatUpdates(tournamentId),
+            doIf(session -> GO_PROTOCOL).then(exec(ws("Live scores viewer - keepalive (tournament " + tournamentId + ")")
+                .sendText(goMessage("ping", "")))),
             exec(session -> {
               Map<String, String> currentMatches = session.getMap("currentMatchesByMat");
               List<String> activeMatchIds = currentMatches.values().stream()
@@ -247,9 +248,9 @@ public class TournamentLoadSimulation extends Simulation {
                     .await(WS_RESPONSE_TIMEOUT).on(
                         ws.checkTextMessage("Live scores viewer - receive websocket sync (tournament " + tournamentId + ")")
                             .matching(
-                                substring("MatchChannel"),
-                                substring("\\\"match_id\\\":#{probeMatchId}"),
-                                substring("\"message\""))))
+                                substring(GO_PROTOCOL ? "\"topic\":\"match:#{probeMatchId}\"" : "MatchChannel"),
+                                substring(GO_PROTOCOL ? "\"type\":\"snapshot\"" : "\\\"match_id\\\":#{probeMatchId}"),
+                                substring(GO_PROTOCOL ? "\"payload\"" : "\"message\""))))
             ),
             followMatUpdates(tournamentId)
         )
@@ -308,7 +309,7 @@ public class TournamentLoadSimulation extends Simulation {
       for (WsInboundMessage inboundMessage : messages) {
         if (!(inboundMessage instanceof WsInboundMessage.Text textMessage)) continue;
         String body = textMessage.message();
-        if (!body.contains("MatScoreboardChannel") || !body.contains("\"message\"")) continue;
+        if (GO_PROTOCOL ? !body.contains("\"topic\":\"mat:") || !body.contains("\"payload\"") : !body.contains("MatScoreboardChannel") || !body.contains("\"message\"")) continue;
 
         String matId = capture(MAT_ID_PATTERN, body);
         if (matId == null) continue;
@@ -346,9 +347,9 @@ public class TournamentLoadSimulation extends Simulation {
             .await(WS_RESPONSE_TIMEOUT).on(
                 ws.checkTextMessage("Live scores viewer - confirm replacement match subscription (tournament " + tournamentId + ")")
                     .matching(
-                        substring("MatchChannel"),
-                        substring("\\\"match_id\\\":#{newMatchId}"),
-                        substring("confirm_subscription"))))
+                        substring(GO_PROTOCOL ? "\"topic\":\"match:#{newMatchId}\"" : "MatchChannel"),
+                        substring(GO_PROTOCOL ? "\"payload\"" : "\\\"match_id\\\":#{newMatchId}"),
+                        substring(GO_PROTOCOL ? "\"type\":\"snapshot\"" : "confirm_subscription"))))
             .exitHereIfFailed()
             .exec(session -> {
               Set<String> confirmed = new LinkedHashSet<>(session.getSet("confirmedMatchIds"));
@@ -356,6 +357,33 @@ public class TournamentLoadSimulation extends Simulation {
               return session.set("confirmedMatchIds", confirmed);
             })
     );
+  }
+
+  private ChainBuilder connectViewer(String label, int tournamentId) {
+    if (GO_PROTOCOL) {
+      return exec(ws(label + " - connect Go live transport (tournament " + tournamentId + ")").connect("/cable"))
+          .exec(ws(label + " - ping Go live transport (tournament " + tournamentId + ")")
+          .sendText(goMessage("ping", ""))
+          .await(WS_RESPONSE_TIMEOUT).on(
+              ws.checkTextMessage(label + " - receive Go live pong (tournament " + tournamentId + ")")
+                  .matching(substring("\"version\":1"), substring("\"type\":\"pong\""))));
+    }
+    return exec(ws(label + " - connect Action Cable (tournament " + tournamentId + ")").connect("/cable")
+        .await(WS_RESPONSE_TIMEOUT).on(
+            ws.checkTextMessage(label + " - receive Action Cable welcome (tournament " + tournamentId + ")")
+                .matching(substring("\"type\":\"welcome\""))));
+  }
+
+  private static String liveProtocol() {
+    String protocol = property("liveProtocol", "rails");
+    if (!protocol.equals("rails") && !protocol.equals("go")) {
+      throw new IllegalArgumentException("LIVE_PROTOCOL must be rails or go");
+    }
+    return protocol;
+  }
+
+  private static String goMessage(String action, String topic) {
+    return "{\"version\":1,\"action\":" + quote(action) + ",\"topic\":" + quote(topic) + "}";
   }
 
   private static List<Integer> loadTestTournamentIds() {
@@ -401,22 +429,26 @@ public class TournamentLoadSimulation extends Simulation {
   }
 
   private static String subscribe(String channel, String parameter, String value) {
+    if (GO_PROTOCOL) return goMessage("subscribe", (channel.equals("MatchChannel") ? "match:" : "mat:") + value);
     String identifier = "{\"channel\":\"" + channel + "\",\"" + parameter + "\":" + jsonValue(value) + "}";
     return "{\"command\":\"subscribe\",\"identifier\":" + quote(identifier) + "}";
   }
 
   private static String unsubscribe(String channel, String parameter, String value) {
+    if (GO_PROTOCOL) return goMessage("unsubscribe", (channel.equals("MatchChannel") ? "match:" : "mat:") + value);
     String identifier = "{\"channel\":\"" + channel + "\",\"" + parameter + "\":" + jsonValue(value) + "}";
     return "{\"command\":\"unsubscribe\",\"identifier\":" + quote(identifier) + "}";
   }
 
   private static String channelAction(String channel, String parameter, String value, String action) {
+    if (GO_PROTOCOL) return goMessage(action, (channel.equals("MatchChannel") ? "match:" : "mat:") + value);
     String identifier = "{\"channel\":\"" + channel + "\",\"" + parameter + "\":" + jsonValue(value) + "}";
     String data = "{\"action\":\"" + action + "\"}";
     return "{\"command\":\"message\",\"identifier\":" + quote(identifier) + ",\"data\":" + quote(data) + "}";
   }
 
   private static String turboSubscription(String signedStreamName) {
+    if (GO_PROTOCOL) return goMessage("subscribe", signedStreamName);
     String identifier = "{\"channel\":\"Turbo::StreamsChannel\",\"signed_stream_name\":" + quote(signedStreamName) + "}";
     return "{\"command\":\"subscribe\",\"identifier\":" + quote(identifier) + "}";
   }

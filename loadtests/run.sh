@@ -17,6 +17,7 @@ set +e
 mvn -B -o gatling:test \
   -Dgatling.simulationClass=com.wrestlingdev.TournamentLoadSimulation \
   -DbaseUrl="${BASE_URL:-http://host.docker.internal:3000}" \
+  -DliveProtocol="${LIVE_PROTOCOL:-rails}" \
   -DwsUrl="${WS_URL:-}" \
   -DtournamentCount="${TOURNAMENT_COUNT:-1}" \
   -DtestDurationSeconds="${TEST_DURATION_SECONDS:-600}" \

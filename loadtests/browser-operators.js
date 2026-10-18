@@ -181,7 +181,25 @@ async function waitForNextMatch(page, previousMatchId, deadline) {
   await page.locator("[data-action='click->match-state#startClock']").waitFor({ state: "visible", timeout: waitTimeout(deadline) })
 }
 
-async function runMatch(page, matId, deadline) {
+async function submitMatch(page, submitButton, deadline, metrics) {
+  const action = await submitButton.evaluate((button) => button.form.action)
+  metrics.submissionAttempts += 1
+  page.once("dialog", (dialog) => dialog.accept())
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      (response) => response.url() === action && ["POST", "PATCH", "PUT"].includes(response.request().method()),
+      { timeout: waitTimeout(deadline) }
+    ),
+    submitButton.click()
+  ])
+  const status = response.status()
+  metrics.responseStatuses[status] = (metrics.responseStatuses[status] || 0) + 1
+  if (status < 200 || status >= 400) {
+    throw new Error(`Match submission rejected with HTTP ${status}`)
+  }
+}
+
+async function runMatch(page, matId, deadline, metrics) {
   if (remainingMs(deadline) < 5000) return false
 
   await openMatState(page, matId, deadline)
@@ -230,13 +248,12 @@ async function runMatch(page, matId, deadline) {
   await submitButton.waitFor({ state: "visible", timeout: waitTimeout(deadline) })
   await waitForSubmitReady(page, deadline)
 
-  page.once("dialog", (dialog) => dialog.accept())
-  await submitButton.click()
+  await submitMatch(page, submitButton, deadline, metrics)
   await waitForNextMatch(page, currentMatchId, deadline)
   return true
 }
 
-async function runOperator(browser, storageState, tournamentId, matNumber, matIndex, matId, deadline) {
+async function runOperator(browser, storageState, tournamentId, matNumber, matIndex, matId, deadline, metrics) {
   const context = await browser.newContext({ storageState })
   configureContextTimeouts(context)
   const page = await context.newPage()
@@ -244,23 +261,25 @@ async function runOperator(browser, storageState, tournamentId, matNumber, matIn
 
   try {
     await sleep(matIndex * operatorStaggerMs)
-    let completedMatches = 0
     console.log(`[operator ${operatorLabel}] controlling mat ${matId}`)
 
-    while (Date.now() < deadline) {
+    while (remainingMs(deadline) >= 5000) {
       try {
-        if (await runMatch(page, matId, deadline)) {
-          completedMatches += 1
-          console.log(`[operator ${operatorLabel}] submitted match ${completedMatches}`)
+        if (await runMatch(page, matId, deadline, metrics)) {
+          metrics.completedMatches += 1
+          console.log(`[operator ${operatorLabel}] submitted match ${metrics.completedMatches}`)
         }
       } catch (error) {
+        metrics.failures.push(error.message)
+        if (error.name === "TimeoutError") metrics.timeouts += 1
         console.error(`[operator ${operatorLabel}] ${error.message}`)
+        await page.goto("about:blank")
         await sleep(1000)
       }
     }
 
-    if (completedMatches === 0) {
-      throw new Error(`Operator ${operatorLabel} did not complete a match`)
+    if (metrics.completedMatches === 0) {
+      metrics.failures.push(`Operator ${operatorLabel} did not complete a match`)
     }
   } finally {
     await context.close()
@@ -285,30 +304,30 @@ async function runLiveScoreBrowserViewer(browser, tournamentId, viewerNumber, de
     })
     await page.goto(`${baseUrl}/tournaments/${tournamentId}/live_scores`, { waitUntil: "domcontentloaded", timeout: waitTimeout(deadline) })
     await page.waitForFunction(
-      () => window.App?.cable?.connection?.webSocket?.readyState === WebSocket.OPEN,
+      () => (window.App?.cable?.connection?.webSocket || window.App?.cable?.transport?.socket)?.readyState === WebSocket.OPEN,
       null,
       { timeout: waitTimeout(deadline) }
     )
     await page.evaluate(() => {
-      const socket = window.App.cable.connection.webSocket
+      const socket = window.App.cable.connection?.webSocket || window.App.cable.transport.socket
       const originalOnMessage = socket.onmessage
       window.__liveScoreDomLatencies = []
       window.__liveScoreMessageHandlerLatencies = []
 
       socket.onmessage = function instrumentLiveScoreMessage(event) {
-        const isApplicationMessage = typeof event.data === "string" && event.data.includes('"message"')
+        const isApplicationMessage = typeof event.data === "string" && (event.data.includes('"message"') || event.data.includes('"payload"'))
         if (!isApplicationMessage) return originalOnMessage.call(this, event)
 
         let deliveredMatchId = null
         try {
           const frame = JSON.parse(event.data)
           const identifier = JSON.parse(frame.identifier || "{}")
-          const message = frame.message || {}
+          const message = frame.message || frame.payload || {}
           if (
-            identifier.channel === "MatchChannel" &&
+            (identifier.channel === "MatchChannel" || frame.topic?.startsWith("match:")) &&
             (Object.hasOwn(message, "w1_stat") || Object.hasOwn(message, "w2_stat"))
           ) {
-            deliveredMatchId = String(identifier.match_id)
+            deliveredMatchId = String(identifier.match_id || frame.topic.split(":")[1])
           }
         } catch (_error) {
         }
@@ -414,18 +433,31 @@ async function main() {
 
   try {
     const { storageState, matIdsByTournament } = await prepareSession(browser, deadline)
+    const operatorMetrics = []
     const operatorRuns = tournamentIds.flatMap((tournamentId) =>
-      [1, 2, 3, 4, 5].map((matNumber, matIndex) =>
-        runOperator(
+      [1, 2, 3, 4, 5].map((matNumber, matIndex) => {
+        const metrics = {
+          tournamentId,
+          matNumber,
+          matId: matIdsByTournament[tournamentId][matNumber],
+          completedMatches: 0,
+          submissionAttempts: 0,
+          responseStatuses: {},
+          timeouts: 0,
+          failures: []
+        }
+        operatorMetrics.push(metrics)
+        return runOperator(
           browser,
           storageState,
           tournamentId,
           matNumber,
           matIndex,
           matIdsByTournament[tournamentId][matNumber],
-          deadline
+          deadline,
+          metrics
         )
-      )
+      })
     )
     const viewerRuns = tournamentIds.flatMap((tournamentId) =>
       Array.from({ length: liveScoreBrowserViewers }, (_, index) =>
@@ -435,18 +467,23 @@ async function main() {
     const settled = await Promise.allSettled([...operatorRuns, ...viewerRuns])
     const operatorResults = settled.slice(0, operatorRuns.length)
     const viewerResults = settled.slice(operatorRuns.length)
-    const operatorFailures = reportRejectedRuns("operator failure", operatorResults)
+    reportRejectedRuns("operator failure", operatorResults)
+    operatorResults.forEach((result, index) => {
+      if (result.status === "rejected") operatorMetrics[index].failures.push(String(result.reason))
+    })
+    const operatorFailures = operatorMetrics.filter((metrics) => metrics.failures.length > 0).length
+    await fs.mkdir("/loadtests/results", { recursive: true })
+    await fs.writeFile("/loadtests/results/browser-operator-metrics.json", `${JSON.stringify(operatorMetrics, null, 2)}\n`)
+    console.log(`[browser operator metrics] ${JSON.stringify(operatorMetrics)}`)
     const viewerFailures = reportRejectedRuns("live-score viewer failure", viewerResults)
 
-    if (viewerFailures === 0) {
-      const viewerMetrics = viewerResults
-        .filter((result) => result.status === "fulfilled")
-        .map((result) => result.value)
-      await writeLiveScoreBrowserReport(viewerMetrics)
-    }
+    const viewerMetrics = viewerResults
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value)
+    await writeLiveScoreBrowserReport(viewerMetrics)
 
     if (operatorFailures > 0) {
-      throw new Error(`${operatorFailures} of ${operatorRuns.length} operators did not complete a match`)
+      throw new Error(`${operatorFailures} of ${operatorRuns.length} operators had scoring failures`)
     }
     if (viewerFailures > 0) {
       throw new Error(`${viewerFailures} of ${viewerRuns.length} live-score browser viewers failed`)

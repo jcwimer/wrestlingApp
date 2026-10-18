@@ -3,6 +3,7 @@ services:
     build: .
     environment:
       BASE_URL: ${BASE_URL:-http://host.docker.internal:3000}
+      LIVE_PROTOCOL: ${LIVE_PROTOCOL:-rails}
       WS_URL: ${WS_URL:-}
       TOURNAMENT_COUNT: ${TOURNAMENT_COUNT:-1}
       TEST_DURATION_SECONDS: ${TEST_DURATION_SECONDS:-600}
