@@ -46,6 +46,11 @@
   <div class="field">
     <%= f.label "Check box if extra" %> <%= f.check_box :extra %>
   </div>
+  <div class="field">
+    <%= f.label :auto_medical_forfeit, "Auto medical forfeit" %>
+    <%= f.check_box :auto_medical_forfeit %>
+    <small>Marked wrestlers forfeit unfinished matches to unmarked opponents as matches advance. If both are marked, the winner is random. BYEs advance normally.</small>
+  </div>
 
   <!-- Render the hidden field if a permission key is present -->
   <% if @school_permission_key.present? %>

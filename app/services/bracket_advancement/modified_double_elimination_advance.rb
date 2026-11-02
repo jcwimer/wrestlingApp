@@ -2,18 +2,15 @@
 
 module BracketAdvancement
   class ModifiedDoubleEliminationAdvance
-    attr_reader :matches_to_advance
-
     def initialize(wrestler, last_match, matches: nil)
       @wrestler = wrestler
       @last_match = last_match
-      @matches = matches || @wrestler.weight.matches.to_a
-      @matches_to_advance = []
+      @matches = matches || @last_match.weight.matches.to_a
       @next_match_position_number = (@last_match.bracket_position_number / 2.0)
     end
 
     def bracket_advancement
-      advance_wrestler
+      advance_wrestler if @wrestler
       advance_double_byes
       set_bye_for_placement
     end
@@ -78,7 +75,7 @@ module BracketAdvancement
     end
 
     def update_consolation_bye
-      bout = @wrestler.last_match.bout_number
+      bout = @last_match.bout_number
       next_match = @matches.find do |m|
         m.weight_id == @wrestler.weight_id && (m.loser1_name == "Loser of #{bout}" || m.loser2_name == "Loser of #{bout}")
       end
@@ -104,26 +101,13 @@ module BracketAdvancement
       return if next_match.blank?
 
       replace_loser_name_with_wrestler(next_match, @wrestler, "Loser of #{bout}")
-
-      return unless next_match.loser1_name == 'BYE' || next_match.loser2_name == 'BYE'
-
-      next_match.winner_id = @wrestler.id
-      next_match.win_type = 'BYE'
-      next_match.score = ''
-      next_match.finished = 1
-      next_match.finished_at = Time.current
-      @matches_to_advance << next_match
     end
 
     def advance_double_byes
-      weight = @wrestler.weight
-      @matches.select do |m|
-        m.weight_id == weight.id && m.loser1_name == 'BYE' and m.loser2_name == 'BYE' and m.finished != 1
-      end.each do |match|
-        match.finished = 1
-        match.finished_at = Time.current
-        match.score = ''
-        match.win_type = 'BYE'
+      weight = @last_match.weight
+      @matches.sort_by(&:round).each do |match|
+        next unless match.weight_id == weight.id && match.double_bye?
+
         next_match_position_number = (match.bracket_position_number / 2.0).ceil
         after_matches = @matches.select do |m|
           m.weight_id == weight.id && m.round > match.round and m.consolation_match? == match.consolation_match?
@@ -153,7 +137,7 @@ module BracketAdvancement
     end
 
     def set_bye_for_placement
-      weight = @wrestler.weight
+      weight = @last_match.weight
       seventh_finals = @matches.find { |match| match.weight_id == weight.id && match.bracket_position == '7/8' }
       return unless seventh_finals
 

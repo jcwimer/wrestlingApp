@@ -5,6 +5,44 @@ require 'test_helper'
 class MatchTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
+  test 'a double bye can finish without a winner and queues normal finalization jobs once' do
+    match = matches(:tournament_1_bout_1000)
+    match.update_columns(w1: nil, w2: nil, winner_id: nil, finished: nil, win_type: nil, score: nil,
+                         finalized_at: nil, mat_id: nil, loser1_name: 'BYE', loser2_name: 'BYE')
+
+    assert_predicate match, :double_bye?
+    assert_enqueued_with(job: AdvanceWrestlerJob, args: [[match.id], match.tournament_id]) do
+      assert_enqueued_with(job: FillBoutBoardJob, args: [match.tournament_id]) do
+        match.update!(finished: 1, win_type: 'BYE', score: '')
+      end
+    end
+
+    assert_predicate match.reload, :valid?
+    assert_nil match.winner_id
+    assert_not_nil match.finished_at
+    assert_not_nil match.finalized_at
+    assert_no_enqueued_jobs { assert_not match.finalize_once? }
+  end
+
+  test 'a bye with a wrestler still requires a winner' do
+    match = matches(:tournament_1_bout_1000)
+    match.assign_attributes(w2: nil, winner_id: nil, finished: 1, win_type: 'BYE', score: '',
+                            loser1_name: nil, loser2_name: 'BYE')
+
+    assert_not_predicate match, :double_bye?
+    assert_not_predicate match, :valid?
+    assert_includes match.errors[:winner_id], 'cannot be blank'
+  end
+
+  test 'empty double bye slots do not permit a decision without a winner' do
+    match = matches(:tournament_1_bout_1000)
+    match.assign_attributes(w1: nil, w2: nil, winner_id: nil, finished: 1, win_type: 'Decision', score: '2-0',
+                            loser1_name: 'BYE', loser2_name: 'BYE')
+
+    assert_not_predicate match, :valid?
+    assert_includes match.errors[:winner_id], 'cannot be blank'
+  end
+
   test 'finalizing locks tournament mats before the match' do
     match = matches(:tournament_1_bout_1000)
     match.update_columns(finished: 1, winner_id: match.w1, finalized_at: nil, mat_id: nil)

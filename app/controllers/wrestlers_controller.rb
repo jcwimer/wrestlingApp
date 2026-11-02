@@ -129,10 +129,19 @@ class WrestlersController < ApplicationController
 
   def wrestler_params
     params.require(:wrestler).permit(:name, :school_id, :weight_id, :seed, :original_seed, :season_win,
-                                     :season_loss, :criteria, :extra, :offical_weight, :pool, :school_permission_key)
+                                     :season_loss, :criteria, :extra, :auto_medical_forfeit, :offical_weight, :pool,
+                                     :school_permission_key)
   end
 
   def check_access
+    if @wrestler
+      @school_permission_key = params[:school_permission_key].presence || params.dig(:wrestler, :school_permission_key).presence
+      @school = @wrestler.school
+      authorize! :manage, @school
+      check_update_destination if action_name == 'update'
+      return
+    end
+
     if params[:school].present?
       @school = School.find(params.require(:school))
     # @tournament = Tournament.find(@school.tournament.id)
@@ -151,6 +160,19 @@ class WrestlersController < ApplicationController
     # set @school_permission_key for use in ability
     @school_permission_key = params[:school_permission_key] if params[:school_permission_key].present?
     authorize! :manage, @school
+  end
+
+  def check_update_destination
+    school = @school
+    school_id = wrestler_params[:school_id]
+    if school_id.present? && school_id.to_i != school.id
+      school = School.find(school_id)
+      authorize! :manage, school
+    end
+
+    weight_id = wrestler_params[:weight_id]
+    weight = weight_id.present? ? Weight.find(weight_id) : @wrestler.weight
+    raise CanCan::AccessDenied unless weight.tournament_id == school.tournament_id
   end
 
   def check_read_access

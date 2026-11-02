@@ -159,10 +159,14 @@ module TournamentServices
       rows = wrestlers.map do |wrestler_attributes|
         school = @schools_by_name[wrestler_attributes['school']['name']]
         weight = @weights_by_max[wrestler_attributes['weight']['max'].to_f]
+        legacy_medical_forfeit = wrestler_attributes.delete('auto_medical_default')
         wrestler_attributes.except!('id', 'school', 'weight')
         wrestler_attributes.merge(
           school_id: school&.id,
-          weight_id: weight&.id
+          weight_id: weight&.id,
+          auto_medical_forfeit: ActiveModel::Type::Boolean.new.cast(
+            wrestler_attributes.fetch('auto_medical_forfeit', legacy_medical_forfeit)
+          ) || false
         )
       end
       Wrestler.insert_all!(rows) if rows.any?
@@ -186,6 +190,7 @@ module TournamentServices
         end
 
         match_attributes.except!('id', 'weight', 'mat', 'w1_name', 'w2_name', 'winner_name', 'tournament_id')
+        match_attributes['win_type'] = 'Medical Forfeit' if match_attributes['win_type'] == 'Medical Default'
 
         match_attributes.merge(
           tournament_id: @tournament.id,

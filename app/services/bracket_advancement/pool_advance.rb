@@ -2,18 +2,16 @@
 
 module BracketAdvancement
   class PoolAdvance
-    attr_reader :matches_to_advance
-
     def initialize(wrestler, last_match, matches: nil, wrestlers: nil)
       @wrestler = wrestler
       @last_match = last_match
       @matches = matches || @wrestler.weight.matches.to_a
       @wrestlers = wrestlers || @wrestler.weight.wrestlers.to_a
-      @matches_to_advance = []
     end
 
     def advance_wrestler
       pool_to_bracket_advancment if (@wrestler.weight.pools > 1) && @wrestler.finished_bracket_matches.empty?
+      return if @last_match.bracket_position == 'Pool'
       return unless @wrestler.finished_bracket_matches.size.positive?
 
       bracket_advancment
@@ -39,6 +37,7 @@ module BracketAdvancement
     end
 
     def bracket_advancment
+      @next_match_position_number = @last_match.bracket_position_number / 2.0
       advance_wrestlers
     end
 
@@ -53,22 +52,22 @@ module BracketAdvancement
     end
 
     def winner_advance
-      if @wrestler.last_match.bracket_position == 'Quarter'
+      if @last_match.bracket_position == 'Quarter'
         new_match = @matches.find do |m|
-          m.bracket_position == 'Semis' && m.bracket_position_number == @wrestler.next_match_position_number.ceil && m.weight_id == @wrestler.weight_id
+          m.bracket_position == 'Semis' && m.bracket_position_number == @next_match_position_number.ceil && m.weight_id == @wrestler.weight_id
         end
         update_new_match(new_match)
       end
-      if @wrestler.last_match.bracket_position == 'Semis'
+      if @last_match.bracket_position == 'Semis'
         new_match = @matches.find do |m|
-          m.bracket_position == '1/2' && m.bracket_position_number == @wrestler.next_match_position_number.ceil && m.weight_id == @wrestler.weight_id
+          m.bracket_position == '1/2' && m.bracket_position_number == @next_match_position_number.ceil && m.weight_id == @wrestler.weight_id
         end
         update_new_match(new_match)
       end
-      return unless @wrestler.last_match.bracket_position == 'Conso Semis'
+      return unless @last_match.bracket_position == 'Conso Semis'
 
       new_match = @matches.find do |m|
-        m.bracket_position == '5/6' && m.bracket_position_number == @wrestler.next_match_position_number.ceil && m.weight_id == @wrestler.weight_id
+        m.bracket_position == '5/6' && m.bracket_position_number == @next_match_position_number.ceil && m.weight_id == @wrestler.weight_id
       end
       update_new_match(new_match)
     end
@@ -76,14 +75,14 @@ module BracketAdvancement
     def update_new_match(match)
       return unless match
 
-      match.w2 = @wrestler.id if @wrestler.next_match_position_number == @wrestler.next_match_position_number.ceil
-      return unless @wrestler.next_match_position_number != @wrestler.next_match_position_number.ceil
+      match.w2 = @wrestler.id if @next_match_position_number == @next_match_position_number.ceil
+      return unless @next_match_position_number != @next_match_position_number.ceil
 
       match.w1 = @wrestler.id
     end
 
     def loser_advance
-      bout = @wrestler.last_match.bout_number
+      bout = @last_match.bout_number
       next_match = @matches.find do |m|
         m.weight_id == @wrestler.weight_id && (m.loser1_name == "Loser of #{bout}" || m.loser2_name == "Loser of #{bout}")
       end

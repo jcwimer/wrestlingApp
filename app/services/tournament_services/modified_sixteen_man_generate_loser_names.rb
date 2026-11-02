@@ -13,7 +13,7 @@ module TournamentServices
       end
       @tournament.weights.each do |weight|
         assign_loser_names_in_memory(weight, rows)
-        assign_bye_outcomes_in_memory(weight, rows)
+        assign_first_round_bye_labels_in_memory(weight, rows)
       end
       rows
     end
@@ -79,24 +79,12 @@ module TournamentServices
       seventh_eighth[:loser2_name] = "Loser of #{conso_semis.second[:bout_number]}" if conso_semis.second
     end
 
-    def assign_bye_outcomes_in_memory(weight, match_rows)
+    def assign_first_round_bye_labels_in_memory(weight, match_rows)
       rows = match_rows.select { |r| r[:weight_id] == weight.id && r[:bracket_position] == 'Bracket Round of 16' }
-      rows.each { |row| apply_bye_to_row(row) }
-    end
-
-    def apply_bye_to_row(row)
-      return unless [row[:w1], row[:w2]].compact.size == 1
-
-      row[:finished] = 1
-      row[:win_type] = 'BYE'
-      if row[:w1]
-        row[:winner_id] = row[:w1]
-        row[:loser2_name] = 'BYE'
-      else
-        row[:winner_id] = row[:w2]
-        row[:loser1_name] = 'BYE'
+      rows.each do |row|
+        row[:loser1_name] = 'BYE' unless row[:w1]
+        row[:loser2_name] = 'BYE' unless row[:w2]
       end
-      row[:score] = ''
     end
   end
 end

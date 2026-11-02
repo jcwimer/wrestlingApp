@@ -14,7 +14,7 @@ class AdvanceWrestlerJob < ApplicationJob
     matches = Match.where(id: Array(match_ids)).to_a
     wrestler_ids = matches.flat_map { |match| [match.w1, match.w2] }.compact.uniq
     wrestlers_by_id = Wrestler.where(id: wrestler_ids).index_by(&:id)
-    job_name = "Advancing #{matches.size == 1 ? "bout #{matches.first&.bout_number}" : 'tournament byes'}"
+    job_name = "Advancing #{matches.size == 1 ? "bout #{matches.first&.bout_number}" : 'tournament matches'}"
     job_status = TournamentJobStatus.create!(
       tournament: tournament,
       job_name: job_name,
@@ -24,14 +24,24 @@ class AdvanceWrestlerJob < ApplicationJob
 
     begin
       tracker = { processed: Set.new, weight_ids: Set.new, wrestler_ids: Set.new, contexts: {} }
-      matches.each do |match|
-        [match.w1, match.w2].compact.uniq.each do |wrestler_id|
-          wrestler = wrestlers_by_id[wrestler_id]
-          if wrestler
-            BracketAdvancement::AdvanceWrestler.new(wrestler, match).advance_raw(tracker:, invalidate: false,
-                                                                                 reload: false)
+      Match.transaction do
+        tournament.mats.order(:id).lock.load
+        Match.where(weight_id: matches.map(&:weight_id).uniq).order(:id).lock.load
+        matches.each do |match|
+          wrestler_ids = [match.w1, match.w2].compact.uniq
+          wrestler_ids = [nil] if wrestler_ids.empty? && match.double_bye?
+          wrestler_ids.each do |wrestler_id|
+            wrestler = wrestlers_by_id[wrestler_id]
+            if wrestler || match.double_bye?
+              BracketAdvancement::AdvanceWrestler.new(wrestler, match).advance_raw(tracker:, invalidate: false,
+                                                                                   reload: false)
+            end
           end
         end
+      end
+
+      Weight.where(id: matches.map(&:weight_id).uniq).find_each do |weight|
+        AutomaticResultsJob.perform_now(weight)
       end
 
       CalculateTournamentTeamScoresJob.perform_now(tournament.id)

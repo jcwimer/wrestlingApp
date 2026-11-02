@@ -114,7 +114,7 @@ module BracketAdvancement
 
     def finish_points(wrestlers_with_same_points)
       award_highest(wrestlers_with_same_points, 'Fall/Default/Forfeit/DQ Points') do |wrestler|
-        pool_wins_by_type(wrestler, 'Pin', 'Forfeit', 'Injury Default', 'Default', 'DQ')
+        pool_wins_by_type(wrestler, 'Pin', 'Forfeit', 'Injury Default', 'Medical Forfeit', 'Default', 'DQ')
       end
     end
 

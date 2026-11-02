@@ -81,8 +81,18 @@ Keep this section updated whenever there's an accepted non standard or non suppo
   harness without blocking the work or claiming to have used cheaper models.
 
 # Other
-- Please keep README.md and AGENTS.md up to date when making changes.
-- AGENTS.md does not need to have every feature listed. Only non standard things or information that cannot easily be gleaned from tests.
-- The README should be relevant information for a developer and should not get bloated. What versions of stuff are running, how to get up and running locally as a dev, how to deploy and what variables are needed or optional.
-- Make sure other README files in subfolders of this project are kept up to date as well if any changes are made.
+- Update README files only when developer setup, dependencies, configuration,
+  environment variables, testing commands, or deployment procedures change.
+- Do not add application features, business rules, implementation details,
+  or change summaries to README files unless explicitly requested.
+- Most code changes require no README changes. Leave documentation unchanged
+  when its existing content remains accurate.
+- Update AGENTS.md only when explicitly requested or when a change introduces
+  a lasting repository-wide development constraint or an accepted departure
+  from standard Rails or gem behavior.
+- Do not document individual features, implementation details, debugging
+  findings, or change summaries in AGENTS.md.
+- Information discoverable from code or tests does not need to be repeated
+  in AGENTS.md.
+- Most code changes require no AGENTS.md changes.
 - If something is added to .gitignore consider always consider if it should be added to .dockerignore as well.

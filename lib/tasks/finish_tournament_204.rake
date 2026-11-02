@@ -26,7 +26,7 @@ namespace :tournament do
         tournament_id: @tournament.id
       )
 
-      GenerateTournamentMatches.new(@tournament).generate
+      TournamentServices::GenerateTournamentMatches.new(@tournament).generate
       sleep(60)
       while @tournament.reload.curently_generating_matches == 1
         puts "Waiting for tournament to finish generating matches..."

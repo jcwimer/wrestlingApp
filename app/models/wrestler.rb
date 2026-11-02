@@ -15,6 +15,7 @@ class Wrestler < ApplicationRecord
 
   validates :name, :weight_id, :school_id, presence: true # rubocop:disable Rails/RedundantPresenceValidationOnBelongsTo
   after_commit :invalidate_cached_views, on: %i[create update]
+  after_commit :advance_medical_forfeits, on: %i[create update], if: :saved_change_to_auto_medical_forfeit?
 
   before_destroy unless: :destroyed_by_association do
     tournament.destroy_all_matches
@@ -25,6 +26,12 @@ class Wrestler < ApplicationRecord
   end
 
   private
+
+  def advance_medical_forfeits
+    return unless auto_medical_forfeit?
+
+    AutomaticResultsJob.perform_later_with_enqueue_retry(weight)
+  end
 
   def invalidate_cached_views
     changes = previous_changes.except('updated_at')
@@ -207,7 +214,7 @@ class Wrestler < ApplicationRecord
 
   def pin_wins
     matches_won.select do |m|
-      ['Pin', 'Forfeit', 'Injury Default', 'Default', 'DQ'].include?(m.win_type)
+      ['Pin', 'Forfeit', 'Injury Default', 'Medical Forfeit', 'Default', 'DQ'].include?(m.win_type)
     end
   end
 

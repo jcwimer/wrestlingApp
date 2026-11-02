@@ -12,10 +12,8 @@ module TournamentServices
         m.attributes.symbolize_keys
       end
       @tournament.weights.each do |weight|
-        next unless weight.calculate_bracket_size > 2
-
         assign_loser_names_in_memory(weight, rows)
-        assign_bye_outcomes_in_memory(weight, rows)
+        assign_first_round_bye_labels_in_memory(weight, rows)
       end
       rows
     end
@@ -102,34 +100,17 @@ module TournamentServices
       m78[:loser2_name] = "Loser of #{conso_quarters[1][:bout_number]}"
     end
 
-    def assign_bye_outcomes_in_memory(weight, match_rows)
+    def assign_first_round_bye_labels_in_memory(weight, match_rows)
       bracket_size = weight.calculate_bracket_size
-      return if bracket_size <= 2
-
       rows = match_rows.select { |r| r[:weight_id] == weight.id }
-      first_round = rows.pluck(:round).compact.min
-      rows.select { |r| r[:round] == first_round }.each { |row| apply_bye_to_row(row) }
-
-      first_conso = dynamic_consolation_rounds(bracket_size).first
-      return unless first_conso
-
-      rows.select { |r| r[:round] == first_conso[:round] && r[:bracket_position] == first_conso[:bracket_position] }
-          .each { |row| apply_bye_to_row(row) }
-    end
-
-    def apply_bye_to_row(row)
-      return unless single_competitor_match_row?(row)
-
-      row[:finished] = 1
-      row[:win_type] = 'BYE'
-      if row[:w1]
-        row[:winner_id] = row[:w1]
-        row[:loser2_name] = 'BYE'
-      else
-        row[:winner_id] = row[:w2]
-        row[:loser1_name] = 'BYE'
+      first_round_position = first_round_label(bracket_size)
+      first_round_number = rows.pluck(:round).compact.min
+      rows.select do |row|
+        row[:bracket_position] == first_round_position && row[:round] == first_round_number
+      end.each do |row|
+        row[:loser1_name] = 'BYE' unless row[:w1]
+        row[:loser2_name] = 'BYE' unless row[:w2]
       end
-      row[:score] = ''
     end
 
     def single_competitor_match_row?(row)
@@ -138,7 +119,7 @@ module TournamentServices
 
     def first_round_label(size)
       case size
-      when 2 then 'Final'
+      when 2 then '1/2'
       when 4 then 'Semis'
       when 8 then 'Quarter'
       else "Bracket Round of #{size}"

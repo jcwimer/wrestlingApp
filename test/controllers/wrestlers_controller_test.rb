@@ -75,6 +75,16 @@ class WrestlersControllerTest < ActionController::TestCase
     sign_in_owner
     get_edit
     success
+    assert_select 'input[name="wrestler[auto_medical_forfeit]"]'
+  end
+
+  test 'tournament owner can update wrestler medical forfeit' do
+    sign_in_owner
+
+    patch :update, params: { id: @wrestler.id, wrestler: { school_id: @school.id, auto_medical_forfeit: '1' } }
+
+    assert_redirected_to school_path(@school.id)
+    assert_predicate @wrestler.reload, :auto_medical_forfeit?
   end
 
   test 'logged in tournament delegate should get edit wrestler page' do

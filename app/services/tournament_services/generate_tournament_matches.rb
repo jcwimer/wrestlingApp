@@ -19,7 +19,9 @@ module TournamentServices
       post_process_match_rows_in_memory(generation_context, match_rows)
       persist_generation_rows(generation_context, match_rows)
       post_match_creation_actions
-      advance_bye_matches_after_insert
+      generation_context[:weights].each do |weight|
+        AutomaticResultsJob.perform_now(weight)
+      end
       TournamentCacheInvalidator.generation_completed(@tournament.id)
     end
 
@@ -75,7 +77,6 @@ module TournamentServices
       move_finals_rows_to_last_round(match_rows) unless @tournament.tournament_type.include?('Regular Double Elimination')
       assign_bouts_in_memory(match_rows, generation_context[:weights])
       assign_loser_names_in_memory(generation_context, match_rows)
-      assign_bye_outcomes_in_memory(generation_context, match_rows)
     end
 
     def persist_wrestlers(wrestlers)
@@ -149,31 +150,17 @@ module TournamentServices
         generation_context[:weights].each { |weight| service.assign_loser_names_in_memory(weight, match_rows) }
       elsif @tournament.tournament_type.include?('Modified 16 Man Double Elimination')
         service = TournamentServices::ModifiedSixteenManGenerateLoserNames.new(@tournament)
-        generation_context[:weights].each { |weight| service.assign_loser_names_in_memory(weight, match_rows) }
+        generation_context[:weights].each do |weight|
+          service.assign_loser_names_in_memory(weight, match_rows)
+          service.assign_first_round_bye_labels_in_memory(weight, match_rows)
+        end
       elsif @tournament.tournament_type.include?('Regular Double Elimination')
         service = TournamentServices::DoubleEliminationGenerateLoserNames.new(@tournament)
-        generation_context[:weights].each { |weight| service.assign_loser_names_in_memory(weight, match_rows) }
+        generation_context[:weights].each do |weight|
+          service.assign_loser_names_in_memory(weight, match_rows)
+          service.assign_first_round_bye_labels_in_memory(weight, match_rows)
+        end
       end
-    end
-
-    def assign_bye_outcomes_in_memory(generation_context, match_rows)
-      if @tournament.tournament_type.include?('Modified 16 Man Double Elimination')
-        service = TournamentServices::ModifiedSixteenManGenerateLoserNames.new(@tournament)
-        generation_context[:weights].each { |weight| service.assign_bye_outcomes_in_memory(weight, match_rows) }
-      elsif @tournament.tournament_type.include?('Regular Double Elimination')
-        service = TournamentServices::DoubleEliminationGenerateLoserNames.new(@tournament)
-        generation_context[:weights].each { |weight| service.assign_bye_outcomes_in_memory(weight, match_rows) }
-      end
-    end
-
-    def advance_bye_matches_after_insert
-      match_ids = Match.where(tournament_id: @tournament.id, finished: 1, win_type: 'BYE')
-                       .where.not(winner_id: nil)
-                       .pluck(:id)
-      return unless match_ids.any?
-
-      AdvanceWrestlerJob.perform_now(match_ids, @tournament.id)
-      FillBoutBoardJob.perform_now(@tournament.id)
     end
 
     def assign_bouts

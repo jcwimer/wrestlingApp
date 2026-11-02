@@ -36,7 +36,7 @@ class Match < ApplicationRecord
     self.class.transaction do
       tournament.mats.order(:id).lock.load
       lock!
-      return false unless finished == 1 && winner_id.present? && finalized_at.nil?
+      return false unless finished == 1 && (winner_id.present? || (win_type == 'BYE' && double_bye?)) && finalized_at.nil?
 
       assigned_mat = mat
       update_column(:finalized_at, Time.current)
@@ -52,13 +52,13 @@ class Match < ApplicationRecord
 
   BRACKET_POSITIONS = ['Pool', '1/2', '3/4', '5/6', '7/8', 'Quarter', 'Semis', 'Conso Semis', 'Bracket', 'Conso',
                        'Conso Quarter'].freeze
-  WIN_TYPES = ['Decision', 'Major', 'Tech Fall', 'Pin', 'Forfeit', 'Injury Default', 'Default', 'DQ', 'BYE'].freeze
+  WIN_TYPES = ['Decision', 'Major', 'Tech Fall', 'Pin', 'Forfeit', 'Injury Default', 'Medical Forfeit', 'Default', 'DQ', 'BYE'].freeze
   OVERTIME_TYPES = ['', 'SV-1', 'TB-1', 'UTB', 'SV-2', 'TB-2', 'OT'].freeze # had to keep the blank here for validations
 
   def score_validation
     return unless finished == 1
 
-    errors.add(:winner_id, 'cannot be blank') unless winner_id
+    errors.add(:winner_id, 'cannot be blank') unless winner_id || (win_type == 'BYE' && double_bye?)
     if (win_type == 'Pin') && !score.match(/^[0-5]?[0-9]:[0-5][0-9]/)
       errors.add(:score, 'needs to be in time format MM:SS when win type is Pin example: 2:23, 0:25, 10:03')
     end
@@ -66,9 +66,9 @@ class Match < ApplicationRecord
       errors.add(:score,
                  'needs to be in Number-Number format when win type is Decision, Tech Fall, and Major example: 10-2')
     end
-    if ((win_type == 'Forfeit') || (win_type == 'Injury Default') || (win_type == 'Default') || (win_type == 'BYE') || (win_type == 'DQ')) && (score != '')
-      errors.add(:score, 'needs to be blank when win type is Forfeit, Injury Default, Default, BYE, or DQ win_type')
-    end
+    return unless ['Forfeit', 'Injury Default', 'Medical Forfeit', 'Default', 'BYE', 'DQ'].include?(win_type) && (score != '')
+
+    errors.add(:score, 'needs to be blank when win type is Forfeit, Injury Default, Medical Forfeit, Default, BYE, or DQ win_type')
   end
 
   def win_type_validation
@@ -76,6 +76,10 @@ class Match < ApplicationRecord
     return if WIN_TYPES.include? win_type
 
     errors.add(:win_type, "can only be one of the following #{WIN_TYPES}")
+  end
+
+  def double_bye?
+    w1.nil? && w2.nil? && loser1_name == 'BYE' && loser2_name == 'BYE'
   end
 
   def winner_validation
@@ -151,7 +155,7 @@ class Match < ApplicationRecord
   alias advance_wrestlers advance_wrestlers?
 
   def enqueue_post_finalize_jobs! # rubocop:disable Naming/PredicateMethod
-    return false unless w1 || w2
+    return false unless w1 || w2 || double_bye?
 
     AdvanceWrestlerJob.perform_later_with_enqueue_retry([id], tournament_id)
     FillBoutBoardJob.perform_later_with_enqueue_retry(tournament_id)
@@ -169,6 +173,8 @@ class Match < ApplicationRecord
     case win_type
     when 'Injury Default'
       '(Inj)'
+    when 'Medical Forfeit'
+      '(MFF)'
     when 'DQ'
       '(DQ)'
     when 'Forfeit'
@@ -351,7 +357,7 @@ class Match < ApplicationRecord
 
   def handle_result_change
     winner_changed = previous_changes.key?('winner_id')
-    finalized_now = finalize_once? if finished == 1 && winner_id.present?
+    finalized_now = finalize_once? if finished == 1 && (winner_id.present? || double_bye?)
     advancement_queued = finalized_now
     advancement_queued = reconcile_finished_result!(winner_changed: winner_changed) if finished == 1 && finalized_at.present? && !finalized_now
     invalidate_result_caches unless advancement_queued
