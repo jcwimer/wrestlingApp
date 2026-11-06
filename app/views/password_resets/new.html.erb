@@ -1,7 +1,7 @@
 <h1>Forgot password</h1>
 
-<div class="row">
-  <div class="col-md-6 col-md-offset-3">
+<div class="tw:flex tw:flex-wrap tw:-mx-[15px]">
+  <div class="tw:w-full tw:px-[15px] tw:md:w-1/2 tw:md:ml-[25%]">
     <%= form_with(url: password_resets_path, scope: :password_reset, local: true) do |f| %>
       <div class="form-group">
         <%= f.label :email %>
@@ -11,4 +11,4 @@
       <%= f.submit "Submit", class: "btn btn-primary" %>
     <% end %>
   </div>
-</div> 
+</div>

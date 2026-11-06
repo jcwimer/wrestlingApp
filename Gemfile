@@ -2,10 +2,7 @@ source 'https://rubygems.org'
 
 ruby '4.0.5'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '8.1.3.1'
-
-# Added in rails 7.1
-gem 'rails-html-sanitizer'
+gem 'rails', '8.1.4.1'
 
 # Asset Management: Propshaft for serving, Importmap for JavaScript
 gem "propshaft"
@@ -25,16 +22,12 @@ gem 'sqlite3', ">= 2.1", :group => :development
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 # gem 'therubyracer',  platforms: :ruby
 
-# Use jquery as the JavaScript library
-gem 'jquery-rails'
 # Turbo for modern page interactions
 gem 'turbo-rails'
 # Stimulus for JavaScript behaviors
 gem 'stimulus-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'
-# bundle exec rake doc:rails generates the API under doc/api.
-gem 'sdoc', :group => :doc
 
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
@@ -64,7 +57,6 @@ gem 'opentelemetry-instrumentation-rails'
 # Role Management
 gem 'cancancan'
 gem 'round_robin_tournament'
-gem 'rb-readline'
 gem 'rqrcode'
 # Replacing Delayed Job with Solid Queue
 # gem 'delayed_job_active_record'
@@ -86,7 +78,6 @@ end
 
 group :development, :test do
   gem 'mocha'
-  gem 'pg_query'
   gem 'prosopite'
   gem 'simplecov', require: false
   # rails-controller-testing is needed for assert_template

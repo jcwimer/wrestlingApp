@@ -10,8 +10,8 @@ Web application for running wrestling tournaments.
 | Component | Version / notes |
 |-----------|----------------|
 | Ruby | 4.0.5 |
-| Rails | 8.1.3.1 |
-| Node.js | 24 in Docker images; Vitest requires 22.12+, 24, or 26+ |
+| Rails | 8.1.4.1 |
+| Node.js | 24 in the development Docker image; Vitest requires 22.12+, 24, or 26+ |
 | Database | SQLite (development/test), MariaDB (production) |
 | Background jobs | Solid Queue |
 | Caching | Solid Cache |
@@ -177,6 +177,16 @@ Primary production deployment uses Docker Compose with Traefik. On the server:
 `prod.env` keys map into the app container as `WRESTLINGDEV_*` variables (for example, `RAILS_SECRET_KEY` → `WRESTLINGDEV_SECRET_KEY_BASE`). `MYSQLD_EXPORTER_PASSWORD` is also required by `deploy-prod.sh`.
 
 Keep `deploy/docker-compose-prod.yml` and `deploy/kubernetes/` in sync when changing deployment config.
+
+The production image uses a multi-stage Ruby 4.0.5 / Alpine 3.24 build. Native gems and Tailwind assets are built in a separate stage; the runtime excludes compilers, Node/npm, development/test gems, and deployment secrets. It runs as the non-root `rails` user on container port 3000. Compose and Kubernetes retain external HTTP port 80; HTTPS terminates at the reverse proxy.
+
+```bash
+docker build --pull -t wrestlingdev -f deploy/rails-prod-Dockerfile .
+```
+
+Add `--no-cache` when refreshing Alpine package updates even if the base image tag has not changed.
+
+Development tests use `deploy/rails-dev-Dockerfile` through `bin/run-tests-with-docker.sh`. The runner copies the checkout into a disposable test container through the Docker API, so Jenkins does not need a workspace path shared with the Docker daemon. Tests run as root inside that isolated container, without a host workspace mount; the container and its temporary volumes are removed afterward. The production Dockerfile and Jenkins production deploy do not run the test suite.
 
 ### Kubernetes (DR)
 

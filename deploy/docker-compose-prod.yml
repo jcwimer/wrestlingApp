@@ -74,7 +74,7 @@ services:
       #traefik:
     restart: always
     healthcheck:
-      test: curl http://127.0.0.1/
+      test: curl --fail http://127.0.0.1:3000/
 
   wrestlingdev_db:
     image: mariadb:10.10

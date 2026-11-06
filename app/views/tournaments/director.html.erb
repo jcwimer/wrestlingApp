@@ -1,7 +1,7 @@
 <h2><%= @tournament.name %> Director Links</h2>
 
-<div class="row">
-  <div class="col-md-6">
+<div class="tw:flex tw:flex-wrap tw:-mx-[15px]">
+  <div class="tw:w-full tw:px-[15px] tw:md:w-1/2">
     <h3>Pages</h3>
     <ul>
       <li><%= link_to "Edit Tournament Info", edit_tournament_path(@tournament) %></li>
@@ -30,7 +30,7 @@
     <% end %>
   </div>
 
-  <div class="col-md-6">
+  <div class="tw:w-full tw:px-[15px] tw:md:w-1/2">
     <h3>Time Savers</h3>
     <ul>
       <li><%= link_to "Create Boys High School Weights (106-285)", "/tournaments/#{@tournament.id}/create_custom_weights?customValue=#{Weight::HS_WEIGHT_CLASSES}", data: { turbo_method: :get, turbo_confirm: 'Are you sure? This will delete all current weights.' } %></li>

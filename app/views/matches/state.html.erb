@@ -14,8 +14,8 @@
   data-match-state-w2-name-value="<%= @wrestler2_name %>"
   data-match-state-w1-school-value="<%= @wrestler1_school_name %>"
   data-match-state-w2-school-value="<%= @wrestler2_school_name %>">
-  <div class="row">
-    <div class="col-md-4">
+  <div class="tw:flex tw:flex-wrap tw:-mx-[15px]">
+    <div class="tw:w-full tw:px-[15px] tw:md:w-1/3">
       <div class="panel panel-success" data-match-state-target="greenPanel">
         <div class="panel-heading">
           <strong data-match-state-target="greenLabel">Green</strong> <span data-match-state-target="greenName"><%= @wrestler1_name %></span>
@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="tw:w-full tw:px-[15px] tw:md:w-1/3">
       <div class="panel panel-default">
         <div class="panel-heading">
           <strong>Bout <%= @match.bout_number %></strong>
@@ -79,7 +79,7 @@
       </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="tw:w-full tw:px-[15px] tw:md:w-1/3">
       <div class="panel panel-danger" data-match-state-target="redPanel">
         <div class="panel-heading">
           <strong data-match-state-target="redLabel">Red</strong> <span data-match-state-target="redName"><%= @wrestler2_name %></span>

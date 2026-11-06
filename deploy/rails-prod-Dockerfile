@@ -1,54 +1,48 @@
-FROM node:24-bookworm-slim AS node
-# Ruby 4.0.5; Chainguard's public registry only exposes this image through latest-dev.
-FROM cgr.dev/chainguard/ruby:latest-dev@sha256:8a3f04a5ca1cb89f2acfce2e41b843ef396f946d641a8554a8ae291a428c92af
+FROM ruby:4.0.5-alpine3.24 AS base
 
-#HEALTHCHECK --start-period=60s CMD curl http://127.0.0.1/
-
-USER root
-COPY --from=node /usr/local/bin/node /usr/local/bin/node
-COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
-RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
-    && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
-
-RUN apk add --no-cache \
-    build-base \
-    openssl \
-    curl \
-    sqlite \
-    sqlite-dev \
-    mariadb-connector-c-dev \
-    yaml-dev \
-    pkgconf \
-    tzdata \
-    git
-
-RUN echo 'gem: --no-rdoc --no-ri' > /root/.gemrc
-RUN gem install bundler
-RUN gem update --system
-#Cache gems so they don't install on every code change
-RUN rm -rf /rails && mkdir /rails
 WORKDIR /rails
-COPY Gemfile Gemfile
-COPY Gemfile.lock Gemfile.lock
-RUN bundle install --jobs 4
 
-# Copy site into place.
-ADD . /rails/
+RUN apk upgrade --no-cache \
+    && apk add --no-cache ca-certificates curl libstdc++ mariadb-connector-c tzdata
 
-# Need a temporary secret key to precompile assets
-ENV WRESTLINGDEV_SECRET_KEY_BASE=077cdbef5c2ccf22543fb17a67339f234306b7fa2e1e4463d851c444c10a5611829a2290b253da78339427f131571fac9a42c83d960b2d25ecc10a4a0a7ce1a2
-# Precompile assets
-RUN RAILS_ENV=production bundle exec rake assets:clobber
-RUN RAILS_ENV=production bundle exec rake assets:precompile
+ENV RAILS_ENV=production \
+    BUNDLE_DEPLOYMENT=1 \
+    BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_WITHOUT=development:test:doc \
+    SOLID_QUEUE_IN_PUMA=true \
+    MARIADB_TLS_DISABLE_PEER_VERIFICATION=1
 
-EXPOSE 80
-EXPOSE 443
+FROM base AS build
 
-# Enable Solid Queue to run inside Puma
-ENV SOLID_QUEUE_IN_PUMA=true
+RUN apk add --no-cache build-base mariadb-connector-c-dev openssl-dev pkgconf yaml-dev
 
-ENV MARIADB_TLS_DISABLE_PEER_VERIFICATION=1
+COPY Gemfile Gemfile.lock ./
+RUN gem install bundler --version 4.0.3 --no-document \
+    && bundle install --jobs 4 \
+    && rm -rf /usr/local/bundle/cache /usr/local/bundle/ruby/*/cache
 
-# Use rails server instead of Puma directly to ensure Rails environment is loaded
-ENTRYPOINT []
-CMD ["bundle", "exec", "rails", "server", "-e", "production", "-p", "80", "-b", "0.0.0.0"]
+COPY . .
+RUN WRESTLINGDEV_SECRET_KEY_BASE=assets-precompile-only bin/rails assets:precompile
+
+FROM base AS production
+
+RUN addgroup -g 1000 rails \
+    && adduser -D -u 1000 -G rails rails
+
+COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build /rails/Gemfile /rails/Gemfile.lock /rails/Rakefile /rails/config.ru ./
+COPY --from=build /rails/app ./app
+COPY --from=build /rails/bin ./bin
+COPY --from=build /rails/config ./config
+COPY --from=build /rails/db ./db
+COPY --from=build /rails/lib ./lib
+COPY --from=build /rails/public ./public
+COPY --from=build /rails/vendor ./vendor
+
+RUN mkdir -p db log storage tmp/pids \
+    && chown -R rails:rails db log storage tmp
+
+USER rails:rails
+
+EXPOSE 3000
+CMD ["bundle", "exec", "rails", "server", "-e", "production", "-p", "3000", "-b", "0.0.0.0"]

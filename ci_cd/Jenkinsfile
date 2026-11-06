@@ -40,8 +40,7 @@ try {
 
         sh '''
           set -o pipefail
-          docker build -t wrestlingdev:dev -f deploy/rails-prod-Dockerfile .
-          docker run --name wrestlingdev-development-tests --rm wrestlingdev:dev /bin/bash /rails/bin/run-all-tests.sh
+          bash bin/run-tests-with-docker.sh
         '''
       }
 
@@ -96,10 +95,7 @@ IMAGE_INTERNAL="10.0.0.221/wrestlingdev"
 IMAGE_EXTERNAL="jcwimer/wrestlingdev"
 
 #build image
-docker build -t ${IMAGE_INTERNAL}:${TAG} -f deploy/rails-prod-Dockerfile .
-
-#test image
-docker run --name wrestlingdev-production-tests --rm ${IMAGE_INTERNAL}:${TAG} /bin/bash /rails/bin/run-all-tests.sh
+docker build --pull -t ${IMAGE_INTERNAL}:${TAG} -f deploy/rails-prod-Dockerfile .
 
 #push to dockerhub
 set -a
@@ -152,6 +148,7 @@ ENDSSH
 } catch (error) {
   currentBuild.result = 'FAILURE'
   mail(
+    from: 'jacob.wimer@gmail.com',
     to: 'jacob.wimer@gmail.com',
     subject: "Failed Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
     body: "The wrestlingdev Jenkins build failed: ${env.BUILD_URL}"
@@ -160,6 +157,7 @@ ENDSSH
 } finally {
   if (currentBuild.currentResult == 'UNSTABLE') {
     mail(
+      from: 'jacob.wimer@gmail.com',
       to: 'jacob.wimer@gmail.com',
       subject: "Unstable Jenkins build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
       body: "The wrestlingdev Jenkins build is unstable: ${env.BUILD_URL}"

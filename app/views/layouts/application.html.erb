@@ -33,19 +33,19 @@
             <%= render 'layouts/header' %>
             <%= render 'layouts/tournament-navbar' %>
 
-            <div class="container">
+            <div class="wd-container">
                 <div class="navbar-roof"></div>
 
                   <div id="page-content">
-                    <div class="row">
-                      <div class="col-md-12">
+                    <div class="tw:flex tw:flex-wrap tw:-mx-[15px]">
+                      <div class="tw:w-full tw:px-[15px]">
                         <% unless hide_ads? %>
                           <%= render 'layouts/underheader' %>
                         <% end %>
                       </div>
                     </div>
-                    <div class="row no-margin">
-                        <div class="col-md-12" style="padding-left: 2%;">
+                    <div class="tw:flex tw:flex-wrap tw:-mx-[15px] no-margin">
+                        <div class="tw:w-full tw:px-[15px]" style="padding-left: 2%;">
                           <% if notice %>
                             <p id="notice" class="wd-alert wd-alert--success wd-alert--dismissible" data-controller="dismiss">
                               <button type="button" class="wd-alert__close" data-action="dismiss#dismiss" aria-label="close">&times;</button>
@@ -53,7 +53,7 @@
                             </p>
                           <% end %>
                           <% if alert %>
-                            <p id="alert" class="wd-alert wd-alert--danger wd-alert--dismissible" data-controller="dismiss">
+                            <p id="alert" class="wd-alert wd-alert--danger wd-alert--dismissible" data-controller="dismiss" role="alert">
                               <button type="button" class="wd-alert__close" data-action="dismiss#dismiss" aria-label="close">&times;</button>
                               <%= alert %>
                             </p>

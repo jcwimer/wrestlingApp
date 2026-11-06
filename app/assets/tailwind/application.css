@@ -1,6 +1,8 @@
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities) prefix(tw) source(none);
+@import "./components.css";
 
 @source "../../views";
 @source "../../helpers";
@@ -10,6 +12,71 @@
   --breakpoint-sm: 768px;
   --breakpoint-md: 992px;
   --breakpoint-lg: 1200px;
+}
+
+@layer base {
+  html {
+    font-size: 10px;
+  }
+
+  body {
+    @apply tw:bg-white tw:text-[#333];
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tw:font-medium tw:leading-[1.1];
+  }
+
+  h1, h2, h3 {
+    @apply tw:mt-[20px] tw:mb-[10px];
+  }
+
+  h4, h5, h6 {
+    @apply tw:my-[10px];
+  }
+
+  h1 { @apply tw:text-[36px]; }
+  h2 { @apply tw:text-[30px]; }
+  h3 { @apply tw:text-[24px]; }
+  h4 { @apply tw:text-[18px]; }
+  h5 { @apply tw:text-[14px]; }
+  h6 { @apply tw:text-[12px]; }
+
+  p { @apply tw:mb-[10px]; }
+  ul, ol { @apply tw:mb-[10px] tw:pl-[40px]; }
+  ul { @apply tw:list-disc; }
+  ol { @apply tw:list-decimal; }
+  ul ul, ol ol, ul ol, ol ul { @apply tw:mb-0; }
+  strong, b { @apply tw:font-bold; }
+  small { @apply tw:text-[85%]; }
+  a { @apply tw:text-[#337ab7] tw:no-underline; }
+  a:hover, a:focus { @apply tw:text-[#23527c] tw:underline; }
+  label { @apply tw:mb-[5px] tw:inline-block tw:font-bold; }
+  button, input, select, textarea { font: inherit; }
+  input:where(:not([type]), [type="text"], [type="search"], [type="email"], [type="password"], [type="number"], [type="tel"], [type="url"], [type="date"], [type="datetime-local"], [type="month"], [type="week"], [type="time"]),
+  select, textarea {
+    @apply tw:max-w-full tw:rounded-[2px] tw:border tw:border-solid tw:border-[#999] tw:bg-white tw:px-[4px] tw:py-[2px];
+  }
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    @apply tw:outline-2 tw:outline-offset-1 tw:outline-[#337ab7];
+  }
+  input:disabled, select:disabled, textarea:disabled { @apply tw:bg-[#eee]; }
+  button, input:where([type="button"], [type="submit"], [type="reset"]) {
+    @apply tw:rounded-[2px] tw:border tw:border-solid tw:border-[#999] tw:bg-[#efefef] tw:px-[6px] tw:py-[2px];
+  }
+  button, [type="button"], [type="submit"], [type="reset"] { @apply tw:cursor-pointer; }
+  button:disabled, input:disabled, select:disabled, textarea:disabled { @apply tw:cursor-not-allowed; }
+  th { @apply tw:text-left; }
+  hr { @apply tw:my-[20px] tw:border-t tw:border-[#eee]; }
+  pre { @apply tw:mb-[10px] tw:overflow-auto tw:rounded tw:border tw:border-[#ccc] tw:font-mono; }
+}
+
+@media print {
+  @page { margin: 0.5in; }
+  a, a:visited { color: inherit; }
+  img, tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+  h2, h3 { break-after: avoid; }
 }
 
 @layer components {

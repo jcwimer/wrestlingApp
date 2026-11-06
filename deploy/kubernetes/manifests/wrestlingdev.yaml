@@ -7,6 +7,7 @@ metadata:
 spec:
   ports:
     - port: 80
+      targetPort: 3000
   selector:
     app: wrestlingdev
     tier: frontend
@@ -38,9 +39,9 @@ spec:
         image: jcwimer/wrestlingdev:prod
         imagePullPolicy: Always
         command: ["bundle"]
-        args: ["exec", "rails", "server", "-e", "production", "-p", "80", "-b", "0.0.0.0"]
+        args: ["exec", "rails", "server", "-e", "production", "-p", "3000", "-b", "0.0.0.0"]
         ports:
-        - containerPort: 80
+        - containerPort: 3000
         env:
         - name: RAILS_ENV
           value: production
@@ -105,7 +106,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 3000
           initialDelaySeconds: 180
           periodSeconds: 20
           timeoutSeconds: 10
