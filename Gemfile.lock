@@ -175,7 +175,7 @@ GEM
       turbo-rails
     mocha (3.1.0)
       ruby2_keywords (>= 0.0.5)
-    msgpack (1.8.4)
+    msgpack (1.8.7)
     mysql2 (0.5.7)
       bigdecimal
     net-imap (0.6.6)
