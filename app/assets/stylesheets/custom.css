@@ -1,4 +1,3 @@
-.navbar-inverse.navbar-fixed-top,
 .wd-navbar.wd-navbar--inverse.wd-navbar--fixed-top {
   z-index: 1040;
 }
@@ -48,7 +47,6 @@
 }
 
 @media (min-width: 768px) {
-  .navbar-fixed-top .dropdown-menu,
   .wd-navbar--fixed-top .wd-dropdown__menu {
     max-height: 70vh;
     overflow-y: auto;

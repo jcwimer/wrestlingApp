@@ -32,16 +32,18 @@ class SessionsControllerTest < ActionController::TestCase
 
   test 'should not create session with invalid email' do
     post :create, params: { session: { email: 'wrong@example.com', password: 'password' } }
+    assert_response :unprocessable_content
     assert_template 'new'
     assert_nil session[:user_id]
-    assert_select '#alert.wd-alert--danger', text: %r{Invalid email/password combination}
+    assert_select '#alert.wd-alert--danger[role=alert]', text: %r{Invalid email/password combination}
   end
 
   test 'should not create session with invalid password' do
     post :create, params: { session: { email: @user.email, password: 'wrongpassword' } }
+    assert_response :unprocessable_content
     assert_template 'new'
     assert_nil session[:user_id]
-    assert_select '#alert.wd-alert--danger', text: %r{Invalid email/password combination}
+    assert_select '#alert.wd-alert--danger[role=alert]', text: %r{Invalid email/password combination}
   end
 
   test 'should destroy session' do

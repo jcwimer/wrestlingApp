@@ -1,6 +1,4 @@
 /* relative pathing from /vender/assets/stylesheets = / */
-@import url("/bootstrap.min.css");
-@import url("/bootstrap-theme.min.css");
 @import url("/fontawesome/all.css");
 @import url("/custom.css");
 @import url("/scaffolds.css");

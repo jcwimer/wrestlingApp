@@ -33,6 +33,27 @@ class StaticPagesControllerTest < ActionController::TestCase
     success
   end
 
+  test 'about page describes current tournament features without signing in' do
+    get :about
+
+    assert_response :success
+    assert_select 'h2', 'About WrestlingDev'
+    assert_select 'section#tournament-management' do
+      assert_select 'h3', text: 'Tournament Management', count: 1
+      assert_select 'h4', count: 5
+      assert_select 'h5', count: 5
+      assert_select 'li', text: /season records/, count: 0
+    end
+    assert_select 'section#tournament-management h3', text: 'Contact', count: 0
+    assert_select 'h3', 'Contact'
+    assert_select 'li', text: /full-screen scoreboards/
+    assert_select 'li', text: /Create and restore tournament backups/
+    assert_select 'li', text: /Two Pools of 5.*9-10 wrestlers/
+    assert_select 'li', text: /Four pools of 3.*11-12 wrestlers/
+    assert_select 'h3', text: 'Future Plans', count: 0
+    assert_select 'div.tw\\:overflow-x-auto table tbody tr', count: 3
+  end
+
   test 'get my_tournaments' do
     sign_in_owner
     get :my_tournaments

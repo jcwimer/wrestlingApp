@@ -39,10 +39,9 @@ services:
       metrics:
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:3000"
     healthcheck: 
-      test: curl http://127.0.0.1/
+      test: curl --fail http://127.0.0.1:3000/
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

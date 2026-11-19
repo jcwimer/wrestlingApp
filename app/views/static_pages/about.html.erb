@@ -1,33 +1,60 @@
 <h2>About WrestlingDev</h2>
 <br>
-<p>WrestlingDev was created to help bring wrestling into the 21st century for <strong>free</strong>. This site is <a href="https://github.com/jcwimer/wrestlingApp">open source</a> and is supported by the ads on the sidebar.</p>
+<p>WrestlingDev is a <strong>free</strong>, <a href="https://github.com/jcwimer/wrestlingApp">open-source</a> wrestling tournament management application. It helps directors organize tournaments, mat workers record results, and coaches and spectators follow the action.</p>
 <br>
-<h3>Features</h3>
-<p>Wrestlingdev supports the following features:</p>
+<section id="tournament-management">
+<h3>Tournament Management</h3>
+<p> Under this section you will find features listed for tournament management.</p>
+<h4>Features</h4>
+<p>Manage your tournament from roster entry and weigh-ins through live scoring and final results.</p>
 <ul>
-  <li>Tournament Types
+  <li>Tournament types
     <ul>
-      <li>Pool to bracket (adhears to 5 match per day rule)</li>
-      <li>Regular Double Elimination 32 man, 16 man, and 8 man. Options for placing 1st-6th or 1st-8th.</li>
-      <li>Modified 16 Man Double Elimination 1-6. Options for placing 1st-6th or 1st-8th. Adhears to 5 match per day rule.</li>
+      <li>Pool to bracket for up to 24 wrestlers per weight, with formats designed for a five-match day.</li>
+      <li>Regular double elimination with 8-, 16-, and 32-person brackets, placing 1st-6th or 1st-8th.</li>
+      <li>Modified 16-person double elimination, placing 1st-6th or 1st-8th, with no wrestler scheduled for more than five matches.</li>
     </ul>
   </li>
-  <li>Team point calculation</li>
-  <li>Bracket generation</li>
-  <li>Bracket advancement</li>
-  <li>Bout board</li>
-  <li>Coach Information
+  <li>Tournament setup and roster management
     <ul>
-      <li>Score breakdown per wrestler</li>
-      <li>Next bout number for each wrestler</li>
-      <li>Next mat assignment for each wrestler</li>
+      <li>Manage schools, wrestlers, seeds, pool assignments, and weigh-ins.</li>
+      <li>Create custom weight classes or use boys' and girls' high-school and middle-school presets.</li>
+      <li>Share tournament responsibilities with delegates and give coaches school-specific roster access, including permission links that do not require an account.</li>
+    </ul>
+  </li>
+  <li>Brackets and team scoring
+    <ul>
+      <li>Generate brackets and bout numbers, advance wrestlers as results are entered, and calculate team scores.</li>
+      <li>Browse interactive championship, consolation, and placement rounds, or print brackets.</li>
+      <li>Review each wrestler's team-point breakdown and apply team-point deductions.</li>
+    </ul>
+  </li>
+  <li>Mat management and live scoring
+    <ul>
+      <li>Follow the bout board through On Mat, On Deck, In the Hole, and Warm Up positions.</li>
+      <li>Assign matches to mats manually or with rules based on weight, bracket position, and round.</li>
+      <li>Enter match results or use full scoring controls with a match clock, periods, and an event log.</li>
+      <li>Display full-screen scoreboards and let spectators follow live match scores.</li>
+    </ul>
+  </li>
+  <li>Coach and spectator information
+    <ul>
+      <li>View brackets, results, team standings, and the bout board.</li>
+      <li>Find each wrestler's next bout number and mat assignment, match history, and score breakdown.</li>
+      <li>View school statistics and tournament updates, email updates to coaches, and share a tournament QR code.</li>
+    </ul>
+  </li>
+  <li>Printing and backups
+    <ul>
+      <li>Print brackets, round-specific bout sheets, weigh-in sheets, and match results.</li>
+      <li>Create and restore tournament backups.</li>
     </ul>
   </li>
 </ul>
 <br>
-<h3>Pool to bracket information</h3>
-<p>At this moment in time, WrestlingDev supports a pool to bracket type tournament for up to 24 wrestlers per weight. The bracket format follows OHSAA's 5 match per day rule. WrestlingDev will automatically generate brackets, generate bout numbers, generate and update a bout board, track team points, and update brackets.</p>
-<h4>Pool tiebreakers</h4>
+<h4>Pool to bracket information</h4>
+<p>Pool-to-bracket tournaments support up to 24 wrestlers per weight. Wrestlers begin in round-robin pools, with advancement determined by pool standings. The format depends on the number of wrestlers in each weight class and is designed to keep each wrestler to five matches or fewer.</p>
+<h5>Pool tiebreakers</h5>
 <p>NFHS rules do not provide a direct tiebreaker sequence for individual round-robin pool standings. WrestlingDev therefore uses a sequence adapted from the NFHS dual-meet tiebreaker criteria.</p>
 <ul>
     <li>Most matches won</li>
@@ -44,7 +71,7 @@
     <li>Coin flip</li>
 </ul>
 <p>If three or more wrestlers are tied, they are compared using this sequence until the tie is reduced. When two wrestlers remain tied, the sequence restarts with their head-to-head result.</p>
-<h4>Pool to bracket scoring</h4>
+<h5>Pool to bracket scoring</h5>
 <ul>
     <li>Pool win: 2pt</li>
     <li>Win in championship bracket: 2pt</li>
@@ -55,20 +82,21 @@
     <li>BYE points: 2pt (if you win at least 1 match in a pool with a BYE). - This only applies if your pool has more BYEs than other pools in your bracket. This does not apply to weight classes with 1 pool.</li>
 </ul>
 <p>See placement points below (based on the largest bracket of the tournament)</p>
-<h4>Pool Types</h4>
+<h5>Pool Types</h5>
 <ul>
     <li>Single pool round robin - 2-6 wrestlers, place 1-4.</li>
     <li>Two Pools of 4 (3 matches each) to a semi final bracket - 7-8 wrestlers, place 1-4.</li>
-    <li>Two Pools of 5 (4 matches each) to a championship and 3rd/4th match - 8-10 wrestlers, place 1-4.</li>
-    <li>Four pools of 3 (2 matches each) to a quarter final bracket - 9-12 wrestlers, place 1-8.</li>
+    <li>Two Pools of 5 (4 matches each) to a championship and 3rd/4th match - 9-10 wrestlers, place 1-4.</li>
+    <li>Four pools of 3 (2 matches each) to a quarter final bracket - 11-12 wrestlers, place 1-8.</li>
     <li>Four pools of 4 (3 matches each) to a semi final bracket - 13-16 wrestlers, place 1-8.</li>
     <li>Eight pools of 3 (2 matches each) to a quarter final bracket - 17-24 wrestlers, place 1-8.</li>
 </ul>
+<p>Pool sizes and match counts above describe full pools; byes reduce the number of matches wrestled.</p>
 <br>
-<h3>Regular Double Elimination Information</h3>
-<p>Right now, double elimination brackets only support 8, 16, and 32 man brackets (4-32 wrestlers). Cross bracketing will happen every other round. 16 man in quarter finals, 8 man in semi finals.</p>
+<h4>Regular Double Elimination Information</h4>
+<p>Regular double elimination supports 8-, 16-, and 32-person brackets. Wrestlers who lose in the championship bracket move into the consolation bracket, with cross-bracketing used along the way. Unlike the modified format, regular double elimination can require more than five matches per wrestler.</p>
 <p>Regular Double Elimination 1-6 places 1st through 6th. Regular Double Elimination 1-8 places 1st through 8th.</p>
-<h4>Regular Double Elimination scoring</h4>
+<h5>Regular Double Elimination scoring</h5>
 <ul>
   <li>Championship win: 2pt</li>
   <li>Consolation win: 1pt</li>
@@ -78,10 +106,10 @@
   <li>BYE points: 2pts if you have a bye in the championship bracket and win the next match. 1pt if you have a bye in the consolation bracket and win the next match. - This only applies if you received a bye in a round with at least 1 match in your backet.</li>
 </ul>
 <br>
-<h3>Modified 16 Man Double Elimination Information</h3>
-<p>Adhears to 5 match per day rule. Allows a 16 man bracket without anyone wrestling more than 5 matches. Semi Final losers wrestle for 3rd. Anyone who loses before the Semi Finals wrestle a consolation bracket for 5th.</p>
+<h4>Modified 16 Man Double Elimination Information</h4>
+<p>The modified format allows a 16-person bracket without anyone wrestling more than five matches. Semifinal losers wrestle for 3rd. Anyone who loses before the semifinals enters a consolation bracket for 5th.</p>
 <p>Modified 16 Man Double Elimination 1-6 places 1st through 6th. Modified 16 Man Double Elimination 1-8 places 1st through 8th.</p>
-<h4>Modified 16 Man Double Elimination scoring (same as Regular Double Elimination)</h4>
+<h5>Modified 16 Man Double Elimination scoring (same as Regular Double Elimination)</h5>
 <ul>
   <li>Championship win: 2pt</li>
   <li>Consolation win: 1pt</li>
@@ -91,7 +119,8 @@
   <li>BYE points: 2pts if you have a bye in the championship bracket and win the next match. 1pt if you have a bye in the consolation bracket and win the next match.</li>
 </ul>
 <br>
-<h3>Placement Points</h3>
+<h4>Placement Points</h4>
+<div class="tw:overflow-x-auto">
 <table class="table table-hover table-condensed">
   <thead>
     <tr>
@@ -142,11 +171,9 @@
      </tr>
   </tbody>
 </table>
-<p>Finals matches will only recieve extra placement points for placing higher and bonus points for pin, tech, major, etc. Please note, only brackets with four pools place up to 8. Brackets with 1 or 2 pools only place top 4.</p>
-<br>
-<h3>Future Plans</h3>
-<br>
-<p>Future development plans are underway to make the application more flexible, make changes after weigh ins easier, and to add functionality for a live scoreboard.</p>
+</div>
+<p>Placement finals award the additional placement points for finishing higher and any applicable win-type bonus points, rather than advancement points. In pool-to-bracket tournaments, four- and eight-pool formats place up to 8 wrestlers; one- and two-pool formats place up to 4.</p>
+</section>
 <br>
 <h3>Contact</h3>
 <br>

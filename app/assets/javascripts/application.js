@@ -3,8 +3,6 @@
 // These are pinned in config/importmap.rb
 import "@hotwired/turbo-rails";
 import { createConsumer } from "@rails/actioncable"; // Import createConsumer directly
-import "jquery";
-import "bootstrap"; 
 
 // Stimulus setup
 import { Application } from "@hotwired/stimulus";
@@ -64,4 +62,4 @@ cleanupWrestlingAppLocalStorage();
   }
 }).call(this);
 
-console.log("Propshaft/Importmap application.js initialized with jQuery, Bootstrap, and Stimulus.");
+console.log("Propshaft/Importmap application.js initialized with Stimulus.");

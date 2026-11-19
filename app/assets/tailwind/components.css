@@ -1,0 +1,156 @@
+@layer components {
+  .btn {
+    @apply tw:inline-block tw:align-middle tw:cursor-pointer tw:select-none tw:whitespace-nowrap tw:rounded-[4px] tw:border tw:border-solid tw:border-transparent tw:px-[12px] tw:py-[6px] tw:text-center tw:text-[14px] tw:font-normal tw:leading-[1.42857143] tw:no-underline;
+    color: var(--button-color, #333);
+    background-color: var(--button-bg, transparent);
+    border-color: var(--button-border, transparent);
+  }
+
+  .btn:hover, .btn:focus, .btn.active, .btn:active {
+    @apply tw:no-underline;
+    color: var(--button-color, #333);
+    background-color: var(--button-hover-bg, transparent);
+    border-color: var(--button-hover-border, transparent);
+  }
+
+  .btn:focus-visible { @apply tw:outline-2 tw:outline-offset-2 tw:outline-[#66afe9]; }
+  .btn.active, .btn:active { box-shadow: inset 0 3px 5px rgb(0 0 0 / 12.5%); }
+  .btn:disabled, .btn.disabled, fieldset:disabled .btn {
+    @apply tw:cursor-not-allowed tw:opacity-65 tw:shadow-none;
+  }
+  a.btn.disabled { @apply tw:pointer-events-none; }
+
+  .btn-default {
+    --button-bg: #fff;
+    --button-border: #ccc;
+    --button-hover-bg: #e6e6e6;
+    --button-hover-border: #adadad;
+  }
+  .btn-primary {
+    --button-color: #fff;
+    --button-bg: #337ab7;
+    --button-border: #2e6da4;
+    --button-hover-bg: #286090;
+    --button-hover-border: #204d74;
+  }
+  .btn-success {
+    --button-color: #fff;
+    --button-bg: #5cb85c;
+    --button-border: #4cae4c;
+    --button-hover-bg: #449d44;
+    --button-hover-border: #398439;
+  }
+  .btn-danger {
+    --button-color: #fff;
+    --button-bg: #d9534f;
+    --button-border: #d43f3a;
+    --button-hover-bg: #c9302c;
+    --button-hover-border: #ac2925;
+  }
+  .btn-warning {
+    --button-color: #fff;
+    --button-bg: #f0ad4e;
+    --button-border: #eea236;
+    --button-hover-bg: #ec971f;
+    --button-hover-border: #d58512;
+  }
+  .btn-link { --button-color: #337ab7; }
+  .btn-link:hover, .btn-link:focus { @apply tw:text-[#23527c] tw:underline tw:shadow-none; }
+  .btn-sm { @apply tw:rounded-[3px] tw:px-[10px] tw:py-[5px] tw:text-[12px] tw:leading-normal; }
+  .btn-xs, .btn-group-xs > .btn { @apply tw:rounded-[3px] tw:px-[5px] tw:py-px tw:text-[12px] tw:leading-normal; }
+  .btn-large { @apply tw:rounded-[6px] tw:px-[16px] tw:py-[10px] tw:text-[18px] tw:leading-[1.3333333]; }
+  .btn-group { @apply tw:relative tw:inline-flex tw:align-middle; }
+  .btn-group > .btn { @apply tw:relative tw:flex-initial; }
+  .btn-group > .btn + .btn { @apply tw:-ml-px; }
+  .btn-group > .btn:not(:first-child) { @apply tw:rounded-l-none; }
+  .btn-group > .btn:not(:last-child) { @apply tw:rounded-r-none; }
+  .btn-group > .btn:hover, .btn-group > .btn:focus, .btn-group > .btn.active { @apply tw:z-10; }
+
+  .panel {
+    @apply tw:mb-[20px] tw:rounded-[4px] tw:border tw:border-solid tw:border-transparent tw:bg-white;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
+  }
+  .panel-body { @apply tw:p-[15px] tw:flow-root; }
+  .panel-heading { @apply tw:rounded-t-[3px] tw:border-b tw:border-solid tw:border-transparent tw:px-[15px] tw:py-[10px]; }
+  .panel-default { @apply tw:border-[#ddd]; }
+  .panel-default > .panel-heading { @apply tw:border-[#ddd] tw:bg-[#f5f5f5] tw:text-[#333]; }
+  .panel-success { @apply tw:border-[#d6e9c6]; }
+  .panel-success > .panel-heading { @apply tw:border-[#d6e9c6] tw:bg-[#dff0d8] tw:text-[#3c763d]; }
+  .panel-danger { @apply tw:border-[#ebccd1]; }
+  .panel-danger > .panel-heading { @apply tw:border-[#ebccd1] tw:bg-[#f2dede] tw:text-[#a94442]; }
+  .panel > .table { @apply tw:mb-0; }
+
+  .table { @apply tw:mb-[20px] tw:w-full tw:max-w-full tw:border-collapse; }
+  .table > :is(thead, tbody, tfoot) > tr > :is(th, td) {
+    @apply tw:border-t tw:border-solid tw:border-[#ddd] tw:p-[8px] tw:align-top tw:leading-[1.42857143];
+  }
+  .table > thead > tr > th { @apply tw:border-b-2 tw:align-bottom; }
+  .table > :first-child > tr:first-child > :is(th, td) { @apply tw:border-t-0; }
+  .table > tbody + tbody { @apply tw:border-t-2 tw:border-solid tw:border-[#ddd]; }
+  .table-bordered, .table-bordered > :is(thead, tbody, tfoot) > tr > :is(th, td) {
+    @apply tw:border tw:border-solid tw:border-[#ddd];
+  }
+  .table-bordered > thead > tr > :is(th, td) { @apply tw:border-b-2; }
+  .table-striped > tbody > tr:nth-of-type(odd) { @apply tw:bg-[#f9f9f9]; }
+  .table-hover > tbody > tr:hover { @apply tw:bg-[#f5f5f5]; }
+  .table-condensed > :is(thead, tbody, tfoot) > tr > :is(th, td),
+  .table-sm > :is(thead, tbody, tfoot) > tr > :is(th, td) { @apply tw:p-[5px]; }
+
+  .form-group { @apply tw:mb-[15px]; }
+  .form-control {
+    @apply tw:block tw:h-[34px] tw:w-full tw:rounded-[4px] tw:border tw:border-solid tw:border-[#ccc] tw:bg-white tw:px-[12px] tw:py-[6px] tw:text-[14px] tw:leading-[1.42857143] tw:text-[#555];
+    box-shadow: inset 0 1px 1px rgb(0 0 0 / 7.5%);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .form-control:focus {
+    @apply tw:border-[#66afe9] tw:outline-none;
+    box-shadow: inset 0 1px 1px rgb(0 0 0 / 7.5%), 0 0 8px rgb(102 175 233 / 60%);
+  }
+  .form-control::placeholder { @apply tw:text-[#999] tw:opacity-100; }
+  .form-control:disabled, .form-control[readonly], fieldset:disabled .form-control { @apply tw:bg-[#eee] tw:opacity-100; }
+  .form-control:disabled, fieldset:disabled .form-control { @apply tw:cursor-not-allowed; }
+  textarea.form-control, select.form-control[multiple], select.form-control[size] { @apply tw:h-auto; }
+  .form-label { @apply tw:mb-[5px] tw:inline-block tw:font-bold; }
+
+  .alert { @apply tw:mb-[20px] tw:rounded-[4px] tw:border tw:border-solid tw:border-transparent tw:p-[15px]; }
+  .alert > :last-child { @apply tw:mb-0; }
+  .alert > p + p { @apply tw:mt-[5px]; }
+  .alert-success { @apply tw:border-[#d6e9c6] tw:bg-[#dff0d8] tw:text-[#3c763d]; }
+  .alert-danger { @apply tw:border-[#ebccd1] tw:bg-[#f2dede] tw:text-[#a94442]; }
+  .alert-info { @apply tw:border-[#bce8f1] tw:bg-[#d9edf7] tw:text-[#31708f]; }
+  .alert-warning { @apply tw:border-[#faebcc] tw:bg-[#fcf8e3] tw:text-[#8a6d3b]; }
+  .alert-secondary { @apply tw:border-[#d6d8db] tw:bg-[#e2e3e5] tw:text-[#383d41]; }
+  .well {
+    @apply tw:mb-[20px] tw:min-h-[20px] tw:rounded-[4px] tw:border tw:border-solid tw:border-[#e3e3e3] tw:bg-[#f5f5f5] tw:p-[19px];
+    box-shadow: inset 0 1px 1px rgb(0 0 0 / 5%);
+  }
+  .well-sm { @apply tw:rounded-[3px] tw:p-[9px]; }
+  .label { @apply tw:inline tw:rounded-[0.25em] tw:px-[0.6em] tw:pt-[0.2em] tw:pb-[0.3em] tw:align-baseline tw:text-center tw:text-[75%] tw:font-bold tw:leading-none tw:whitespace-nowrap tw:text-white; }
+  .label-default { @apply tw:bg-[#777]; }
+  .label-primary { @apply tw:bg-[#337ab7]; }
+  .label-success { @apply tw:bg-[#5cb85c]; }
+  .label-danger { @apply tw:bg-[#d9534f]; }
+  .label:empty { @apply tw:hidden; }
+
+  .pagination { @apply tw:my-[20px] tw:flex tw:max-w-full tw:list-none tw:overflow-x-auto tw:p-0; }
+  .page-link { @apply tw:relative tw:block tw:border tw:border-solid tw:border-[#ddd] tw:bg-white tw:px-[12px] tw:py-[6px] tw:leading-[1.42857143] tw:text-[#337ab7] tw:no-underline; }
+  .page-item + .page-item > .page-link { @apply tw:-ml-px; }
+  .page-item:first-child > .page-link { @apply tw:rounded-l-[4px]; }
+  .page-item:last-child > .page-link { @apply tw:rounded-r-[4px]; }
+  .page-link:hover, .page-link:focus { @apply tw:z-10 tw:border-[#ddd] tw:bg-[#eee] tw:text-[#23527c] tw:no-underline; }
+  .page-item.active > .page-link { @apply tw:z-10 tw:border-[#337ab7] tw:bg-[#337ab7] tw:text-white; }
+  .page-item.disabled > .page-link { @apply tw:cursor-not-allowed tw:border-[#ddd] tw:bg-white tw:text-[#777]; }
+
+  .text-muted { @apply tw:text-[#777]; }
+  .text-success { @apply tw:text-[#3c763d]; }
+  .text-danger { @apply tw:text-[#a94442]; }
+  .text-warning { @apply tw:text-[#8a6d3b]; }
+  .text-dark { @apply tw:text-[#333]; }
+  .text-center { @apply tw:text-center; }
+  .text-right { @apply tw:text-right; }
+  .text-decoration-none { @apply tw:no-underline; }
+  .mt-2 { @apply tw:mt-[8px]; }
+  .mb-2 { @apply tw:mb-[8px]; }
+  .mb-3 { @apply tw:mb-[16px]; }
+  .p-3 { @apply tw:p-[16px]; }
+}

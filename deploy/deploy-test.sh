@@ -20,7 +20,7 @@ echo "Making sure databases exist..."
 # DISABLE_DATABASE_ENVIRONMENT_CHECK=1 is needed because this is "destructive" action on production
 ${COMPOSE} -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:create
 echo Resetting the db with seed data
-${COMPOSE} -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bash -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:reset"
+${COMPOSE} -f ${project_dir}/deploy/docker-compose-test.yml run --rm app sh -c "DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:reset"
 echo "Running database migrations..."
 ${COMPOSE} -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:migrate
 ${COMPOSE} -f ${project_dir}/deploy/docker-compose-test.yml run --rm app bin/rails db:migrate:cache

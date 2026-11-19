@@ -1,7 +1,7 @@
 <h1>Sign up</h1>
 
-<div class="row">
-  <div class="col-md-6 col-md-offset-3">
+<div class="tw:flex tw:flex-wrap tw:-mx-[15px]">
+  <div class="tw:w-full tw:px-[15px] tw:md:w-1/2 tw:md:ml-[25%]">
     <%= form_with(model: @user, url: signup_path, local: true) do |f| %>
       <% if @user.errors.any? %>
         <div class="error_explanation">
@@ -36,4 +36,4 @@
     
     <p>Already have an account? <%= link_to "Log in", login_path %></p>
   </div>
-</div> 
+</div>

@@ -6,17 +6,6 @@ pin "@hotwired/stimulus", to: "stimulus.min.js", preload: true
 pin "@hotwired/stimulus-loading", to: "stimulus-loading.js", preload: true
 pin "@rails/actioncable", to: "actioncable.esm.js" # For Action Cable
 
-# Pin jQuery. jquery-rails should make "jquery.js" or "jquery.min.js" available.
-# If this doesn't work, you might need to copy jquery.js/jquery.min.js to vendor/javascript
-# and pin it directly, e.g., pin "jquery", to: "jquery.min.js"
-pin "jquery", to: "jquery.js"
-
-# Pin Bootstrap from vendor/assets/javascripts/
-pin "bootstrap", to: "bootstrap.min.js"
-
-# If Bootstrap requires Popper.js, and you have it in vendor/assets/javascripts/
-# pin "@popperjs/core", to: "popper.min.js" # Or the actual filename if different
-
 # Pin controllers from app/assets/javascripts/controllers
 pin_all_from "app/assets/javascripts/controllers", under: "controllers"
 pin "match-state-config", to: "lib/match_state/config.js"
